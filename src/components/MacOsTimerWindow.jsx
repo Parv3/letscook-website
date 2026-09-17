@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Maximize2, Minimize2, Move } from 'lucide-react';
+import { Clock, Move } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
 
 export default function MacOsTimerWindow({ isVisible, onClose }) {
   const [isMinimized, setIsMinimized] = useState(false);
-  const [position, setPosition] = useState({ x: 24, y: 100 });
+  const [position, setPosition] = useState({ x: 16, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const posStartRef = useRef({ x: 0, y: 0 });
@@ -19,7 +19,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Window drag logic
+  // Desktop Mouse Drag logic
   const handleMouseDown = (e) => {
     if (e.target.closest('.mac-control')) return;
     setIsDragging(true);
@@ -27,28 +27,44 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
     posStartRef.current = { ...position };
   };
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - dragStartRef.current.x;
-      const dy = e.clientY - dragStartRef.current.y;
+  // Mobile Touch Drag logic
+  const handleTouchStart = (e) => {
+    if (e.target.closest('.mac-control')) return;
+    const touch = e.touches[0];
+    setIsDragging(true);
+    dragStartRef.current = { x: touch.clientX, y: touch.clientY };
+    posStartRef.current = { ...position };
+  };
 
-      const newX = Math.max(10, Math.min(window.innerWidth - 320, posStartRef.current.x + dx));
-      const newY = Math.max(10, Math.min(window.innerHeight - 180, posStartRef.current.y + dy));
+  useEffect(() => {
+    const handleMove = (clientX, clientY) => {
+      if (!isDragging) return;
+      const dx = clientX - dragStartRef.current.x;
+      const dy = clientY - dragStartRef.current.y;
+
+      const windowWidth = Math.min(320, window.innerWidth - 32);
+      const newX = Math.max(8, Math.min(window.innerWidth - windowWidth - 8, posStartRef.current.x + dx));
+      const newY = Math.max(8, Math.min(window.innerHeight - 140, posStartRef.current.y + dy));
 
       setPosition({ x: newX, y: newY });
     };
 
-    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseMove = (e) => handleMove(e.clientX, e.clientY);
+    const handleTouchMove = (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    const handleEnd = () => setIsDragging(false);
 
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mouseup', handleEnd);
+      window.addEventListener('touchmove', handleTouchMove);
+      window.addEventListener('touchend', handleEnd);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, [isDragging]);
 
@@ -66,7 +82,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
         <div className="mac-dot red-dot"></div>
         <div className="mac-dot yellow-dot"></div>
         <div className="mac-dot green-dot"></div>
-        <Clock size={14} className="badge-clock" />
+        <Clock size={13} className="badge-clock" />
         <span className="badge-text">
           {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
         </span>
@@ -77,12 +93,12 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
             z-index: 2500;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
+            gap: 6px;
+            padding: 8px 12px;
             background-color: var(--bg-surface);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-btn);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
             cursor: pointer;
             color: var(--text-main);
           }
@@ -91,7 +107,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
           }
           .badge-text {
             font-family: var(--font-display);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
           }
         `}</style>
@@ -105,16 +121,20 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
     >
       {/* macOS Titlebar Header */}
-      <div className="mac-titlebar" onMouseDown={handleMouseDown}>
+      <div 
+        className="mac-titlebar" 
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+      >
         <div className="mac-controls">
           <button onClick={onClose} className="mac-control red-dot" title="Close window" aria-label="Close window" />
           <button onClick={() => setIsMinimized(true)} className="mac-control yellow-dot" title="Minimize window" aria-label="Minimize window" />
-          <button onClick={() => setPosition({ x: 24, y: 100 })} className="mac-control green-dot" title="Reset position" aria-label="Reset position" />
+          <button onClick={() => setPosition({ x: 16, y: 80 })} className="mac-control green-dot" title="Reset position" aria-label="Reset position" />
         </div>
 
         <div className="mac-title">
-          <Clock size={13} className="mac-title-icon" />
-          <span>launch-countdown.sh — Monday 12 PM</span>
+          <Clock size={12} className="mac-title-icon" />
+          <span>launch-timer.sh</span>
         </div>
 
         <div className="drag-handle-hint">
@@ -125,7 +145,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
       {/* macOS Window Body */}
       <div className="mac-body">
         <div className="mac-timer-header">
-          <span>TARGET: MONDAY 12:00 PM IST</span>
+          <span>UNLOCKS MONDAY 12:00 PM IST</span>
         </div>
 
         <div className="mac-countdown-row">
@@ -155,13 +175,15 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
         .mac-window-container {
           position: fixed;
           z-index: 2500;
-          width: 320px;
+          width: 300px;
+          max-width: calc(100vw - 24px);
           background-color: var(--bg-surface);
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
           overflow: hidden;
           user-select: none;
+          touch-action: none;
         }
 
         .mac-titlebar {
@@ -215,43 +237,43 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
         }
 
         .mac-body {
-          padding: 16px;
+          padding: 14px;
           background: linear-gradient(180deg, var(--bg-surface) 0%, #16161c 100%);
         }
 
         .mac-timer-header {
           text-align: center;
-          font-size: 0.65rem;
+          font-size: 0.62rem;
           font-weight: 700;
           letter-spacing: 0.08em;
           color: var(--accent-burgundy-hover);
-          margin-bottom: 10px;
+          margin-bottom: 8px;
         }
 
         .mac-countdown-row {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 6px;
         }
 
         .mac-unit {
           display: flex;
           flex-direction: column;
           align-items: center;
-          min-width: 44px;
+          min-width: 40px;
         }
 
         .mac-val {
           font-family: var(--font-display);
-          font-size: 1.5rem;
+          font-size: 1.35rem;
           font-weight: 700;
           color: var(--text-main);
           line-height: 1;
         }
 
         .mac-lbl {
-          font-size: 0.6rem;
+          font-size: 0.55rem;
           font-weight: 700;
           letter-spacing: 0.06em;
           color: var(--text-muted);
@@ -260,7 +282,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
 
         .mac-colon {
           font-family: var(--font-display);
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: 700;
           color: var(--accent-burgundy);
           margin-top: -6px;
