@@ -331,37 +331,51 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           position: relative;
           max-width: 1100px;
           margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
 
         .tech-bar {
           display: flex;
           flex-wrap: wrap;
+          justify-content: center;
           gap: 12px;
           margin-bottom: 32px;
         }
 
         .hero-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
           margin-bottom: 40px;
-          max-width: 800px;
+          max-width: 880px;
         }
 
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4.2rem);
           margin-bottom: 24px;
           letter-spacing: -0.03em;
+          text-align: center;
+          text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 0 35px rgba(6, 6, 8, 0.85);
         }
 
         .hero-subtitle {
           font-size: 1.15rem;
           color: var(--text-muted);
-          max-width: 720px;
-          margin-bottom: 32px;
+          max-width: 740px;
+          margin: 0 auto 32px auto;
           line-height: 1.6;
+          text-align: center;
+          text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
         }
 
         .hero-cta-group {
           display: flex;
           flex-wrap: wrap;
+          justify-content: center;
           gap: 16px;
         }
 
