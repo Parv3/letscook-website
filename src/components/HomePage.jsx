@@ -8,13 +8,14 @@ const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_prof
 
 export default function HomePage({ setCurrentPage }) {
   const [accessCode, setAccessCode] = useState('');
+  const [hoveredPillar, setHoveredPillar] = useState(null);
 
   const techBadges = [
-    { name: 'REACT', desc: 'Web Apps' },
-    { name: 'TYPESCRIPT', desc: 'Type Safety' },
-    { name: 'NODE.JS', desc: 'Backend Services' },
-    { name: 'PYTHON', desc: 'AI & Systems' },
-    { name: 'DOCKER', desc: 'Cloud DevOps' }
+    { name: 'REACT', desc: 'Web Apps', delay: '0s' },
+    { name: 'TYPESCRIPT', desc: 'Type Safety', delay: '0.4s' },
+    { name: 'NODE.JS', desc: 'Backend Services', delay: '0.8s' },
+    { name: 'PYTHON', desc: 'AI & Systems', delay: '1.2s' },
+    { name: 'DOCKER', desc: 'Cloud DevOps', delay: '1.6s' }
   ];
 
   const pillars = [
@@ -45,10 +46,14 @@ export default function HomePage({ setCurrentPage }) {
       {/* Hero Section inspired by reference design */}
       <section className="hero-section">
         <div className="hero-container">
-          {/* Tech Stack Badges Row */}
+          {/* Staggered Floating Tech Badges */}
           <div className="tech-bar">
             {techBadges.map((badge, idx) => (
-              <div key={idx} className="tech-tag">
+              <div 
+                key={idx} 
+                className="tech-tag floating-element"
+                style={{ animationDelay: badge.delay }}
+              >
                 <span className="tech-name">{badge.name}</span>
                 <span className="tech-dot">•</span>
                 <span className="tech-desc">{badge.desc}</span>
@@ -71,7 +76,7 @@ export default function HomePage({ setCurrentPage }) {
                 href={getTrackedUrl(LINKTREE_URL)}
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="btn-primary btn-lg"
+                className="btn-primary btn-lg glow-btn"
               >
                 JOIN THE FOUNDRY <ArrowUpRight size={18} />
               </a>
@@ -89,22 +94,22 @@ export default function HomePage({ setCurrentPage }) {
 
           {/* Feature Highlights Grid */}
           <div className="hero-stats-row">
-            <div className="stat-card">
-              <Sparkles size={20} className="stat-icon" />
+            <div className="stat-card hover-glow">
+              <Sparkles size={20} className="stat-icon pulse-icon" />
               <div>
                 <h4>STUDENT RUN</h4>
                 <p>100% peer led and community governed</p>
               </div>
             </div>
-            <div className="stat-card">
-              <Rocket size={20} className="stat-icon" />
+            <div className="stat-card hover-glow">
+              <Rocket size={20} className="stat-icon pulse-icon" />
               <div>
                 <h4>PRODUCTION FIRST</h4>
                 <p>Focusing on deployed, working applications</p>
               </div>
             </div>
-            <div className="stat-card">
-              <Shield size={20} className="stat-icon" />
+            <div className="stat-card hover-glow">
+              <Shield size={20} className="stat-icon pulse-icon" />
               <div>
                 <h4>ZERO COST</h4>
                 <p>Free open access for all student builders</p>
@@ -124,9 +129,20 @@ export default function HomePage({ setCurrentPage }) {
           <div className="asymmetric-grid pillars-grid">
             {pillars.map((item, idx) => {
               const IconComp = item.icon;
+              const isHovered = hoveredPillar === idx;
               return (
-                <div key={idx} className="pillar-card">
-                  <div className="pillar-icon-box">
+                <div 
+                  key={idx} 
+                  className={`pillar-card ${isHovered ? 'active-card' : ''}`}
+                  onMouseEnter={() => setHoveredPillar(idx)}
+                  onMouseLeave={() => setHoveredPillar(null)}
+                >
+                  {/* Subtle Glass Crack Accent Line on Hover */}
+                  {isHovered && (
+                    <div className="card-crack-line" />
+                  )}
+
+                  <div className={`pillar-icon-box ${isHovered ? 'icon-glow' : ''}`}>
                     <IconComp size={24} />
                   </div>
                   <h3>{item.title}</h3>
@@ -141,7 +157,7 @@ export default function HomePage({ setCurrentPage }) {
       {/* Member Access / Form Showcase Section with PW Visibility Toggle */}
       <section className="access-section">
         <div className="access-container">
-          <div className="access-box">
+          <div className="access-box hover-glow">
             <div className="access-info">
               <h3>JOIN THE LET'S COOK NETWORK</h3>
               <p>Ready to build? Access our WhatsApp community, Discord server, and upcoming sprint schedules via Linktree.</p>
@@ -166,7 +182,7 @@ export default function HomePage({ setCurrentPage }) {
                 href={getTrackedUrl(LINKTREE_URL)}
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="btn-primary w-full mt-4"
+                className="btn-primary w-full mt-4 glow-btn"
               >
                 OPEN LINKTREE PORTAL <ArrowUpRight size={16} />
               </a>
@@ -183,7 +199,7 @@ export default function HomePage({ setCurrentPage }) {
         <div className="footer-container">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <img src="/the-foundry-logo-removebg-preview.png" alt="Let's Cook Logo" className="footer-logo" />
+              <img src="/the-foundry-logo-removebg-preview.png" alt="Let's Cook Logo" className="footer-logo pulse-logo" />
               <span className="footer-title">LET'S COOK</span>
             </div>
             <p className="footer-desc">Student-run software & technology community operating at letscook.co.in.</p>
@@ -233,6 +249,7 @@ export default function HomePage({ setCurrentPage }) {
           padding: 80px 24px 60px 24px;
           border-bottom: 1px solid var(--border-color);
           background-color: var(--bg-main);
+          background-image: radial-gradient(circle at 80% 20%, rgba(139, 0, 46, 0.15) 0%, transparent 60%);
         }
 
         .hero-container {
@@ -257,6 +274,12 @@ export default function HomePage({ setCurrentPage }) {
           border-radius: var(--radius-btn);
           font-size: 0.75rem;
           font-weight: 600;
+          transition: border-color var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .tech-tag:hover {
+          border-color: var(--accent-burgundy-border);
+          transform: translateY(-4px) scale(1.02);
         }
 
         .tech-name {
@@ -301,6 +324,10 @@ export default function HomePage({ setCurrentPage }) {
           font-size: 1rem;
         }
 
+        .glow-btn {
+          box-shadow: 0 4px 20px rgba(139, 0, 46, 0.4);
+        }
+
         .hero-stats-row {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -317,12 +344,28 @@ export default function HomePage({ setCurrentPage }) {
           background-color: var(--bg-surface);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
+          transition: all var(--transition-fast);
+        }
+
+        .stat-card:hover {
+          border-color: var(--accent-burgundy-border);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
 
         .stat-icon {
           color: var(--accent-burgundy);
           flex-shrink: 0;
           margin-top: 2px;
+        }
+
+        .pulse-icon {
+          animation: pulseIcon 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseIcon {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); color: var(--accent-burgundy-hover); }
         }
 
         .stat-card h4 {
@@ -352,7 +395,7 @@ export default function HomePage({ setCurrentPage }) {
           font-size: 0.75rem;
           font-weight: 700;
           letter-spacing: 0.1em;
-          color: var(--accent-burgundy);
+          color: var(--accent-burgundy-hover);
           margin-bottom: 8px;
         }
 
@@ -372,17 +415,35 @@ export default function HomePage({ setCurrentPage }) {
         }
 
         .pillar-card {
+          position: relative;
           grid-column: span 3;
           background-color: var(--bg-surface);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
           padding: 28px 24px;
           transition: all var(--transition-fast);
+          overflow: hidden;
         }
 
         .pillar-card:hover {
           border-color: var(--accent-burgundy);
-          transform: translateY(-2px);
+          transform: translateY(-6px) scale(1.01);
+          box-shadow: 0 12px 30px rgba(139, 0, 46, 0.25);
+        }
+
+        .card-crack-line {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, var(--accent-burgundy-hover), transparent);
+          animation: scanLine 1.5s ease infinite;
+        }
+
+        @keyframes scanLine {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
         }
 
         .pillar-icon-box {
@@ -395,6 +456,14 @@ export default function HomePage({ setCurrentPage }) {
           align-items: center;
           justify-content: center;
           margin-bottom: 20px;
+          transition: all var(--transition-fast);
+        }
+
+        .icon-glow {
+          background-color: var(--accent-burgundy);
+          color: #ffffff;
+          box-shadow: 0 0 18px rgba(163, 8, 59, 0.8);
+          transform: scale(1.08);
         }
 
         .pillar-card h3 {
@@ -428,6 +497,12 @@ export default function HomePage({ setCurrentPage }) {
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
           padding: 40px;
+          transition: all var(--transition-fast);
+        }
+
+        .access-box:hover {
+          border-color: var(--accent-burgundy-border);
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
         }
 
         .access-info h3 {
@@ -457,7 +532,7 @@ export default function HomePage({ setCurrentPage }) {
         }
 
         .check-icon {
-          color: var(--accent-burgundy);
+          color: var(--accent-burgundy-hover);
         }
 
         .access-form-box {
@@ -518,6 +593,10 @@ export default function HomePage({ setCurrentPage }) {
           height: 32px;
         }
 
+        .pulse-logo {
+          animation: pulseIcon 4s infinite ease-in-out;
+        }
+
         .footer-title {
           font-family: var(--font-display);
           font-weight: 700;
@@ -552,7 +631,7 @@ export default function HomePage({ setCurrentPage }) {
           text-align: left;
           font-size: 0.85rem;
           color: var(--text-muted);
-          transition: color var(--transition-fast);
+          transition: color var(--transition-fast), transform var(--transition-fast);
           display: inline-flex;
           align-items: center;
           gap: 4px;
@@ -560,6 +639,7 @@ export default function HomePage({ setCurrentPage }) {
 
         .footer-col button:hover, .footer-col a:hover {
           color: var(--accent-burgundy-hover);
+          transform: translateX(3px);
         }
 
         .footer-domain {

@@ -11,8 +11,8 @@
   --radius-badge: 4px;
 
   /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Fallback Theme Variables (Default Dark) */
   --bg-main: #0a0a0c;
@@ -24,8 +24,8 @@
 
   --accent-burgundy: #8b002e;
   --accent-burgundy-hover: #a3083b;
-  --accent-burgundy-light: rgba(139, 0, 46, 0.15);
-  --accent-burgundy-border: rgba(163, 8, 59, 0.4);
+  --accent-burgundy-light: rgba(139, 0, 46, 0.2);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.5);
 
   --text-main: #f4f4f6;
   --text-muted: #a1a1aa;
@@ -50,8 +50,8 @@ html.dark {
 
   --accent-burgundy: #8b002e;
   --accent-burgundy-hover: #a3083b;
-  --accent-burgundy-light: rgba(139, 0, 46, 0.15);
-  --accent-burgundy-border: rgba(163, 8, 59, 0.4);
+  --accent-burgundy-light: rgba(139, 0, 46, 0.2);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.5);
 
   --text-main: #f4f4f6;
   --text-muted: #a1a1aa;
@@ -154,6 +154,7 @@ button {
 
 /* Crisp Sharp Rectangular Buttons (NO PILL BUTTONS) */
 .btn-primary {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -168,13 +169,30 @@ button {
   transition: all var(--transition-fast);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: rotate(30deg) translateY(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-primary:hover::after {
+  transform: rotate(30deg) translateY(100%);
 }
 
 .btn-primary:hover {
   background-color: var(--accent-burgundy-hover);
   border-color: var(--accent-burgundy-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 0, 46, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(163, 8, 59, 0.5);
 }
 
 .btn-secondary {
@@ -196,10 +214,11 @@ button {
   background-color: var(--bg-surface-hover);
   border-color: var(--accent-burgundy-border);
   color: var(--text-main);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
-/* Reference-Style Hero Highlight Box */
+/* Reference-Style Hero Highlight Box with Pulse Glow Animation */
 .highlight-box {
   display: inline-block;
   background-color: var(--hero-highlight-bg);
@@ -208,9 +227,16 @@ button {
   border-radius: 4px;
   transform: rotate(-1deg);
   font-weight: 700;
+  box-shadow: 0 0 20px rgba(139, 0, 46, 0.6);
+  animation: pulseGlow 3s infinite ease-in-out;
 }
 
-/* Asymmetrical Layout Card Container (NO AVERAGE BENTO) */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(139, 0, 46, 0.5); transform: rotate(-1deg) scale(1); }
+  50% { box-shadow: 0 0 32px rgba(163, 8, 59, 0.85); transform: rotate(-1deg) scale(1.02); }
+}
+
+/* Asymmetrical Layout Card Container */
 .asymmetric-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -219,25 +245,22 @@ button {
 
 /* Utility Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease forwards;
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Skeleton Loading State */
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-surface-hover) 50%, var(--bg-surface) 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  border-radius: 4px;
+/* Floating Animation Keyframes */
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+.floating-element {
+  animation: floatBadge 4s infinite ease-in-out;
 }
 
 /* Print Stylesheet */
