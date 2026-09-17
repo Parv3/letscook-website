@@ -5,7 +5,7 @@ import PasswordInput from './PasswordInput';
 import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
 import { getTrackedUrl } from '../utils/utmTracker';
-import { playTechClick } from '../utils/soundEngine';
+import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
@@ -18,6 +18,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
   const [shakeLevel, setShakeLevel] = useState('none');
   const hoverIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
+  const tickCounterRef = useRef(0);
 
   const techBadges = [
     { name: 'REACT', desc: 'Web Apps' },
@@ -50,24 +51,32 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     }
   ];
 
+  // Progressive Shake & 5-Second Hover Logic with Escalating Sound
   const handleFoundryMouseEnter = () => {
     if (isFoundryInverted) return;
     startTimeRef.current = Date.now();
+    tickCounterRef.current = 0;
     setShakeLevel('shake-light');
 
     hoverIntervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
+      tickCounterRef.current += 1;
 
       if (elapsed >= 5000) {
+        // Trigger Invert & Loud Audio Shatter at 5 seconds
         clearInterval(hoverIntervalRef.current);
         setIsFoundryInverted(true);
         setShakeLevel('none');
+        playInversionSound();
       } else if (elapsed >= 3500) {
         setShakeLevel('shake-heavy');
+        if (tickCounterRef.current % 2 === 0) playHoverRumbleTick('heavy');
       } else if (elapsed >= 1500) {
         setShakeLevel('shake-medium');
+        if (tickCounterRef.current % 3 === 0) playHoverRumbleTick('medium');
       } else {
         setShakeLevel('shake-light');
+        if (tickCounterRef.current % 4 === 0) playHoverRumbleTick('light');
       }
     }, 100);
   };
@@ -80,10 +89,12 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     }
   };
 
+  // Double Click Reset Handler with Sound (LETS COOK -> FOUNDRY)
   const handleFoundryDoubleClick = () => {
     if (isFoundryInverted) {
       setIsFoundryInverted(false);
       setShakeLevel('none');
+      playInversionSound();
     }
   };
 
@@ -97,67 +108,61 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     <div className="home-page animate-fade-in">
       {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-container hero-split-layout">
-          <div className="hero-left-col">
-            {/* Static Tech Badges */}
-            <div className="tech-bar">
-              {techBadges.map((badge, idx) => (
-                <div key={idx} className="tech-tag">
-                  <span className="tech-name">{badge.name}</span>
-                  <span className="tech-dot">•</span>
-                  <span className="tech-desc">{badge.desc}</span>
-                </div>
-              ))}
-            </div>
+        <div className="hero-container">
+          {/* Disappearing 3D Grid Overlay Layer */}
+          <Hero3dObject />
 
-            {/* Main Headline with Progressive Shake & Double-Click Reset */}
-            <div className="hero-content">
-              <h1 className="hero-title">
-                CODE, BUILD{' '}
-                <span 
-                  className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
-                  onMouseEnter={handleFoundryMouseEnter}
-                  onMouseLeave={handleFoundryMouseLeave}
-                  onDoubleClick={handleFoundryDoubleClick}
-                  title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
-                >
-                  {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
-                </span>{' '}
-                AND SHIP PRODUCTS
-              </h1>
-
-              <p className="hero-subtitle">
-                Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
-              </p>
-
-              <div className="hero-cta-group">
-                <a 
-                  href={getTrackedUrl(LINKTREE_URL)}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="btn-primary btn-lg glow-btn"
-                  onClick={playTechClick}
-                >
-                  JOIN THE FOUNDRY <ArrowUpRight size={18} />
-                </a>
-                <button 
-                  onClick={() => { playTechClick(); onOpenPitchModal(); }}
-                  className="btn-secondary btn-lg"
-                >
-                  <Lightbulb size={18} /> PITCH A PROJECT
-                </button>
+          {/* Static Tech Badges */}
+          <div className="tech-bar">
+            {techBadges.map((badge, idx) => (
+              <div key={idx} className="tech-tag">
+                <span className="tech-name">{badge.name}</span>
+                <span className="tech-dot">•</span>
+                <span className="tech-desc">{badge.desc}</span>
               </div>
+            ))}
+          </div>
+
+          {/* Main Headline with Progressive Shake & Double-Click Reset */}
+          <div className="hero-content">
+            <h1 className="hero-title">
+              CODE, BUILD{' '}
+              <span 
+                className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
+                onMouseEnter={handleFoundryMouseEnter}
+                onMouseLeave={handleFoundryMouseLeave}
+                onDoubleClick={handleFoundryDoubleClick}
+                title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
+              >
+                {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
+              </span>{' '}
+              AND SHIP PRODUCTS
+            </h1>
+
+            <p className="hero-subtitle">
+              Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
+            </p>
+
+            <div className="hero-cta-group">
+              <a 
+                href={getTrackedUrl(LINKTREE_URL)}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-primary btn-lg glow-btn"
+                onClick={playTechClick}
+              >
+                JOIN THE FOUNDRY <ArrowUpRight size={18} />
+              </a>
+              <button 
+                onClick={() => { playTechClick(); onOpenPitchModal(); }}
+                className="btn-secondary btn-lg"
+              >
+                <Lightbulb size={18} /> PITCH A PROJECT
+              </button>
             </div>
           </div>
 
-          {/* Interactive 3D Wireframe Canvas Object */}
-          <div className="hero-right-col">
-            <Hero3dObject />
-          </div>
-        </div>
-
-        {/* Feature Highlights Grid */}
-        <div className="hero-stats-container">
+          {/* Feature Highlights Grid */}
           <div className="hero-stats-row">
             <div className="stat-card hover-glow">
               <Sparkles size={20} className="stat-icon pulse-icon" />
@@ -315,25 +320,15 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         }
 
         .hero-section {
+          position: relative;
           padding: 80px 24px 60px 24px;
           border-bottom: 1px solid var(--border-color);
           background-color: var(--bg-main);
+          overflow: hidden;
         }
 
-        .hero-split-layout {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 40px;
-          max-width: 1100px;
-          margin: 0 auto;
-        }
-
-        .hero-left-col {
-          flex: 1;
-        }
-
-        .hero-stats-container {
+        .hero-container {
+          position: relative;
           max-width: 1100px;
           margin: 0 auto;
         }
@@ -347,6 +342,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
         .hero-content {
           margin-bottom: 40px;
+          max-width: 800px;
         }
 
         .hero-title {
@@ -708,10 +704,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           color: var(--text-muted);
         }
 
-        @media (max-width: 868px) {
-          .hero-split-layout {
-            flex-direction: column;
-          }
+        @media (max-width: 768px) {
           .access-box {
             grid-template-columns: 1fr;
           }

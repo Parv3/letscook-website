@@ -1,5 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 
+/**
+ * Hero3dObject: 3D Disappearing Wireframe Grid Horizon
+ * Renders a perspective grid that flows into a vanishing horizon with radial vignetting.
+ * Fits seamlessly into hero background without taking layout space or obscuring text.
+ */
 export default function Hero3dObject() {
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
@@ -10,116 +15,94 @@ export default function Hero3dObject() {
     const ctx = canvas.getContext('2d');
 
     let animationFrameId;
-    let width = (canvas.width = 300);
-    let height = (canvas.height = 300);
+    let width = (canvas.width = canvas.parentElement?.offsetWidth || 1000);
+    let height = (canvas.height = canvas.parentElement?.offsetHeight || 450);
 
-    // Generate 3D Torus Vertices
-    const vertices = [];
-    const R = 75; // Major radius
-    const r = 35; // Minor radius
-    const segmentsU = 24;
-    const segmentsV = 16;
-
-    for (let i = 0; i < segmentsU; i++) {
-      const u = (i / segmentsU) * Math.PI * 2;
-      for (let j = 0; j < segmentsV; j++) {
-        const v = (j / segmentsV) * Math.PI * 2;
-        const x = (R + r * Math.cos(v)) * Math.cos(u);
-        const y = (R + r * Math.cos(v)) * Math.sin(u);
-        const z = r * Math.sin(v);
-        vertices.push({ x, y, z, uIndex: i, vIndex: j });
-      }
-    }
-
-    let rotX = 0.4;
-    let rotY = 0.6;
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.offsetWidth;
+      height = canvas.height = canvas.parentElement.offsetHeight;
+    };
+    window.addEventListener('resize', handleResize);
 
     const handleMouseMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      mouseRef.current.targetX = (e.clientX - centerX) * 0.001;
-      mouseRef.current.targetY = (e.clientY - centerY) * 0.001;
+      mouseRef.current.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
     };
-
     window.addEventListener('mousemove', handleMouseMove);
 
-    // 3D Render Loop
+    let offsetZ = 0;
+
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth mouse lerp
-      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.08;
-      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.08;
+      // Smooth parallax mouse interpolation
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
 
-      rotY += 0.01 + mouseRef.current.x;
-      rotX += 0.005 + mouseRef.current.y;
+      offsetZ = (offsetZ + 0.6) % 45; // Smooth grid animation velocity
 
-      const cosX = Math.cos(rotX);
-      const sinX = Math.sin(rotX);
-      const cosY = Math.cos(rotY);
-      const sinY = Math.sin(rotY);
+      const fov = 320;
+      const horizonY = height * 0.35 + mouseRef.current.y * 18;
+      const cameraX = mouseRef.current.x * 50;
 
-      const projected = [];
-
-      for (let i = 0; i < vertices.length; i++) {
-        const v = vertices[i];
-
-        // 3D Rotation
-        let y1 = v.y * cosX - v.z * sinX;
-        let z1 = v.y * sinX + v.z * cosX;
-
-        let x2 = v.x * cosY + z1 * sinY;
-        let z2 = -v.x * sinY + z1 * cosY;
-
-        // Perspective Projection
-        const fov = 260;
-        const scale = fov / (fov + z2 + 180);
-        const px = x2 * scale + width / 2;
-        const py = y1 * scale + height / 2;
-
-        projected.push({ x: px, y: py, scale, z: z2, uIndex: v.uIndex, vIndex: v.vIndex });
-      }
-
-      // Draw Wireframe Mesh Edges
       ctx.lineWidth = 1;
-      for (let i = 0; i < projected.length; i++) {
-        const p1 = projected[i];
 
-        // Connect along U ring
-        const nextU = (i + segmentsV) % projected.length;
-        const pU = projected[nextU];
+      // 1. Z-axis Perspective Lines (Disappearing towards horizon)
+      const numColumns = 28;
+      const gridWidth = 1600;
 
-        // Connect along V ring
-        const nextV = (p1.vIndex + 1) % segmentsV + p1.uIndex * segmentsV;
-        const pV = projected[nextV];
+      for (let i = -numColumns / 2; i <= numColumns / 2; i++) {
+        const worldX = i * (gridWidth / numColumns) - cameraX;
 
-        const alpha = Math.max(0.15, Math.min(0.85, (p1.z + 100) / 200));
+        // Near point (z = 40)
+        const nearZ = 40;
+        const scaleNear = fov / nearZ;
+        const xNear = width / 2 + worldX * scaleNear;
+        const yNear = height;
 
-        // Draw line U
-        ctx.strokeStyle = `rgba(163, 8, 59, ${alpha})`;
+        // Far point (vanishing horizon, z = 850)
+        const farZ = 850;
+        const scaleFar = fov / farZ;
+        const xFar = width / 2 + worldX * scaleFar;
+        const yFar = horizonY;
+
+        const distRatio = Math.abs(i) / (numColumns / 2);
+        const alpha = Math.max(0, 1 - distRatio);
+        
+        ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.38})`;
+
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(pU.x, pU.y);
-        ctx.stroke();
-
-        // Draw line V
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.4})`;
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(pV.x, pV.y);
+        ctx.moveTo(xNear, yNear);
+        ctx.lineTo(xFar, yFar);
         ctx.stroke();
       }
 
-      // Draw Glowing Vertex Nodes
-      for (let i = 0; i < projected.length; i += 3) {
-        const p = projected[i];
-        if (p.z < 0) {
-          ctx.fillStyle = '#ff2a6d';
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 2 * p.scale, 0, Math.PI * 2);
-          ctx.fill();
+      // 2. Horizontal X-axis Transverse Lines (Fading into distance)
+      const numRows = 18;
+      for (let j = 0; j < numRows; j++) {
+        const z = j * 45 + offsetZ;
+        if (z <= 12) continue;
+
+        const scale = fov / z;
+        const y = horizonY + (height - horizonY) * (scale / (fov / 40));
+
+        if (y < horizonY || y > height) continue;
+
+        const fade = Math.pow((z - 10) / 750, 0.45) * (1 - z / 850);
+        const alpha = Math.max(0, Math.min(0.55, fade * 0.75));
+
+        // Alternating burgundy and white wireframe grid accents
+        if (j % 2 === 0) {
+          ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.65})`;
+        } else {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.35})`;
         }
+
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -129,34 +112,31 @@ export default function Hero3dObject() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
 
   return (
-    <div className="hero-3d-wrapper no-print">
-      <canvas ref={canvasRef} className="hero-3d-canvas" />
+    <div className="hero-3d-disappearing-grid no-print">
+      <canvas ref={canvasRef} className="disappearing-grid-canvas" />
       <style>{`
-        .hero-3d-wrapper {
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 240px;
-          height: 240px;
-          flex-shrink: 0;
-        }
-
-        .hero-3d-canvas {
+        .hero-3d-disappearing-grid {
+          position: absolute;
+          inset: 0;
           width: 100%;
           height: 100%;
-          filter: drop-shadow(0 0 25px rgba(139, 0, 46, 0.5));
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.65;
+          mask-image: radial-gradient(ellipse at 50% 60%, black 15%, transparent 75%);
+          -webkit-mask-image: radial-gradient(ellipse at 50% 60%, black 15%, transparent 75%);
         }
 
-        @media (max-width: 868px) {
-          .hero-3d-wrapper {
-            display: none;
-          }
+        .disappearing-grid-canvas {
+          width: 100%;
+          height: 100%;
+          filter: drop-shadow(0 0 25px rgba(139, 0, 46, 0.35));
         }
       `}</style>
     </div>
