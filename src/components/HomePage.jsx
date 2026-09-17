@@ -15,10 +15,18 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
   // Progressive Shake & Invert Easter Egg State
   const [isFoundryInverted, setIsFoundryInverted] = useState(false);
-  const [shakeLevel, setShakeLevel] = useState('none');
+  const boxRef = useRef(null);
   const hoverIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
   const tickCounterRef = useRef(0);
+
+  const setBoxShakeClass = (className) => {
+    if (!boxRef.current) return;
+    boxRef.current.classList.remove('shake-light', 'shake-medium', 'shake-heavy');
+    if (className !== 'none') {
+      boxRef.current.classList.add(className);
+    }
+  };
 
   const techBadges = [
     { name: 'REACT', desc: 'Web Apps' },
@@ -51,31 +59,32 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     }
   ];
 
-  // Progressive Shake & 5-Second Hover Logic with Escalating Sound
+  // Progressive Shake & 5-Second Hover Logic with Zero Re-render Lag
   const handleFoundryMouseEnter = () => {
     if (isFoundryInverted) return;
     startTimeRef.current = Date.now();
     tickCounterRef.current = 0;
-    setShakeLevel('shake-light');
+    setBoxShakeClass('shake-light');
+
+    if (hoverIntervalRef.current) clearInterval(hoverIntervalRef.current);
 
     hoverIntervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
       tickCounterRef.current += 1;
 
       if (elapsed >= 5000) {
-        // Trigger Invert & Loud Audio Shatter at 5 seconds
         clearInterval(hoverIntervalRef.current);
+        setBoxShakeClass('none');
         setIsFoundryInverted(true);
-        setShakeLevel('none');
         playInversionSound();
       } else if (elapsed >= 3500) {
-        setShakeLevel('shake-heavy');
+        setBoxShakeClass('shake-heavy');
         if (tickCounterRef.current % 2 === 0) playHoverRumbleTick('heavy');
       } else if (elapsed >= 1500) {
-        setShakeLevel('shake-medium');
+        setBoxShakeClass('shake-medium');
         if (tickCounterRef.current % 3 === 0) playHoverRumbleTick('medium');
       } else {
-        setShakeLevel('shake-light');
+        setBoxShakeClass('shake-light');
         if (tickCounterRef.current % 4 === 0) playHoverRumbleTick('light');
       }
     }, 100);
@@ -83,7 +92,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
   const handleFoundryMouseLeave = () => {
     if (isFoundryInverted) return;
-    setShakeLevel('none');
+    setBoxShakeClass('none');
     if (hoverIntervalRef.current) {
       clearInterval(hoverIntervalRef.current);
     }
@@ -93,7 +102,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
   const handleFoundryDoubleClick = () => {
     if (isFoundryInverted) {
       setIsFoundryInverted(false);
-      setShakeLevel('none');
+      setBoxShakeClass('none');
       playInversionSound();
     }
   };
@@ -128,7 +137,8 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
             <h1 className="hero-title">
               CODE, BUILD{' '}
               <span 
-                className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
+                ref={boxRef}
+                className={`highlight-box ${isFoundryInverted ? 'inverted-mode' : ''}`}
                 onMouseEnter={handleFoundryMouseEnter}
                 onMouseLeave={handleFoundryMouseLeave}
                 onTouchStart={handleFoundryMouseEnter}
@@ -736,76 +746,88 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
         @media (max-width: 640px) {
           .hero-section {
-            padding: 48px 16px 40px 16px;
-            min-height: 75vh;
+            padding: 36px 14px 32px 14px;
+            min-height: 70vh;
+          }
+          .hero-content {
+            padding: 8px 10px;
+            margin-bottom: 24px;
           }
           .hero-title {
-            font-size: clamp(1.85rem, 7.5vw, 2.8rem);
-            line-height: 1.2;
+            font-size: clamp(1.7rem, 6.8vw, 2.5rem);
+            line-height: 1.3;
             margin-bottom: 16px;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
           }
           .highlight-box {
-            padding: 3px 10px;
-            margin: 2px 0;
+            display: inline-block;
+            vertical-align: middle;
+            padding: 2px 8px;
+            font-size: 0.92em;
+            margin: 2px 2px;
           }
           .hero-subtitle {
-            font-size: 0.95rem;
-            line-height: 1.55;
-            margin-bottom: 24px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
             padding: 0 4px;
+            max-width: 96%;
           }
           .hero-cta-group {
             flex-direction: column;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             margin: 0 auto;
-            gap: 12px;
+            gap: 10px;
           }
           .btn-lg {
             width: 100%;
-            padding: 14px 20px;
+            padding: 13px 18px;
             min-height: 48px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             justify-content: center;
           }
           .tech-bar {
-            gap: 6px;
-            margin-bottom: 20px;
+            gap: 5px;
+            margin-bottom: 16px;
           }
           .tech-tag {
-            padding: 4px 10px;
-            font-size: 0.7rem;
+            padding: 3px 8px;
+            font-size: 0.65rem;
           }
           .tech-desc {
             display: none;
           }
           .hero-stats-row {
             grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 24px;
-            padding-top: 20px;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+          }
+          .stat-card {
+            padding: 12px 14px;
           }
           .access-box {
             grid-template-columns: 1fr;
-            padding: 24px 16px;
+            padding: 20px 14px;
           }
           .pillar-card {
             grid-column: span 12;
-            padding: 20px 16px;
+            padding: 18px 14px;
           }
           .pillars-section {
-            padding: 50px 16px;
+            padding: 44px 14px;
           }
           .access-section {
-            padding: 50px 16px;
+            padding: 44px 14px;
           }
           .footer-container {
             flex-direction: column;
-            gap: 32px;
+            gap: 28px;
           }
           .footer-links-group {
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
           }
         }
       `}</style>
