@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Search, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Sun, Moon, Search, Menu, X, ArrowUpRight, Volume2, VolumeX, Lightbulb } from 'lucide-react';
 import { getTrackedUrl } from '../utils/utmTracker';
+import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
-export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage, setCurrentPage }) {
+export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggleTheme, currentPage, setCurrentPage }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [muted, setMuted] = useState(() => isSoundMuted());
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +23,13 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const toggleSound = () => {
+    const nextState = !muted;
+    setMuted(nextState);
+    setSoundMuted(nextState);
+    if (!nextState) playTechClick();
+  };
+
   const navItems = [
     { label: 'HOME', page: 'home' },
     { label: 'INITIATIVES', page: 'home', section: 'pillars' },
@@ -30,6 +39,7 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
   ];
 
   const handleNavClick = (item) => {
+    playTechClick();
     setCurrentPage(item.page);
     setMobileMenuOpen(false);
 
@@ -78,10 +88,19 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
           ))}
         </div>
 
-        {/* Right Actions: Search, Theme Toggle, CTA, Mobile Toggle */}
+        {/* Right Actions: Sound, Search, Theme, Pitch, Join, Mobile */}
         <div className="nav-actions">
           <button 
-            onClick={onOpenSearch} 
+            onClick={toggleSound} 
+            className="icon-btn" 
+            title={muted ? "Unmute Cyber Audio Effects" : "Mute Cyber Audio Effects"}
+            aria-label="Toggle sound"
+          >
+            {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </button>
+
+          <button 
+            onClick={() => { playTechClick(); onOpenSearch(); }} 
             className="icon-btn" 
             title="Search site (Ctrl+K)"
             aria-label="Search site"
@@ -90,7 +109,7 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
           </button>
 
           <button 
-            onClick={onToggleTheme} 
+            onClick={() => { playTechClick(); onToggleTheme(); }} 
             className="icon-btn theme-toggle-btn" 
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             aria-label="Toggle theme"
@@ -98,18 +117,26 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
+          <button 
+            onClick={() => { playTechClick(); onOpenPitchModal(); }} 
+            className="btn-secondary desktop-cta"
+          >
+            <Lightbulb size={16} /> PITCH IDEA
+          </button>
+
           <a 
             href={getTrackedUrl(LINKTREE_URL)}
             target="_blank" 
             rel="noopener noreferrer"
             className="btn-primary desktop-cta"
+            onClick={playTechClick}
           >
             JOIN US <ArrowUpRight size={16} />
           </a>
 
           <button 
             className="mobile-menu-btn icon-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => { playTechClick(); setMobileMenuOpen(!mobileMenuOpen); }}
             aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -131,12 +158,20 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
               </button>
             ))}
 
+            <button 
+              onClick={() => { playTechClick(); setMobileMenuOpen(false); onOpenPitchModal(); }}
+              className="btn-secondary w-full"
+            >
+              <Lightbulb size={16} /> PITCH A PROJECT IDEA
+            </button>
+
             <div className="mobile-drawer-footer">
               <a 
                 href={getTrackedUrl(LINKTREE_URL)}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn-primary w-full"
+                onClick={playTechClick}
               >
                 JOIN COMMUNITY <ArrowUpRight size={16} />
               </a>
@@ -207,7 +242,7 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 28px;
+          gap: 24px;
         }
 
         .nav-link {
@@ -225,7 +260,7 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
         .nav-actions {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
         }
 
         .icon-btn {
@@ -260,7 +295,7 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
         .mobile-drawer-content {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
 
         .mobile-nav-link {
@@ -273,14 +308,14 @@ export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage
         }
 
         .mobile-drawer-footer {
-          margin-top: 12px;
+          margin-top: 8px;
         }
 
         .w-full {
           width: 100%;
         }
 
-        @media (max-width: 868px) {
+        @media (max-width: 960px) {
           .desktop-nav, .desktop-cta {
             display: none;
           }

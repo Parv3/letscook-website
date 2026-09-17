@@ -1,18 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2, Lightbulb } from 'lucide-react';
 import FaqSection from './FaqSection';
 import PasswordInput from './PasswordInput';
+import Hero3dObject from './Hero3dObject';
+import TextDecoder from './TextDecoder';
 import { getTrackedUrl } from '../utils/utmTracker';
+import { playTechClick } from '../utils/soundEngine';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
-export default function HomePage({ setCurrentPage }) {
+export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
   const [accessCode, setAccessCode] = useState('');
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
   // Progressive Shake & Invert Easter Egg State
   const [isFoundryInverted, setIsFoundryInverted] = useState(false);
-  const [shakeLevel, setShakeLevel] = useState('none'); // 'none' | 'shake-light' | 'shake-medium' | 'shake-heavy'
+  const [shakeLevel, setShakeLevel] = useState('none');
   const hoverIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
 
@@ -47,7 +50,6 @@ export default function HomePage({ setCurrentPage }) {
     }
   ];
 
-  // Progressive Shake & 5-Second Hover Logic
   const handleFoundryMouseEnter = () => {
     if (isFoundryInverted) return;
     startTimeRef.current = Date.now();
@@ -57,7 +59,6 @@ export default function HomePage({ setCurrentPage }) {
       const elapsed = Date.now() - startTimeRef.current;
 
       if (elapsed >= 5000) {
-        // Trigger Invert at 5 seconds
         clearInterval(hoverIntervalRef.current);
         setIsFoundryInverted(true);
         setShakeLevel('none');
@@ -79,7 +80,6 @@ export default function HomePage({ setCurrentPage }) {
     }
   };
 
-  // Double Click Reset Handler (LETS COOK -> FOUNDRY)
   const handleFoundryDoubleClick = () => {
     if (isFoundryInverted) {
       setIsFoundryInverted(false);
@@ -97,60 +97,67 @@ export default function HomePage({ setCurrentPage }) {
     <div className="home-page animate-fade-in">
       {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-container">
-          {/* Static Tech Badges */}
-          <div className="tech-bar">
-            {techBadges.map((badge, idx) => (
-              <div key={idx} className="tech-tag">
-                <span className="tech-name">{badge.name}</span>
-                <span className="tech-dot">•</span>
-                <span className="tech-desc">{badge.desc}</span>
+        <div className="hero-container hero-split-layout">
+          <div className="hero-left-col">
+            {/* Static Tech Badges */}
+            <div className="tech-bar">
+              {techBadges.map((badge, idx) => (
+                <div key={idx} className="tech-tag">
+                  <span className="tech-name">{badge.name}</span>
+                  <span className="tech-dot">•</span>
+                  <span className="tech-desc">{badge.desc}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Main Headline with Progressive Shake & Double-Click Reset */}
+            <div className="hero-content">
+              <h1 className="hero-title">
+                CODE, BUILD{' '}
+                <span 
+                  className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
+                  onMouseEnter={handleFoundryMouseEnter}
+                  onMouseLeave={handleFoundryMouseLeave}
+                  onDoubleClick={handleFoundryDoubleClick}
+                  title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
+                >
+                  {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
+                </span>{' '}
+                AND SHIP PRODUCTS
+              </h1>
+
+              <p className="hero-subtitle">
+                Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
+              </p>
+
+              <div className="hero-cta-group">
+                <a 
+                  href={getTrackedUrl(LINKTREE_URL)}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-primary btn-lg glow-btn"
+                  onClick={playTechClick}
+                >
+                  JOIN THE FOUNDRY <ArrowUpRight size={18} />
+                </a>
+                <button 
+                  onClick={() => { playTechClick(); onOpenPitchModal(); }}
+                  className="btn-secondary btn-lg"
+                >
+                  <Lightbulb size={18} /> PITCH A PROJECT
+                </button>
               </div>
-            ))}
-          </div>
-
-          {/* Main Headline with Progressive Shake & Double-Click Reset */}
-          <div className="hero-content">
-            <h1 className="hero-title">
-              CODE, BUILD{' '}
-              <span 
-                className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
-                onMouseEnter={handleFoundryMouseEnter}
-                onMouseLeave={handleFoundryMouseLeave}
-                onDoubleClick={handleFoundryDoubleClick}
-                title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
-              >
-                {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
-              </span>{' '}
-              AND SHIP PRODUCTS
-            </h1>
-
-            <p className="hero-subtitle">
-              Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
-            </p>
-
-            <div className="hero-cta-group">
-              <a 
-                href={getTrackedUrl(LINKTREE_URL)}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn-primary btn-lg glow-btn"
-              >
-                JOIN THE FOUNDRY <ArrowUpRight size={18} />
-              </a>
-              <button 
-                onClick={() => {
-                  const el = document.getElementById('pillars');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="btn-secondary btn-lg"
-              >
-                EXPLORE INITIATIVES
-              </button>
             </div>
           </div>
 
-          {/* Feature Highlights Grid */}
+          {/* Interactive 3D Wireframe Canvas Object */}
+          <div className="hero-right-col">
+            <Hero3dObject />
+          </div>
+        </div>
+
+        {/* Feature Highlights Grid */}
+        <div className="hero-stats-container">
           <div className="hero-stats-row">
             <div className="stat-card hover-glow">
               <Sparkles size={20} className="stat-icon pulse-icon" />
@@ -181,7 +188,9 @@ export default function HomePage({ setCurrentPage }) {
       <section id="pillars" className="pillars-section">
         <div className="pillars-container">
           <div className="section-label">COMMUNITY TRACKS</div>
-          <h2>OUR CORE BUILD INITIATIVES</h2>
+          <h2>
+            <TextDecoder text="OUR CORE BUILD INITIATIVES" />
+          </h2>
           <p className="section-desc">Structured tracks designed to move students from tutorials to shipping production software.</p>
 
           <div className="asymmetric-grid pillars-grid">
@@ -192,7 +201,7 @@ export default function HomePage({ setCurrentPage }) {
                 <div 
                   key={idx} 
                   className={`pillar-card ${isHovered ? 'active-card' : ''}`}
-                  onMouseEnter={() => setHoveredPillar(idx)}
+                  onMouseEnter={() => { playTechClick(); setHoveredPillar(idx); }}
                   onMouseLeave={() => setHoveredPillar(null)}
                 >
                   {isHovered && (
@@ -202,7 +211,9 @@ export default function HomePage({ setCurrentPage }) {
                   <div className={`pillar-icon-box ${isHovered ? 'icon-glow' : ''}`}>
                     <IconComp size={24} />
                   </div>
-                  <h3>{item.title}</h3>
+                  <h3>
+                    <TextDecoder text={item.title} />
+                  </h3>
                   <p>{item.desc}</p>
                 </div>
               );
@@ -240,6 +251,7 @@ export default function HomePage({ setCurrentPage }) {
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn-primary w-full mt-4 glow-btn"
+                onClick={playTechClick}
               >
                 OPEN LINKTREE PORTAL <ArrowUpRight size={16} />
               </a>
@@ -306,10 +318,22 @@ export default function HomePage({ setCurrentPage }) {
           padding: 80px 24px 60px 24px;
           border-bottom: 1px solid var(--border-color);
           background-color: var(--bg-main);
-          background-image: radial-gradient(circle at 80% 20%, rgba(139, 0, 46, 0.18) 0%, transparent 60%);
         }
 
-        .hero-container {
+        .hero-split-layout {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 40px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+
+        .hero-left-col {
+          flex: 1;
+        }
+
+        .hero-stats-container {
           max-width: 1100px;
           margin: 0 auto;
         }
@@ -322,7 +346,7 @@ export default function HomePage({ setCurrentPage }) {
         }
 
         .hero-content {
-          margin-bottom: 50px;
+          margin-bottom: 40px;
         }
 
         .hero-title {
@@ -684,7 +708,10 @@ export default function HomePage({ setCurrentPage }) {
           color: var(--text-muted);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 868px) {
+          .hero-split-layout {
+            flex-direction: column;
+          }
           .access-box {
             grid-template-columns: 1fr;
           }

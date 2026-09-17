@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Play, RotateCcw, Lock, Sparkles } from 'lucide-react';
+import { Play, Sparkles } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
+import { playCinematicShatterSound } from '../utils/soundEngine';
 
 export default function LaunchOverlay({ onReveal }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
@@ -19,6 +20,9 @@ export default function LaunchOverlay({ onReveal }) {
   // Start Slow, Cinematic 4-Second Shatter Sequence
   const playCinematicShatter = () => {
     if (animPhase !== 'idle') return;
+
+    // Trigger Synthesized Web Audio API Glass Shatter Boom Sound
+    playCinematicShatterSound();
 
     // Phase 1: Energy Charge & Deep Rumble (0ms -> 1200ms)
     setAnimPhase('charging');
@@ -59,10 +63,8 @@ export default function LaunchOverlay({ onReveal }) {
       {/* Spiderweb Glass Crack SVG Overlay */}
       {(animPhase === 'cracking' || animPhase === 'shattering') && (
         <svg viewBox="0 0 1000 1000" className="cinematic-crack-svg">
-          {/* Primary Glass Fracture Lines */}
           <path d="M500 500 L200 100 L400 800 L500 500 L800 200 L700 900 L500 500 L100 600 L500 500 L900 400" stroke="#a3083b" strokeWidth="4" fill="none" className="crack-path main-crack" />
           <path d="M500 500 L100 100 M500 500 L900 900 M500 500 L300 950 M500 500 L850 50" stroke="#ffffff" strokeWidth="2" strokeDasharray="8 4" fill="none" className="crack-path secondary-crack" />
-          {/* Concentric Shatter Rings */}
           <circle cx="500" cy="500" r="140" stroke="#ff2a6d" strokeWidth="2" fill="none" opacity="0.8" />
           <circle cx="500" cy="500" r="280" stroke="#8b002e" strokeWidth="3" fill="none" opacity="0.6" />
         </svg>
