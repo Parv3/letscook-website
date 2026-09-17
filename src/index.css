@@ -15,11 +15,11 @@
   --transition-normal: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Fallback Theme Variables (Default Dark) */
-  --bg-main: #0a0a0c;
-  --bg-surface: #141418;
-  --bg-surface-hover: #1c1c24;
-  --bg-surface-active: #242430;
-  --border-color: #24242d;
+  --bg-main: #060608;
+  --bg-surface: #121216;
+  --bg-surface-hover: #1a1a22;
+  --bg-surface-active: #22222e;
+  --border-color: #22222c;
   --border-focus: #8b002e;
 
   --accent-burgundy: #8b002e;
@@ -34,18 +34,18 @@
   --hero-highlight-bg: #8b002e;
   --hero-highlight-text: #ffffff;
 
-  --navbar-bg: rgba(10, 10, 12, 0.95);
+  --navbar-bg: rgba(6, 6, 8, 0.95);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
 }
 
 /* Dark Theme Variables */
 html.dark {
-  --bg-main: #0a0a0c;
-  --bg-surface: #141418;
-  --bg-surface-hover: #1c1c24;
-  --bg-surface-active: #242430;
-  --border-color: #24242d;
+  --bg-main: #060608;
+  --bg-surface: #121216;
+  --bg-surface-hover: #1a1a22;
+  --bg-surface-active: #22222e;
+  --border-color: #22222c;
   --border-focus: #8b002e;
 
   --accent-burgundy: #8b002e;
@@ -60,7 +60,7 @@ html.dark {
   --hero-highlight-bg: #8b002e;
   --hero-highlight-text: #ffffff;
 
-  --navbar-bg: rgba(10, 10, 12, 0.95);
+  --navbar-bg: rgba(6, 6, 8, 0.95);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
 }
@@ -91,7 +91,7 @@ html.light {
   --scrollbar-thumb: #cbd5e1;
 }
 
-/* Reset & Global Styles */
+/* Reset & High-Resolution Vector Rendering */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -104,6 +104,8 @@ html {
   background-color: var(--bg-main);
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -114,34 +116,43 @@ body {
   color: var(--text-main);
   transition: background-color var(--transition-normal), color var(--transition-normal);
   position: relative;
+  image-rendering: -webkit-optimize-contrast;
 }
 
-/* LIVE ANIMATED LINE GRID BACKGROUND */
-body::before {
-  content: '';
+/* LIVE GLOWING ANIMATED LINES BACKGROUND */
+.live-glowing-lines-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background-image: 
-    linear-gradient(to right, rgba(139, 0, 46, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(139, 0, 46, 0.06) 1px, transparent 1px);
-  background-size: 60px 60px;
-  animation: gridMove 20s linear infinite;
+  overflow: hidden;
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(180deg, rgba(139, 0, 46, 0.08) 0%, transparent 40%, rgba(139, 0, 46, 0.08) 100%);
+.glowing-laser-svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.75;
 }
 
-@keyframes gridMove {
-  0% { background-position: 0 0; }
-  100% { background-position: 60px 60px; }
+.glow-line {
+  stroke: #8b002e;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(163, 8, 59, 0.8));
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: laserFlow 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.glow-line-1 { animation-delay: 0s; }
+.glow-line-2 { stroke: #a3083b; stroke-width: 2; animation-delay: 3s; }
+.glow-line-3 { stroke: #ff2a6d; stroke-width: 1; animation-delay: 6s; }
+.glow-line-4 { animation-delay: 9s; }
+
+@keyframes laserFlow {
+  0% { stroke-dashoffset: 600; opacity: 0.2; }
+  50% { stroke-dashoffset: 0; opacity: 0.9; }
+  100% { stroke-dashoffset: -600; opacity: 0.2; }
 }
 
 #root {
@@ -186,7 +197,7 @@ button {
   background: var(--accent-burgundy);
 }
 
-/* Crisp Sharp Rectangular Buttons (NO PILL BUTTONS) */
+/* Crisp Sharp Rectangular Buttons */
 .btn-primary {
   position: relative;
   display: inline-flex;
@@ -213,7 +224,7 @@ button {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.25), transparent);
   transform: rotate(30deg) translateY(-100%);
   transition: transform 0.6s ease;
 }
@@ -226,7 +237,7 @@ button {
   background-color: var(--accent-burgundy-hover);
   border-color: var(--accent-burgundy-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(163, 8, 59, 0.5);
+  box-shadow: 0 6px 22px rgba(163, 8, 59, 0.6);
 }
 
 .btn-secondary {
@@ -249,7 +260,7 @@ button {
   border-color: var(--accent-burgundy-border);
   color: var(--text-main);
   transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 /* Reference-Style Hero Highlight Box */
@@ -265,31 +276,21 @@ button {
   box-shadow: 0 0 20px rgba(139, 0, 46, 0.6);
   cursor: pointer;
   user-select: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .highlight-box.inverted-mode {
   background-color: #ffffff !important;
   color: #8b002e !important;
-  box-shadow: 0 0 35px #ffffff, 0 0 20px #8b002e !important;
-  transform: rotate(1deg) scale(1.08) !important;
-  animation: shatterInvert 0.5s ease forwards;
+  box-shadow: 0 0 40px #ffffff, 0 0 25px #a3083b !important;
+  transform: rotate(1.5deg) scale(1.08) !important;
+  animation: shatterInvert 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes shatterInvert {
   0% { transform: scale(1) rotate(-1deg); filter: invert(0); }
   50% { transform: scale(1.2) rotate(4deg); filter: invert(1); }
-  100% { transform: scale(1.08) rotate(1deg); filter: invert(0); }
-}
-
-/* Progress Border Bar for 10-Second Hover Easter Egg */
-.hover-progress-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background-color: #ffffff;
-  transition: width 0.1s linear;
+  100% { transform: scale(1.08) rotate(1.5deg); filter: invert(0); }
 }
 
 /* Static Tech Badges */
@@ -330,7 +331,7 @@ button {
 
 /* Print Stylesheet */
 @media print {
-  header, footer, .floating-contact, .top-scroll-btn, .cookie-banner, .no-print {
+  header, footer, .floating-contact, .top-scroll-btn, .cookie-banner, .no-print, .live-glowing-lines-bg {
     display: none !important;
   }
   body {

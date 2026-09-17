@@ -49,7 +49,17 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* 1. Full-Screen Scratch-To-Reveal Launch Overlay */}
+      {/* Dynamic Live Glowing Laser Fracture Background */}
+      <div className="live-glowing-lines-bg no-print" aria-hidden="true">
+        <svg viewBox="0 0 1440 900" preserveAspectRatio="none" className="glowing-laser-svg">
+          <path d="M-100 150 Q 400 450 1540 100" fill="none" className="glow-line glow-line-1" />
+          <path d="M-100 700 Q 700 200 1540 800" fill="none" className="glow-line glow-line-2" />
+          <path d="M200 -100 Q 900 500 400 1000" fill="none" className="glow-line glow-line-3" />
+          <path d="M1200 -100 Q 500 500 1300 1000" fill="none" className="glow-line glow-line-4" />
+        </svg>
+      </div>
+
+      {/* 1. Full-Screen Launch Overlay */}
       {showLaunchOverlay && (
         <LaunchOverlay onReveal={handleRevealLaunch} />
       )}

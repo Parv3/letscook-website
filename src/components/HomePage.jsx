@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2, Zap } from 'lucide-react';
+import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2 } from 'lucide-react';
 import FaqSection from './FaqSection';
 import PasswordInput from './PasswordInput';
 import { getTrackedUrl } from '../utils/utmTracker';
@@ -10,12 +10,9 @@ export default function HomePage({ setCurrentPage }) {
   const [accessCode, setAccessCode] = useState('');
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
-  // 10-Second Hover Easter Egg State on FOUNDRY Box
-  const [isHoveringFoundry, setIsHoveringFoundry] = useState(false);
-  const [foundryProgress, setFoundryProgress] = useState(0); // 0 to 100
+  // Hidden 5-Second Hover Easter Egg State on FOUNDRY Box
   const [isFoundryInverted, setIsFoundryInverted] = useState(false);
-  const hoverIntervalRef = useRef(null);
-  const startTimeRef = useRef(null);
+  const hoverTimeoutRef = useRef(null);
 
   const techBadges = [
     { name: 'REACT', desc: 'Web Apps' },
@@ -48,37 +45,25 @@ export default function HomePage({ setCurrentPage }) {
     }
   ];
 
-  // 10-Second Continuous Hover Handler
+  // Hidden 5-Second Continuous Hover Handler (No visible hints)
   const handleFoundryMouseEnter = () => {
     if (isFoundryInverted) return;
-    setIsHoveringFoundry(true);
-    startTimeRef.current = Date.now();
 
-    hoverIntervalRef.current = setInterval(() => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const pct = Math.min(100, Math.floor((elapsed / 10000) * 100));
-      setFoundryProgress(pct);
-
-      if (elapsed >= 10000) {
-        clearInterval(hoverIntervalRef.current);
-        setIsFoundryInverted(true);
-        setIsHoveringFoundry(false);
-      }
-    }, 100);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsFoundryInverted(true);
+    }, 5000); // 5 seconds continuous hover
   };
 
   const handleFoundryMouseLeave = () => {
     if (isFoundryInverted) return;
-    setIsHoveringFoundry(false);
-    setFoundryProgress(0);
-    if (hoverIntervalRef.current) {
-      clearInterval(hoverIntervalRef.current);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
     }
   };
 
   useEffect(() => {
     return () => {
-      if (hoverIntervalRef.current) clearInterval(hoverIntervalRef.current);
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     };
   }, []);
 
@@ -98,7 +83,7 @@ export default function HomePage({ setCurrentPage }) {
             ))}
           </div>
 
-          {/* Main Headline with 10-Second Hover Invert "FOUNDRY" -> "LETS COOK" */}
+          {/* Main Headline with Secret 5-Second Hover Invert "FOUNDRY" -> "LETS COOK" */}
           <div className="hero-content">
             <h1 className="hero-title">
               CODE, BUILD{' '}
@@ -106,31 +91,11 @@ export default function HomePage({ setCurrentPage }) {
                 className={`highlight-box ${isFoundryInverted ? 'inverted-mode' : ''}`}
                 onMouseEnter={handleFoundryMouseEnter}
                 onMouseLeave={handleFoundryMouseLeave}
-                title={isFoundryInverted ? "Inverted into LETS COOK!" : "Hover continuously for 10 seconds to shatter & invert!"}
               >
                 {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
-                {isHoveringFoundry && !isFoundryInverted && (
-                  <div 
-                    className="hover-progress-bar" 
-                    style={{ width: `${foundryProgress}%` }} 
-                  />
-                )}
               </span>{' '}
               AND SHIP PRODUCTS
             </h1>
-
-            {/* Hint message when user hovers */}
-            {isHoveringFoundry && !isFoundryInverted && (
-              <div className="hover-hint-badge animate-fade-in">
-                <Zap size={13} /> HOLD HOVER FOR 10 SECONDS TO BREAK & INVERT ({Math.ceil((10000 - (foundryProgress * 100)) / 1000)}s)
-              </div>
-            )}
-
-            {isFoundryInverted && (
-              <div className="hover-hint-badge inverted-success animate-fade-in">
-                <Sparkles size={13} /> UNLOCKED: INVERTED TO LETS COOK!
-              </div>
-            )}
 
             <p className="hero-subtitle">
               Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
@@ -334,29 +299,8 @@ export default function HomePage({ setCurrentPage }) {
 
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4.2rem);
-          margin-bottom: 16px;
-          letter-spacing: -0.03em;
-        }
-
-        .hover-hint-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          background-color: var(--accent-burgundy-light);
-          border: 1px solid var(--accent-burgundy-border);
-          color: var(--accent-burgundy-hover);
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          border-radius: var(--radius-badge);
           margin-bottom: 24px;
-        }
-
-        .hover-hint-badge.inverted-success {
-          background-color: rgba(255, 255, 255, 0.15);
-          border-color: #ffffff;
-          color: #ffffff;
+          letter-spacing: -0.03em;
         }
 
         .hero-subtitle {
