@@ -113,6 +113,40 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
   transition: background-color var(--transition-normal), color var(--transition-normal);
+  position: relative;
+}
+
+/* LIVE ANIMATED LINE GRID BACKGROUND */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(to right, rgba(139, 0, 46, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139, 0, 46, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 20s linear infinite;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(139, 0, 46, 0.08) 0%, transparent 40%, rgba(139, 0, 46, 0.08) 100%);
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 /* Headings */
@@ -218,8 +252,9 @@ button {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
-/* Reference-Style Hero Highlight Box with Pulse Glow Animation */
+/* Reference-Style Hero Highlight Box */
 .highlight-box {
+  position: relative;
   display: inline-block;
   background-color: var(--hero-highlight-bg);
   color: var(--hero-highlight-text);
@@ -228,12 +263,52 @@ button {
   transform: rotate(-1deg);
   font-weight: 700;
   box-shadow: 0 0 20px rgba(139, 0, 46, 0.6);
-  animation: pulseGlow 3s infinite ease-in-out;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(139, 0, 46, 0.5); transform: rotate(-1deg) scale(1); }
-  50% { box-shadow: 0 0 32px rgba(163, 8, 59, 0.85); transform: rotate(-1deg) scale(1.02); }
+.highlight-box.inverted-mode {
+  background-color: #ffffff !important;
+  color: #8b002e !important;
+  box-shadow: 0 0 35px #ffffff, 0 0 20px #8b002e !important;
+  transform: rotate(1deg) scale(1.08) !important;
+  animation: shatterInvert 0.5s ease forwards;
+}
+
+@keyframes shatterInvert {
+  0% { transform: scale(1) rotate(-1deg); filter: invert(0); }
+  50% { transform: scale(1.2) rotate(4deg); filter: invert(1); }
+  100% { transform: scale(1.08) rotate(1deg); filter: invert(0); }
+}
+
+/* Progress Border Bar for 10-Second Hover Easter Egg */
+.hover-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: #ffffff;
+  transition: width 0.1s linear;
+}
+
+/* Static Tech Badges */
+.tech-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-btn);
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.tech-tag:hover {
+  border-color: var(--accent-burgundy-border);
+  transform: translateY(-2px);
 }
 
 /* Asymmetrical Layout Card Container */
@@ -251,16 +326,6 @@ button {
 
 .animate-fade-in {
   animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Floating Animation Keyframes */
-@keyframes floatBadge {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-.floating-element {
-  animation: floatBadge 4s infinite ease-in-out;
 }
 
 /* Print Stylesheet */

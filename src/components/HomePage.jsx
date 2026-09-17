@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowUpRight, Code2, Terminal, Cpu, Users, Sparkles, Shield, Rocket, CheckCircle2, Zap } from 'lucide-react';
 import FaqSection from './FaqSection';
 import PasswordInput from './PasswordInput';
 import { getTrackedUrl } from '../utils/utmTracker';
@@ -10,12 +10,19 @@ export default function HomePage({ setCurrentPage }) {
   const [accessCode, setAccessCode] = useState('');
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
+  // 10-Second Hover Easter Egg State on FOUNDRY Box
+  const [isHoveringFoundry, setIsHoveringFoundry] = useState(false);
+  const [foundryProgress, setFoundryProgress] = useState(0); // 0 to 100
+  const [isFoundryInverted, setIsFoundryInverted] = useState(false);
+  const hoverIntervalRef = useRef(null);
+  const startTimeRef = useRef(null);
+
   const techBadges = [
-    { name: 'REACT', desc: 'Web Apps', delay: '0s' },
-    { name: 'TYPESCRIPT', desc: 'Type Safety', delay: '0.4s' },
-    { name: 'NODE.JS', desc: 'Backend Services', delay: '0.8s' },
-    { name: 'PYTHON', desc: 'AI & Systems', delay: '1.2s' },
-    { name: 'DOCKER', desc: 'Cloud DevOps', delay: '1.6s' }
+    { name: 'REACT', desc: 'Web Apps' },
+    { name: 'TYPESCRIPT', desc: 'Type Safety' },
+    { name: 'NODE.JS', desc: 'Backend Services' },
+    { name: 'PYTHON', desc: 'AI & Systems' },
+    { name: 'DOCKER', desc: 'Cloud DevOps' }
   ];
 
   const pillars = [
@@ -41,19 +48,49 @@ export default function HomePage({ setCurrentPage }) {
     }
   ];
 
+  // 10-Second Continuous Hover Handler
+  const handleFoundryMouseEnter = () => {
+    if (isFoundryInverted) return;
+    setIsHoveringFoundry(true);
+    startTimeRef.current = Date.now();
+
+    hoverIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const pct = Math.min(100, Math.floor((elapsed / 10000) * 100));
+      setFoundryProgress(pct);
+
+      if (elapsed >= 10000) {
+        clearInterval(hoverIntervalRef.current);
+        setIsFoundryInverted(true);
+        setIsHoveringFoundry(false);
+      }
+    }, 100);
+  };
+
+  const handleFoundryMouseLeave = () => {
+    if (isFoundryInverted) return;
+    setIsHoveringFoundry(false);
+    setFoundryProgress(0);
+    if (hoverIntervalRef.current) {
+      clearInterval(hoverIntervalRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverIntervalRef.current) clearInterval(hoverIntervalRef.current);
+    };
+  }, []);
+
   return (
     <div className="home-page animate-fade-in">
-      {/* Hero Section inspired by reference design */}
+      {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-container">
-          {/* Staggered Floating Tech Badges */}
+          {/* Static Tech Badges */}
           <div className="tech-bar">
             {techBadges.map((badge, idx) => (
-              <div 
-                key={idx} 
-                className="tech-tag floating-element"
-                style={{ animationDelay: badge.delay }}
-              >
+              <div key={idx} className="tech-tag">
                 <span className="tech-name">{badge.name}</span>
                 <span className="tech-dot">•</span>
                 <span className="tech-desc">{badge.desc}</span>
@@ -61,11 +98,39 @@ export default function HomePage({ setCurrentPage }) {
             ))}
           </div>
 
-          {/* Main Headline with Highlight Box */}
+          {/* Main Headline with 10-Second Hover Invert "FOUNDRY" -> "LETS COOK" */}
           <div className="hero-content">
             <h1 className="hero-title">
-              CODE, BUILD <span className="highlight-box">FOUNDRY</span> AND SHIP PRODUCTS
+              CODE, BUILD{' '}
+              <span 
+                className={`highlight-box ${isFoundryInverted ? 'inverted-mode' : ''}`}
+                onMouseEnter={handleFoundryMouseEnter}
+                onMouseLeave={handleFoundryMouseLeave}
+                title={isFoundryInverted ? "Inverted into LETS COOK!" : "Hover continuously for 10 seconds to shatter & invert!"}
+              >
+                {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
+                {isHoveringFoundry && !isFoundryInverted && (
+                  <div 
+                    className="hover-progress-bar" 
+                    style={{ width: `${foundryProgress}%` }} 
+                  />
+                )}
+              </span>{' '}
+              AND SHIP PRODUCTS
             </h1>
+
+            {/* Hint message when user hovers */}
+            {isHoveringFoundry && !isFoundryInverted && (
+              <div className="hover-hint-badge animate-fade-in">
+                <Zap size={13} /> HOLD HOVER FOR 10 SECONDS TO BREAK & INVERT ({Math.ceil((10000 - (foundryProgress * 100)) / 1000)}s)
+              </div>
+            )}
+
+            {isFoundryInverted && (
+              <div className="hover-hint-badge inverted-success animate-fade-in">
+                <Sparkles size={13} /> UNLOCKED: INVERTED TO LETS COOK!
+              </div>
+            )}
 
             <p className="hero-subtitle">
               Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
@@ -137,7 +202,6 @@ export default function HomePage({ setCurrentPage }) {
                   onMouseEnter={() => setHoveredPillar(idx)}
                   onMouseLeave={() => setHoveredPillar(null)}
                 >
-                  {/* Subtle Glass Crack Accent Line on Hover */}
                   {isHovered && (
                     <div className="card-crack-line" />
                   )}
@@ -264,45 +328,35 @@ export default function HomePage({ setCurrentPage }) {
           margin-bottom: 32px;
         }
 
-        .tech-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 14px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-btn);
-          font-size: 0.75rem;
-          font-weight: 600;
-          transition: border-color var(--transition-fast), transform var(--transition-fast);
-        }
-
-        .tech-tag:hover {
-          border-color: var(--accent-burgundy-border);
-          transform: translateY(-4px) scale(1.02);
-        }
-
-        .tech-name {
-          color: var(--text-main);
-          letter-spacing: 0.05em;
-        }
-
-        .tech-dot {
-          color: var(--accent-burgundy);
-        }
-
-        .tech-desc {
-          color: var(--text-muted);
-        }
-
         .hero-content {
           margin-bottom: 50px;
         }
 
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4.2rem);
-          margin-bottom: 24px;
+          margin-bottom: 16px;
           letter-spacing: -0.03em;
+        }
+
+        .hover-hint-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          background-color: var(--accent-burgundy-light);
+          border: 1px solid var(--accent-burgundy-border);
+          color: var(--accent-burgundy-hover);
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          border-radius: var(--radius-badge);
+          margin-bottom: 24px;
+        }
+
+        .hover-hint-badge.inverted-success {
+          background-color: rgba(255, 255, 255, 0.15);
+          border-color: #ffffff;
+          color: #ffffff;
         }
 
         .hero-subtitle {
