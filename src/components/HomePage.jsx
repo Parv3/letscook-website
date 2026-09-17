@@ -123,7 +123,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
             ))}
           </div>
 
-          {/* Main Headline with Progressive Shake & Double-Click Reset */}
+          {/* Main Headline with Progressive Shake & Double-Click/Touch Reset */}
           <div className="hero-content">
             <h1 className="hero-title">
               CODE, BUILD{' '}
@@ -131,8 +131,13 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
                 className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
                 onMouseEnter={handleFoundryMouseEnter}
                 onMouseLeave={handleFoundryMouseLeave}
+                onTouchStart={handleFoundryMouseEnter}
+                onTouchEnd={handleFoundryMouseLeave}
                 onDoubleClick={handleFoundryDoubleClick}
-                title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
+                onClick={() => {
+                  if (isFoundryInverted) handleFoundryDoubleClick();
+                }}
+                title={isFoundryInverted ? "Tap or double-click to reset back to FOUNDRY!" : "Hold or hover to break into LETS COOK!"}
               >
                 {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
               </span>{' '}
@@ -729,12 +734,78 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           color: var(--text-muted);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 640px) {
+          .hero-section {
+            padding: 48px 16px 40px 16px;
+            min-height: 75vh;
+          }
+          .hero-title {
+            font-size: clamp(1.85rem, 7.5vw, 2.8rem);
+            line-height: 1.2;
+            margin-bottom: 16px;
+          }
+          .highlight-box {
+            padding: 3px 10px;
+            margin: 2px 0;
+          }
+          .hero-subtitle {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            margin-bottom: 24px;
+            padding: 0 4px;
+          }
+          .hero-cta-group {
+            flex-direction: column;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            gap: 12px;
+          }
+          .btn-lg {
+            width: 100%;
+            padding: 14px 20px;
+            min-height: 48px;
+            font-size: 0.9rem;
+            justify-content: center;
+          }
+          .tech-bar {
+            gap: 6px;
+            margin-bottom: 20px;
+          }
+          .tech-tag {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+          }
+          .tech-desc {
+            display: none;
+          }
+          .hero-stats-row {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+          }
           .access-box {
             grid-template-columns: 1fr;
+            padding: 24px 16px;
           }
           .pillar-card {
             grid-column: span 12;
+            padding: 20px 16px;
+          }
+          .pillars-section {
+            padding: 50px 16px;
+          }
+          .access-section {
+            padding: 50px 16px;
+          }
+          .footer-container {
+            flex-direction: column;
+            gap: 32px;
+          }
+          .footer-links-group {
+            flex-direction: column;
+            gap: 24px;
           }
         }
       `}</style>

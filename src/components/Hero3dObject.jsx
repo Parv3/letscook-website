@@ -46,12 +46,14 @@ export default function Hero3dObject() {
 
       offsetZ = (offsetZ + 0.45) % 40; // Horizon grid velocity
 
-      // Position horizon in the lower 62% of section so sun sits comfortably below hero text
-      const horizonY = height * 0.62 + mouseRef.current.y * 10;
+      const isMobile = width < 600;
+
+      // Position horizon in the lower 60-62% of section so sun sits comfortably below hero text
+      const horizonY = height * (isMobile ? 0.58 : 0.62) + mouseRef.current.y * 10;
       const sunCenterX = width / 2 + mouseRef.current.x * 20;
 
       // 1. SUBTLE SETTING SYNTHWAVE SUN (LOW ON HORIZON, NON-DISTRACTING)
-      const sunRadius = Math.min(width * 0.14, 110);
+      const sunRadius = Math.min(width * (isMobile ? 0.22 : 0.14), isMobile ? 75 : 110);
       const sunCenterY = horizonY + sunRadius * 0.15; // Setting half-sun on horizon line
 
       // Soft Ambient Radial Halo Glow

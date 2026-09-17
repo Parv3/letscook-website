@@ -303,11 +303,29 @@ export default function LaunchOverlay({ onReveal }) {
         }
 
         @media (max-width: 600px) {
+          .cinematic-backdrop {
+            padding: 16px 12px;
+          }
           .giant-timer-container {
-            gap: 6px;
+            gap: clamp(2px, 1.2vw, 8px);
+            margin-bottom: 36px;
+          }
+          .giant-val {
+            font-size: clamp(2.0rem, 8.5vw, 4.2rem);
           }
           .giant-colon {
-            margin-top: -15px;
+            font-size: clamp(1.6rem, 6.5vw, 3.2rem);
+            margin-top: -10px;
+          }
+          .giant-lbl {
+            font-size: clamp(0.5rem, 1.6vw, 0.75rem);
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+          }
+          .btn-hero-play {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 0.88rem;
           }
         }
       `}</style>
