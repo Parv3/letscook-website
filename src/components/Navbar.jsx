@@ -185,6 +185,9 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
           position: sticky;
           top: 0;
           z-index: 1000;
+          width: 100%;
+          max-width: 100vw;
+          box-sizing: border-box;
           background-color: var(--navbar-bg);
           border-bottom: 1px solid var(--border-color);
           backdrop-filter: blur(8px);
@@ -197,12 +200,14 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
         }
 
         .navbar-container {
+          width: 100%;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 14px 24px;
+          padding: 12px 16px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          box-sizing: border-box;
         }
 
         .brand-group {
@@ -321,6 +326,29 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
           }
           .mobile-menu-btn {
             display: flex;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .navbar-container {
+            padding: 10px 12px;
+          }
+          .brand-logo {
+            height: 32px;
+          }
+          .brand-title {
+            font-size: 0.95rem;
+          }
+          .brand-subtitle {
+            font-size: 0.56rem;
+            letter-spacing: 0.08em;
+          }
+          .nav-actions {
+            gap: 6px;
+          }
+          .icon-btn {
+            width: 34px;
+            height: 34px;
           }
         }
       `}</style>

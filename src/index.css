@@ -108,15 +108,27 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  position: relative;
+}
+
 body {
   min-height: 100vh;
-  overflow-x: hidden;
   line-height: 1.6;
   background-color: var(--bg-main);
   color: var(--text-main);
   transition: background-color var(--transition-normal), color var(--transition-normal);
-  position: relative;
   image-rendering: -webkit-optimize-contrast;
+}
+
+#root, .app-root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
 }
 
 /* DRAMATIC YET NON-DISTRACTING BACKGROUND LAYER */
@@ -369,10 +381,11 @@ button {
 }
 
 .highlight-box.inverted-mode {
-  background-color: #ffffff !important;
-  color: #8b002e !important;
-  box-shadow: 0 0 40px #ffffff, 0 0 30px #a3083b !important;
-  transform: rotate(1.5deg) scale(1.08) !important;
+  background-color: #a3083b !important;
+  color: #ffffff !important;
+  border: 1px solid #ff2a6d !important;
+  box-shadow: 0 0 25px rgba(255, 42, 109, 0.8), 0 0 10px #8b002e !important;
+  transform: rotate(1deg) scale(1.03) !important;
   animation: shatterInvert 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 

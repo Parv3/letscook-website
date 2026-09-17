@@ -203,16 +203,19 @@ export default function Hero3dObject() {
           position: absolute;
           inset: 0;
           width: 100%;
+          max-width: 100vw;
           height: 100%;
           pointer-events: none;
           z-index: 0;
           opacity: 0.5;
+          overflow: hidden;
           mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 35%, rgba(0,0,0,1) 100%);
           -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 35%, rgba(0,0,0,1) 100%);
         }
 
         .synthwave-sunset-canvas {
           width: 100%;
+          max-width: 100%;
           height: 100%;
           filter: drop-shadow(0 0 20px rgba(139, 0, 46, 0.3));
         }

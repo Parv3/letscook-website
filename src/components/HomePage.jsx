@@ -332,6 +332,9 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
       <style>{`
         .home-page {
           width: 100%;
+          max-width: 100vw;
+          overflow-x: hidden;
+          box-sizing: border-box;
         }
 
         .hero-section {
@@ -341,9 +344,11 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           background-color: var(--bg-main);
           overflow: hidden;
           width: 100%;
+          max-width: 100vw;
           min-height: 80vh;
           display: flex;
           align-items: center;
+          box-sizing: border-box;
         }
 
         .hero-container {
@@ -356,6 +361,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           flex-direction: column;
           align-items: center;
           text-align: center;
+          box-sizing: border-box;
         }
 
         .tech-bar {
