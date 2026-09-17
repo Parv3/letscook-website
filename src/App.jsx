@@ -49,7 +49,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* Dynamic Live Glowing Laser Fracture Background */}
+      {/* Dynamic Live Glowing Laser Fracture & Floating Particles Background */}
       <div className="live-glowing-lines-bg no-print" aria-hidden="true">
         <svg viewBox="0 0 1440 900" preserveAspectRatio="none" className="glowing-laser-svg">
           <path d="M-100 150 Q 400 450 1540 100" fill="none" className="glow-line glow-line-1" />
@@ -57,6 +57,12 @@ export default function App() {
           <path d="M200 -100 Q 900 500 400 1000" fill="none" className="glow-line glow-line-3" />
           <path d="M1200 -100 Q 500 500 1300 1000" fill="none" className="glow-line glow-line-4" />
         </svg>
+
+        {/* Dynamic Floating Orbs */}
+        <div className="bg-particle" style={{ left: '15%', animationDuration: '14s', animationDelay: '0s' }} />
+        <div className="bg-particle" style={{ left: '35%', animationDuration: '18s', animationDelay: '3s' }} />
+        <div className="bg-particle" style={{ left: '60%', animationDuration: '11s', animationDelay: '1s' }} />
+        <div className="bg-particle" style={{ left: '80%', animationDuration: '16s', animationDelay: '5s' }} />
       </div>
 
       {/* 1. Full-Screen Launch Overlay */}

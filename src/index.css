@@ -119,7 +119,7 @@ body {
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* LIVE GLOWING ANIMATED LINES BACKGROUND */
+/* DYNAMIC DUST PARTICLES & GLOWING LASER LINES BACKGROUND */
 .live-glowing-lines-bg {
   position: fixed;
   inset: 0;
@@ -131,28 +131,46 @@ body {
 .glowing-laser-svg {
   width: 100%;
   height: 100%;
-  opacity: 0.75;
+  opacity: 0.85;
 }
 
 .glow-line {
   stroke: #8b002e;
   stroke-width: 1.5;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 8px rgba(163, 8, 59, 0.8));
-  stroke-dasharray: 600;
-  stroke-dashoffset: 600;
-  animation: laserFlow 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  filter: drop-shadow(0 0 10px rgba(163, 8, 59, 0.9));
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+  animation: laserFlow 10s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .glow-line-1 { animation-delay: 0s; }
-.glow-line-2 { stroke: #a3083b; stroke-width: 2; animation-delay: 3s; }
-.glow-line-3 { stroke: #ff2a6d; stroke-width: 1; animation-delay: 6s; }
-.glow-line-4 { animation-delay: 9s; }
+.glow-line-2 { stroke: #a3083b; stroke-width: 2.5; animation-delay: 2.5s; }
+.glow-line-3 { stroke: #ff2a6d; stroke-width: 1.5; animation-delay: 5s; }
+.glow-line-4 { stroke: #8b002e; animation-delay: 7.5s; }
 
 @keyframes laserFlow {
-  0% { stroke-dashoffset: 600; opacity: 0.2; }
-  50% { stroke-dashoffset: 0; opacity: 0.9; }
-  100% { stroke-dashoffset: -600; opacity: 0.2; }
+  0% { stroke-dashoffset: 700; opacity: 0.15; }
+  50% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: -700; opacity: 0.15; }
+}
+
+/* Floating Particle Orbs */
+.bg-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(163, 8, 59, 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 42, 109, 0.8);
+  animation: floatOrb 12s linear infinite;
+}
+
+@keyframes floatOrb {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
 }
 
 #root {
@@ -276,20 +294,56 @@ button {
   box-shadow: 0 0 20px rgba(139, 0, 46, 0.6);
   cursor: pointer;
   user-select: none;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* PROGRESSIVE SHAKE ANIMATION LEVELS */
+.highlight-box.shake-light {
+  animation: shakeLight 0.2s ease infinite;
+  box-shadow: 0 0 25px rgba(163, 8, 59, 0.8);
+}
+
+.highlight-box.shake-medium {
+  animation: shakeMedium 0.15s ease infinite;
+  box-shadow: 0 0 35px rgba(255, 42, 109, 0.9);
+}
+
+.highlight-box.shake-heavy {
+  animation: shakeHeavy 0.08s ease infinite;
+  box-shadow: 0 0 50px #ff2a6d, 0 0 20px #ffffff;
+}
+
+@keyframes shakeLight {
+  0% { transform: rotate(-1deg) translate(0, 0); }
+  50% { transform: rotate(-1deg) translate(1px, -1px); }
+  100% { transform: rotate(-1deg) translate(-1px, 1px); }
+}
+
+@keyframes shakeMedium {
+  0% { transform: rotate(-1.5deg) translate(-2px, 1px); }
+  50% { transform: rotate(-0.5deg) translate(2px, -2px); }
+  100% { transform: rotate(-1.5deg) translate(-1px, -1px); }
+}
+
+@keyframes shakeHeavy {
+  0% { transform: rotate(-2.5deg) translate(-4px, 3px); }
+  25% { transform: rotate(1deg) translate(4px, -3px); }
+  50% { transform: rotate(-2deg) translate(-3px, -4px); }
+  75% { transform: rotate(1.5deg) translate(3px, 4px); }
+  100% { transform: rotate(-2.5deg) translate(-4px, 3px); }
 }
 
 .highlight-box.inverted-mode {
   background-color: #ffffff !important;
   color: #8b002e !important;
-  box-shadow: 0 0 40px #ffffff, 0 0 25px #a3083b !important;
+  box-shadow: 0 0 40px #ffffff, 0 0 30px #a3083b !important;
   transform: rotate(1.5deg) scale(1.08) !important;
-  animation: shatterInvert 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: shatterInvert 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes shatterInvert {
-  0% { transform: scale(1) rotate(-1deg); filter: invert(0); }
-  50% { transform: scale(1.2) rotate(4deg); filter: invert(1); }
+  0% { transform: scale(1) rotate(-2deg); filter: invert(0); }
+  50% { transform: scale(1.25) rotate(5deg); filter: invert(1); }
   100% { transform: scale(1.08) rotate(1.5deg); filter: invert(0); }
 }
 

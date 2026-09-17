@@ -10,9 +10,11 @@ export default function HomePage({ setCurrentPage }) {
   const [accessCode, setAccessCode] = useState('');
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
-  // Hidden 5-Second Hover Easter Egg State on FOUNDRY Box
+  // Progressive Shake & Invert Easter Egg State
   const [isFoundryInverted, setIsFoundryInverted] = useState(false);
-  const hoverTimeoutRef = useRef(null);
+  const [shakeLevel, setShakeLevel] = useState('none'); // 'none' | 'shake-light' | 'shake-medium' | 'shake-heavy'
+  const hoverIntervalRef = useRef(null);
+  const startTimeRef = useRef(null);
 
   const techBadges = [
     { name: 'REACT', desc: 'Web Apps' },
@@ -45,25 +47,49 @@ export default function HomePage({ setCurrentPage }) {
     }
   ];
 
-  // Hidden 5-Second Continuous Hover Handler (No visible hints)
+  // Progressive Shake & 5-Second Hover Logic
   const handleFoundryMouseEnter = () => {
     if (isFoundryInverted) return;
+    startTimeRef.current = Date.now();
+    setShakeLevel('shake-light');
 
-    hoverTimeoutRef.current = setTimeout(() => {
-      setIsFoundryInverted(true);
-    }, 5000); // 5 seconds continuous hover
+    hoverIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+
+      if (elapsed >= 5000) {
+        // Trigger Invert at 5 seconds
+        clearInterval(hoverIntervalRef.current);
+        setIsFoundryInverted(true);
+        setShakeLevel('none');
+      } else if (elapsed >= 3500) {
+        setShakeLevel('shake-heavy');
+      } else if (elapsed >= 1500) {
+        setShakeLevel('shake-medium');
+      } else {
+        setShakeLevel('shake-light');
+      }
+    }, 100);
   };
 
   const handleFoundryMouseLeave = () => {
     if (isFoundryInverted) return;
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
+    setShakeLevel('none');
+    if (hoverIntervalRef.current) {
+      clearInterval(hoverIntervalRef.current);
+    }
+  };
+
+  // Double Click Reset Handler (LETS COOK -> FOUNDRY)
+  const handleFoundryDoubleClick = () => {
+    if (isFoundryInverted) {
+      setIsFoundryInverted(false);
+      setShakeLevel('none');
     }
   };
 
   useEffect(() => {
     return () => {
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (hoverIntervalRef.current) clearInterval(hoverIntervalRef.current);
     };
   }, []);
 
@@ -83,14 +109,16 @@ export default function HomePage({ setCurrentPage }) {
             ))}
           </div>
 
-          {/* Main Headline with Secret 5-Second Hover Invert "FOUNDRY" -> "LETS COOK" */}
+          {/* Main Headline with Progressive Shake & Double-Click Reset */}
           <div className="hero-content">
             <h1 className="hero-title">
               CODE, BUILD{' '}
               <span 
-                className={`highlight-box ${isFoundryInverted ? 'inverted-mode' : ''}`}
+                className={`highlight-box ${shakeLevel} ${isFoundryInverted ? 'inverted-mode' : ''}`}
                 onMouseEnter={handleFoundryMouseEnter}
                 onMouseLeave={handleFoundryMouseLeave}
+                onDoubleClick={handleFoundryDoubleClick}
+                title={isFoundryInverted ? "Double-click to reset back to FOUNDRY!" : ""}
               >
                 {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
               </span>{' '}
@@ -278,7 +306,7 @@ export default function HomePage({ setCurrentPage }) {
           padding: 80px 24px 60px 24px;
           border-bottom: 1px solid var(--border-color);
           background-color: var(--bg-main);
-          background-image: radial-gradient(circle at 80% 20%, rgba(139, 0, 46, 0.15) 0%, transparent 60%);
+          background-image: radial-gradient(circle at 80% 20%, rgba(139, 0, 46, 0.18) 0%, transparent 60%);
         }
 
         .hero-container {
