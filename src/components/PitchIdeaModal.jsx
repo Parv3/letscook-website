@@ -184,7 +184,7 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
 
           <div className="mac-title">
             <Terminal size={13} className="mac-title-icon" />
-            <span>pitch-project.sh — zsh — 80x24</span>
+            <span>pitch-project.sh - zsh - 80x24</span>
           </div>
 
           <div className="drag-handle-hint" title="Drag to move window">
@@ -296,26 +296,27 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
         .pitch-backdrop-overlay {
           position: fixed;
           inset: 0;
-          background-color: rgba(0, 0, 0, 0.65);
-          backdrop-filter: blur(4px);
+          background-color: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(2px);
           z-index: 5000;
           display: flex;
           align-items: flex-end;
           justify-content: center;
-          padding: 0 16px 20px 16px;
+          padding: 0;
         }
 
         .mac-pitch-window {
           position: fixed;
-          bottom: 20px;
+          bottom: 0;
           left: 50%;
-          width: 560px;
-          max-width: calc(100vw - 24px);
+          width: 580px;
+          max-width: 100vw;
           max-height: 85vh;
           background-color: var(--bg-surface);
           border: 1px solid var(--accent-burgundy-border);
-          border-radius: 10px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 0, 46, 0.25);
+          border-bottom: none;
+          border-radius: 12px 12px 0 0;
+          box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 0, 46, 0.25);
           overflow: hidden;
           display: flex;
           flex-direction: column;
