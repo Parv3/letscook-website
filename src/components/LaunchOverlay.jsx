@@ -1,427 +1,311 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Sparkles, Lock, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Play, RotateCcw, Lock, Sparkles } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
 
 export default function LaunchOverlay({ onReveal }) {
-  const canvasRef = useRef(null);
-  const [isScratching, setIsScratching] = useState(false);
-  const [scratchPercent, setScratchPercent] = useState(0);
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
-  const [isCracking, setIsCracking] = useState(false);
-  const [crackProgress, setCrackProgress] = useState(0);
+  const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'shattering'
+  const [shockwaveRadius, setShockwaveRadius] = useState(0);
 
-  // Live Countdown & Auto-Trigger on Timer Completion
+  // Live timer tick
   useEffect(() => {
     const target = getNextMondayNoon();
     const interval = setInterval(() => {
-      const remaining = calculateTimeLeft(target);
-      setTimeLeft(remaining);
-
-      if (remaining.completed && !isCracking) {
-        triggerGlassShatter();
-      }
+      setTimeLeft(calculateTimeLeft(target));
     }, 1000);
     return () => clearInterval(interval);
-  }, [isCracking]);
-
-  // Trigger Glass Crack & Shatter Transition
-  const triggerGlassShatter = () => {
-    setIsCracking(true);
-    let step = 0;
-    const crackInterval = setInterval(() => {
-      step += 1;
-      setCrackProgress(step);
-      if (step >= 10) {
-        clearInterval(crackInterval);
-        setTimeout(() => {
-          onReveal();
-        }, 400);
-      }
-    }, 120);
-  };
-
-  // Canvas Scratch Foil Setup
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#5b0e2d');
-    gradient.addColorStop(0.5, '#8b002e');
-    gradient.addColorStop(1, '#2b0314');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-    for (let i = 0; i < canvas.width; i += 16) {
-      ctx.fillRect(i, 0, 1, canvas.height);
-    }
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '700 15px "Space Grotesk", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('SCRATCH TO PREVIEW COUNTDOWN', canvas.width / 2, canvas.height / 2);
-
-    ctx.font = '500 12px "Inter", sans-serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    ctx.fillText('Swipe or drag across foil', canvas.width / 2, canvas.height / 2 + 22);
   }, []);
 
-  const scratch = (x, y) => {
-    const canvas = canvasRef.current;
-    if (!canvas || isCracking) return;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x - rect.left, y - rect.top, 32, 0, Math.PI * 2);
-    ctx.fill();
+  // Start Slow, Cinematic 4-Second Shatter Sequence
+  const playCinematicShatter = () => {
+    if (animPhase !== 'idle') return;
 
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imageData.data;
-    let transparentCount = 0;
+    // Phase 1: Energy Charge & Deep Rumble (0ms -> 1200ms)
+    setAnimPhase('charging');
 
-    for (let i = 3; i < pixels.length; i += 4) {
-      if (pixels[i] === 0) transparentCount++;
-    }
+    // Phase 2: Spiderweb Glass Fracturing (1200ms -> 2600ms)
+    setTimeout(() => {
+      setAnimPhase('cracking');
+      
+      let radius = 0;
+      const waveInterval = setInterval(() => {
+        radius += 15;
+        setShockwaveRadius(radius);
+        if (radius >= 300) clearInterval(waveInterval);
+      }, 50);
+    }, 1200);
 
-    const percent = Math.round((transparentCount / (pixels.length / 4)) * 100);
-    setScratchPercent(percent);
-  };
+    // Phase 3: Explosive Shatter & Slow-Motion Dissolve (2600ms -> 4000ms)
+    setTimeout(() => {
+      setAnimPhase('shattering');
+    }, 2600);
 
-  const handleMouseDown = (e) => {
-    setIsScratching(true);
-    scratch(e.clientX, e.clientY);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isScratching) return;
-    scratch(e.clientX, e.clientY);
-  };
-
-  const handleMouseUp = () => setIsScratching(false);
-
-  const handleTouchStart = (e) => {
-    setIsScratching(true);
-    const touch = e.touches[0];
-    scratch(touch.clientX, touch.clientY);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!isScratching) return;
-    const touch = e.touches[0];
-    scratch(touch.clientX, touch.clientY);
+    // Phase 4: Complete Transition into Website
+    setTimeout(() => {
+      onReveal();
+    }, 3800);
   };
 
   return (
-    <div className={`launch-overlay-backdrop ${isCracking ? 'shattering' : ''}`}>
-      <div className={`launch-container ${isCracking ? 'crack-shake' : ''}`}>
-        
-        {/* Top Status Header */}
-        <div className="launch-badge">
-          <Lock size={14} className="lock-icon" />
-          <span>SITE LOCKED UNTIL LAUNCH</span>
+    <div className={`cinematic-backdrop ${animPhase}`}>
+      {/* Shockwave Radial Glow Effect */}
+      {animPhase !== 'idle' && (
+        <div 
+          className="shockwave-ring" 
+          style={{ width: `${shockwaveRadius * 4}px`, height: `${shockwaveRadius * 4}px` }}
+        />
+      )}
+
+      {/* Spiderweb Glass Crack SVG Overlay */}
+      {(animPhase === 'cracking' || animPhase === 'shattering') && (
+        <svg viewBox="0 0 1000 1000" className="cinematic-crack-svg">
+          {/* Primary Glass Fracture Lines */}
+          <path d="M500 500 L200 100 L400 800 L500 500 L800 200 L700 900 L500 500 L100 600 L500 500 L900 400" stroke="#a3083b" strokeWidth="4" fill="none" className="crack-path main-crack" />
+          <path d="M500 500 L100 100 M500 500 L900 900 M500 500 L300 950 M500 500 L850 50" stroke="#ffffff" strokeWidth="2" strokeDasharray="8 4" fill="none" className="crack-path secondary-crack" />
+          {/* Concentric Shatter Rings */}
+          <circle cx="500" cy="500" r="140" stroke="#ff2a6d" strokeWidth="2" fill="none" opacity="0.8" />
+          <circle cx="500" cy="500" r="280" stroke="#8b002e" strokeWidth="3" fill="none" opacity="0.6" />
+        </svg>
+      )}
+
+      <div className={`cinematic-content ${animPhase}`}>
+        {/* Top Header Badge */}
+        <div className="launch-header-tag">
+          <Sparkles size={16} className="tag-sparkle" />
+          <span>LET'S COOK OFFICIAL LAUNCH</span>
         </div>
 
-        <h1 className="launch-title">LET'S COOK OFFICIAL LAUNCH</h1>
-        <p className="launch-subtitle">
-          The main website unlocks automatically when the countdown hits zero on <strong>Monday at 12:00 PM IST</strong>.
-        </p>
+        <h1 className="cinematic-heading">MONDAY 12:00 PM IST</h1>
 
-        {/* Scratch & Timer Card Wrapper */}
-        <div className="scratch-card-wrapper">
-          {/* Glass Crack SVG Animation Overlay */}
-          {isCracking && (
-            <div className="glass-crack-layer">
-              <svg viewBox="0 0 540 220" className="crack-svg">
-                <path d="M270 110 L150 20 L220 180 L270 110 L380 40 L450 160 L270 110 L90 120 L270 110 L310 200" stroke="#ff2a6d" strokeWidth="3" fill="none" className="crack-line line-1" />
-                <path d="M270 110 L40 50 M270 110 L500 190 M270 110 L180 210 M270 110 L340 10" stroke="#ffffff" strokeWidth="2" fill="none" className="crack-line line-2" />
-                <circle cx="270" cy="110" r={crackProgress * 25} fill="none" stroke="#8b002e" strokeWidth="6" opacity="0.8" />
-              </svg>
-            </div>
-          )}
-
-          {/* Underneath Content (Live Timer) */}
-          <div className="timer-reveal-box">
-            <span className="reveal-label">COUNTDOWN TO MONDAY 12:00 PM</span>
-            
-            <div className="countdown-grid">
-              <div className="timer-unit">
-                <span className="timer-value">{String(timeLeft.days).padStart(2, '0')}</span>
-                <span className="timer-label">DAYS</span>
-              </div>
-              <span className="colon">:</span>
-              <div className="timer-unit">
-                <span className="timer-value">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="timer-label">HOURS</span>
-              </div>
-              <span className="colon">:</span>
-              <div className="timer-unit">
-                <span className="timer-value">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="timer-label">MINS</span>
-              </div>
-              <span className="colon">:</span>
-              <div className="timer-unit">
-                <span className="timer-value">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className="timer-label">SECS</span>
-              </div>
-            </div>
-
-            <div className="target-date">Unlocks Monday, 12:00 PM IST</div>
+        {/* GIANT COUNTDOWN TIMER */}
+        <div className="giant-timer-container">
+          <div className="giant-unit">
+            <span className="giant-val">{String(timeLeft.days).padStart(2, '0')}</span>
+            <span className="giant-lbl">DAYS</span>
           </div>
-
-          {/* Canvas Scratch Foil Layer */}
-          <canvas
-            ref={canvasRef}
-            className="scratch-canvas"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleMouseUp}
-          />
+          <span className="giant-colon">:</span>
+          <div className="giant-unit">
+            <span className="giant-val">{String(timeLeft.hours).padStart(2, '0')}</span>
+            <span className="giant-lbl">HOURS</span>
+          </div>
+          <span className="giant-colon">:</span>
+          <div className="giant-unit">
+            <span className="giant-val">{String(timeLeft.minutes).padStart(2, '0')}</span>
+            <span className="giant-lbl">MINUTES</span>
+          </div>
+          <span className="giant-colon">:</span>
+          <div className="giant-unit">
+            <span className="giant-val">{String(timeLeft.seconds).padStart(2, '0')}</span>
+            <span className="giant-lbl">SECONDS</span>
+          </div>
         </div>
 
-        {/* Lock Status & Admin Simulation Controls */}
-        <div className="launch-actions">
-          <div className="lock-status-note">
-            <span>Website Access: <strong>Locked</strong> ({scratchPercent}% Scratched)</span>
-          </div>
-
-          {/* Development Test Shatter Trigger */}
+        {/* Cinematic Simulation Control */}
+        <div className="cinematic-controls">
           <button 
-            onClick={triggerGlassShatter}
-            className="btn-secondary btn-sm test-shatter-btn"
-            title="Simulate Timer Completion & Glass Shatter"
+            onClick={playCinematicShatter}
+            disabled={animPhase !== 'idle'}
+            className="btn-primary btn-hero-play"
           >
-            <Zap size={14} /> SIMULATE LAUNCH UNLOCK
+            <Play size={20} className="play-icon" /> 
+            {animPhase === 'idle' ? 'PLAY CINEMATIC SHATTER REVEAL' : 'SHATTERING & UNLOCKING...'}
           </button>
         </div>
       </div>
 
       <style>{`
-        .launch-overlay-backdrop {
+        .cinematic-backdrop {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background-color: var(--bg-main);
-          background-image: radial-gradient(circle at 50% 35%, rgba(139, 0, 46, 0.35) 0%, rgba(10, 10, 12, 0.99) 75%);
-          z-index: 5000;
+          background-color: #060608;
+          background-image: radial-gradient(circle at 50% 50%, rgba(139, 0, 46, 0.4) 0%, rgba(6, 6, 8, 0.98) 75%);
+          z-index: 6000;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 16px;
-          overflow-y: auto;
-          transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s ease;
+          padding: 24px;
+          overflow: hidden;
+          transition: opacity 1.2s ease, transform 1.2s ease;
         }
 
-        .launch-overlay-backdrop.shattering {
+        .cinematic-backdrop.charging {
+          animation: rumble 1.2s ease infinite;
+        }
+
+        .cinematic-backdrop.cracking {
+          animation: heavyRumble 0.8s ease infinite;
+        }
+
+        .cinematic-backdrop.shattering {
           opacity: 0;
-          transform: scale(1.15);
+          transform: scale(1.3);
           pointer-events: none;
         }
 
-        .launch-container {
-          max-width: 600px;
-          width: 100%;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          transition: transform 0.1s ease;
+        @keyframes rumble {
+          0% { transform: translate(0, 0); }
+          25% { transform: translate(-2px, 2px); }
+          50% { transform: translate(2px, -2px); }
+          75% { transform: translate(-1px, 1px); }
+          100% { transform: translate(0, 0); }
         }
 
-        .crack-shake {
-          animation: crackShake 0.4s ease infinite;
-        }
-
-        @keyframes crackShake {
+        @keyframes heavyRumble {
           0% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(-3px, 3px) rotate(-1deg); }
-          50% { transform: translate(3px, -2px) rotate(1deg); }
-          75% { transform: translate(-2px, -3px) rotate(0deg); }
-          100% { transform: translate(2px, 2px) rotate(0.5deg); }
+          20% { transform: translate(-5px, 5px) rotate(-1deg); }
+          40% { transform: translate(5px, -4px) rotate(1deg); }
+          60% { transform: translate(-4px, -3px) rotate(-0.5deg); }
+          80% { transform: translate(4px, 4px) rotate(0.5deg); }
+          100% { transform: translate(0, 0) rotate(0deg); }
         }
 
-        .launch-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          background-color: var(--accent-burgundy-light);
-          border: 1px solid var(--accent-burgundy-border);
-          color: var(--accent-burgundy-hover);
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          border-radius: var(--radius-badge);
-          margin-bottom: 16px;
+        .shockwave-ring {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          border: 2px solid #a3083b;
+          box-shadow: 0 0 50px #8b002e, inset 0 0 50px #8b002e;
+          pointer-events: none;
+          transition: width 0.05s linear, height 0.05s linear;
         }
 
-        .lock-icon {
-          color: var(--accent-burgundy);
-        }
-
-        .launch-title {
-          font-size: clamp(1.8rem, 5vw, 2.8rem);
-          line-height: 1.1;
-          margin-bottom: 12px;
-          letter-spacing: -0.03em;
-        }
-
-        .launch-subtitle {
-          color: var(--text-muted);
-          font-size: clamp(0.85rem, 2.5vw, 1rem);
-          max-width: 480px;
-          margin-bottom: 28px;
-        }
-
-        .scratch-card-wrapper {
-          position: relative;
-          width: 100%;
-          max-width: 520px;
-          height: 210px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-          overflow: hidden;
-          user-select: none;
-        }
-
-        .glass-crack-layer {
+        .cinematic-crack-svg {
           position: absolute;
           inset: 0;
-          z-index: 10;
-          pointer-events: none;
-          background: rgba(139, 0, 46, 0.2);
-          backdrop-filter: blur(2px);
-        }
-
-        .crack-svg {
           width: 100%;
           height: 100%;
+          pointer-events: none;
+          z-index: 10;
         }
 
-        .crack-line {
-          stroke-dasharray: 400;
+        .crack-path {
+          stroke-dasharray: 800;
           stroke-dashoffset: 0;
-          animation: crackDraw 0.5s ease forwards;
+          animation: drawCrack 1s ease forwards;
         }
 
-        @keyframes crackDraw {
-          from { stroke-dashoffset: 400; }
+        @keyframes drawCrack {
+          from { stroke-dashoffset: 800; }
           to { stroke-dashoffset: 0; }
         }
 
-        .timer-reveal-box {
-          position: absolute;
-          inset: 0;
+        .cinematic-content {
+          position: relative;
+          z-index: 20;
           display: flex;
           flex-direction: column;
+          align-items: center;
+          text-align: center;
+          width: 100%;
+          max-width: 1200px;
+          transition: transform 0.8s ease, filter 0.8s ease;
+        }
+
+        .cinematic-content.charging {
+          filter: drop-shadow(0 0 35px #a3083b);
+        }
+
+        .cinematic-content.shattering {
+          transform: scale(1.2);
+          filter: blur(8px) contrast(200%);
+        }
+
+        .launch-header-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 20px;
+          background-color: rgba(139, 0, 46, 0.25);
+          border: 1px solid var(--accent-burgundy-border);
+          color: #ffffff;
+          font-size: 0.85rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          border-radius: var(--radius-badge);
+          margin-bottom: 24px;
+        }
+
+        .tag-sparkle {
+          color: var(--accent-burgundy-hover);
+        }
+
+        .cinematic-heading {
+          font-size: clamp(1.2rem, 3vw, 2.2rem);
+          letter-spacing: 0.15em;
+          color: var(--text-muted);
+          margin-bottom: 40px;
+          font-weight: 600;
+        }
+
+        /* GIANT MASSIVE TIMER DISPLAY */
+        .giant-timer-container {
+          display: flex;
           align-items: center;
           justify-content: center;
-          padding: 16px;
-          background: linear-gradient(135deg, var(--bg-surface) 0%, #1a030b 100%);
+          gap: clamp(12px, 3vw, 40px);
+          width: 100%;
+          margin-bottom: 60px;
         }
 
-        .reveal-label {
-          font-size: 0.7rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          color: var(--accent-burgundy-hover);
-          margin-bottom: 12px;
-        }
-
-        .countdown-grid {
-          display: flex;
-          align-items: center;
-          gap: clamp(6px, 2vw, 14px);
-        }
-
-        .timer-unit {
+        .giant-unit {
           display: flex;
           flex-direction: column;
           align-items: center;
-          min-width: clamp(46px, 12vw, 64px);
         }
 
-        .timer-value {
+        .giant-val {
           font-family: var(--font-display);
           font-weight: 700;
-          font-size: clamp(1.8rem, 6vw, 2.5rem);
-          color: var(--text-main);
-          line-height: 1;
+          font-size: clamp(3.5rem, 12vw, 9.5rem);
+          line-height: 0.95;
+          color: #ffffff;
+          text-shadow: 0 0 40px rgba(139, 0, 46, 0.6);
+          letter-spacing: -0.04em;
         }
 
-        .timer-label {
-          font-size: 0.6rem;
+        .giant-lbl {
+          font-size: clamp(0.65rem, 1.8vw, 1.1rem);
           font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--text-muted);
-          margin-top: 4px;
-        }
-
-        .colon {
-          font-family: var(--font-display);
-          font-size: clamp(1.4rem, 4vw, 2rem);
-          font-weight: 700;
-          color: var(--accent-burgundy);
-          margin-top: -10px;
-        }
-
-        .target-date {
-          font-size: 0.75rem;
-          color: var(--text-dim);
+          letter-spacing: 0.18em;
+          color: var(--accent-burgundy-hover);
           margin-top: 12px;
         }
 
-        .scratch-canvas {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          cursor: crosshair;
-          touch-action: none;
+        .giant-colon {
+          font-family: var(--font-display);
+          font-size: clamp(2.5rem, 9vw, 7rem);
+          font-weight: 700;
+          color: var(--accent-burgundy);
+          margin-top: -30px;
+          text-shadow: 0 0 20px rgba(163, 8, 59, 0.8);
         }
 
-        .launch-actions {
-          margin-top: 24px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
+        .cinematic-controls {
+          margin-top: 10px;
         }
 
-        .lock-status-note {
-          font-size: 0.85rem;
-          color: var(--text-muted);
+        .btn-hero-play {
+          padding: 16px 36px;
+          font-size: 1.05rem;
+          letter-spacing: 0.08em;
+          box-shadow: 0 10px 30px rgba(139, 0, 46, 0.5);
         }
 
-        .test-shatter-btn {
-          font-size: 0.75rem;
-          padding: 8px 16px;
-          margin-top: 4px;
-          opacity: 0.85;
+        .play-icon {
+          fill: currentColor;
         }
 
-        .test-shatter-btn:hover {
-          opacity: 1;
-        }
-
-        @media (max-width: 480px) {
-          .scratch-card-wrapper {
-            height: 180px;
+        @media (max-width: 600px) {
+          .giant-timer-container {
+            gap: 6px;
+          }
+          .giant-colon {
+            margin-top: -15px;
           }
         }
       `}</style>
