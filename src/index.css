@@ -1,0 +1,258 @@
+/* Let's Cook - Design System & Custom CSS */
+
+:root {
+  /* Fonts */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Base Radii - Rectangular & Sharp (NO PILL BUTTONS) */
+  --radius-btn: 4px;
+  --radius-card: 6px;
+  --radius-badge: 4px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fallback Theme Variables (Default Dark) */
+  --bg-main: #0a0a0c;
+  --bg-surface: #141418;
+  --bg-surface-hover: #1c1c24;
+  --bg-surface-active: #242430;
+  --border-color: #24242d;
+  --border-focus: #8b002e;
+
+  --accent-burgundy: #8b002e;
+  --accent-burgundy-hover: #a3083b;
+  --accent-burgundy-light: rgba(139, 0, 46, 0.15);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.4);
+
+  --text-main: #f4f4f6;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+
+  --hero-highlight-bg: #8b002e;
+  --hero-highlight-text: #ffffff;
+
+  --navbar-bg: rgba(10, 10, 12, 0.95);
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+  --scrollbar-thumb: #2d2d38;
+}
+
+/* Dark Theme Variables */
+html.dark {
+  --bg-main: #0a0a0c;
+  --bg-surface: #141418;
+  --bg-surface-hover: #1c1c24;
+  --bg-surface-active: #242430;
+  --border-color: #24242d;
+  --border-focus: #8b002e;
+
+  --accent-burgundy: #8b002e;
+  --accent-burgundy-hover: #a3083b;
+  --accent-burgundy-light: rgba(139, 0, 46, 0.15);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.4);
+
+  --text-main: #f4f4f6;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+
+  --hero-highlight-bg: #8b002e;
+  --hero-highlight-text: #ffffff;
+
+  --navbar-bg: rgba(10, 10, 12, 0.95);
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+  --scrollbar-thumb: #2d2d38;
+}
+
+/* Light Theme Variables */
+html.light {
+  --bg-main: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f3f5;
+  --bg-surface-active: #e9ecef;
+  --border-color: #e4e4e7;
+  --border-focus: #72092c;
+
+  --accent-burgundy: #72092c;
+  --accent-burgundy-hover: #5b0e2d;
+  --accent-burgundy-light: rgba(114, 9, 44, 0.08);
+  --accent-burgundy-border: rgba(114, 9, 44, 0.3);
+
+  --text-main: #111114;
+  --text-muted: #52525b;
+  --text-dim: #8e8e93;
+
+  --hero-highlight-bg: #72092c;
+  --hero-highlight-text: #ffffff;
+
+  --navbar-bg: rgba(248, 249, 250, 0.95);
+  --modal-overlay: rgba(0, 0, 0, 0.6);
+  --scrollbar-thumb: #cbd5e1;
+}
+
+/* Reset & Global Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-burgundy);
+}
+
+/* Crisp Sharp Rectangular Buttons (NO PILL BUTTONS) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--accent-burgundy);
+  color: #ffffff;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--accent-burgundy);
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-burgundy-hover);
+  border-color: var(--accent-burgundy-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 0, 46, 0.35);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--accent-burgundy-border);
+  color: var(--text-main);
+  transform: translateY(-1px);
+}
+
+/* Reference-Style Hero Highlight Box */
+.highlight-box {
+  display: inline-block;
+  background-color: var(--hero-highlight-bg);
+  color: var(--hero-highlight-text);
+  padding: 4px 16px;
+  border-radius: 4px;
+  transform: rotate(-1deg);
+  font-weight: 700;
+}
+
+/* Asymmetrical Layout Card Container (NO AVERAGE BENTO) */
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+
+/* Utility Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Skeleton Loading State */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-surface-hover) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Print Stylesheet */
+@media print {
+  header, footer, .floating-contact, .top-scroll-btn, .cookie-banner, .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .highlight-box {
+    background: none !important;
+    color: #000000 !important;
+    font-weight: bold;
+    border: 1px solid #000;
+  }
+}

@@ -1,0 +1,294 @@
+import React, { useState, useEffect } from 'react';
+import { Sun, Moon, Search, Menu, X, ArrowUpRight } from 'lucide-react';
+import { getTrackedUrl } from '../utils/utmTracker';
+
+const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
+
+export default function Navbar({ onOpenSearch, theme, onToggleTheme, currentPage, setCurrentPage }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const currentScroll = window.scrollY;
+      if (totalScroll > 0) {
+        setScrollProgress((currentScroll / totalScroll) * 100);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = [
+    { label: 'HOME', page: 'home' },
+    { label: 'INITIATIVES', page: 'home', section: 'pillars' },
+    { label: 'FAQ', page: 'home', section: 'faq' },
+    { label: 'PRIVACY', page: 'privacy' },
+    { label: 'TERMS', page: 'terms' }
+  ];
+
+  const handleNavClick = (item) => {
+    setCurrentPage(item.page);
+    setMobileMenuOpen(false);
+
+    if (item.section && item.page === 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(item.section);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <header className="sticky-header">
+      {/* Scroll Progress Bar */}
+      <div 
+        className="scroll-progress-bar" 
+        style={{ width: `${scrollProgress}%` }}
+      />
+
+      <nav className="navbar-container">
+        {/* Brand Logo & Name */}
+        <div className="brand-group" onClick={() => handleNavClick({ page: 'home' })}>
+          <img 
+            src="/the-foundry-logo-removebg-preview.png" 
+            alt="Let's Cook Logo" 
+            className="brand-logo"
+          />
+          <div className="brand-text">
+            <span className="brand-title">LET'S COOK</span>
+            <span className="brand-subtitle">THE FOUNDRY COMMUNITY</span>
+          </div>
+        </div>
+
+        {/* Desktop Navigation Links */}
+        <div className="desktop-nav">
+          {navItems.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleNavClick(item)}
+              className={`nav-link ${currentPage === item.page && !item.section ? 'active' : ''}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Right Actions: Search, Theme Toggle, CTA, Mobile Toggle */}
+        <div className="nav-actions">
+          <button 
+            onClick={onOpenSearch} 
+            className="icon-btn" 
+            title="Search site (Ctrl+K)"
+            aria-label="Search site"
+          >
+            <Search size={18} />
+          </button>
+
+          <button 
+            onClick={onToggleTheme} 
+            className="icon-btn theme-toggle-btn" 
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          <a 
+            href={getTrackedUrl(LINKTREE_URL)}
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="btn-primary desktop-cta"
+          >
+            JOIN US <ArrowUpRight size={16} />
+          </a>
+
+          <button 
+            className="mobile-menu-btn icon-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer animate-fade-in">
+          <div className="mobile-drawer-content">
+            {navItems.map((item, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleNavClick(item)}
+                className="mobile-nav-link"
+              >
+                {item.label}
+              </button>
+            ))}
+
+            <div className="mobile-drawer-footer">
+              <a 
+                href={getTrackedUrl(LINKTREE_URL)}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-primary w-full"
+              >
+                JOIN COMMUNITY <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .sticky-header {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          background-color: var(--navbar-bg);
+          border-bottom: 1px solid var(--border-color);
+          backdrop-filter: blur(8px);
+        }
+
+        .scroll-progress-bar {
+          height: 3px;
+          background-color: var(--accent-burgundy);
+          transition: width 0.1s ease-out;
+        }
+
+        .navbar-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 14px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .brand-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+        }
+
+        .brand-logo {
+          height: 38px;
+          width: auto;
+          object-fit: contain;
+        }
+
+        .brand-text {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .brand-title {
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-size: 1.1rem;
+          letter-spacing: 0.05em;
+          line-height: 1.1;
+          color: var(--text-main);
+        }
+
+        .brand-subtitle {
+          font-size: 0.65rem;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          color: var(--text-muted);
+        }
+
+        .desktop-nav {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+        }
+
+        .nav-link {
+          font-size: 0.85rem;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          color: var(--text-muted);
+          transition: color var(--transition-fast);
+        }
+
+        .nav-link:hover, .nav-link.active {
+          color: var(--text-main);
+        }
+
+        .nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .icon-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: var(--radius-btn);
+          border: 1px solid var(--border-color);
+          background-color: var(--bg-surface);
+          color: var(--text-main);
+          transition: all var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+          background-color: var(--bg-surface-hover);
+          border-color: var(--accent-burgundy-border);
+          color: var(--accent-burgundy-hover);
+        }
+
+        .mobile-menu-btn {
+          display: none;
+        }
+
+        .mobile-drawer {
+          border-top: 1px solid var(--border-color);
+          background-color: var(--bg-surface);
+          padding: 24px;
+        }
+
+        .mobile-drawer-content {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .mobile-nav-link {
+          text-align: left;
+          font-size: 1.1rem;
+          font-weight: 600;
+          padding: 10px 0;
+          border-bottom: 1px solid var(--border-color);
+          color: var(--text-main);
+        }
+
+        .mobile-drawer-footer {
+          margin-top: 12px;
+        }
+
+        .w-full {
+          width: 100%;
+        }
+
+        @media (max-width: 868px) {
+          .desktop-nav, .desktop-cta {
+            display: none;
+          }
+          .mobile-menu-btn {
+            display: flex;
+          }
+        }
+      `}</style>
+    </header>
+  );
+}
