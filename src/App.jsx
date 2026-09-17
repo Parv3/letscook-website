@@ -49,8 +49,13 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* Dynamic Live Glowing Laser Fracture & Floating Particles Background */}
+      {/* Dramatic Yet Non-Distracting Background (Nebula Glows + Laser Rays + Embers) */}
       <div className="live-glowing-lines-bg no-print" aria-hidden="true">
+        {/* Ambient Burgundy Energy Nebulas */}
+        <div className="nebula-orb nebula-1" />
+        <div className="nebula-orb nebula-2" />
+
+        {/* Laser Lines SVG */}
         <svg viewBox="0 0 1440 900" preserveAspectRatio="none" className="glowing-laser-svg">
           <path d="M-100 150 Q 400 450 1540 100" fill="none" className="glow-line glow-line-1" />
           <path d="M-100 700 Q 700 200 1540 800" fill="none" className="glow-line glow-line-2" />
@@ -58,7 +63,7 @@ export default function App() {
           <path d="M1200 -100 Q 500 500 1300 1000" fill="none" className="glow-line glow-line-4" />
         </svg>
 
-        {/* Dynamic Floating Orbs */}
+        {/* Floating Embers */}
         <div className="bg-particle" style={{ left: '15%', animationDuration: '14s', animationDelay: '0s' }} />
         <div className="bg-particle" style={{ left: '35%', animationDuration: '18s', animationDelay: '3s' }} />
         <div className="bg-particle" style={{ left: '60%', animationDuration: '11s', animationDelay: '1s' }} />
