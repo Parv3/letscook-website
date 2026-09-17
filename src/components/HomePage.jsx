@@ -108,10 +108,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     <div className="home-page animate-fade-in">
       {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-container">
-          {/* Disappearing 3D Grid Overlay Layer */}
-          <Hero3dObject />
+        {/* Wall-to-Wall Fullscreen Synthwave Sunset Grid Background Layer */}
+        <Hero3dObject />
 
+        <div className="hero-container">
           {/* Static Tech Badges */}
           <div className="tech-bar">
             {techBadges.map((badge, idx) => (
@@ -325,12 +325,18 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           border-bottom: 1px solid var(--border-color);
           background-color: var(--bg-main);
           overflow: hidden;
+          width: 100%;
+          min-height: 80vh;
+          display: flex;
+          align-items: center;
         }
 
         .hero-container {
           position: relative;
+          z-index: 10;
           max-width: 1100px;
           margin: 0 auto;
+          width: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -352,6 +358,11 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           text-align: center;
           margin-bottom: 40px;
           max-width: 880px;
+          position: relative;
+          z-index: 10;
+          padding: 10px 20px;
+          background: radial-gradient(ellipse at 50% 50%, rgba(6, 6, 8, 0.75) 0%, rgba(6, 6, 8, 0) 75%);
+          border-radius: var(--radius-card);
         }
 
         .hero-title {

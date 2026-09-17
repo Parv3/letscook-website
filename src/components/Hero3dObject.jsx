@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 
 /**
- * Hero3dObject: Synthwave Sunset Grid Horizon
- * Renders a glowing sun, wireframe perspective grid floor, and terrain mountain ridges on the horizon.
- * Designed to evoke retro synthwave grid aesthetics without obscuring hero text.
+ * Hero3dObject: Fullscreen Synthwave Sunset Grid Horizon
+ * Spans 100% wall-to-wall viewport. Positioned low on the horizon with a subtle setting sun
+ * so foreground hero text remains 100% focused, distraction-free, and legible.
  */
 export default function Hero3dObject() {
   const canvasRef = useRef(null);
@@ -15,8 +15,8 @@ export default function Hero3dObject() {
     const ctx = canvas.getContext('2d');
 
     let animationFrameId;
-    let width = (canvas.width = canvas.parentElement?.offsetWidth || 1200);
-    let height = (canvas.height = canvas.parentElement?.offsetHeight || 500);
+    let width = (canvas.width = canvas.parentElement?.offsetWidth || window.innerWidth);
+    let height = (canvas.height = canvas.parentElement?.offsetHeight || 600);
 
     const handleResize = () => {
       if (!canvas.parentElement) return;
@@ -33,98 +33,88 @@ export default function Hero3dObject() {
 
     let offsetZ = 0;
 
-    // Static terrain elevation points for wireframe mountain ridges (left and right)
-    const terrainLeft = [35, 70, 45, 105, 80, 135, 85, 150, 55, 115, 30, 0];
-    const terrainRight = [0, 30, 115, 55, 150, 85, 135, 80, 105, 45, 70, 35];
+    // Static elevation points for subtle wireframe mountain ridges on horizon
+    const terrainLeft = [25, 55, 35, 85, 60, 110, 70, 125, 45, 90, 25, 0];
+    const terrainRight = [0, 25, 90, 45, 125, 70, 110, 60, 85, 35, 55, 25];
 
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
       // Smooth parallax mouse interpolation
-      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.05;
-      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.05;
+      mouseRef.current.x += (mouseRef.current.targetX - mouseRef.current.x) * 0.04;
+      mouseRef.current.y += (mouseRef.current.targetY - mouseRef.current.y) * 0.04;
 
       offsetZ = (offsetZ + 0.45) % 40; // Horizon grid velocity
 
-      const horizonY = height * 0.42 + mouseRef.current.y * 12;
-      const sunCenterX = width / 2 + mouseRef.current.x * 25;
+      // Position horizon in the lower 62% of section so sun sits comfortably below hero text
+      const horizonY = height * 0.62 + mouseRef.current.y * 10;
+      const sunCenterX = width / 2 + mouseRef.current.x * 20;
 
-      // 1. GLOWING SYNTHWAVE SUN ON HORIZON
-      const sunRadius = Math.min(width * 0.16, 135);
-      const sunCenterY = horizonY - sunRadius * 0.35;
+      // 1. SUBTLE SETTING SYNTHWAVE SUN (LOW ON HORIZON, NON-DISTRACTING)
+      const sunRadius = Math.min(width * 0.14, 110);
+      const sunCenterY = horizonY + sunRadius * 0.15; // Setting half-sun on horizon line
 
-      // Sun Outer Ambient Radial Glow Halo
+      // Soft Ambient Radial Halo Glow
       const sunGlow = ctx.createRadialGradient(
         sunCenterX, sunCenterY, sunRadius * 0.2,
-        sunCenterX, sunCenterY, sunRadius * 2.2
+        sunCenterX, sunCenterY, sunRadius * 2.4
       );
-      sunGlow.addColorStop(0, 'rgba(255, 42, 109, 0.4)');
-      sunGlow.addColorStop(0.5, 'rgba(163, 8, 59, 0.22)');
+      sunGlow.addColorStop(0, 'rgba(255, 42, 109, 0.28)');
+      sunGlow.addColorStop(0.5, 'rgba(163, 8, 59, 0.15)');
       sunGlow.addColorStop(1, 'rgba(6, 6, 8, 0)');
 
       ctx.fillStyle = sunGlow;
       ctx.beginPath();
-      ctx.arc(sunCenterX, sunCenterY, sunRadius * 2.2, 0, Math.PI * 2);
+      ctx.arc(sunCenterX, sunCenterY, sunRadius * 2.4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Sun Gradient (Fiery Golden Amber -> Neon Crimson -> Deep Burgundy Base)
+      // Soft Setting Sun Gradient (Toned down burgundy & deep amber glow)
       const sunGrad = ctx.createLinearGradient(
         sunCenterX, sunCenterY - sunRadius,
         sunCenterX, sunCenterY + sunRadius
       );
-      sunGrad.addColorStop(0, '#ffd000');   // Glowing amber top
-      sunGrad.addColorStop(0.35, '#ff2a6d'); // Neon magenta/crimson middle
-      sunGrad.addColorStop(0.8, '#8b002e');  // Deep burgundy
-      sunGrad.addColorStop(1, '#3a0013');    // Shadow base
+      sunGrad.addColorStop(0, '#ff9e00');    // Soft golden amber peak
+      sunGrad.addColorStop(0.35, '#a3083b'); // Deep crimson middle
+      sunGrad.addColorStop(0.8, '#58001d');  // Muted burgundy base
+      sunGrad.addColorStop(1, '#060608');    // Horizon shadow blend
 
       ctx.save();
       ctx.beginPath();
       ctx.arc(sunCenterX, sunCenterY, sunRadius, 0, Math.PI * 2);
       ctx.fillStyle = sunGrad;
+      ctx.globalAlpha = 0.85;
       ctx.fill();
 
-      // Retro Horizontal Scanlines across Sun
-      const scanlineCount = 7;
+      // Retro Horizontal Scanlines across Setting Sun
+      const scanlineCount = 6;
       for (let i = 0; i < scanlineCount; i++) {
-        const lineY = sunCenterY + (i / scanlineCount) * sunRadius * 0.9;
-        const lineHeight = 2.2 + i * 1.3;
+        const lineY = sunCenterY - sunRadius * 0.4 + (i / scanlineCount) * sunRadius * 1.2;
+        const lineHeight = 2 + i * 1.2;
         ctx.fillStyle = 'rgba(6, 6, 8, 0.95)';
         ctx.fillRect(sunCenterX - sunRadius - 10, lineY, sunRadius * 2 + 20, lineHeight);
       }
       ctx.restore();
 
-      // 2. HORIZON WIREFRAME MOUNTAIN RIDGES (LEFT & RIGHT OF SUN)
-      ctx.lineWidth = 1.2;
+      // 2. HORIZON WIREFRAME TERRAIN RIDGES (FLANKING SUN)
+      ctx.lineWidth = 1;
 
-      // Left Ridge
-      ctx.strokeStyle = 'rgba(163, 8, 59, 0.55)';
+      // Left Mountain Ridge
+      ctx.strokeStyle = 'rgba(163, 8, 59, 0.45)';
       ctx.beginPath();
-      const leftStep = (sunCenterX - sunRadius * 0.75) / (terrainLeft.length - 1);
+      const leftStep = (sunCenterX - sunRadius * 0.7) / (terrainLeft.length - 1);
       for (let i = 0; i < terrainLeft.length; i++) {
         const x = i * leftStep;
         const y = horizonY - terrainLeft[i];
         if (i === 0) ctx.moveTo(x, horizonY);
         else ctx.lineTo(x, y);
       }
-      ctx.lineTo(sunCenterX - sunRadius * 0.75, horizonY);
+      ctx.lineTo(sunCenterX - sunRadius * 0.7, horizonY);
       ctx.stroke();
 
-      // Left Ridge Internal Wireframe Mesh Lines
-      for (let i = 0; i < terrainLeft.length - 1; i++) {
-        const x1 = i * leftStep;
-        const y1 = horizonY - terrainLeft[i];
-        const x2 = (i + 1) * leftStep;
-        ctx.strokeStyle = 'rgba(255, 42, 109, 0.22)';
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, horizonY);
-        ctx.stroke();
-      }
-
-      // Right Ridge
-      const rightStart = sunCenterX + sunRadius * 0.75;
+      // Right Mountain Ridge
+      const rightStart = sunCenterX + sunRadius * 0.7;
       const rightStep = (width - rightStart) / (terrainRight.length - 1);
-      ctx.strokeStyle = 'rgba(163, 8, 59, 0.55)';
+      ctx.strokeStyle = 'rgba(163, 8, 59, 0.45)';
       ctx.beginPath();
       for (let i = 0; i < terrainRight.length; i++) {
         const x = rightStart + i * rightStep;
@@ -135,26 +125,14 @@ export default function Hero3dObject() {
       ctx.lineTo(width, horizonY);
       ctx.stroke();
 
-      // Right Ridge Internal Wireframe Mesh Lines
-      for (let i = 0; i < terrainRight.length - 1; i++) {
-        const x1 = rightStart + i * rightStep;
-        const y1 = horizonY - terrainRight[i];
-        const x2 = rightStart + (i + 1) * rightStep;
-        ctx.strokeStyle = 'rgba(255, 42, 109, 0.22)';
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, horizonY);
-        ctx.stroke();
-      }
+      // 3. PERSPECTIVE FLOOR GRID STRETCHING TO HORIZON (FULL SECTION COVERAGE)
+      const fov = 320;
+      const numColumns = 36;
+      const gridWidth = width * 1.8;
 
-      // 3. PERSPECTIVE FLOOR GRID STRETCHING TO HORIZON
-      const fov = 300;
-      const numColumns = 30;
-      const gridWidth = 1800;
-
-      // Z-axis perspective lines converging to horizon sun
+      // Z-axis perspective lines fanning out across full viewport width
       for (let i = -numColumns / 2; i <= numColumns / 2; i++) {
-        const worldX = i * (gridWidth / numColumns) - mouseRef.current.x * 40;
+        const worldX = i * (gridWidth / numColumns) - mouseRef.current.x * 35;
 
         const nearZ = 35;
         const scaleNear = fov / nearZ;
@@ -163,13 +141,13 @@ export default function Hero3dObject() {
 
         const farZ = 850;
         const scaleFar = fov / farZ;
-        const xFar = sunCenterX + worldX * scaleFar * 0.4;
+        const xFar = sunCenterX + worldX * scaleFar * 0.35;
         const yFar = horizonY;
 
         const distRatio = Math.abs(i) / (numColumns / 2);
-        const alpha = Math.max(0, 1 - distRatio * 0.85);
+        const alpha = Math.max(0, 1 - distRatio * 0.8);
 
-        ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.42})`;
+        ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.35})`;
 
         ctx.beginPath();
         ctx.moveTo(xNear, yNear);
@@ -178,9 +156,9 @@ export default function Hero3dObject() {
       }
 
       // Horizontal moving transverse grid lines
-      const numRows = 20;
+      const numRows = 18;
       for (let j = 0; j < numRows; j++) {
-        const z = j * 40 + offsetZ;
+        const z = j * 42 + offsetZ;
         if (z <= 10) continue;
 
         const scale = fov / z;
@@ -189,12 +167,12 @@ export default function Hero3dObject() {
         if (y < horizonY || y > height) continue;
 
         const fade = Math.pow((z - 10) / 750, 0.45) * (1 - z / 850);
-        const alpha = Math.max(0, Math.min(0.55, fade * 0.75));
+        const alpha = Math.max(0, Math.min(0.5, fade * 0.65));
 
         if (j % 2 === 0) {
-          ctx.strokeStyle = `rgba(255, 42, 109, ${alpha * 0.5})`;
+          ctx.strokeStyle = `rgba(255, 42, 109, ${alpha * 0.4})`;
         } else {
-          ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.6})`;
+          ctx.strokeStyle = `rgba(163, 8, 59, ${alpha * 0.5})`;
         }
 
         ctx.beginPath();
@@ -226,15 +204,15 @@ export default function Hero3dObject() {
           height: 100%;
           pointer-events: none;
           z-index: 0;
-          opacity: 0.55;
-          mask-image: radial-gradient(ellipse at 50% 50%, black 25%, transparent 85%);
-          -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 25%, transparent 85%);
+          opacity: 0.5;
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 35%, rgba(0,0,0,1) 100%);
+          -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.7) 35%, rgba(0,0,0,1) 100%);
         }
 
         .synthwave-sunset-canvas {
           width: 100%;
           height: 100%;
-          filter: drop-shadow(0 0 25px rgba(139, 0, 46, 0.4));
+          filter: drop-shadow(0 0 20px rgba(139, 0, 46, 0.3));
         }
       `}</style>
     </div>
