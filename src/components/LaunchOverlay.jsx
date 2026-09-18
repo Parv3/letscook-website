@@ -1,54 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { Play, Sparkles } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Sparkles, Lock } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
 import { playCinematicShatterSound } from '../utils/soundEngine';
 
+/**
+ * LaunchOverlay: Live Official Launch Screen
+ * Removed manual preview controls for production launch.
+ * Automatically triggers the 4-phase cinematic glass shatter sequence and Web Audio boom
+ * when the live countdown reaches 00:00:00:00.
+ */
 export default function LaunchOverlay({ onReveal }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
   const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'shattering'
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
+  const hasTriggeredRef = useRef(false);
 
-  // Live timer tick
-  useEffect(() => {
-    const target = getNextMondayNoon();
-    const interval = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(target));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Start Slow, Cinematic 4-Second Shatter Sequence
+  // Automatic 4-Second Cinematic Shatter Sequence
   const playCinematicShatter = () => {
     if (animPhase !== 'idle') return;
 
-    // Trigger Synthesized Web Audio API Glass Shatter Boom Sound
+    // Phase 1: Synthesized Sub-Bass Boom & Glass Crackle Sound
     playCinematicShatterSound();
-
-    // Phase 1: Energy Charge & Deep Rumble (0ms -> 1200ms)
     setAnimPhase('charging');
 
-    // Phase 2: Spiderweb Glass Fracturing (1200ms -> 2600ms)
+    // Phase 2: Spiderweb Glass Fracturing & Radial Shockwave Expansion (1200ms)
     setTimeout(() => {
       setAnimPhase('cracking');
-      
+
       let radius = 0;
       const waveInterval = setInterval(() => {
-        radius += 15;
+        radius += 18;
         setShockwaveRadius(radius);
-        if (radius >= 300) clearInterval(waveInterval);
-      }, 50);
+        if (radius >= 320) clearInterval(waveInterval);
+      }, 40);
     }, 1200);
 
-    // Phase 3: Explosive Shatter & Slow-Motion Dissolve (2600ms -> 4000ms)
+    // Phase 3: Explosive Glass Shatter & Slow-Motion Dissolve (2600ms)
     setTimeout(() => {
       setAnimPhase('shattering');
     }, 2600);
 
-    // Phase 4: Complete Transition into Website
+    // Phase 4: Complete Transition into Live Website (3800ms)
     setTimeout(() => {
       onReveal();
     }, 3800);
   };
+
+  // Live 1-second countdown tick & auto-trigger when completed
+  useEffect(() => {
+    const target = getNextMondayNoon();
+
+    const checkAndTick = () => {
+      const remaining = calculateTimeLeft(target);
+      setTimeLeft(remaining);
+
+      // Auto-trigger cinematic shatter when timer reaches 0
+      if (remaining.completed && !hasTriggeredRef.current) {
+        hasTriggeredRef.current = true;
+        playCinematicShatter();
+      }
+    };
+
+    checkAndTick();
+    const interval = setInterval(checkAndTick, 1000);
+    return () => clearInterval(interval);
+  }, [animPhase]);
 
   return (
     <div className={`cinematic-backdrop ${animPhase}`}>
@@ -102,16 +118,18 @@ export default function LaunchOverlay({ onReveal }) {
           </div>
         </div>
 
-        {/* Cinematic Simulation Control */}
-        <div className="cinematic-controls">
-          <button 
-            onClick={playCinematicShatter}
-            disabled={animPhase !== 'idle'}
-            className="btn-primary btn-hero-play"
-          >
-            <Play size={20} className="play-icon" /> 
-            {animPhase === 'idle' ? 'PLAY CINEMATIC SHATTER REVEAL' : 'SHATTERING & UNLOCKING...'}
-          </button>
+        {/* Live Automatic Launch Status Bar */}
+        <div className="launch-status-bar">
+          <div className="pulse-dot" />
+          <span>
+            {animPhase === 'idle' ? (
+              <>
+                <Lock size={13} className="inline-lock-icon" /> LAUNCH GATED • AUTOMATIC SHATTER REVEAL AT 00:00:00
+              </>
+            ) : (
+              'SHATTERING & UNLOCKING FOUNDRY...'
+            )}
+          </span>
         </div>
       </div>
 
@@ -251,7 +269,7 @@ export default function LaunchOverlay({ onReveal }) {
           justify-content: center;
           gap: clamp(12px, 3vw, 40px);
           width: 100%;
-          margin-bottom: 60px;
+          margin-bottom: 50px;
         }
 
         .giant-unit {
@@ -287,19 +305,41 @@ export default function LaunchOverlay({ onReveal }) {
           text-shadow: 0 0 20px rgba(163, 8, 59, 0.8);
         }
 
-        .cinematic-controls {
-          margin-top: 10px;
+        /* Live Automatic Launch Status Bar */
+        .launch-status-bar {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 22px;
+          background-color: var(--bg-surface);
+          border: 1px solid var(--accent-burgundy-border);
+          border-radius: var(--radius-badge);
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: var(--text-main);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
         }
 
-        .btn-hero-play {
-          padding: 16px 36px;
-          font-size: 1.05rem;
-          letter-spacing: 0.08em;
-          box-shadow: 0 10px 30px rgba(139, 0, 46, 0.5);
+        .pulse-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: var(--accent-burgundy-hover);
+          box-shadow: 0 0 10px var(--accent-burgundy-hover);
+          animation: statusPulse 1.5s ease-in-out infinite;
         }
 
-        .play-icon {
-          fill: currentColor;
+        @keyframes statusPulse {
+          0%, 100% { opacity: 0.4; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .inline-lock-icon {
+          color: var(--accent-burgundy-hover);
+          display: inline;
+          vertical-align: -2px;
+          margin-right: 4px;
         }
 
         @media (max-width: 600px) {
@@ -308,7 +348,7 @@ export default function LaunchOverlay({ onReveal }) {
           }
           .giant-timer-container {
             gap: clamp(2px, 1.2vw, 8px);
-            margin-bottom: 36px;
+            margin-bottom: 32px;
           }
           .giant-val {
             font-size: clamp(2.0rem, 8.5vw, 4.2rem);
@@ -322,10 +362,10 @@ export default function LaunchOverlay({ onReveal }) {
             letter-spacing: 0.1em;
             margin-top: 4px;
           }
-          .btn-hero-play {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 0.88rem;
+          .launch-status-bar {
+            padding: 8px 14px;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
           }
         }
       `}</style>
