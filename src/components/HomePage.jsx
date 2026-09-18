@@ -326,6 +326,14 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Let's Cook Community. All rights reserved.</p>
+          <div 
+            className="parv-easter-egg"
+            onClick={playTechClick}
+            title="System Architect & Lead Engineer"
+          >
+            <span className="easter-dot">•</span>
+            <span>MADE BY PARV</span>
+          </div>
         </div>
       </footer>
 
@@ -748,6 +756,39 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           text-align: center;
           font-size: 0.8rem;
           color: var(--text-muted);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .parv-easter-egg {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 12px;
+          background-color: var(--bg-surface);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-badge);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: var(--text-dim);
+          cursor: pointer;
+          user-select: none;
+          transition: all var(--transition-fast);
+        }
+
+        .parv-easter-egg:hover {
+          color: #ffffff;
+          background-color: var(--accent-burgundy-light);
+          border-color: var(--accent-burgundy-border);
+          box-shadow: 0 0 14px rgba(163, 8, 59, 0.4);
+          transform: translateY(-1px);
+        }
+
+        .easter-dot {
+          color: var(--accent-burgundy-hover);
         }
 
         @media (max-width: 640px) {
