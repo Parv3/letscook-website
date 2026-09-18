@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Sparkles, Lock } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
-import { playCinematicShatterSound } from '../utils/soundEngine';
+import { playCinematicShatterSound, playTechClick } from '../utils/soundEngine';
 
 /**
  * LaunchOverlay: Live Official Launch Screen
- * Removed manual preview controls for production launch.
  * Automatically triggers the 4-phase cinematic glass shatter sequence and Web Audio boom
  * when the live countdown reaches 00:00:00:00.
+ * Secret Bypass: Tapping/clicking the top header sparkle tag 10 times triggers the shatter reveal immediately.
  */
 export default function LaunchOverlay({ onReveal }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
   const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'shattering'
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
+
+  // Secret 10-Click Sparkle Bypass Counter
+  const sparkleClickCountRef = useRef(0);
 
   // Automatic 4-Second Cinematic Shatter Sequence
   const playCinematicShatter = () => {
@@ -44,6 +47,20 @@ export default function LaunchOverlay({ onReveal }) {
     setTimeout(() => {
       onReveal();
     }, 3800);
+  };
+
+  // Secret Bypass Handler: Trigger shatter on 10th click
+  const handleSparkleClick = (e) => {
+    e.stopPropagation();
+    if (animPhase !== 'idle') return;
+
+    playTechClick();
+    sparkleClickCountRef.current += 1;
+
+    if (sparkleClickCountRef.current >= 10) {
+      sparkleClickCountRef.current = 0;
+      playCinematicShatter();
+    }
   };
 
   // Live 1-second countdown tick & auto-trigger when completed
@@ -87,8 +104,12 @@ export default function LaunchOverlay({ onReveal }) {
       )}
 
       <div className={`cinematic-content ${animPhase}`}>
-        {/* Top Header Badge */}
-        <div className="launch-header-tag">
+        {/* Top Header Badge with Secret 10-Click Bypass */}
+        <div 
+          className="launch-header-tag clickable-sparkle"
+          onClick={handleSparkleClick}
+          title="Official Launch Tag (Secret Bypass: Tap 10x to reveal website)"
+        >
           <Sparkles size={16} className="tag-sparkle" />
           <span>LET'S COOK OFFICIAL LAUNCH</span>
         </div>
@@ -248,6 +269,22 @@ export default function LaunchOverlay({ onReveal }) {
           letter-spacing: 0.12em;
           border-radius: var(--radius-badge);
           margin-bottom: 24px;
+        }
+
+        .clickable-sparkle {
+          cursor: pointer;
+          user-select: none;
+          transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .clickable-sparkle:hover {
+          background-color: rgba(163, 8, 59, 0.35);
+          border-color: var(--accent-burgundy-hover);
+          box-shadow: 0 0 15px rgba(255, 42, 109, 0.5);
+        }
+
+        .clickable-sparkle:active {
+          transform: scale(0.95);
         }
 
         .tag-sparkle {
