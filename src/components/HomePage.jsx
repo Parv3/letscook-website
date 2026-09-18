@@ -15,10 +15,21 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
   // Progressive Shake & Invert Easter Egg State
   const [isFoundryInverted, setIsFoundryInverted] = useState(false);
+  const [parvEasterEggStage, setParvEasterEggStage] = useState(0);
   const boxRef = useRef(null);
   const hoverIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
   const tickCounterRef = useRef(0);
+
+  const handleParvClick = () => {
+    playTechClick();
+    if (parvEasterEggStage === 0) {
+      setParvEasterEggStage(1);
+    } else {
+      window.open('https://www.linkedin.com/in/parv-mishra-b4938b341/', '_blank', 'noopener,noreferrer');
+      setParvEasterEggStage(0);
+    }
+  };
 
   const setBoxShakeClass = (className) => {
     if (!boxRef.current) return;
@@ -327,12 +338,12 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Let's Cook Community. All rights reserved.</p>
           <div 
-            className="parv-easter-egg"
-            onClick={playTechClick}
-            title="System Architect & Lead Engineer"
+            className={`parv-easter-egg ${parvEasterEggStage === 1 ? 'stop-warning' : ''}`}
+            onClick={handleParvClick}
+            title={parvEasterEggStage === 1 ? "Click again to open Parv's LinkedIn profile!" : "System Architect & Lead Engineer"}
           >
-            <span className="easter-dot">•</span>
-            <span>MADE BY PARV</span>
+            <span className="easter-dot">{parvEasterEggStage === 1 ? '🛑' : '•'}</span>
+            <span>{parvEasterEggStage === 1 ? 'STOP!' : 'MADE BY PARV'}</span>
           </div>
         </div>
       </footer>
@@ -785,6 +796,14 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           border-color: var(--accent-burgundy-border);
           box-shadow: 0 0 14px rgba(163, 8, 59, 0.4);
           transform: translateY(-1px);
+        }
+
+        .parv-easter-egg.stop-warning {
+          color: #ffffff !important;
+          background-color: #8b002e !important;
+          border-color: #ff2a6d !important;
+          box-shadow: 0 0 20px rgba(255, 42, 109, 0.9), 0 0 10px #8b002e !important;
+          animation: shakeLight 0.18s ease infinite;
         }
 
         .easter-dot {
