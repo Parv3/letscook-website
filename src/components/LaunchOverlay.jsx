@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { KeyRound, Lock, X, CheckCircle2, Terminal, ShieldAlert } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
-import { playCinematicShatterSound, playNeonIgniteSound, playDecodeTick, playTechClick } from '../utils/soundEngine';
+import { playCinematicShatterSound, playNeonIgniteSound } from '../utils/soundEngine';
 import LogoMark from './LogoMark';
 
 /**
@@ -21,15 +20,6 @@ export default function LaunchOverlay({ onReveal }) {
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
   const keyBufferRef = useRef('');
-
-  // Mobile Secret Access States
-  const [tapCount, setTapCount] = useState(0);
-  const [isHolding, setIsHolding] = useState(false);
-  const [showSecretModal, setShowSecretModal] = useState(false);
-  const [secretPasscode, setSecretPasscode] = useState('');
-  const [secretError, setSecretError] = useState(false);
-  const holdTimerRef = useRef(null);
-  const tapTimerRef = useRef(null);
 
   // Lock body scroll while launch overlay is active
   useEffect(() => {
@@ -158,56 +148,70 @@ export default function LaunchOverlay({ onReveal }) {
     return () => clearInterval(interval);
   }, [animPhase]);
 
-  // Mobile secret tap handling (5 taps triggers override)
-  const handleMobileTap = (e) => {
+  // Stealth Mobile Developer Triggers:
+  // 1. Triple-tap heading (MONDAY 12:00 PM IST)
+  // 2. Swipe up gesture (> 80px upward drag)
+  // 3. Silent long-press on timer (1.8s)
+  const devTapCountRef = useRef(0);
+  const devTapTimerRef = useRef(null);
+  const touchStartYRef = useRef(0);
+  const longPressTimerRef = useRef(null);
+
+  const handleHeadingTap = () => {
     if (animPhase !== 'idle') return;
-    playDecodeTick();
-    const nextCount = tapCount + 1;
-    setTapCount(nextCount);
+    devTapCountRef.current += 1;
+    if (devTapTimerRef.current) clearTimeout(devTapTimerRef.current);
+    devTapTimerRef.current = setTimeout(() => {
+      devTapCountRef.current = 0;
+    }, 1200);
 
-    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
-    tapTimerRef.current = setTimeout(() => {
-      setTapCount(0);
-    }, 2500);
-
-    if (nextCount >= 5) {
-      setTapCount(0);
+    // 3 rapid taps unlocks for developers
+    if (devTapCountRef.current >= 3) {
+      devTapCountRef.current = 0;
       playCinematicShatter();
     }
   };
 
-  // Mobile press & hold gesture (holding for 1.6s charges & shatters)
-  const handleTouchStart = () => {
+  const handleScreenTouchStart = (e) => {
     if (animPhase !== 'idle') return;
-    setIsHolding(true);
-    holdTimerRef.current = setTimeout(() => {
-      setIsHolding(false);
+    const touch = e.touches ? e.touches[0] : e;
+    touchStartYRef.current = touch.clientY;
+
+    // Silent long-press developer unlock
+    longPressTimerRef.current = setTimeout(() => {
       playCinematicShatter();
-    }, 1600);
+    }, 1800);
   };
 
-  const handleTouchEnd = () => {
-    setIsHolding(false);
-    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+  const handleScreenTouchMove = (e) => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
   };
 
-  // Secret Passcode Submit
-  const handleSecretPasscodeSubmit = (e) => {
-    if (e) e.preventDefault();
-    const code = secretPasscode.trim().toLowerCase();
-    if (code === 'cook' || code === 'dev' || code === 'parv' || code === '7777' || code === 'letscook' || code === 'override' || code === '') {
-      setShowSecretModal(false);
+  const handleScreenTouchEnd = (e) => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+    if (animPhase !== 'idle') return;
+    const touch = e.changedTouches ? e.changedTouches[0] : e;
+    const deltaY = touchStartYRef.current - touch.clientY;
+
+    // Upward swipe gesture (> 90px flick up) unlocks for developers
+    if (deltaY > 90) {
       playCinematicShatter();
-    } else {
-      setSecretError(true);
-      setTimeout(() => setSecretError(false), 2000);
     }
   };
 
   const isCountdownPhase = animPhase === 'idle' || animPhase === 'charging' || animPhase === 'cracking';
 
   return (
-    <div className={`cinematic-backdrop ${animPhase}`}>
+    <div 
+      className={`cinematic-backdrop ${animPhase}`}
+      onTouchStart={handleScreenTouchStart}
+      onTouchMove={handleScreenTouchMove}
+      onTouchEnd={handleScreenTouchEnd}
+    >
       {/* Shockwave Radial Glow Effect */}
       {animPhase !== 'idle' && shockwaveRadius > 0 && (
         <div 
@@ -231,28 +235,13 @@ export default function LaunchOverlay({ onReveal }) {
           <div className="countdown-view-group">
             <h1 
               className="cinematic-heading"
-              onClick={handleMobileTap}
-              title="Tap 5x for Secret Access"
+              onClick={handleHeadingTap}
             >
               MONDAY 12:00 PM IST
             </h1>
 
-            {/* Secret Tap Counter Feedback Indicator */}
-            {tapCount > 0 && (
-              <div className="secret-tap-badge">
-                <ShieldAlert size={12} className="pulse-icon" />
-                <span>OVERRIDE PROTOCOL: {tapCount}/5 TAPS</span>
-              </div>
-            )}
-
             {/* GIANT COUNTDOWN TIMER */}
-            <div 
-              className={`giant-timer-container ${isHolding ? 'is-holding' : ''}`}
-              onClick={handleMobileTap}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onTouchCancel={handleTouchEnd}
-            >
+            <div className="giant-timer-container">
               <div className="giant-unit">
                 <span className="giant-val">{String(timeLeft.days).padStart(2, '0')}</span>
                 <span className="giant-lbl">DAYS</span>
@@ -273,26 +262,6 @@ export default function LaunchOverlay({ onReveal }) {
                 <span className="giant-lbl">SECONDS</span>
               </div>
             </div>
-
-            {/* Hold Feedback Hint */}
-            {isHolding && (
-              <div className="hold-progress-text">
-                CHARGING BYPASS OVERRIDE...
-              </div>
-            )}
-
-            {/* Discreet Mobile Secret Access Trigger */}
-            <div className="mobile-secret-bar">
-              <button
-                type="button"
-                onClick={() => { playTechClick(); setShowSecretModal(true); }}
-                className="btn-secret-trigger"
-                title="Mobile Secret Access"
-              >
-                <KeyRound size={12} />
-                <span>SECRET ACCESS</span>
-              </button>
-            </div>
           </div>
         ) : (
           /* LOGO REVEAL, FLICKER & PRESENTATION */
@@ -307,57 +276,6 @@ export default function LaunchOverlay({ onReveal }) {
           </div>
         )}
       </div>
-
-      {/* Secret Access Keypad Modal */}
-      {showSecretModal && (
-        <div className="secret-modal-overlay" onClick={() => setShowSecretModal(false)}>
-          <div className="secret-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="secret-modal-header">
-              <div className="secret-modal-title">
-                <Terminal size={14} />
-                <span>MOBILE CLEARANCE OVERRIDE</span>
-              </div>
-              <button onClick={() => setShowSecretModal(false)} className="close-btn" aria-label="Close">
-                <X size={14} />
-              </button>
-            </div>
-
-            <p className="secret-modal-desc">
-              Mobile developer clearance access. Bypass launch lock immediately or enter your access key.
-            </p>
-
-            <div className="secret-quick-actions">
-              <button 
-                type="button" 
-                onClick={() => { setShowSecretModal(false); playCinematicShatter(); }}
-                className="btn-override-instant"
-              >
-                <CheckCircle2 size={15} /> INSTANT BYPASS &amp; ENTER
-              </button>
-            </div>
-
-            <form onSubmit={handleSecretPasscodeSubmit} className="secret-passcode-form">
-              <label className="form-lbl">OR ENTER CLEARANCE KEY</label>
-              <div className="input-row">
-                <input 
-                  type="text"
-                  placeholder="Key (e.g. 'cook', '7777')..."
-                  value={secretPasscode}
-                  onChange={(e) => setSecretPasscode(e.target.value)}
-                  className={`secret-text-input ${secretError ? 'error' : ''}`}
-                  autoFocus
-                />
-                <button type="submit" className="btn-passcode-submit">
-                  UNLOCK
-                </button>
-              </div>
-              {secretError && (
-                <span className="error-txt">INVALID PASSCODE // TRY 'COOK' OR '7777'</span>
-              )}
-            </form>
-          </div>
-        </div>
-      )}
 
       <style>{`
         .cinematic-backdrop {
@@ -570,246 +488,10 @@ export default function LaunchOverlay({ onReveal }) {
           50% { transform: scale(1.05); filter: drop-shadow(0 0 70px rgba(255, 42, 109, 1)); }
           100% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(163, 8, 59, 0.8)); }
         }
-
-        /* Mobile Secret Access Styles */
-        .secret-tap-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          background: rgba(0, 255, 204, 0.12);
-          border: 1px solid rgba(0, 255, 204, 0.4);
-          border-radius: 4px;
-          color: #00ffcc;
-          font-family: var(--font-mono, monospace);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          margin-bottom: 14px;
-          animation: fadeIn 0.2s ease forwards;
-        }
-
-        .giant-timer-container {
+        .cinematic-heading {
           cursor: pointer;
+          user-select: none;
           touch-action: manipulation;
-          transition: transform 0.2s ease, filter 0.2s ease;
-        }
-
-        .giant-timer-container.is-holding {
-          transform: scale(1.03);
-          filter: drop-shadow(0 0 35px rgba(0, 255, 204, 0.8));
-          animation: pulseHold 0.5s ease infinite alternate;
-        }
-
-        @keyframes pulseHold {
-          from { filter: drop-shadow(0 0 25px rgba(0, 255, 204, 0.5)); }
-          to { filter: drop-shadow(0 0 50px rgba(255, 0, 127, 0.9)); }
-        }
-
-        .hold-progress-text {
-          margin-top: 14px;
-          font-family: var(--font-mono, monospace);
-          font-size: 12px;
-          font-weight: 800;
-          color: #00ffcc;
-          letter-spacing: 0.1em;
-          animation: flashText 0.4s ease infinite alternate;
-        }
-
-        @keyframes flashText {
-          from { opacity: 0.6; }
-          to { opacity: 1; text-shadow: 0 0 15px #00ffcc; }
-        }
-
-        .mobile-secret-bar {
-          margin-top: 28px;
-          display: flex;
-          justify-content: center;
-        }
-
-        .btn-secret-trigger {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: rgba(255, 255, 255, 0.55);
-          padding: 6px 14px;
-          border-radius: 4px;
-          font-family: var(--font-mono, monospace);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .btn-secret-trigger:hover {
-          color: #00ffcc;
-          border-color: #00ffcc;
-          background: rgba(0, 255, 204, 0.08);
-        }
-
-        /* Secret Access Keypad Modal */
-        .secret-modal-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: 8000;
-          background: rgba(0, 0, 0, 0.82);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 16px;
-          animation: fadeIn 0.2s ease forwards;
-        }
-
-        .secret-modal-card {
-          background: #0b0b12;
-          border: 1px solid rgba(0, 255, 204, 0.4);
-          border-radius: 8px;
-          padding: 24px;
-          max-width: 400px;
-          width: 100%;
-          box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 255, 204, 0.15);
-        }
-
-        .secret-modal-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          padding-bottom: 12px;
-          margin-bottom: 14px;
-        }
-
-        .secret-modal-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: #00ffcc;
-          font-family: var(--font-mono, monospace);
-          font-size: 12px;
-          font-weight: 800;
-          letter-spacing: 0.05em;
-        }
-
-        .close-btn {
-          background: transparent;
-          border: none;
-          color: #88889c;
-          cursor: pointer;
-          padding: 4px;
-        }
-
-        .close-btn:hover {
-          color: #fff;
-        }
-
-        .secret-modal-desc {
-          font-size: 12px;
-          color: #a0a0b8;
-          line-height: 1.5;
-          margin: 0 0 16px 0;
-        }
-
-        .secret-quick-actions {
-          margin-bottom: 16px;
-        }
-
-        .btn-override-instant {
-          width: 100%;
-          background: #00ffcc;
-          color: #000;
-          border: none;
-          border-radius: 4px;
-          padding: 10px 16px;
-          font-family: var(--font-mono, monospace);
-          font-size: 12px;
-          font-weight: 800;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          transition: all 0.2s ease;
-          box-shadow: 0 0 20px rgba(0, 255, 204, 0.35);
-        }
-
-        .btn-override-instant:hover {
-          filter: brightness(1.15);
-          box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
-        }
-
-        .secret-passcode-form {
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding-top: 14px;
-        }
-
-        .form-lbl {
-          display: block;
-          font-family: var(--font-mono, monospace);
-          font-size: 10px;
-          font-weight: 700;
-          color: #77778c;
-          margin-bottom: 6px;
-          letter-spacing: 0.05em;
-        }
-
-        .input-row {
-          display: flex;
-          gap: 8px;
-        }
-
-        .secret-text-input {
-          flex: 1;
-          background: #040407;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 4px;
-          color: #fff;
-          font-family: var(--font-mono, monospace);
-          font-size: 12px;
-          padding: 8px 12px;
-          outline: none;
-        }
-
-        .secret-text-input:focus {
-          border-color: #00ffcc;
-        }
-
-        .secret-text-input.error {
-          border-color: #ff3366;
-        }
-
-        .btn-passcode-submit {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 4px;
-          color: #fff;
-          font-family: var(--font-mono, monospace);
-          font-size: 11px;
-          font-weight: 700;
-          padding: 8px 14px;
-          cursor: pointer;
-        }
-
-        .btn-passcode-submit:hover {
-          background: #fff;
-          color: #000;
-        }
-
-        .error-txt {
-          display: block;
-          font-family: var(--font-mono, monospace);
-          font-size: 10px;
-          color: #ff3366;
-          margin-top: 6px;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
         }
 
         @media (max-width: 600px) {
