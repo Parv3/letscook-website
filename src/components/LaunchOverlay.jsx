@@ -74,11 +74,14 @@ export default function LaunchOverlay({ onReveal }) {
 
   // Developer Keystroke & URL Bypass
   useEffect(() => {
-    // 1. URL parameter check (?dev=true, #dev, ?access, ?secret, ?mobile, ?unlock)
+    // 1. URL parameter check (?dev, #dev, ?cook, etc.)
     const url = window.location.href.toLowerCase();
     if (
+      url.includes('?dev') ||
+      url.includes('&dev') ||
       url.includes('dev=true') || 
       url.includes('#dev') || 
+      url.includes('?cook') ||
       url.includes('access=1') || 
       url.includes('access=true') || 
       url.includes('secret=1') || 
@@ -148,70 +151,10 @@ export default function LaunchOverlay({ onReveal }) {
     return () => clearInterval(interval);
   }, [animPhase]);
 
-  // Stealth Mobile Developer Triggers:
-  // 1. Triple-tap heading (MONDAY 12:00 PM IST)
-  // 2. Swipe up gesture (> 80px upward drag)
-  // 3. Silent long-press on timer (1.8s)
-  const devTapCountRef = useRef(0);
-  const devTapTimerRef = useRef(null);
-  const touchStartYRef = useRef(0);
-  const longPressTimerRef = useRef(null);
-
-  const handleHeadingTap = () => {
-    if (animPhase !== 'idle') return;
-    devTapCountRef.current += 1;
-    if (devTapTimerRef.current) clearTimeout(devTapTimerRef.current);
-    devTapTimerRef.current = setTimeout(() => {
-      devTapCountRef.current = 0;
-    }, 1200);
-
-    // 3 rapid taps unlocks for developers
-    if (devTapCountRef.current >= 3) {
-      devTapCountRef.current = 0;
-      playCinematicShatter();
-    }
-  };
-
-  const handleScreenTouchStart = (e) => {
-    if (animPhase !== 'idle') return;
-    const touch = e.touches ? e.touches[0] : e;
-    touchStartYRef.current = touch.clientY;
-
-    // Silent long-press developer unlock
-    longPressTimerRef.current = setTimeout(() => {
-      playCinematicShatter();
-    }, 1800);
-  };
-
-  const handleScreenTouchMove = (e) => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-    }
-  };
-
-  const handleScreenTouchEnd = (e) => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-    }
-    if (animPhase !== 'idle') return;
-    const touch = e.changedTouches ? e.changedTouches[0] : e;
-    const deltaY = touchStartYRef.current - touch.clientY;
-
-    // Upward swipe gesture (> 90px flick up) unlocks for developers
-    if (deltaY > 90) {
-      playCinematicShatter();
-    }
-  };
-
   const isCountdownPhase = animPhase === 'idle' || animPhase === 'charging' || animPhase === 'cracking';
 
   return (
-    <div 
-      className={`cinematic-backdrop ${animPhase}`}
-      onTouchStart={handleScreenTouchStart}
-      onTouchMove={handleScreenTouchMove}
-      onTouchEnd={handleScreenTouchEnd}
-    >
+    <div className={`cinematic-backdrop ${animPhase}`}>
       {/* Shockwave Radial Glow Effect */}
       {animPhase !== 'idle' && shockwaveRadius > 0 && (
         <div 
@@ -233,10 +176,7 @@ export default function LaunchOverlay({ onReveal }) {
       <div className={`cinematic-content ${animPhase}`}>
         {isCountdownPhase ? (
           <div className="countdown-view-group">
-            <h1 
-              className="cinematic-heading"
-              onClick={handleHeadingTap}
-            >
+            <h1 className="cinematic-heading">
               MONDAY 12:00 PM IST
             </h1>
 
