@@ -301,6 +301,16 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
                 <button type="submit" className="btn-primary w-full mt-2 glow-btn">
                   EXECUTE PITCH SUBMISSION <Send size={14} />
                 </button>
+                <div className="alt-form-link-row">
+                  <a 
+                    href="https://forms.gle/Fd4At9jGkJm7U1Xa9" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="direct-form-link"
+                  >
+                    Having trouble? Open Google Form directly <ExternalLink size={12} />
+                  </a>
+                </div>
               </div>
             </form>
           )}
@@ -538,6 +548,26 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
 
         .mt-3 {
           margin-top: 12px;
+        }
+
+        .alt-form-link-row {
+          display: flex;
+          justify-content: center;
+          margin-top: 10px;
+        }
+
+        .direct-form-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.78rem;
+          color: var(--text-dim);
+          text-decoration: underline;
+          transition: color var(--transition-fast);
+        }
+
+        .direct-form-link:hover {
+          color: var(--accent-burgundy-hover);
         }
 
         @media (max-width: 640px) {
