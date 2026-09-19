@@ -4,6 +4,7 @@ import FaqSection from './FaqSection';
 import PasswordInput from './PasswordInput';
 import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
+import LogoMark from './LogoMark';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
@@ -269,7 +270,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         <div className="footer-container">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <img src="/letscook-logo.png" alt="Let's Cook Logo" className="footer-logo pulse-logo" />
+              <LogoMark size={32} className="footer-logo pulse-logo" />
               <span className="footer-title">LET'S COOK</span>
             </div>
             <p className="footer-desc">Student-run software & technology community operating at letscook.co.in.</p>

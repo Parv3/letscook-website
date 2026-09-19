@@ -1,15 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
-import { playCinematicShatterSound } from '../utils/soundEngine';
+import { playCinematicShatterSound, playNeonIgniteSound } from '../utils/soundEngine';
+import LogoMark from './LogoMark';
 
 /**
- * LaunchOverlay: Live Official Launch Screen
- * Automatically triggers the 4-phase cinematic glass shatter sequence and Web Audio boom
- * when the live countdown reaches 00:00:00:00. Access to the site is strictly blocked until the timer runs out.
+ * LaunchOverlay: Live Official Launch Screen with Cinematic Logo Reveal
+ * 
+ * Transition Phases:
+ * 1. idle: Live countdown timer ticking to Monday 12:00 PM IST.
+ * 2. charging: Sub-bass boom & physical screen rumble.
+ * 3. cracking: Spiderweb glass fracturing shockwave dissolves countdown.
+ * 4. logo-flicker: Logo reveals in center, flickers with electric neon CRT discharge.
+ * 5. logo-present: Logo locks steady, presents itself with luminous pulse & motto.
+ * 6. dissolve: Smooth cinematic dissolve & zoom into the live website.
  */
 export default function LaunchOverlay({ onReveal }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
-  const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'shattering'
+  const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'logo-flicker' | 'logo-present' | 'dissolve'
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
   const keyBufferRef = useRef('');
@@ -23,7 +30,7 @@ export default function LaunchOverlay({ onReveal }) {
     };
   }, []);
 
-  // Automatic 4-Second Cinematic Shatter Sequence
+  // Automatic Cinematic Logo Reveal Sequence
   const playCinematicShatter = () => {
     if (animPhase !== 'idle') return;
 
@@ -31,27 +38,38 @@ export default function LaunchOverlay({ onReveal }) {
     playCinematicShatterSound();
     setAnimPhase('charging');
 
-    // Phase 2: Spiderweb Glass Fracturing & Radial Shockwave Expansion (1200ms)
+    // Phase 2: Spiderweb Glass Fracturing & Radial Shockwave (1000ms)
     setTimeout(() => {
       setAnimPhase('cracking');
 
       let radius = 0;
       const waveInterval = setInterval(() => {
-        radius += 18;
+        radius += 20;
         setShockwaveRadius(radius);
-        if (radius >= 320) clearInterval(waveInterval);
-      }, 40);
-    }, 1200);
+        if (radius >= 360) clearInterval(waveInterval);
+      }, 35);
+    }, 1000);
 
-    // Phase 3: Explosive Glass Shatter & Slow-Motion Dissolve (2600ms)
+    // Phase 3: Reveal Vector Logo with Electric Flicker (1900ms)
     setTimeout(() => {
-      setAnimPhase('shattering');
-    }, 2600);
+      setAnimPhase('logo-flicker');
+      playNeonIgniteSound();
+    }, 1900);
 
-    // Phase 4: Complete Transition into Live Website (3800ms)
+    // Phase 4: Logo Presents Itself Proudly (3100ms)
+    setTimeout(() => {
+      setAnimPhase('logo-present');
+    }, 3100);
+
+    // Phase 5: Smooth Cinematic Fade-Away as website opens (4500ms)
+    setTimeout(() => {
+      setAnimPhase('dissolve');
+    }, 4500);
+
+    // Phase 6: Complete Transition (5900ms)
     setTimeout(() => {
       onReveal();
-    }, 3800);
+    }, 5900);
   };
 
   // Developer Keystroke & URL Bypass: Tilde key (`), typing 'cook'/'dev', Alt+L, or ?dev=true
@@ -79,7 +97,7 @@ export default function LaunchOverlay({ onReveal }) {
         return;
       }
 
-      // 4. Secret typed keyword: simply type 'cook', 'dev', or 'parv' (no modifiers needed)
+      // 4. Secret typed keyword: simply type 'cook', 'dev', or 'parv'
       if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
         keyBufferRef.current = (keyBufferRef.current + e.key.toLowerCase()).slice(-10);
         if (
@@ -121,10 +139,12 @@ export default function LaunchOverlay({ onReveal }) {
     return () => clearInterval(interval);
   }, [animPhase]);
 
+  const isCountdownPhase = animPhase === 'idle' || animPhase === 'charging' || animPhase === 'cracking';
+
   return (
     <div className={`cinematic-backdrop ${animPhase}`}>
       {/* Shockwave Radial Glow Effect */}
-      {animPhase !== 'idle' && (
+      {animPhase !== 'idle' && shockwaveRadius > 0 && (
         <div 
           className="shockwave-ring" 
           style={{ width: `${shockwaveRadius * 4}px`, height: `${shockwaveRadius * 4}px` }}
@@ -132,7 +152,7 @@ export default function LaunchOverlay({ onReveal }) {
       )}
 
       {/* Spiderweb Glass Crack SVG Overlay */}
-      {(animPhase === 'cracking' || animPhase === 'shattering') && (
+      {animPhase === 'cracking' && (
         <svg viewBox="0 0 1000 1000" className="cinematic-crack-svg">
           <path d="M500 500 L200 100 L400 800 L500 500 L800 200 L700 900 L500 500 L100 600 L500 500 L900 400" stroke="#a3083b" strokeWidth="4" fill="none" className="crack-path main-crack" />
           <path d="M500 500 L100 100 M500 500 L900 900 M500 500 L300 950 M500 500 L850 50" stroke="#ffffff" strokeWidth="2" strokeDasharray="8 4" fill="none" className="crack-path secondary-crack" />
@@ -142,30 +162,45 @@ export default function LaunchOverlay({ onReveal }) {
       )}
 
       <div className={`cinematic-content ${animPhase}`}>
-        <h1 className="cinematic-heading">MONDAY 12:00 PM IST</h1>
+        {isCountdownPhase ? (
+          <div className="countdown-view-group">
+            <h1 className="cinematic-heading">MONDAY 12:00 PM IST</h1>
 
-        {/* GIANT COUNTDOWN TIMER */}
-        <div className="giant-timer-container">
-          <div className="giant-unit">
-            <span className="giant-val">{String(timeLeft.days).padStart(2, '0')}</span>
-            <span className="giant-lbl">DAYS</span>
+            {/* GIANT COUNTDOWN TIMER */}
+            <div className="giant-timer-container">
+              <div className="giant-unit">
+                <span className="giant-val">{String(timeLeft.days).padStart(2, '0')}</span>
+                <span className="giant-lbl">DAYS</span>
+              </div>
+              <span className="giant-colon">:</span>
+              <div className="giant-unit">
+                <span className="giant-val">{String(timeLeft.hours).padStart(2, '0')}</span>
+                <span className="giant-lbl">HOURS</span>
+              </div>
+              <span className="giant-colon">:</span>
+              <div className="giant-unit">
+                <span className="giant-val">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                <span className="giant-lbl">MINUTES</span>
+              </div>
+              <span className="giant-colon">:</span>
+              <div className="giant-unit">
+                <span className="giant-val">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                <span className="giant-lbl">SECONDS</span>
+              </div>
+            </div>
           </div>
-          <span className="giant-colon">:</span>
-          <div className="giant-unit">
-            <span className="giant-val">{String(timeLeft.hours).padStart(2, '0')}</span>
-            <span className="giant-lbl">HOURS</span>
+        ) : (
+          /* LOGO REVEAL, FLICKER & PRESENTATION */
+          <div className={`logo-reveal-container ${animPhase}`}>
+            <div className="reveal-logo-wrapper">
+              <LogoMark size={140} className="reveal-logo" />
+            </div>
+            <div className="reveal-text-block">
+              <h2 className="reveal-brand-name">LET'S COOK</h2>
+              <p className="reveal-motto">CODERE · AEDIFICARE · VINCERE</p>
+            </div>
           </div>
-          <span className="giant-colon">:</span>
-          <div className="giant-unit">
-            <span className="giant-val">{String(timeLeft.minutes).padStart(2, '0')}</span>
-            <span className="giant-lbl">MINUTES</span>
-          </div>
-          <span className="giant-colon">:</span>
-          <div className="giant-unit">
-            <span className="giant-val">{String(timeLeft.seconds).padStart(2, '0')}</span>
-            <span className="giant-lbl">SECONDS</span>
-          </div>
-        </div>
+        )}
       </div>
 
       <style>{`
@@ -176,27 +211,28 @@ export default function LaunchOverlay({ onReveal }) {
           right: 0;
           bottom: 0;
           background-color: #060608;
-          background-image: radial-gradient(circle at 50% 50%, rgba(139, 0, 46, 0.4) 0%, rgba(6, 6, 8, 0.98) 75%);
+          background-image: radial-gradient(circle at 50% 50%, rgba(139, 0, 46, 0.45) 0%, rgba(6, 6, 8, 0.98) 75%);
           z-index: 6000;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 24px;
           overflow: hidden;
-          transition: opacity 1.2s ease, transform 1.2s ease;
+          transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1), transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), filter 1.4s ease;
         }
 
         .cinematic-backdrop.charging {
-          animation: rumble 1.2s ease infinite;
+          animation: rumble 1s ease infinite;
         }
 
         .cinematic-backdrop.cracking {
           animation: heavyRumble 0.8s ease infinite;
         }
 
-        .cinematic-backdrop.shattering {
+        .cinematic-backdrop.dissolve {
           opacity: 0;
-          transform: scale(1.3);
+          transform: scale(1.15);
+          filter: blur(12px);
           pointer-events: none;
         }
 
@@ -224,7 +260,7 @@ export default function LaunchOverlay({ onReveal }) {
           transform: translate(-50%, -50%);
           border-radius: 50%;
           border: 2px solid #a3083b;
-          box-shadow: 0 0 50px #8b002e, inset 0 0 50px #8b002e;
+          box-shadow: 0 0 60px #8b002e, inset 0 0 60px #8b002e;
           pointer-events: none;
           transition: width 0.05s linear, height 0.05s linear;
         }
@@ -241,7 +277,7 @@ export default function LaunchOverlay({ onReveal }) {
         .crack-path {
           stroke-dasharray: 800;
           stroke-dashoffset: 0;
-          animation: drawCrack 1s ease forwards;
+          animation: drawCrack 0.8s ease forwards;
         }
 
         @keyframes drawCrack {
@@ -258,16 +294,7 @@ export default function LaunchOverlay({ onReveal }) {
           text-align: center;
           width: 100%;
           max-width: 1200px;
-          transition: transform 0.8s ease, filter 0.8s ease;
-        }
-
-        .cinematic-content.charging {
-          filter: drop-shadow(0 0 35px #a3083b);
-        }
-
-        .cinematic-content.shattering {
-          transform: scale(1.2);
-          filter: blur(8px) contrast(200%);
+          color: #ffffff;
         }
 
         .cinematic-heading {
@@ -285,7 +312,6 @@ export default function LaunchOverlay({ onReveal }) {
           justify-content: center;
           gap: clamp(12px, 3vw, 40px);
           width: 100%;
-          margin-bottom: 0;
         }
 
         .giant-unit {
@@ -321,13 +347,76 @@ export default function LaunchOverlay({ onReveal }) {
           text-shadow: 0 0 20px rgba(163, 8, 59, 0.8);
         }
 
+        /* LOGO REVEAL PRESENTATION SECTION */
+        .logo-reveal-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 24px;
+        }
+
+        .logo-reveal-container.logo-flicker {
+          animation: neonFlicker 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .logo-reveal-container.logo-present {
+          animation: presentPulse 1.4s ease-in-out infinite alternate;
+        }
+
+        .reveal-logo-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .reveal-brand-name {
+          font-family: var(--font-display);
+          font-size: clamp(2.4rem, 6vw, 4.4rem);
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          color: #ffffff;
+          text-shadow: 0 0 25px rgba(255, 42, 109, 0.9), 0 0 55px rgba(163, 8, 59, 0.7);
+          margin-top: 6px;
+        }
+
+        .reveal-motto {
+          font-family: var(--font-body);
+          font-size: clamp(0.75rem, 1.8vw, 1.05rem);
+          font-weight: 600;
+          letter-spacing: 0.35em;
+          color: #d4d4d8;
+          text-transform: uppercase;
+          margin-top: 8px;
+          text-shadow: 0 0 12px rgba(163, 8, 59, 0.6);
+        }
+
+        @keyframes neonFlicker {
+          0% { opacity: 0; transform: scale(0.88); filter: drop-shadow(0 0 0 transparent); }
+          6% { opacity: 0.9; transform: scale(0.94); filter: drop-shadow(0 0 25px #a3083b); }
+          12% { opacity: 0.12; filter: none; }
+          20% { opacity: 0.95; transform: scale(0.98); filter: drop-shadow(0 0 45px #ff2a6d); }
+          28% { opacity: 0.25; }
+          38% { opacity: 1; transform: scale(1.02); filter: drop-shadow(0 0 60px #a3083b); }
+          50% { opacity: 0.45; }
+          65% { opacity: 1; filter: drop-shadow(0 0 75px #ff2a6d); }
+          80% { opacity: 0.85; }
+          100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 50px rgba(163, 8, 59, 0.9)); }
+        }
+
+        @keyframes presentPulse {
+          0% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(163, 8, 59, 0.8)); }
+          50% { transform: scale(1.05); filter: drop-shadow(0 0 70px rgba(255, 42, 109, 1)); }
+          100% { transform: scale(1); filter: drop-shadow(0 0 40px rgba(163, 8, 59, 0.8)); }
+        }
+
         @media (max-width: 600px) {
           .cinematic-backdrop {
             padding: 16px 12px;
           }
           .giant-timer-container {
             gap: clamp(2px, 1.2vw, 8px);
-            margin-bottom: 0;
           }
           .giant-val {
             font-size: clamp(2.0rem, 8.5vw, 4.2rem);

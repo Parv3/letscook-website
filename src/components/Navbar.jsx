@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Search, Sun, Moon, ArrowUpRight, Lightbulb, Menu, X } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { getTrackedUrl } from '../utils/utmTracker';
+import LogoMark from './LogoMark';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
@@ -91,15 +92,11 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
       <nav className="navbar-container">
         {/* Brand Logo & Name */}
         <div className="brand-group" onClick={() => handleNavClick({ page: 'home' })}>
-          <img 
-            src="/letscook-logo.png" 
-            alt="Let's Cook Logo" 
-            className="brand-logo"
-            onClick={handleLogoTap}
-            title="Let's Cook (Secret: Tap 5x)"
-          />
+          <div onClick={handleLogoTap} title="Let's Cook (Secret: Tap 5x)" className="brand-logo-wrap">
+            <LogoMark size={36} className="brand-logo" />
+          </div>
           <div className="brand-text">
-            <span className="brand-title">LET'S COOK COMMUNITY</span>
+            <span className="brand-title">LET'S COOK</span>
           </div>
         </div>
 

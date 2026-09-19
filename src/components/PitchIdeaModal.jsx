@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Sparkles, ExternalLink, CheckCircle2, Terminal, Move, Minus, Maximize2 } from 'lucide-react';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick } from '../utils/soundEngine';
+import { submitPitchData } from '../utils/pitchSubmission';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
@@ -91,10 +92,16 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     playTechClick();
     if (!projectTitle || !description || !email) return;
+
+    try {
+      await submitPitchData({ projectTitle, techStack, description, email });
+    } catch (err) {
+      console.error('Submission failed:', err);
+    }
 
     setSubmitted(true);
     setTimeout(() => {

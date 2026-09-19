@@ -212,3 +212,30 @@ export const playCinematicShatterSound = () => {
     // Ignore audio errors
   }
 };
+
+// Neon Electric Ignition / Cathode Strike Sound
+export const playNeonIgniteSound = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, ctx.currentTime);
+    osc.frequency.setValueAtTime(440, ctx.currentTime + 0.05);
+    osc.frequency.setValueAtTime(180, ctx.currentTime + 0.12);
+    osc.frequency.setValueAtTime(520, ctx.currentTime + 0.2);
+
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.55);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
