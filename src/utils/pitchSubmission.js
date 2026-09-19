@@ -50,27 +50,70 @@ export async function submitPitchData({ projectTitle, techStack, description, em
   // 2. Submit to Google Form if Form ID is configured
   if (GOOGLE_FORM_CONFIG.formId) {
     const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_CONFIG.formId}/formResponse`;
-    const formData = new URLSearchParams();
     
-    formData.append(GOOGLE_FORM_CONFIG.fields.projectTitle, projectTitle);
-    formData.append(GOOGLE_FORM_CONFIG.fields.techStack, techStack);
-    formData.append(GOOGLE_FORM_CONFIG.fields.description, description);
-    formData.append(GOOGLE_FORM_CONFIG.fields.email, email);
-
+    // Method A: Hidden Iframe Form Submit (Immune to Brave Shields, uBlock Origin, and Adblockers)
     try {
-      await fetch(formUrl, {
+      let iframe = document.getElementById('gform_hidden_iframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'gform_hidden_iframe';
+        iframe.name = 'gform_hidden_iframe';
+        iframe.style.display = 'none';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+      }
+
+      const form = document.createElement('form');
+      form.action = formUrl;
+      form.method = 'POST';
+      form.target = 'gform_hidden_iframe';
+      form.style.display = 'none';
+
+      const fields = [
+        { name: GOOGLE_FORM_CONFIG.fields.projectTitle, value: projectTitle },
+        { name: GOOGLE_FORM_CONFIG.fields.techStack, value: techStack },
+        { name: GOOGLE_FORM_CONFIG.fields.description, value: description },
+        { name: GOOGLE_FORM_CONFIG.fields.email, value: email },
+      ];
+
+      fields.forEach(({ name, value }) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(() => {
+        if (form.parentNode) form.parentNode.removeChild(form);
+      }, 2000);
+    } catch (iframeErr) {
+      console.warn('Iframe submission warning:', iframeErr);
+    }
+
+    // Method B: Parallel direct fetch (no-cors) for browsers supporting background POST
+    try {
+      const formData = new URLSearchParams();
+      formData.append(GOOGLE_FORM_CONFIG.fields.projectTitle, projectTitle);
+      formData.append(GOOGLE_FORM_CONFIG.fields.techStack, techStack);
+      formData.append(GOOGLE_FORM_CONFIG.fields.description, description);
+      formData.append(GOOGLE_FORM_CONFIG.fields.email, email);
+
+      fetch(formUrl, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData.toString(),
-      });
-      return { success: true, method: 'google-form' };
-    } catch (error) {
-      console.error('Google Form submission error:', error);
-      return { success: true, method: 'local-backup' };
-    }
+      }).catch(() => {});
+    } catch (e) {}
+
+    return { success: true, method: 'google-form' };
   } else {
     // Helpful log in developer console
     console.info(
