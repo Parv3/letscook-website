@@ -10,6 +10,8 @@ import ScrollTopButton from './components/ScrollTopButton';
 import LaunchOverlay from './components/LaunchOverlay';
 import MacOsTimerWindow from './components/MacOsTimerWindow';
 import PitchIdeaModal from './components/PitchIdeaModal';
+import TerminalDrawer from './components/TerminalDrawer';
+import JoinSquadModal from './components/JoinSquadModal';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
@@ -19,6 +21,8 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [isJoinSquadOpen, setIsJoinSquadOpen] = useState(false);
   
   // Launch Experience States
   const [showLaunchOverlay, setShowLaunchOverlay] = useState(true);
@@ -26,6 +30,16 @@ export default function App() {
 
   useEffect(() => {
     captureUtmParams();
+
+    // Global Terminal Shortcut: Ctrl + ~ or Cmd + ~
+    const handleGlobalKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === '`' || e.key === '~')) {
+        e.preventDefault();
+        setIsTerminalOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
   useEffect(() => {
@@ -87,6 +101,7 @@ export default function App() {
           onToggleTheme={toggleTheme}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenPitchModal={() => setIsPitchModalOpen(true)}
+          onOpenTerminal={() => setIsTerminalOpen(true)}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
@@ -96,7 +111,8 @@ export default function App() {
           {currentPage === 'home' && (
             <HomePage 
               setCurrentPage={setCurrentPage} 
-              onOpenPitchModal={() => setIsPitchModalOpen(true)} 
+              onOpenPitchModal={() => setIsPitchModalOpen(true)}
+              onOpenJoinModal={() => setIsJoinSquadOpen(true)}
             />
           )}
           {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
@@ -118,6 +134,17 @@ export default function App() {
         <PitchIdeaModal
           isOpen={isPitchModalOpen}
           onClose={() => setIsPitchModalOpen(false)}
+        />
+        <TerminalDrawer
+          isOpen={isTerminalOpen}
+          onClose={() => setIsTerminalOpen(false)}
+          onOpenPitchModal={() => setIsPitchModalOpen(true)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+        <JoinSquadModal
+          isOpen={isJoinSquadOpen}
+          onClose={() => setIsJoinSquadOpen(false)}
         />
         <FloatingContact />
         <CookieBanner />

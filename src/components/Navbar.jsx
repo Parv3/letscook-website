@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Search, Sun, Moon, ArrowUpRight, Lightbulb, Menu, X } from 'lucide-react';
+import { Volume2, VolumeX, Search, Sun, Moon, ArrowUpRight, Lightbulb, Menu, X, Terminal } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { getTrackedUrl } from '../utils/utmTracker';
 import LogoMark from './LogoMark';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
-export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggleTheme, currentPage, setCurrentPage }) {
+export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal, theme, onToggleTheme, currentPage, setCurrentPage }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [muted, setMuted] = useState(() => isSoundMuted());
@@ -41,6 +41,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
   const navItems = [
     { label: 'HOME', page: 'home' },
     { label: 'INITIATIVES', page: 'home', section: 'pillars' },
+    { label: 'SPRINTS', page: 'home', section: 'sprints' },
     { label: 'FAQ', page: 'home', section: 'faq' },
     { label: 'PRIVACY', page: 'privacy' },
     { label: 'TERMS', page: 'terms' }
@@ -121,6 +122,15 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          <button 
+            onClick={() => { playTechClick(); if (onOpenTerminal) onOpenTerminal(); }} 
+            className="icon-btn terminal-btn" 
+            title="Open Interactive Shell (Ctrl + ~)"
+            aria-label="Open Interactive Shell"
+          >
+            <Terminal size={17} />
           </button>
 
           <button 

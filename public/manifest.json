@@ -1,0 +1,22 @@
+{
+  "short_name": "Let's Cook",
+  "name": "Let's Cook Community",
+  "description": "Student-run software & technology community. Codere, Aedificare, Vincere.",
+  "icons": [
+    {
+      "src": "/letscook-logo.png",
+      "type": "image/png",
+      "sizes": "192x192 512x512"
+    },
+    {
+      "src": "/letscook-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#060608",
+  "theme_color": "#8b002e",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

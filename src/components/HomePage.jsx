@@ -5,12 +5,14 @@ import PasswordInput from './PasswordInput';
 import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
+import ScrollCircuitRail from './ScrollCircuitRail';
+import ActiveSprintsBoard from './ActiveSprintsBoard';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
-export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
+export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinModal }) {
   const [accessCode, setAccessCode] = useState('');
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
@@ -108,8 +110,11 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
   return (
     <div className="home-page animate-fade-in">
+      {/* Dynamic Scroll Circuit Rail */}
+      <ScrollCircuitRail />
+
       {/* Hero Section */}
-      <section className="hero-section">
+      <section id="hero-top" className="hero-section">
         {/* Wall-to-Wall Fullscreen Synthwave Sunset Grid Background Layer */}
         <Hero3dObject />
 
@@ -141,15 +146,20 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
             </p>
 
             <div className="hero-cta-group">
-              <a 
-                href={getTrackedUrl(LINKTREE_URL)}
-                target="_blank" 
-                rel="noopener noreferrer"
+              <button 
+                type="button"
                 className="btn-primary btn-lg glow-btn"
-                onClick={playTechClick}
+                onClick={() => {
+                  playTechClick();
+                  if (onOpenJoinModal) {
+                    onOpenJoinModal();
+                  } else {
+                    window.open(getTrackedUrl(LINKTREE_URL), '_blank', 'noopener,noreferrer');
+                  }
+                }}
               >
                 JOIN THE SQUAD <ArrowUpRight size={18} />
-              </a>
+              </button>
               <button 
                 onClick={() => { playTechClick(); onOpenPitchModal(); }}
                 className="btn-secondary btn-lg"
@@ -224,8 +234,14 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         </div>
       </section>
 
+      {/* Active Sprints Showcase Board */}
+      <ActiveSprintsBoard 
+        onOpenPitchModal={onOpenPitchModal} 
+        onOpenJoinModal={onOpenJoinModal} 
+      />
+
       {/* Member Access / Form Showcase Section with PW Visibility Toggle */}
-      <section className="access-section">
+      <section id="access" className="access-section">
         <div className="access-container">
           <div className="access-box hover-glow">
             <div className="access-info">
@@ -284,6 +300,14 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
                 const el = document.getElementById('pillars');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}>Initiatives</button>
+              <button onClick={() => {
+                const el = document.getElementById('sprints');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}>Sprints</button>
+              <button onClick={() => {
+                const el = document.getElementById('access');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}>Access</button>
               <button onClick={() => {
                 const el = document.getElementById('faq');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
