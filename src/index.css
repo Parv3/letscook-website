@@ -219,6 +219,29 @@ body {
   100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
 }
 
+/* MOBILE GPU & COMPOSITING OPTIMIZATIONS (< 768px) */
+@media (max-width: 768px) {
+  .nebula-orb {
+    filter: blur(30px) !important;
+    animation: none !important; /* Disable continuous translate compositing on mobile */
+    opacity: 0.25;
+  }
+  .nebula-1 {
+    width: 300px !important;
+    height: 300px !important;
+  }
+  .nebula-2 {
+    width: 320px !important;
+    height: 320px !important;
+  }
+  .glow-line {
+    filter: none !important; /* Remove SVG drop-shadow filter on mobile */
+  }
+  .bg-particle {
+    display: none !important; /* Hide ember particles on mobile */
+  }
+}
+
 #root {
   position: relative;
   z-index: 1;

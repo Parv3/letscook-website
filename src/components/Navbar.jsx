@@ -11,15 +11,22 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
   const [muted, setMuted] = useState(() => isSoundMuted());
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const currentScroll = window.scrollY;
-      if (totalScroll > 0) {
-        setScrollProgress((currentScroll / totalScroll) * 100);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const currentScroll = window.scrollY;
+          if (totalScroll > 0) {
+            setScrollProgress((currentScroll / totalScroll) * 100);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
