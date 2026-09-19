@@ -17,13 +17,12 @@
  */
 
 export const GOOGLE_FORM_CONFIG = {
-  // Replace with your Google Form ID:
-  formId: import.meta.env.VITE_GOOGLE_FORM_ID || '',
+  formId: import.meta.env.VITE_GOOGLE_FORM_ID || '1FAIpQLSfI3jrnWBM1RJkitXjTCT9_UUFAiuhK7gpfb4VSVvZuwZUPrA',
   fields: {
-    projectTitle: import.meta.env.VITE_GF_ENTRY_TITLE || 'entry.1000001',
-    techStack: import.meta.env.VITE_GF_ENTRY_STACK || 'entry.1000002',
-    description: import.meta.env.VITE_GF_ENTRY_DESC || 'entry.1000003',
-    email: import.meta.env.VITE_GF_ENTRY_EMAIL || 'entry.1000004',
+    projectTitle: import.meta.env.VITE_GF_ENTRY_TITLE || 'entry.1129128780',
+    techStack: import.meta.env.VITE_GF_ENTRY_STACK || 'entry.461833103',
+    description: import.meta.env.VITE_GF_ENTRY_DESC || 'entry.1806044077',
+    email: import.meta.env.VITE_GF_ENTRY_EMAIL || 'entry.1110776376',
   }
 };
 
