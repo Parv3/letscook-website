@@ -92,15 +92,14 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
         {/* Brand Logo & Name */}
         <div className="brand-group" onClick={() => handleNavClick({ page: 'home' })}>
           <img 
-            src="/the-foundry-logo-removebg-preview.png" 
+            src="/letscook-logo.png" 
             alt="Let's Cook Logo" 
             className="brand-logo"
             onClick={handleLogoTap}
             title="Let's Cook (Secret: Tap 5x)"
           />
           <div className="brand-text">
-            <span className="brand-title">LET'S COOK</span>
-            <span className="brand-subtitle">THE LETS COOK COMMUNITY</span>
+            <span className="brand-title">LET'S COOK COMMUNITY</span>
           </div>
         </div>
 
@@ -224,6 +223,10 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        html.light .sticky-header {
+          box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
         }
 
         .navbar-spacer {

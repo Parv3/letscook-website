@@ -269,7 +269,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         <div className="footer-container">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <img src="/the-foundry-logo-removebg-preview.png" alt="Let's Cook Logo" className="footer-logo pulse-logo" />
+              <img src="/letscook-logo.png" alt="Let's Cook Logo" className="footer-logo pulse-logo" />
               <span className="footer-title">LET'S COOK</span>
             </div>
             <p className="footer-desc">Student-run software & technology community operating at letscook.co.in.</p>
@@ -359,12 +359,21 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           border-radius: var(--radius-card);
         }
 
+        html.light .hero-content {
+          background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 75%);
+        }
+
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4.2rem);
           margin-bottom: 24px;
           letter-spacing: -0.03em;
           text-align: center;
           text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9), 0 0 35px rgba(6, 6, 8, 0.85);
+        }
+
+        html.light .hero-title {
+          color: var(--text-main);
+          text-shadow: none;
         }
 
         .hero-subtitle {
@@ -375,6 +384,39 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           line-height: 1.6;
           text-align: center;
           text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+        }
+
+        html.light .hero-subtitle {
+          color: var(--text-muted);
+          text-shadow: none;
+        }
+
+        html.light .glow-btn {
+          box-shadow: 0 4px 18px rgba(114, 9, 44, 0.3);
+        }
+
+        html.light .stat-card {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        html.light .stat-card:hover {
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        html.light .pillar-card {
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        html.light .pillar-card:hover {
+          box-shadow: 0 12px 30px rgba(114, 9, 44, 0.12);
+        }
+
+        html.light .access-box {
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        html.light .access-box:hover {
+          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
         }
 
         .hero-cta-group {

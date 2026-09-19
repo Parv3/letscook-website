@@ -92,14 +92,16 @@ export default function Hero3dObject() {
       const sunRadius = Math.min(width * (isMobile ? 0.22 : 0.14), isMobile ? 70 : 110);
       const sunCenterY = horizonY + sunRadius * 0.15;
 
+      const isLight = document.documentElement.classList.contains('light');
+
       // Soft Ambient Radial Halo Glow
       const sunGlow = ctx.createRadialGradient(
         sunCenterX, sunCenterY, sunRadius * 0.2,
         sunCenterX, sunCenterY, sunRadius * 2.2
       );
-      sunGlow.addColorStop(0, 'rgba(255, 42, 109, 0.25)');
-      sunGlow.addColorStop(0.5, 'rgba(163, 8, 59, 0.12)');
-      sunGlow.addColorStop(1, 'rgba(6, 6, 8, 0)');
+      sunGlow.addColorStop(0, isLight ? 'rgba(255, 42, 109, 0.18)' : 'rgba(255, 42, 109, 0.25)');
+      sunGlow.addColorStop(0.5, isLight ? 'rgba(163, 8, 59, 0.08)' : 'rgba(163, 8, 59, 0.12)');
+      sunGlow.addColorStop(1, isLight ? 'rgba(248, 249, 250, 0)' : 'rgba(6, 6, 8, 0)');
 
       ctx.fillStyle = sunGlow;
       ctx.beginPath();
@@ -114,13 +116,13 @@ export default function Hero3dObject() {
       sunGrad.addColorStop(0, '#ff9e00');
       sunGrad.addColorStop(0.35, '#a3083b');
       sunGrad.addColorStop(0.8, '#58001d');
-      sunGrad.addColorStop(1, '#060608');
+      sunGrad.addColorStop(1, isLight ? '#f8f9fa' : '#060608');
 
       ctx.save();
       ctx.beginPath();
       ctx.arc(sunCenterX, sunCenterY, sunRadius, 0, Math.PI * 2);
       ctx.fillStyle = sunGrad;
-      ctx.globalAlpha = 0.85;
+      ctx.globalAlpha = isLight ? 0.8 : 0.85;
       ctx.fill();
 
       // Horizontal Scanlines across Setting Sun
@@ -128,7 +130,7 @@ export default function Hero3dObject() {
       for (let i = 0; i < scanlineCount; i++) {
         const lineY = sunCenterY - sunRadius * 0.4 + (i / scanlineCount) * sunRadius * 1.2;
         const lineHeight = 2 + i * 1.2;
-        ctx.fillStyle = 'rgba(6, 6, 8, 0.95)';
+        ctx.fillStyle = isLight ? 'rgba(248, 249, 250, 0.95)' : 'rgba(6, 6, 8, 0.95)';
         ctx.fillRect(sunCenterX - sunRadius - 10, lineY, sunRadius * 2 + 20, lineHeight);
       }
       ctx.restore();
