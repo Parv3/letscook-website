@@ -41,7 +41,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
   const navItems = [
     { label: 'HOME', page: 'home' },
     { label: 'INITIATIVES', page: 'home', section: 'pillars' },
-    { label: 'SPRINTS', page: 'home', section: 'sprints' },
     { label: 'FAQ', page: 'home', section: 'faq' },
     { label: 'PRIVACY', page: 'privacy' },
     { label: 'TERMS', page: 'terms' }

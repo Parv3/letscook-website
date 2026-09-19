@@ -6,7 +6,6 @@ import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
-import ActiveSprintsBoard from './ActiveSprintsBoard';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
@@ -234,12 +233,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
         </div>
       </section>
 
-      {/* Active Sprints Showcase Board */}
-      <ActiveSprintsBoard 
-        onOpenPitchModal={onOpenPitchModal} 
-        onOpenJoinModal={onOpenJoinModal} 
-      />
-
       {/* Member Access / Form Showcase Section with PW Visibility Toggle */}
       <section id="access" className="access-section">
         <div className="access-container">
@@ -300,10 +293,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
                 const el = document.getElementById('pillars');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}>Initiatives</button>
-              <button onClick={() => {
-                const el = document.getElementById('sprints');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>Sprints</button>
               <button onClick={() => {
                 const el = document.getElementById('access');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });

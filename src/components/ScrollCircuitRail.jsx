@@ -4,7 +4,7 @@ import { playTechClick } from '../utils/soundEngine';
 const SECTIONS = [
   { id: 'hero-top', label: '01 // HERO', targetId: null },
   { id: 'pillars', label: '02 // INITIATIVES', targetId: 'pillars' },
-  { id: 'sprints', label: '03 // SPRINTS', targetId: 'sprints' },
+  { id: 'access', label: '03 // ACCESS', targetId: 'access' },
   { id: 'faq', label: '04 // FAQ', targetId: 'faq' },
 ];
 

@@ -4,7 +4,7 @@ import { playTechClick, playNeonIgniteSound, playDecodeTick } from '../utils/sou
 
 const COMMANDS_HELP = [
   { cmd: 'help', desc: 'Display list of available commands' },
-  { cmd: 'sprints', desc: 'List active open-source sprint initiatives' },
+  { cmd: 'projects', desc: 'List active open-source project initiatives' },
   { cmd: 'stack', desc: 'Output community core engineering stack' },
   { cmd: 'lore', desc: 'The origins and philosophy of Let\'s Cook' },
   { cmd: 'pitch', desc: 'Launch project proposal transmission terminal' },
@@ -18,7 +18,7 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState([
     { type: 'sys', text: 'LET\'S COOK SHELL v2.4.0 [x86_64-sprint-kernel]' },
-    { type: 'sys', text: 'Type "help" to display operational directives or "sprints" to view active initiatives.' },
+    { type: 'sys', text: 'Type "help" to display operational directives or "projects" to view active initiatives.' },
   ]);
   const [cmdHistory, setCmdHistory] = useState([]);
   const [cmdHistoryIdx, setCmdHistoryIdx] = useState(-1);
@@ -53,13 +53,13 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
         type: 'sys',
         text: 'AVAILABLE DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(12)} - ${c.desc}`).join('\n')
       });
-    } else if (cmdLower === 'sprints' || cmdLower === 'projects') {
+    } else if (cmdLower === 'sprints' || cmdLower === 'projects' || cmdLower === 'initiatives') {
       newHistory.push({
         type: 'sys',
-        text: 'ACTIVE SPRINT REPOSITORIES:\n' +
-          '  [01] FORGE ENGINE / CLI  - Rust micro-benchmark runner (Cycle 03)\n' +
+        text: 'ACTIVE INITIATIVES & CODE LABS:\n' +
+          '  [01] SYSTEMS & RUNTIMES  - High-throughput tooling, micro-benchmarks & CLI\n' +
           '  [02] CAMPUSMESH P2P      - Decentralized peer-to-peer Wi-Fi network\n' +
-          '  [03] NEUROPROMPT STUDIO  - Local LLM quantization workbench\n' +
+          '  [03] NEUROPROMPT STUDIO  - Local model quantization & agent evaluation\n' +
           'Type "pitch" to propose a new architecture.'
       });
     } else if (cmdLower === 'stack') {
@@ -183,7 +183,7 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="type directive (e.g. 'help', 'sprints', 'sudo cook')..."
+            placeholder="type directive (e.g. 'help', 'projects', 'sudo cook')..."
             className="terminal-text-input"
             autoFocus
             spellCheck={false}
