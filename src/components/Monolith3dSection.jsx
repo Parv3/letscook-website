@@ -5,6 +5,7 @@ import {
   Layers, 
   Sparkles, 
   ArrowUpRight, 
+  ChevronLeft,
   ChevronRight, 
   Maximize2, 
   Minimize2, 
@@ -20,31 +21,33 @@ import { getTrackedUrl } from '../utils/utmTracker';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
-const FACE_ANGLES = {
-  front:  { x: 0,    y: 0,   label: '01 // ORIGIN', color: '#00ffcc' },
-  bottom: { x: 90,   y: 0,   label: '02 // TRACKS', color: '#ff007f' },
-  back:   { x: 180,  y: 0,   label: '03 // ACCESS', color: '#ffb800' },
-  top:    { x: -90,  y: 0,   label: '04 // FAQ',    color: '#00ffcc' },
-  right:  { x: 0,    y: -90, label: '05 // SHELL',  color: '#00ffcc' },
-  left:   { x: 0,    y: 90,  label: '06 // MATRIX', color: '#ff007f' }
-};
+// 6 Upright Facets arranged along a 3D Cylindrical Hexagonal Prism
+// Every face is strictly oriented along the Y-axis so text is NEVER upside down
+const FACETS = [
+  { id: 'origin',    angle: 0,   label: '01 // ORIGIN', color: '#00ffcc', name: 'HERO' },
+  { id: 'tracks',    angle: 60,  label: '02 // TRACKS', color: '#ff007f', name: 'TRACKS' },
+  { id: 'access',    angle: 120, label: '03 // ACCESS', color: '#ffb800', name: 'ACCESS' },
+  { id: 'faq',       angle: 180, label: '04 // FAQ',    color: '#00ffcc', name: 'FAQ' },
+  { id: 'shell',     angle: 240, label: '05 // SHELL',  color: '#00ffcc', name: 'SHELL' },
+  { id: 'telemetry', angle: 300, label: '06 // MATRIX', color: '#ff007f', name: 'MATRIX' }
+];
 
 export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal }) {
-  const [rotX, setRotX] = useState(-10);
-  const [rotY, setRotY] = useState(15);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [rotY, setRotY] = useState(0);
+  const [rotX, setRotX] = useState(0); // Subtly clamped on desktop, locked upright on mobile
   const [isDragging, setIsDragging] = useState(false);
-  const [activeFace, setActiveFace] = useState('front');
-  const [explodeDist, setExplodeDist] = useState(180);
+  const [explodeDist, setExplodeDist] = useState(0); // 0 to 80px additional outward radial expansion
   const [zoomScale, setZoomScale] = useState(1);
   const [isAutoOrbit, setIsAutoOrbit] = useState(false);
   const [isWireframe, setIsWireframe] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   
-  // FAQ expansion states on face 4
+  // FAQ expansion states on Face 4
   const [openFaq, setOpenFaq] = useState(null);
 
-  // Terminal state on face 5
+  // Terminal state on Face 5
   const [termInput, setTermInput] = useState('');
   const [termLogs, setTermLogs] = useState([
     { type: 'sys', text: "LET'S COOK MONOLITH SHELL v3.2" },
@@ -53,17 +56,30 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
   const termLogsEndRef = useRef(null);
 
   const stageRef = useRef(null);
-  const startPointerRef = useRef({ x: 0, y: 0 });
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const touchStartTimeRef = useRef(0);
   const startRotRef = useRef({ x: 0, y: 0 });
   const autoSpinTimerRef = useRef(null);
-  const wheelCooldownRef = useRef(false);
+
+  // Synchronize rotation with active facet index
+  const snapToIndex = (newIndex) => {
+    playTechClick();
+    if (isAutoOrbit) setIsAutoOrbit(false);
+    const normalized = (newIndex + FACETS.length) % FACETS.length;
+    setActiveIndex(normalized);
+    // Target Y angle to bring face to the front
+    setRotY(-normalized * 60);
+    setRotX(0); // Always snap upright
+  };
+
+  const nextFacet = () => snapToIndex(activeIndex + 1);
+  const prevFacet = () => snapToIndex(activeIndex - 1);
 
   // Auto-Orbit Logic
   useEffect(() => {
     if (isAutoOrbit) {
       autoSpinTimerRef.current = setInterval(() => {
-        setRotY(prev => (prev + 0.6) % 360);
-        setRotX(prev => -10 + Math.sin(Date.now() * 0.001) * 7);
+        setRotY(prev => prev - 0.45);
       }, 25);
     } else {
       if (autoSpinTimerRef.current) clearInterval(autoSpinTimerRef.current);
@@ -73,68 +89,66 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
     };
   }, [isAutoOrbit]);
 
-  // Scroll to bottom of terminal when logs change
+  // Keep active index aligned during continuous orbit
+  useEffect(() => {
+    if (isAutoOrbit) {
+      const currentNorm = Math.round((-rotY / 60) % FACETS.length + FACETS.length) % FACETS.length;
+      if (currentNorm !== activeIndex) {
+        setActiveIndex(currentNorm);
+      }
+    }
+  }, [rotY, isAutoOrbit, activeIndex]);
+
+  // Scroll terminal logs to bottom
   useEffect(() => {
     termLogsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [termLogs]);
 
-  // Snap directly to a specific cube face
-  const snapToFace = (faceKey) => {
-    playTechClick();
-    if (isAutoOrbit) setIsAutoOrbit(false);
-    const target = FACE_ANGLES[faceKey];
-    if (!target) return;
-    setRotX(target.x);
-    setRotY(target.y);
-    setActiveFace(faceKey);
-  };
-
-  // Trackball pointer drag handling
-  const handlePointerDown = (e) => {
+  // Touch Swipe & Drag Handling (Mobile-optimized with swipe detection)
+  const handleTouchStart = (e) => {
     if (e.target.closest('button, input, a, .interactive-item')) return;
-    setIsDragging(true);
-    if (isAutoOrbit) setIsAutoOrbit(false);
-    startPointerRef.current = { x: e.clientX, y: e.clientY };
+    const touch = e.touches ? e.touches[0] : e;
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    touchStartTimeRef.current = Date.now();
     startRotRef.current = { x: rotX, y: rotY };
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch (err) {}
+    setIsDragging(true);
   };
 
-  const handlePointerMove = (e) => {
+  const handleTouchMove = (e) => {
     if (!isDragging) return;
-    const dx = e.clientX - startPointerRef.current.x;
-    const dy = e.clientY - startPointerRef.current.y;
-    setRotY(startRotRef.current.y + dx * 0.45);
-    setRotX(startRotRef.current.x - dy * 0.45);
+    const touch = e.touches ? e.touches[0] : e;
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+
+    // Horizontal drag controls Y rotation directly
+    setRotY(startRotRef.current.y + dx * 0.4);
+
+    // Vertical drag subtly tilts X but strictly clamps between -8 and +8 degrees to avoid flipping
+    const clampedX = Math.max(-8, Math.min(8, startRotRef.current.x - dy * 0.15));
+    setRotX(clampedX);
   };
 
-  const handlePointerUp = (e) => {
+  const handleTouchEnd = (e) => {
     if (!isDragging) return;
     setIsDragging(false);
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (err) {}
-  };
 
-  // Scroll Wheel Snap Handling
-  const handleWheel = (e) => {
-    // Only capture wheel when hovering the 3D stage
-    if (wheelCooldownRef.current) return;
-    e.preventDefault();
-    wheelCooldownRef.current = true;
-    setTimeout(() => { wheelCooldownRef.current = false; }, 320);
+    const touch = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = touch.clientX - touchStartRef.current.x;
+    const duration = Date.now() - touchStartTimeRef.current;
 
-    const faceSequence = ['front', 'bottom', 'back', 'top'];
-    let idx = faceSequence.indexOf(activeFace);
-    if (idx === -1) idx = 0;
-
-    if (e.deltaY > 0) {
-      idx = (idx + 1) % faceSequence.length;
+    // Fast flick / swipe detection
+    if (Math.abs(dx) > 45 && duration < 350) {
+      if (dx < 0) {
+        nextFacet();
+      } else {
+        prevFacet();
+      }
     } else {
-      idx = (idx - 1 + faceSequence.length) % faceSequence.length;
+      // Snap to nearest 60-degree facet
+      const nearestIdx = Math.round(-rotY / 60);
+      const normalized = ((nearestIdx % FACETS.length) + FACETS.length) % FACETS.length;
+      snapToIndex(normalized);
     }
-    snapToFace(faceSequence[idx]);
   };
 
   // Copy Portal Link
@@ -180,7 +194,9 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
     setTermInput('');
   };
 
-  const explodePercent = Math.round(((explodeDist - 180) / (320 - 180)) * 100);
+  // Calculate dynamic radius based on screen width
+  // Base radius around 270px on desktop, ~220px on mobile
+  const baseRadius = 260 + explodeDist;
 
   return (
     <section 
@@ -193,26 +209,61 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         <div className="monolith-header">
           <div className="monolith-badge">
             <Compass size={14} className="badge-icon spin-slow" />
-            <span>DIMENSIONAL CONSOLE // V3.2</span>
+            <span>DIMENSIONAL ARTIFACT // CYBER CYLINDER</span>
           </div>
           <h2 className="monolith-title">
-            INTERACTIVE 3D ARTIFACT
+            3D HOLOGRAPHIC CONSOLE
           </h2>
           <p className="monolith-subtitle">
-            Orbit the monolith in true 3D space. Scroll to flip faces, peel open the tesseract core, or execute directives on the live shell.
+            Swipe left or right to rotate through the 6 operational sectors. Upright geometry calibrated for all screens.
           </p>
 
-          {/* Quick Snap Face Selector Tabs */}
-          <div className="face-tabs-row">
-            {Object.entries(FACE_ANGLES).map(([key, data]) => (
+          {/* Quick Mobile Carousel Nav Bar */}
+          <div className="mobile-nav-stepper">
+            <button 
+              type="button" 
+              onClick={prevFacet}
+              className="stepper-arrow-btn" 
+              aria-label="Previous Sector"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <div className="stepper-center-info">
+              <span className="stepper-tag" style={{ color: FACETS[activeIndex].color }}>
+                {FACETS[activeIndex].label}
+              </span>
+              <div className="stepper-dots">
+                {FACETS.map((f, i) => (
+                  <span 
+                    key={f.id} 
+                    className={`stepper-dot ${i === activeIndex ? 'active' : ''}`}
+                    style={{ '--dot-color': f.color }}
+                    onClick={() => snapToIndex(i)}
+                  />
+                ))}
+              </div>
+            </div>
+            <button 
+              type="button" 
+              onClick={nextFacet}
+              className="stepper-arrow-btn" 
+              aria-label="Next Sector"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
+          {/* Desktop Face Selector Tabs */}
+          <div className="face-tabs-scroll">
+            {FACETS.map((facet, idx) => (
               <button
-                key={key}
+                key={facet.id}
                 type="button"
-                onClick={() => snapToFace(key)}
-                className={`face-tab-btn ${activeFace === key ? 'active' : ''}`}
-                style={{ '--tab-color': data.color }}
+                onClick={() => snapToIndex(idx)}
+                className={`face-tab-btn ${activeIndex === idx ? 'active' : ''}`}
+                style={{ '--tab-color': facet.color }}
               >
-                <span className="dot" /> {data.label}
+                <span className="dot" /> {facet.name}
               </button>
             ))}
           </div>
@@ -222,38 +273,40 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         <div 
           ref={stageRef}
           className="monolith-stage"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onWheel={handleWheel}
+          onMouseDown={handleTouchStart}
+          onMouseMove={handleTouchMove}
+          onMouseUp={handleTouchEnd}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          {/* Ambient Orbital Rings */}
+          {/* Ambient Orbital Grid Halo */}
           <div className="ambient-orbit-ring ring-1" />
           <div className="ambient-orbit-ring ring-2" />
 
-          {/* Central Pulsing Plasma Core (Exposed during explode) */}
+          {/* Central Pulsing Plasma Reactor */}
           <div 
             className="monolith-plasma-core"
             style={{
-              transform: `scale(${1 + (explodePercent / 100) * 1.8})`,
-              opacity: 0.3 + (explodePercent / 100) * 0.7
+              transform: `scale(${1 + (explodeDist / 80) * 1.5})`,
+              opacity: 0.35 + (explodeDist / 80) * 0.65
             }}
           />
 
-          {/* Floating Monolith Cube Entity */}
+          {/* Upright Rotating 3D Hexagonal Prism Entity */}
           <div 
-            className={`monolith-cube-entity ${isDragging ? 'is-dragging' : ''}`}
+            className={`monolith-prism-entity ${isDragging ? 'is-dragging' : ''}`}
             style={{
               transform: `scale(${zoomScale}) rotateX(${rotX}deg) rotateY(${rotY}deg)`
             }}
           >
 
             {/* =========================================================
-                FACE 1: FRONT -> HERO / ORIGIN
+                FACET 01: ORIGIN / HERO
             ========================================================= */}
             <div 
-              className={`cube-facet facet-front ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 0 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(0deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -263,7 +316,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
               <div className="facet-topbar">
                 <span className="pill-indicator">
-                  <span className="live-dot" /> FACE 01 // ORIGIN
+                  <span className="live-dot" /> 01 // ORIGIN
                 </span>
                 <span className="domain-tag">letscook.co.in</span>
               </div>
@@ -303,20 +356,20 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
                 </button>
                 <button 
                   type="button"
-                  onClick={() => snapToFace('bottom')}
+                  onClick={nextFacet}
                   className="btn-facet-secondary interactive-item"
                 >
-                  TRACKS ⬇
+                  TRACKS ➔
                 </button>
               </div>
             </div>
 
             {/* =========================================================
-                FACE 2: BOTTOM -> INITIATIVES & LAB TRACKS
+                FACET 02: INITIATIVES & LAB TRACKS
             ========================================================= */}
             <div 
-              className={`cube-facet facet-bottom ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `rotateX(-90deg) translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 1 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(60deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -325,8 +378,8 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               <div className="corner-bracket br" />
 
               <div className="facet-topbar magenta">
-                <span className="pill-indicator">FACE 02 // LAB TRACKS</span>
-                <span className="domain-tag">COLLABORATIVE</span>
+                <span className="pill-indicator">02 // LAB TRACKS</span>
+                <span className="domain-tag">ACTIVE INITIATIVES</span>
               </div>
 
               <div className="facet-body tracks-list">
@@ -365,10 +418,10 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               </div>
 
               <div className="facet-actions">
-                <span className="hint-txt">TAP TRACK TO SELECT DISCIPLINE</span>
+                <span className="hint-txt">TAP TRACK TO SELECT</span>
                 <button 
                   type="button"
-                  onClick={() => snapToFace('back')}
+                  onClick={nextFacet}
                   className="btn-facet-secondary interactive-item"
                 >
                   ACCESS ➔
@@ -377,11 +430,11 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
             </div>
 
             {/* =========================================================
-                FACE 3: BACK -> ACCESS PORTAL & NETWORKS
+                FACET 03: ACCESS PORTAL & NETWORKS
             ========================================================= */}
             <div 
-              className={`cube-facet facet-back ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `rotateX(-180deg) translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 2 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(120deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -390,12 +443,12 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               <div className="corner-bracket br" />
 
               <div className="facet-topbar amber">
-                <span className="pill-indicator">FACE 03 // SQUAD ACCESS</span>
-                <span className="domain-tag">ONLINE</span>
+                <span className="pill-indicator">03 // SQUAD ACCESS</span>
+                <span className="domain-tag">ONLINE PORTAL</span>
               </div>
 
               <div className="facet-body access-layout">
-                <h4 className="access-h4">DIRECT COMMUNITY PORTAL</h4>
+                <h4 className="access-h4">DIRECT COMMUNITY ACCESS</h4>
                 <p className="access-p">
                   Jump into our WhatsApp announcements, Discord channels, and project sprint boards via official Linktree.
                 </p>
@@ -432,11 +485,11 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
             </div>
 
             {/* =========================================================
-                FACE 4: TOP -> INTERACTIVE INTEL & FAQ ACCORDION
+                FACET 04: INTEL & FAQ ACCORDION
             ========================================================= */}
             <div 
-              className={`cube-facet facet-top ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `rotateX(90deg) translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 3 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(180deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -445,8 +498,8 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               <div className="corner-bracket br" />
 
               <div className="facet-topbar cyan">
-                <span className="pill-indicator">FACE 04 // INTEL &amp; FAQ</span>
-                <span className="domain-tag">EXPANDABLE</span>
+                <span className="pill-indicator">04 // INTEL &amp; FAQ</span>
+                <span className="domain-tag">INTERACTIVE</span>
               </div>
 
               <div className="facet-body faq-body">
@@ -491,23 +544,23 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               </div>
 
               <div className="facet-actions">
-                <span className="hint-txt">CLICK QUESTIONS TO TOGGLE</span>
+                <span className="hint-txt">TAP QUESTION TO READ</span>
                 <button 
                   type="button"
-                  onClick={() => snapToFace('front')}
+                  onClick={nextFacet}
                   className="btn-facet-secondary interactive-item"
                 >
-                  HERO ⬆
+                  SHELL ➔
                 </button>
               </div>
             </div>
 
             {/* =========================================================
-                FACE 5: RIGHT -> LIVE 3D HACKER SHELL
+                FACET 05: LIVE 3D HACKER SHELL
             ========================================================= */}
             <div 
-              className={`cube-facet facet-right ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `rotateY(90deg) translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 4 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(240deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -517,7 +570,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
               <div className="facet-topbar terminal-bar">
                 <span className="pill-indicator">
-                  <TerminalIcon size={12} /> MONOLITH SHELL
+                  <TerminalIcon size={12} /> 05 // CYBER SHELL
                 </span>
                 <span className="domain-tag">ZSH 5.9</span>
               </div>
@@ -540,7 +593,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
                   value={termInput}
                   onChange={(e) => setTermInput(e.target.value)}
                   onKeyDown={handleTermCommand}
-                  placeholder="type directive (e.g. 'help', 'cook')..."
+                  placeholder="type (e.g. 'help', 'cook')..."
                   className="term-input interactive-item"
                   spellCheck={false}
                 />
@@ -548,11 +601,11 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
             </div>
 
             {/* =========================================================
-                FACE 6: LEFT -> HARDWARE TELEMETRY MATRIX
+                FACET 06: HARDWARE TELEMETRY MATRIX
             ========================================================= */}
             <div 
-              className={`cube-facet facet-left ${isWireframe ? 'wireframe' : ''}`}
-              style={{ transform: `rotateY(-90deg) translateZ(${explodeDist}px)` }}
+              className={`prism-facet ${isWireframe ? 'wireframe' : ''} ${activeIndex === 5 ? 'is-active-facet' : ''}`}
+              style={{ transform: `rotateY(300deg) translateZ(${baseRadius}px)` }}
             >
               <div className="facet-specular" />
               <div className="corner-bracket tl" />
@@ -562,7 +615,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
               <div className="facet-topbar magenta">
                 <span className="pill-indicator">
-                  <Cpu size={12} /> HARDWARE MATRIX
+                  <Cpu size={12} /> 06 // HARDWARE MATRIX
                 </span>
                 <span className="status-live">● ONLINE</span>
               </div>
@@ -570,7 +623,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
               <div className="facet-body telemetry-body">
                 <div className="telemetry-row">
                   <div className="row-info">
-                    <span>STUDENT GPU CLUSTER ALLOC</span>
+                    <span>STUDENT GPU ALLOCATION</span>
                     <span className="val-hi">88.4%</span>
                   </div>
                   <div className="bar-track">
@@ -580,7 +633,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
                 <div className="telemetry-row">
                   <div className="row-info">
-                    <span>PEER CODE REVIEWS COMPLETED</span>
+                    <span>CODE REVIEWS COMPLETE</span>
                     <span className="val-hi">148 CYCLES</span>
                   </div>
                   <div className="bar-track">
@@ -590,7 +643,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
                 <div className="telemetry-row">
                   <div className="row-info">
-                    <span>CAMPUS P2P SUBNET LATENCY</span>
+                    <span>CAMPUS P2P LATENCY</span>
                     <span className="val-hi">3.8ms</span>
                   </div>
                   <div className="bar-track">
@@ -600,22 +653,22 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
                 <div className="telemetry-stat-chips">
                   <div className="chip">
-                    <Zap size={11} /> 100% LOCAL COMPUTE
+                    <Zap size={11} /> LOCAL COMPUTE
                   </div>
                   <div className="chip">
-                    <Layers size={11} /> 4 SQUAD CORES
+                    <Layers size={11} /> 4 SQUAD NODES
                   </div>
                 </div>
               </div>
 
               <div className="facet-actions">
-                <span className="hint-txt">TELEMETRY STREAM VERIFIED</span>
+                <span className="hint-txt">TELEMETRY STREAM ACTIVE</span>
                 <button 
                   type="button"
-                  onClick={() => snapToFace('front')}
+                  onClick={() => snapToIndex(0)}
                   className="btn-facet-secondary interactive-item"
                 >
-                  RETURN ➔
+                  ORIGIN ➔
                 </button>
               </div>
             </div>
@@ -623,39 +676,28 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           </div>
         </div>
 
-        {/* Bottom Interactive HUD Controls Bar */}
+        {/* Mobile Swipe Guidance */}
+        <div className="mobile-swipe-hint">
+          <span>👈 SWIPE HORIZONTALLY TO ROTATE 👉</span>
+        </div>
+
+        {/* Bottom HUD Controls Bar */}
         <div className="monolith-controls-bar">
           
-          {/* Tesseract Explode Slider */}
-          <div className="control-slider-group">
+          {/* Radial Aperture / Explode Slider */}
+          <div className="control-slider-group desktop-only">
             <span className="slider-label magenta">
-              <Sparkles size={12} /> TESSERACT EXPLODE:
+              <Sparkles size={12} /> APERTURE:
             </span>
             <input 
               type="range"
-              min="180"
-              max="320"
+              min="0"
+              max="80"
               value={explodeDist}
               onChange={(e) => setExplodeDist(parseInt(e.target.value, 10))}
               className="hud-slider magenta"
             />
-            <span className="slider-val">{explodePercent}%</span>
-          </div>
-
-          {/* Optical Zoom Slider */}
-          <div className="control-slider-group">
-            <span className="slider-label cyan">
-              OPTICAL ZOOM:
-            </span>
-            <input 
-              type="range"
-              min="75"
-              max="130"
-              value={Math.round(zoomScale * 100)}
-              onChange={(e) => setZoomScale(parseInt(e.target.value, 10) / 100)}
-              className="hud-slider cyan"
-            />
-            <span className="slider-val">{Math.round(zoomScale * 100)}%</span>
+            <span className="slider-val">{Math.round((explodeDist / 80) * 100)}%</span>
           </div>
 
           {/* Action Buttons */}
@@ -676,16 +718,16 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
             </button>
             <button 
               type="button"
-              onClick={() => { playTechClick(); snapToFace('front'); }}
+              onClick={() => snapToIndex(0)}
               className="btn-hud"
-              title="Reset View"
+              title="Reset to Origin"
             >
               <RotateCcw size={13} />
             </button>
             <button 
               type="button"
               onClick={() => { playTechClick(); setIsFullscreen(!isFullscreen); }}
-              className="btn-hud"
+              className="btn-hud desktop-only"
               title={isFullscreen ? "Exit Fullscreen" : "Expand Fullscreen"}
             >
               {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
@@ -699,7 +741,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
       <style>{`
         .monolith-section {
           position: relative;
-          padding: 80px 24px 60px 24px;
+          padding: 60px 16px 50px 16px;
           border-bottom: 1px solid var(--border-color);
           background: radial-gradient(circle at 50% 30%, rgba(0, 255, 204, 0.03) 0%, transparent 70%), var(--bg-main);
           width: 100%;
@@ -712,7 +754,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           inset: 0;
           z-index: 6000;
           background: #050508;
-          padding: 24px;
+          padding: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -725,12 +767,14 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           display: flex;
           flex-direction: column;
           align-items: center;
+          box-sizing: border-box;
         }
 
         .monolith-header {
           text-align: center;
-          margin-bottom: 30px;
+          margin-bottom: 24px;
           max-width: 750px;
+          width: 100%;
         }
 
         .monolith-badge {
@@ -746,30 +790,100 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0.06em;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
         }
 
         .monolith-title {
-          font-size: clamp(26px, 4vw, 36px);
+          font-size: clamp(22px, 5vw, 34px);
           font-weight: 800;
           color: var(--text-main);
           letter-spacing: -0.02em;
-          margin: 0 0 10px 0;
+          margin: 0 0 8px 0;
         }
 
         .monolith-subtitle {
-          font-size: 14px;
+          font-size: 13px;
           color: var(--text-muted);
-          line-height: 1.6;
-          margin: 0 0 20px 0;
+          line-height: 1.5;
+          margin: 0 0 16px 0;
         }
 
-        /* Face selector tabs */
-        .face-tabs-row {
+        /* Mobile Stepper Navigation */
+        .mobile-nav-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(14, 14, 22, 0.8);
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          padding: 6px 12px;
+          margin-bottom: 12px;
+          width: 100%;
+          max-width: 380px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .stepper-arrow-btn {
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #fff;
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .stepper-arrow-btn:hover, .stepper-arrow-btn:active {
+          background: var(--accent-cyan);
+          color: #000;
+          border-color: var(--accent-cyan);
+        }
+
+        .stepper-center-info {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .stepper-tag {
+          font-family: var(--font-mono, monospace);
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+        }
+
+        .stepper-dots {
+          display: flex;
+          gap: 5px;
+        }
+
+        .stepper-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .stepper-dot.active {
+          background: var(--dot-color);
+          box-shadow: 0 0 8px var(--dot-color);
+          transform: scale(1.25);
+        }
+
+        /* Desktop Face selector tabs */
+        .face-tabs-scroll {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          gap: 8px;
+          gap: 6px;
           background: rgba(14, 14, 22, 0.6);
           padding: 6px;
           border-radius: 6px;
@@ -783,7 +897,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 700;
-          padding: 6px 12px;
+          padding: 5px 12px;
           border-radius: 4px;
           cursor: pointer;
           display: flex;
@@ -821,15 +935,16 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         .monolith-stage {
           position: relative;
           width: 100%;
-          height: 480px;
-          perspective: 1400px;
+          height: 440px;
+          perspective: 1200px;
           perspective-origin: 50% 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           user-select: none;
-          touch-action: none;
+          touch-action: pan-y pinch-zoom;
           cursor: grab;
+          overflow: hidden;
         }
 
         .monolith-stage:active {
@@ -844,65 +959,73 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         }
 
         .ambient-orbit-ring.ring-1 {
-          width: 520px;
-          height: 520px;
+          width: 480px;
+          height: 480px;
           border: 1px dashed rgba(0, 255, 204, 0.12);
         }
 
         .ambient-orbit-ring.ring-2 {
-          width: 680px;
-          height: 680px;
+          width: 620px;
+          height: 620px;
           border: 1px solid rgba(255, 0, 127, 0.07);
         }
 
-        /* Central Plasma Core */
+        /* Central Plasma Reactor */
         .monolith-plasma-core {
           position: absolute;
-          width: 90px;
-          height: 90px;
+          width: 70px;
+          height: 70px;
           border-radius: 50%;
           background: radial-gradient(circle, #00ffcc 0%, #ff007f 60%, #ffb800 100%);
-          filter: blur(28px);
+          filter: blur(24px);
           pointer-events: none;
           transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        /* 3D Cube Container */
-        .monolith-cube-entity {
+        /* 3D Hexagonal Prism Entity */
+        .monolith-prism-entity {
           position: relative;
-          width: 360px;
-          height: 360px;
+          width: 320px;
+          height: 380px;
           transform-style: preserve-3d;
-          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
           will-change: transform;
         }
 
-        .monolith-cube-entity.is-dragging {
+        .monolith-prism-entity.is-dragging {
           transition: none;
         }
 
         /* Common Facet Card Styles */
-        .cube-facet {
+        .prism-facet {
           position: absolute;
-          width: 360px;
-          height: 360px;
+          width: 320px;
+          height: 380px;
           left: 0;
           top: 0;
           background: #0d0d16;
           border: 2px solid var(--accent-cyan);
           border-radius: 8px;
           box-sizing: border-box;
-          padding: 20px;
+          padding: 18px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          backface-visibility: visible;
-          box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 10px 40px rgba(0, 0, 0, 0.5);
+          backface-visibility: hidden; /* Critical for clean mobile rendering: hides reverse side */
+          box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.85), 0 10px 40px rgba(0, 0, 0, 0.6);
           overflow: hidden;
-          transition: transform 0.3s ease, border-color 0.2s ease, background 0.2s ease;
+          transition: opacity 0.3s ease, border-color 0.2s ease, filter 0.3s ease;
+          opacity: 0.25;
+          filter: brightness(0.6);
         }
 
-        .cube-facet.wireframe {
+        .prism-facet.is-active-facet {
+          opacity: 1 !important;
+          filter: brightness(1) !important;
+          box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 255, 204, 0.25);
+        }
+
+        .prism-facet.wireframe {
           background: rgba(10, 12, 20, 0.25) !important;
           backdrop-filter: blur(2px);
           border-style: dashed;
@@ -911,8 +1034,8 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         /* Chamfered Sci-Fi Corner Brackets */
         .corner-bracket {
           position: absolute;
-          width: 10px;
-          height: 10px;
+          width: 9px;
+          height: 9px;
           border-color: currentColor;
           pointer-events: none;
         }
@@ -937,7 +1060,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           font-size: 11px;
           font-weight: 700;
           color: var(--accent-cyan);
-          padding-bottom: 8px;
+          padding-bottom: 6px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
@@ -948,7 +1071,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         .facet-topbar .pill-indicator {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
         }
 
         .facet-topbar .live-dot {
@@ -975,28 +1098,28 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           display: flex;
           flex-direction: column;
           justify-content: center;
-          margin: 12px 0;
+          margin: 8px 0;
         }
 
         .builder-pill {
           display: inline-block;
           font-family: var(--font-mono, monospace);
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           color: var(--accent-cyan);
           background: rgba(0, 255, 204, 0.1);
-          padding: 2px 8px;
+          padding: 2px 6px;
           border-radius: 3px;
-          margin-bottom: 6px;
+          margin-bottom: 4px;
           width: fit-content;
         }
 
         .hero-punchline {
-          font-size: 22px;
+          font-size: 19px;
           font-weight: 900;
           color: #fff;
           line-height: 1.2;
-          margin: 0 0 8px 0;
+          margin: 0 0 6px 0;
           letter-spacing: -0.02em;
         }
 
@@ -1005,30 +1128,30 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         }
 
         .hero-desc {
-          font-size: 12px;
+          font-size: 11px;
           color: #b0b0c5;
-          line-height: 1.5;
-          margin: 0 0 12px 0;
+          line-height: 1.4;
+          margin: 0 0 8px 0;
         }
 
         .quick-metrics {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 6px;
+          gap: 4px;
           border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding-top: 10px;
+          padding-top: 8px;
         }
 
         .metric-cell .val {
           display: block;
           font-family: var(--font-mono, monospace);
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 800;
           color: var(--accent-cyan);
         }
 
         .metric-cell .lbl {
-          font-size: 9px;
+          font-size: 8px;
           color: #88889c;
           font-weight: 600;
         }
@@ -1039,7 +1162,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           align-items: center;
           gap: 8px;
           border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding-top: 10px;
+          padding-top: 8px;
         }
 
         .btn-facet-primary {
@@ -1048,14 +1171,14 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 800;
-          padding: 8px 14px;
+          padding: 7px 12px;
           border-radius: 4px;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 5px;
           flex: 1;
           transition: all 0.2s ease;
         }
@@ -1075,16 +1198,11 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           font-family: var(--font-mono, monospace);
           font-size: 11px;
           font-weight: 700;
-          padding: 8px 12px;
+          padding: 7px 10px;
           border-radius: 4px;
           border: 1px solid rgba(255, 255, 255, 0.15);
           cursor: pointer;
           transition: all 0.2s ease;
-        }
-
-        .btn-facet-secondary:hover {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: #fff;
         }
 
         .hint-txt {
@@ -1096,15 +1214,15 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
         /* Specific Facet Details */
         .tracks-list {
-          gap: 6px;
-          margin: 6px 0;
+          gap: 5px;
+          margin: 4px 0;
         }
 
         .track-strip {
           background: rgba(255, 0, 127, 0.06);
           border: 1px solid rgba(255, 0, 127, 0.25);
           border-radius: 4px;
-          padding: 8px 10px;
+          padding: 6px 8px;
           cursor: pointer;
           transition: all 0.15s ease;
         }
@@ -1119,7 +1237,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           display: flex;
           justify-content: space-between;
           font-family: var(--font-mono, monospace);
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           color: var(--accent-pink);
           margin-bottom: 2px;
@@ -1130,25 +1248,25 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         }
 
         .track-info {
-          font-size: 10px;
+          font-size: 9px;
           color: #b0b0c5;
           margin: 0;
         }
 
         /* Access Facet */
         .access-layout {
-          gap: 10px;
+          gap: 8px;
         }
 
         .access-h4 {
-          font-size: 15px;
+          font-size: 14px;
           font-weight: 800;
           color: #fff;
           margin: 0;
         }
 
         .access-p {
-          font-size: 11px;
+          font-size: 10px;
           color: #b0b0c5;
           line-height: 1.4;
           margin: 0;
@@ -1161,12 +1279,12 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           background: #000;
           border: 1px solid rgba(255, 184, 0, 0.3);
           border-radius: 4px;
-          padding: 6px 10px;
+          padding: 5px 8px;
         }
 
         .copy-url {
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           color: #ffb800;
         }
 
@@ -1175,28 +1293,28 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           border: 1px solid rgba(255, 184, 0, 0.4);
           color: #ffb800;
           border-radius: 3px;
-          padding: 4px 6px;
+          padding: 3px 5px;
           cursor: pointer;
         }
 
         .status-item {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 10px;
+          gap: 5px;
+          font-size: 9px;
           color: #9999ac;
         }
 
         /* FAQ Facet */
         .faq-body {
-          gap: 6px;
+          gap: 5px;
         }
 
         .faq-block {
           background: rgba(0, 255, 204, 0.05);
           border: 1px solid rgba(0, 255, 204, 0.2);
           border-radius: 4px;
-          padding: 7px 10px;
+          padding: 6px 8px;
           cursor: pointer;
         }
 
@@ -1204,7 +1322,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           color: #fff;
         }
@@ -1215,29 +1333,29 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         }
 
         .faq-a {
-          font-size: 10px;
+          font-size: 9px;
           color: #b0b0c5;
-          margin: 4px 0 0 0;
-          padding-top: 4px;
+          margin: 3px 0 0 0;
+          padding-top: 3px;
           border-top: 1px solid rgba(255, 255, 255, 0.08);
-          line-height: 1.4;
+          line-height: 1.35;
         }
 
         /* Live Terminal Facet */
         .terminal-body {
-          margin: 6px 0;
+          margin: 4px 0;
           background: #050508;
           border: 1px solid rgba(0, 255, 204, 0.2);
           border-radius: 4px;
-          padding: 8px;
+          padding: 6px;
           overflow-y: auto;
-          max-height: 200px;
+          max-height: 180px;
         }
 
         .terminal-logs {
           font-family: var(--font-mono, monospace);
-          font-size: 10px;
-          line-height: 1.5;
+          font-size: 9px;
+          line-height: 1.45;
         }
 
         .term-line.sys { color: #88889c; }
@@ -1247,17 +1365,17 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         .facet-terminal-input {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
           background: #000;
           border: 1px solid rgba(0, 255, 204, 0.3);
           border-radius: 4px;
-          padding: 6px 8px;
+          padding: 5px 6px;
         }
 
         .prompt-symbol {
           color: var(--accent-cyan);
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 800;
         }
 
@@ -1267,22 +1385,22 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           border: none;
           color: #fff;
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           outline: none;
         }
 
         /* Telemetry Facet */
         .telemetry-body {
-          gap: 10px;
+          gap: 8px;
         }
 
         .telemetry-row .row-info {
           display: flex;
           justify-content: space-between;
           font-family: var(--font-mono, monospace);
-          font-size: 9px;
+          font-size: 8.5px;
           color: #9999ac;
-          margin-bottom: 3px;
+          margin-bottom: 2px;
         }
 
         .telemetry-row .val-hi {
@@ -1292,7 +1410,7 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
         .bar-track {
           width: 100%;
-          height: 6px;
+          height: 5px;
           background: rgba(255, 255, 255, 0.08);
           border-radius: 3px;
           overflow: hidden;
@@ -1305,50 +1423,65 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
 
         .telemetry-stat-chips {
           display: flex;
-          gap: 6px;
-          margin-top: 6px;
+          gap: 5px;
+          margin-top: 4px;
         }
 
         .chip {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
           font-family: var(--font-mono, monospace);
-          font-size: 9px;
+          font-size: 8.5px;
           color: #fff;
           background: rgba(255, 0, 127, 0.1);
           border: 1px solid rgba(255, 0, 127, 0.3);
           border-radius: 3px;
-          padding: 3px 6px;
+          padding: 2px 5px;
+        }
+
+        /* Mobile Swipe Hint */
+        .mobile-swipe-hint {
+          text-align: center;
+          margin-top: 6px;
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+          color: rgba(0, 255, 204, 0.7);
+          letter-spacing: 0.08em;
+          animation: pulseFade 2s ease infinite alternate;
+        }
+
+        @keyframes pulseFade {
+          from { opacity: 0.45; }
+          to { opacity: 1; }
         }
 
         /* Bottom HUD Controls Bar */
         .monolith-controls-bar {
           display: flex;
-          flex-wrap: wrap;
           align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          background: rgba(14, 14, 22, 0.7);
+          justify-content: center;
+          gap: 10px;
+          background: rgba(14, 14, 22, 0.75);
           border: 1px solid var(--border-color);
           border-radius: 8px;
-          padding: 12px 18px;
+          padding: 8px 14px;
           width: 100%;
+          max-width: 480px;
           box-sizing: border-box;
-          margin-top: 20px;
+          margin-top: 14px;
+          margin-bottom: 20px;
         }
 
         .control-slider-group {
           display: flex;
           align-items: center;
-          gap: 10px;
-          flex: 1;
-          min-width: 220px;
+          gap: 8px;
         }
 
         .slider-label {
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           display: flex;
           align-items: center;
@@ -1357,28 +1490,20 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
         }
 
         .slider-label.magenta { color: var(--accent-pink); }
-        .slider-label.cyan { color: var(--accent-cyan); }
-
-        .hud-slider {
-          flex: 1;
-          cursor: pointer;
-        }
-
         .hud-slider.magenta { accent-color: var(--accent-pink); }
-        .hud-slider.cyan { accent-color: var(--accent-cyan); }
 
         .slider-val {
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           color: var(--text-muted);
-          width: 36px;
-          text-align: right;
+          width: 30px;
         }
 
         .control-buttons-row {
           display: flex;
           align-items: center;
-          gap: 8px;
+          justify-content: center;
+          gap: 6px;
         }
 
         .btn-hud {
@@ -1386,14 +1511,14 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           border: 1px solid var(--border-color);
           color: var(--text-muted);
           font-family: var(--font-mono, monospace);
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
-          padding: 6px 12px;
+          padding: 5px 10px;
           border-radius: 4px;
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 5px;
+          gap: 4px;
           transition: all 0.2s ease;
         }
 
@@ -1424,29 +1549,53 @@ export default function Monolith3dSection({ onOpenPitchModal, onOpenJoinModal })
           to { transform: rotate(360deg); }
         }
 
-        /* Mobile Adjustments */
+        /* Responsive Breakpoints */
         @media (max-width: 768px) {
-          .monolith-cube-entity {
-            width: 290px;
-            height: 290px;
+          .desktop-only {
+            display: none !important;
           }
 
-          .cube-facet {
+          .face-tabs-scroll {
+            display: none !important; /* On mobile, the sleek stepper is used instead */
+          }
+
+          .monolith-stage {
+            height: 410px;
+          }
+
+          .monolith-prism-entity {
             width: 290px;
-            height: 290px;
+            height: 360px;
+          }
+
+          .prism-facet {
+            width: 290px;
+            height: 360px;
             padding: 14px;
           }
 
           .hero-punchline {
-            font-size: 18px;
+            font-size: 17px;
           }
 
-          .monolith-stage {
-            height: 420px;
+          .ambient-orbit-ring.ring-1 {
+            width: 360px;
+            height: 360px;
           }
 
-          .control-slider-group {
-            min-width: 100%;
+          .ambient-orbit-ring.ring-2 {
+            width: 440px;
+            height: 440px;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .mobile-nav-stepper {
+            display: none !important; /* Use tabs on desktop */
+          }
+
+          .mobile-swipe-hint {
+            display: none !important;
           }
         }
       `}</style>
