@@ -197,12 +197,12 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
           <div className="terminal-prompt-header">
             <span className="prompt-user">builder@letscook</span>
             <span className="prompt-sep">:</span>
-            <span className="prompt-path">~/foundry/pitch</span>
+            <span className="prompt-path">~/letscook/pitch</span>
             <span className="prompt-cmd">$ lets-cook pitch --new-project</span>
           </div>
 
           <div className="pitch-intro">
-            <h3>PITCH A PROJECT TO THE FOUNDRY</h3>
+            <h3>PITCH A PROJECT TO LET'S COOK</h3>
             <p>Propose a software tool, AI project, or hackathon idea to form a student sprint team.</p>
           </div>
 
@@ -210,7 +210,7 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
             <div className="terminal-success-box animate-fade-in">
               <CheckCircle2 size={36} className="success-icon" />
               <h4>[SUCCESS 200 OK] PITCH SUBMITTED!</h4>
-              <p>Your idea has been logged in the Foundry sprint queue. Community leads will contact you shortly via email or Discord.</p>
+              <p>Your idea has been logged in the Let's Cook sprint queue. Community leads will contact you shortly via email or Discord.</p>
               <a 
                 href={getTrackedUrl(LINKTREE_URL)}
                 target="_blank"

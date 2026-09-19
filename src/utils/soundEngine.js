@@ -117,7 +117,7 @@ export const playHoverRumbleTick = (intensity = 'light') => {
   }
 };
 
-// FOUNDRY Inversion Energy Shatter & Reverse Sound (Louder & Epic)
+// CREATE / LETS COOK Inversion Energy Shatter & Reverse Sound (Louder & Epic)
 export const playInversionSound = () => {
   if (soundMuted) return;
   try {

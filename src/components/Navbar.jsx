@@ -61,12 +61,13 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
   };
 
   return (
-    <header className="sticky-header">
-      {/* Scroll Progress Bar */}
-      <div 
-        className="scroll-progress-bar" 
-        style={{ width: `${scrollProgress}%` }}
-      />
+    <>
+      <header className="sticky-header">
+        {/* Scroll Progress Bar */}
+        <div 
+          className="scroll-progress-bar" 
+          style={{ width: `${scrollProgress}%` }}
+        />
 
       <nav className="navbar-container">
         {/* Brand Logo & Name */}
@@ -78,7 +79,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
           />
           <div className="brand-text">
             <span className="brand-title">LET'S COOK</span>
-            <span className="brand-subtitle">THE FOUNDRY COMMUNITY</span>
+            <span className="brand-subtitle">THE LETS COOK COMMUNITY</span>
           </div>
         </div>
 
@@ -189,15 +190,25 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
 
       <style>{`
         .sticky-header {
-          position: sticky;
+          position: fixed;
           top: 0;
+          left: 0;
+          right: 0;
           z-index: 1000;
           width: 100%;
           max-width: 100vw;
           box-sizing: border-box;
           background-color: var(--navbar-bg);
           border-bottom: 1px solid var(--border-color);
-          backdrop-filter: blur(8px);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .navbar-spacer {
+          height: 65px;
+          width: 100%;
+          flex-shrink: 0;
         }
 
         .scroll-progress-bar {
@@ -357,8 +368,13 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
             width: 34px;
             height: 34px;
           }
+          .navbar-spacer {
+            height: 55px;
+          }
         }
       `}</style>
     </header>
+    <div className="navbar-spacer" aria-hidden="true" />
+  </>
   );
 }

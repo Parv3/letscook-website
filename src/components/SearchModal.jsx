@@ -5,8 +5,8 @@ import { getTrackedUrl } from '../utils/utmTracker';
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
 const SEARCH_ITEMS = [
-  { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder foundry community.' },
-  { title: 'The Foundry Initiatives', category: 'Program', page: 'home', section: 'pillars', snippet: 'Hackathons, open-source build tracks, and peer mentorship.' },
+  { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder Let\'s Cook community.' },
+  { title: 'Let\'s Cook Initiatives', category: 'Program', page: 'home', section: 'pillars', snippet: 'Hackathons, open-source build tracks, and peer mentorship.' },
   { title: 'Frequently Asked Questions', category: 'Help', page: 'home', section: 'faq', snippet: 'How to join, membership cost, tech stacks, and team projects.' },
   { title: 'Privacy Policy', category: 'Legal', page: 'privacy', snippet: 'Data protection and user rights policy at letscook.co.in.' },
   { title: 'Terms & Conditions', category: 'Legal', page: 'terms', snippet: 'Community guidelines and platform usage terms.' },

@@ -108,6 +108,10 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+html {
+  scroll-padding-top: 70px;
+}
+
 html, body {
   width: 100%;
   max-width: 100vw;

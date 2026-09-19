@@ -14,7 +14,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
   const [hoveredPillar, setHoveredPillar] = useState(null);
 
   // Progressive Shake & Invert Easter Egg State
-  const [isFoundryInverted, setIsFoundryInverted] = useState(false);
+  const [isCreateInverted, setIsCreateInverted] = useState(false);
   const [parvEasterEggStage, setParvEasterEggStage] = useState(0);
   const boxRef = useRef(null);
   const hoverIntervalRef = useRef(null);
@@ -25,8 +25,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     playTechClick();
     if (parvEasterEggStage === 0) {
       setParvEasterEggStage(1);
-    } else {
-      window.open('https://www.linkedin.com/in/parv-mishra-b4938b341/', '_blank', 'noopener,noreferrer');
+    } else if (parvEasterEggStage === 1) {
+      setParvEasterEggStage(2);
+    } else if (parvEasterEggStage === 2) {
+      window.open('https://www.linkedin.com/in/parvmishra/', '_blank', 'noopener,noreferrer');
       setParvEasterEggStage(0);
     }
   };
@@ -38,14 +40,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
       boxRef.current.classList.add(className);
     }
   };
-
-  const techBadges = [
-    { name: 'REACT', desc: 'Web Apps' },
-    { name: 'TYPESCRIPT', desc: 'Type Safety' },
-    { name: 'NODE.JS', desc: 'Backend Services' },
-    { name: 'PYTHON', desc: 'AI & Systems' },
-    { name: 'DOCKER', desc: 'Cloud DevOps' }
-  ];
 
   const pillars = [
     {
@@ -71,8 +65,8 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
   ];
 
   // Progressive Shake & 5-Second Hover Logic with Zero Re-render Lag
-  const handleFoundryMouseEnter = () => {
-    if (isFoundryInverted) return;
+  const handleCreateMouseEnter = () => {
+    if (isCreateInverted) return;
     startTimeRef.current = Date.now();
     tickCounterRef.current = 0;
     setBoxShakeClass('shake-light');
@@ -86,7 +80,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
       if (elapsed >= 5000) {
         clearInterval(hoverIntervalRef.current);
         setBoxShakeClass('none');
-        setIsFoundryInverted(true);
+        setIsCreateInverted(true);
         playInversionSound();
       } else if (elapsed >= 3500) {
         setBoxShakeClass('shake-heavy');
@@ -101,18 +95,18 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
     }, 100);
   };
 
-  const handleFoundryMouseLeave = () => {
-    if (isFoundryInverted) return;
+  const handleCreateMouseLeave = () => {
+    if (isCreateInverted) return;
     setBoxShakeClass('none');
     if (hoverIntervalRef.current) {
       clearInterval(hoverIntervalRef.current);
     }
   };
 
-  // Double Click Reset Handler with Sound (LETS COOK -> FOUNDRY)
-  const handleFoundryDoubleClick = () => {
-    if (isFoundryInverted) {
-      setIsFoundryInverted(false);
+  // Double Click Reset Handler with Sound (LETS COOK -> CREATE)
+  const handleCreateDoubleClick = () => {
+    if (isCreateInverted) {
+      setIsCreateInverted(false);
       setBoxShakeClass('none');
       playInversionSound();
     }
@@ -132,35 +126,24 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
         <Hero3dObject />
 
         <div className="hero-container">
-          {/* Static Tech Badges */}
-          <div className="tech-bar">
-            {techBadges.map((badge, idx) => (
-              <div key={idx} className="tech-tag">
-                <span className="tech-name">{badge.name}</span>
-                <span className="tech-dot">•</span>
-                <span className="tech-desc">{badge.desc}</span>
-              </div>
-            ))}
-          </div>
-
           {/* Main Headline with Progressive Shake & Double-Click/Touch Reset */}
           <div className="hero-content">
             <h1 className="hero-title">
               CODE, BUILD{' '}
               <span 
                 ref={boxRef}
-                className={`highlight-box ${isFoundryInverted ? 'inverted-mode' : ''}`}
-                onMouseEnter={handleFoundryMouseEnter}
-                onMouseLeave={handleFoundryMouseLeave}
-                onTouchStart={handleFoundryMouseEnter}
-                onTouchEnd={handleFoundryMouseLeave}
-                onDoubleClick={handleFoundryDoubleClick}
+                className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
+                onMouseEnter={handleCreateMouseEnter}
+                onMouseLeave={handleCreateMouseLeave}
+                onTouchStart={handleCreateMouseEnter}
+                onTouchEnd={handleCreateMouseLeave}
+                onDoubleClick={handleCreateDoubleClick}
                 onClick={() => {
-                  if (isFoundryInverted) handleFoundryDoubleClick();
+                  if (isCreateInverted) handleCreateDoubleClick();
                 }}
-                title={isFoundryInverted ? "Tap or double-click to reset back to FOUNDRY!" : "Hold or hover to break into LETS COOK!"}
+                title={isCreateInverted ? "Tap or double-click to reset back to CREATE!" : "Hold or hover to break into LETS COOK!"}
               >
-                {isFoundryInverted ? 'LETS COOK' : 'FOUNDRY'}
+                {isCreateInverted ? 'LETS COOK' : 'CREATE'}
               </span>{' '}
               AND SHIP PRODUCTS
             </h1>
@@ -177,7 +160,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
                 className="btn-primary btn-lg glow-btn"
                 onClick={playTechClick}
               >
-                JOIN THE FOUNDRY <ArrowUpRight size={18} />
+                JOIN THE SQUAD <ArrowUpRight size={18} />
               </a>
               <button 
                 onClick={() => { playTechClick(); onOpenPitchModal(); }}
@@ -381,14 +364,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           align-items: center;
           text-align: center;
           box-sizing: border-box;
-        }
-
-        .tech-bar {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 12px;
-          margin-bottom: 32px;
         }
 
         .hero-content {
@@ -852,17 +827,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
             min-height: 48px;
             font-size: 0.88rem;
             justify-content: center;
-          }
-          .tech-bar {
-            gap: 5px;
-            margin-bottom: 16px;
-          }
-          .tech-tag {
-            padding: 3px 8px;
-            font-size: 0.65rem;
-          }
-          .tech-desc {
-            display: none;
           }
           .hero-stats-row {
             grid-template-columns: 1fr;
