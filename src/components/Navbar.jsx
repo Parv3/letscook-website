@@ -10,25 +10,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [muted, setMuted] = useState(() => isSoundMuted());
-  const [showParvToast, setShowParvToast] = useState(false);
-  const logoTapCountRef = useRef(0);
-  const logoTapTimerRef = useRef(null);
-
-  const handleLogoTap = (e) => {
-    logoTapCountRef.current += 1;
-    if (logoTapTimerRef.current) clearTimeout(logoTapTimerRef.current);
-    logoTapTimerRef.current = setTimeout(() => {
-      logoTapCountRef.current = 0;
-    }, 2000);
-
-    if (logoTapCountRef.current >= 5) {
-      e.stopPropagation();
-      logoTapCountRef.current = 0;
-      playTechClick();
-      setShowParvToast(true);
-      setTimeout(() => setShowParvToast(false), 5000);
-    }
-  };
 
   useEffect(() => {
     let ticking = false;
@@ -92,7 +73,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
       <nav className="navbar-container">
         {/* Brand Logo & Name */}
         <div className="brand-group" onClick={() => handleNavClick({ page: 'home' })}>
-          <div onClick={handleLogoTap} title="Let's Cook (Secret: Tap 5x)" className="brand-logo-wrap">
+          <div className="brand-logo-wrap">
             <LogoMark size={36} className="brand-logo" />
           </div>
           <div className="brand-text">
@@ -423,72 +404,9 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
             height: 55px;
           }
         }
-
-        .parv-hidden-toast {
-          position: fixed;
-          top: 72px;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 3500;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 18px;
-          background: linear-gradient(135deg, #8b002e 0%, #16161c 100%);
-          border: 1px solid #ff2a6d;
-          border-radius: var(--radius-badge);
-          color: #ffffff;
-          font-size: 0.8rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          box-shadow: 0 8px 30px rgba(255, 42, 109, 0.45);
-          text-decoration: none;
-          cursor: pointer;
-          animation: slideDownToast 0.25s ease forwards;
-        }
-
-        .toast-dot {
-          color: #ffbd2e;
-          font-size: 1rem;
-        }
-
-        .toast-name {
-          color: #ffffff;
-        }
-
-        .toast-sub {
-          color: rgba(255, 255, 255, 0.75);
-          font-size: 0.72rem;
-          font-weight: 500;
-        }
-
-        @keyframes slideDownToast {
-          from { opacity: 0; transform: translate(-50%, -10px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
-        }
       `}</style>
     </header>
     <div className="navbar-spacer" aria-hidden="true" />
-
-    {/* Secret Logo Easter Egg Toast */}
-    {showParvToast && (
-      <a 
-        href="https://www.linkedin.com/in/parvmishra/" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="parv-hidden-toast animate-fade-in"
-        onClick={(e) => {
-          e.stopPropagation();
-          playTechClick();
-          setShowParvToast(false);
-        }}
-        title="Open Parv Mishra's LinkedIn Profile"
-      >
-        <span className="toast-dot">⚡</span>
-        <span className="toast-name">MADE BY PARV</span>
-        <span className="toast-sub">• Lead Architect ↗</span>
-      </a>
-    )}
   </>
   );
 }

@@ -202,15 +202,7 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
         {/* macOS Window Terminal Body */}
         <div className="mac-terminal-body">
           <div className="terminal-prompt-header">
-            <span 
-              className="prompt-user"
-              title="⚡ System Architect: MADE BY PARV (Click to view LinkedIn)"
-              onClick={() => {
-                playTechClick();
-                window.open('https://www.linkedin.com/in/parvmishra/', '_blank', 'noopener,noreferrer');
-              }}
-              style={{ cursor: 'pointer' }}
-            >builder@letscook</span>
+            <span className="prompt-user">builder@letscook</span>
             <span className="prompt-sep">:</span>
             <span className="prompt-path">~/letscook/pitch</span>
             <span className="prompt-cmd">$ lets-cook pitch --new-project</span>
