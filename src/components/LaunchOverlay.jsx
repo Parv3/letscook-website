@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Sparkles, Lock } from 'lucide-react';
 import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
-import { playCinematicShatterSound, playTechClick } from '../utils/soundEngine';
+import { playCinematicShatterSound } from '../utils/soundEngine';
 
 /**
  * LaunchOverlay: Live Official Launch Screen
  * Automatically triggers the 4-phase cinematic glass shatter sequence and Web Audio boom
- * when the live countdown reaches 00:00:00:00.
- * Secret Bypass: Tapping/clicking the top header sparkle tag 10 times triggers the shatter reveal immediately.
+ * when the live countdown reaches 00:00:00:00. Access to the site is strictly blocked until the timer runs out.
  */
 export default function LaunchOverlay({ onReveal }) {
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
@@ -15,8 +13,14 @@ export default function LaunchOverlay({ onReveal }) {
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
 
-  // Secret 10-Click Sparkle Bypass Counter
-  const sparkleClickCountRef = useRef(0);
+  // Lock body scroll while launch overlay is active
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   // Automatic 4-Second Cinematic Shatter Sequence
   const playCinematicShatter = () => {
@@ -47,20 +51,6 @@ export default function LaunchOverlay({ onReveal }) {
     setTimeout(() => {
       onReveal();
     }, 3800);
-  };
-
-  // Secret Bypass Handler: Trigger shatter on 10th click
-  const handleSparkleClick = (e) => {
-    e.stopPropagation();
-    if (animPhase !== 'idle') return;
-
-    playTechClick();
-    sparkleClickCountRef.current += 1;
-
-    if (sparkleClickCountRef.current >= 10) {
-      sparkleClickCountRef.current = 0;
-      playCinematicShatter();
-    }
   };
 
   // Live 1-second countdown tick & auto-trigger when completed
@@ -104,16 +94,6 @@ export default function LaunchOverlay({ onReveal }) {
       )}
 
       <div className={`cinematic-content ${animPhase}`}>
-        {/* Top Header Badge with Secret 10-Click Bypass */}
-        <div 
-          className="launch-header-tag clickable-sparkle"
-          onClick={handleSparkleClick}
-          title="Official Launch Tag (Secret Bypass: Tap 10x to reveal website)"
-        >
-          <Sparkles size={16} className="tag-sparkle" />
-          <span>LET'S COOK OFFICIAL LAUNCH</span>
-        </div>
-
         <h1 className="cinematic-heading">MONDAY 12:00 PM IST</h1>
 
         {/* GIANT COUNTDOWN TIMER */}
@@ -137,20 +117,6 @@ export default function LaunchOverlay({ onReveal }) {
             <span className="giant-val">{String(timeLeft.seconds).padStart(2, '0')}</span>
             <span className="giant-lbl">SECONDS</span>
           </div>
-        </div>
-
-        {/* Live Automatic Launch Status Bar */}
-        <div className="launch-status-bar">
-          <div className="pulse-dot" />
-          <span>
-            {animPhase === 'idle' ? (
-              <>
-                <Lock size={13} className="inline-lock-icon" /> LAUNCH GATED • AUTOMATIC SHATTER REVEAL AT 00:00:00
-              </>
-            ) : (
-              'SHATTERING & UNLOCKING FOUNDRY...'
-            )}
-          </span>
         </div>
       </div>
 
@@ -256,41 +222,6 @@ export default function LaunchOverlay({ onReveal }) {
           filter: blur(8px) contrast(200%);
         }
 
-        .launch-header-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 20px;
-          background-color: rgba(139, 0, 46, 0.25);
-          border: 1px solid var(--accent-burgundy-border);
-          color: #ffffff;
-          font-size: 0.85rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          border-radius: var(--radius-badge);
-          margin-bottom: 24px;
-        }
-
-        .clickable-sparkle {
-          cursor: pointer;
-          user-select: none;
-          transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .clickable-sparkle:hover {
-          background-color: rgba(163, 8, 59, 0.35);
-          border-color: var(--accent-burgundy-hover);
-          box-shadow: 0 0 15px rgba(255, 42, 109, 0.5);
-        }
-
-        .clickable-sparkle:active {
-          transform: scale(0.95);
-        }
-
-        .tag-sparkle {
-          color: var(--accent-burgundy-hover);
-        }
-
         .cinematic-heading {
           font-size: clamp(1.2rem, 3vw, 2.2rem);
           letter-spacing: 0.15em;
@@ -306,7 +237,7 @@ export default function LaunchOverlay({ onReveal }) {
           justify-content: center;
           gap: clamp(12px, 3vw, 40px);
           width: 100%;
-          margin-bottom: 50px;
+          margin-bottom: 0;
         }
 
         .giant-unit {
@@ -342,50 +273,13 @@ export default function LaunchOverlay({ onReveal }) {
           text-shadow: 0 0 20px rgba(163, 8, 59, 0.8);
         }
 
-        /* Live Automatic Launch Status Bar */
-        .launch-status-bar {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 10px 22px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--accent-burgundy-border);
-          border-radius: var(--radius-badge);
-          font-size: 0.8rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          color: var(--text-main);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-        }
-
-        .pulse-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background-color: var(--accent-burgundy-hover);
-          box-shadow: 0 0 10px var(--accent-burgundy-hover);
-          animation: statusPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes statusPulse {
-          0%, 100% { opacity: 0.4; transform: scale(0.9); }
-          50% { opacity: 1; transform: scale(1.3); }
-        }
-
-        .inline-lock-icon {
-          color: var(--accent-burgundy-hover);
-          display: inline;
-          vertical-align: -2px;
-          margin-right: 4px;
-        }
-
         @media (max-width: 600px) {
           .cinematic-backdrop {
             padding: 16px 12px;
           }
           .giant-timer-container {
             gap: clamp(2px, 1.2vw, 8px);
-            margin-bottom: 32px;
+            margin-bottom: 0;
           }
           .giant-val {
             font-size: clamp(2.0rem, 8.5vw, 4.2rem);
@@ -398,11 +292,6 @@ export default function LaunchOverlay({ onReveal }) {
             font-size: clamp(0.5rem, 1.6vw, 0.75rem);
             letter-spacing: 0.1em;
             margin-top: 4px;
-          }
-          .launch-status-bar {
-            padding: 8px 14px;
-            font-size: 0.7rem;
-            letter-spacing: 0.05em;
           }
         }
       `}</style>

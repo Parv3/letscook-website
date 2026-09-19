@@ -74,47 +74,55 @@ export default function App() {
         <LaunchOverlay onReveal={handleRevealLaunch} />
       )}
 
-      {/* 2. Sticky Navigation Header */}
-      <Navbar
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenPitchModal={() => setIsPitchModalOpen(true)}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+      {/* Main Site Container: Access strictly blocked until launch countdown finishes */}
+      <div 
+        className="site-main-wrapper" 
+        style={showLaunchOverlay ? { pointerEvents: 'none', userSelect: 'none' } : undefined}
+        aria-hidden={showLaunchOverlay ? "true" : undefined}
+        inert={showLaunchOverlay ? "" : undefined}
+      >
+        {/* 2. Sticky Navigation Header */}
+        <Navbar
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenPitchModal={() => setIsPitchModalOpen(true)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
 
-      {/* 3. Main Content Views */}
-      <main>
-        {currentPage === 'home' && (
-          <HomePage 
-            setCurrentPage={setCurrentPage} 
-            onOpenPitchModal={() => setIsPitchModalOpen(true)} 
-          />
-        )}
-        {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
-        {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
-      </main>
+        {/* 3. Main Content Views */}
+        <main>
+          {currentPage === 'home' && (
+            <HomePage 
+              setCurrentPage={setCurrentPage} 
+              onOpenPitchModal={() => setIsPitchModalOpen(true)} 
+            />
+          )}
+          {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
+          {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
+        </main>
 
-      {/* 4. Floating Movable macOS Countdown Timer Window */}
-      <MacOsTimerWindow
-        isVisible={showMacOsWindow}
-        onClose={() => setShowMacOsWindow(false)}
-      />
+        {/* 4. Floating Movable macOS Countdown Timer Window */}
+        <MacOsTimerWindow
+          isVisible={showMacOsWindow}
+          onClose={() => setShowMacOsWindow(false)}
+        />
 
-      {/* 5. Global Interactive Overlays & Modals */}
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        setCurrentPage={setCurrentPage}
-      />
-      <PitchIdeaModal
-        isOpen={isPitchModalOpen}
-        onClose={() => setIsPitchModalOpen(false)}
-      />
-      <FloatingContact />
-      <CookieBanner />
-      <ScrollTopButton />
+        {/* 5. Global Interactive Overlays & Modals */}
+        <SearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          setCurrentPage={setCurrentPage}
+        />
+        <PitchIdeaModal
+          isOpen={isPitchModalOpen}
+          onClose={() => setIsPitchModalOpen(false)}
+        />
+        <FloatingContact />
+        <CookieBanner />
+        <ScrollTopButton />
+      </div>
     </div>
   );
 }
