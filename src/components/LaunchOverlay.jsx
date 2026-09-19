@@ -369,6 +369,10 @@ export default function LaunchOverlay({ onReveal }) {
           display: flex;
           align-items: center;
           justify-content: center;
+          padding: 24px 36px;
+          border-radius: 20px;
+          background: radial-gradient(circle, rgba(0, 0, 0, 0.92) 0%, rgba(6, 6, 8, 0.65) 70%, transparent 100%);
+          box-shadow: 0 0 70px rgba(0, 0, 0, 0.95);
         }
 
         .reveal-brand-name {

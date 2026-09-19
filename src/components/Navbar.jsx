@@ -256,10 +256,40 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
           cursor: pointer;
         }
 
+        .brand-logo-wrap {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px 6px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+          backdrop-filter: blur(8px);
+          transition: all var(--transition-fast);
+        }
+
+        .brand-logo-wrap:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 42, 109, 0.4);
+          box-shadow: 0 0 14px rgba(255, 42, 109, 0.25);
+        }
+
+        html.light .brand-logo-wrap {
+          background: rgba(0, 0, 0, 0.03);
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        html.light .brand-logo-wrap:hover {
+          background: rgba(0, 0, 0, 0.06);
+          border-color: rgba(225, 29, 72, 0.3);
+        }
+
         .brand-logo {
-          height: 38px;
+          height: 34px;
           width: auto;
-          object-fit: contain;
+          display: block;
         }
 
         .brand-text {

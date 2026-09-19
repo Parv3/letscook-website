@@ -37,6 +37,10 @@
   --navbar-bg: rgba(6, 6, 8, 0.95);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
+
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #ff2a6d;
+  --logo-filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 6px rgba(255, 42, 109, 0.45));
 }
 
 /* Dark Theme Variables */
@@ -63,6 +67,10 @@ html.dark {
   --navbar-bg: rgba(6, 6, 8, 0.95);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
+
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #ff2a6d;
+  --logo-filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 6px rgba(255, 42, 109, 0.45));
 }
 
 /* Light Theme Variables */
@@ -89,6 +97,10 @@ html.light {
   --navbar-bg: rgba(248, 249, 250, 0.95);
   --modal-overlay: rgba(0, 0, 0, 0.6);
   --scrollbar-thumb: #cbd5e1;
+
+  --logo-stem-color: #111114;
+  --logo-accent-color: #e11d48;
+  --logo-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 /* Reset & High-Resolution Vector Rendering */
@@ -249,6 +261,22 @@ body {
 #root {
   position: relative;
   z-index: 1;
+}
+
+/* Vector Logo Contrast Engine */
+.logo-mark-svg {
+  filter: var(--logo-filter);
+  transition: filter var(--transition-fast);
+}
+
+.logo-mark-stem {
+  fill: var(--logo-stem-color, currentColor);
+  transition: fill var(--transition-fast);
+}
+
+.logo-mark-accent {
+  fill: var(--logo-accent-color, #ff2a6d);
+  transition: fill var(--transition-fast);
 }
 
 /* Headings with High Contrast Drop Shadows */
