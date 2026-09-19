@@ -6,6 +6,7 @@ import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
+import Monolith3dSection from './Monolith3dSection';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
@@ -195,6 +196,12 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
         </div>
       </section>
 
+      {/* Interactive 3D Dimensional Monolith Console */}
+      <Monolith3dSection 
+        onOpenPitchModal={onOpenPitchModal} 
+        onOpenJoinModal={onOpenJoinModal} 
+      />
+
       {/* Initiatives / Pillars Section */}
       <section id="pillars" className="pillars-section">
         <div className="pillars-container">
@@ -289,6 +296,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             <div className="footer-col">
               <h5>NAVIGATION</h5>
               <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</button>
+              <button onClick={() => {
+                const el = document.getElementById('monolith-3d');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}>3D Console</button>
               <button onClick={() => {
                 const el = document.getElementById('pillars');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
