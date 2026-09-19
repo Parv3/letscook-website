@@ -30,11 +30,25 @@ export default function SearchModal({ isOpen, onClose, setCurrentPage }) {
 
   if (!isOpen) return null;
 
-  const filtered = SEARCH_ITEMS.filter(item => 
-    item.title.toLowerCase().includes(query.toLowerCase()) ||
-    item.snippet.toLowerCase().includes(query.toLowerCase()) ||
-    item.category.toLowerCase().includes(query.toLowerCase())
+  const isParvQuery = ['parv', 'creator', 'author', 'developer', 'architect', 'credits', 'who made this'].some(k => 
+    query.toLowerCase().includes(k)
   );
+
+  const PARV_EASTER_EGG = {
+    title: 'MADE BY PARV',
+    category: 'Lead Architect',
+    url: 'https://www.linkedin.com/in/parvmishra/',
+    snippet: 'System Architect & Full-Stack Engineer • Tap to connect on LinkedIn ↗'
+  };
+
+  const filtered = [
+    ...(isParvQuery ? [PARV_EASTER_EGG] : []),
+    ...SEARCH_ITEMS.filter(item => 
+      item.title.toLowerCase().includes(query.toLowerCase()) ||
+      item.snippet.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase())
+    )
+  ];
 
   const handleSelect = (item) => {
     onClose();

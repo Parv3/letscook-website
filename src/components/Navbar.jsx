@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Search, Menu, X, ArrowUpRight, Volume2, VolumeX, Lightbulb } from 'lucide-react';
-import { getTrackedUrl } from '../utils/utmTracker';
+import React, { useState, useEffect, useRef } from 'react';
+import { Volume2, VolumeX, Search, Sun, Moon, ArrowUpRight, Lightbulb, Menu, X } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
+import { getTrackedUrl } from '../utils/utmTracker';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
@@ -9,6 +9,25 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [muted, setMuted] = useState(() => isSoundMuted());
+  const [showParvToast, setShowParvToast] = useState(false);
+  const logoTapCountRef = useRef(0);
+  const logoTapTimerRef = useRef(null);
+
+  const handleLogoTap = (e) => {
+    logoTapCountRef.current += 1;
+    if (logoTapTimerRef.current) clearTimeout(logoTapTimerRef.current);
+    logoTapTimerRef.current = setTimeout(() => {
+      logoTapCountRef.current = 0;
+    }, 2000);
+
+    if (logoTapCountRef.current >= 5) {
+      e.stopPropagation();
+      logoTapCountRef.current = 0;
+      playTechClick();
+      setShowParvToast(true);
+      setTimeout(() => setShowParvToast(false), 5000);
+    }
+  };
 
   useEffect(() => {
     let ticking = false;
@@ -76,6 +95,8 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
             src="/the-foundry-logo-removebg-preview.png" 
             alt="Let's Cook Logo" 
             className="brand-logo"
+            onClick={handleLogoTap}
+            title="Let's Cook (Secret: Tap 5x)"
           />
           <div className="brand-text">
             <span className="brand-title">LET'S COOK</span>
@@ -372,9 +393,72 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, theme, onToggle
             height: 55px;
           }
         }
+
+        .parv-hidden-toast {
+          position: fixed;
+          top: 72px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 3500;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 18px;
+          background: linear-gradient(135deg, #8b002e 0%, #16161c 100%);
+          border: 1px solid #ff2a6d;
+          border-radius: var(--radius-badge);
+          color: #ffffff;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          box-shadow: 0 8px 30px rgba(255, 42, 109, 0.45);
+          text-decoration: none;
+          cursor: pointer;
+          animation: slideDownToast 0.25s ease forwards;
+        }
+
+        .toast-dot {
+          color: #ffbd2e;
+          font-size: 1rem;
+        }
+
+        .toast-name {
+          color: #ffffff;
+        }
+
+        .toast-sub {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 0.72rem;
+          font-weight: 500;
+        }
+
+        @keyframes slideDownToast {
+          from { opacity: 0; transform: translate(-50%, -10px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
       `}</style>
     </header>
     <div className="navbar-spacer" aria-hidden="true" />
+
+    {/* Secret Logo Easter Egg Toast */}
+    {showParvToast && (
+      <a 
+        href="https://www.linkedin.com/in/parvmishra/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="parv-hidden-toast animate-fade-in"
+        onClick={(e) => {
+          e.stopPropagation();
+          playTechClick();
+          setShowParvToast(false);
+        }}
+        title="Open Parv Mishra's LinkedIn Profile"
+      >
+        <span className="toast-dot">⚡</span>
+        <span className="toast-name">MADE BY PARV</span>
+        <span className="toast-sub">• Lead Architect ↗</span>
+      </a>
+    )}
   </>
   );
 }

@@ -15,23 +15,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
   // Progressive Shake & Invert Easter Egg State
   const [isCreateInverted, setIsCreateInverted] = useState(false);
-  const [parvEasterEggStage, setParvEasterEggStage] = useState(0);
   const boxRef = useRef(null);
   const hoverIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
   const tickCounterRef = useRef(0);
-
-  const handleParvClick = () => {
-    playTechClick();
-    if (parvEasterEggStage === 0) {
-      setParvEasterEggStage(1);
-    } else if (parvEasterEggStage === 1) {
-      setParvEasterEggStage(2);
-    } else if (parvEasterEggStage === 2) {
-      window.open('https://www.linkedin.com/in/parvmishra/', '_blank', 'noopener,noreferrer');
-      setParvEasterEggStage(0);
-    }
-  };
 
   const setBoxShakeClass = (className) => {
     if (!boxRef.current) return;
@@ -320,14 +307,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
 
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Let's Cook Community. All rights reserved.</p>
-          <div 
-            className={`parv-easter-egg ${parvEasterEggStage === 1 ? 'stop-warning' : ''}`}
-            onClick={handleParvClick}
-            title={parvEasterEggStage === 1 ? "Click again to open Parv's LinkedIn profile!" : "System Architect & Lead Engineer"}
-          >
-            <span className="easter-dot">{parvEasterEggStage === 1 ? '🛑' : '•'}</span>
-            <span>{parvEasterEggStage === 1 ? 'STOP!' : 'MADE BY PARV'}</span>
-          </div>
         </div>
       </footer>
 
@@ -742,47 +721,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal }) {
           text-align: center;
           font-size: 0.8rem;
           color: var(--text-muted);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .parv-easter-egg {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-badge);
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          color: var(--text-dim);
-          cursor: pointer;
-          user-select: none;
-          transition: all var(--transition-fast);
-        }
-
-        .parv-easter-egg:hover {
-          color: #ffffff;
-          background-color: var(--accent-burgundy-light);
-          border-color: var(--accent-burgundy-border);
-          box-shadow: 0 0 14px rgba(163, 8, 59, 0.4);
-          transform: translateY(-1px);
-        }
-
-        .parv-easter-egg.stop-warning {
-          color: #ffffff !important;
-          background-color: #8b002e !important;
-          border-color: #ff2a6d !important;
-          box-shadow: 0 0 20px rgba(255, 42, 109, 0.9), 0 0 10px #8b002e !important;
-          animation: shakeLight 0.18s ease infinite;
-        }
-
-        .easter-dot {
-          color: var(--accent-burgundy-hover);
         }
 
         @media (max-width: 640px) {
