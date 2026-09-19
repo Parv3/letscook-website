@@ -12,6 +12,7 @@ export default function LaunchOverlay({ onReveal }) {
   const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'shattering'
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
+  const keyBufferRef = useRef('');
 
   // Lock body scroll while launch overlay is active
   useEffect(() => {
@@ -52,6 +53,53 @@ export default function LaunchOverlay({ onReveal }) {
       onReveal();
     }, 3800);
   };
+
+  // Developer Keystroke & URL Bypass: Tilde key (`), typing 'cook'/'dev', Alt+L, or ?dev=true
+  useEffect(() => {
+    // 1. URL parameter check (?dev=true or #dev)
+    if (window.location.search.includes('dev=true') || window.location.hash.includes('dev')) {
+      playCinematicShatter();
+      return;
+    }
+
+    const handleKeyDown = (e) => {
+      if (animPhase !== 'idle') return;
+
+      // 2. Single Key Shortcut: Backtick / Tilde (` or ~)
+      if (e.key === '`' || e.key === '~') {
+        e.preventDefault();
+        playCinematicShatter();
+        return;
+      }
+
+      // 3. Hotkey shortcut: Alt + L (Launch), Alt + C (Cook), or Alt + D (Dev)
+      if (e.altKey && (e.key.toLowerCase() === 'l' || e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'd')) {
+        e.preventDefault();
+        playCinematicShatter();
+        return;
+      }
+
+      // 4. Secret typed keyword: simply type 'cook', 'dev', or 'parv' (no modifiers needed)
+      if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        keyBufferRef.current = (keyBufferRef.current + e.key.toLowerCase()).slice(-10);
+        if (
+          keyBufferRef.current.endsWith('cook') || 
+          keyBufferRef.current.endsWith('dev') || 
+          keyBufferRef.current.endsWith('parv')
+        ) {
+          playCinematicShatter();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.unlock = playCinematicShatter;
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      delete window.unlock;
+    };
+  }, [animPhase]);
 
   // Live 1-second countdown tick & auto-trigger when completed
   useEffect(() => {
