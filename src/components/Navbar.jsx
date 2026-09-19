@@ -181,6 +181,13 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
               <Lightbulb size={16} /> PITCH A PROJECT IDEA
             </button>
 
+            <button 
+              onClick={() => { playTechClick(); setMobileMenuOpen(false); if (onOpenTerminal) onOpenTerminal(); }}
+              className="btn-secondary w-full"
+            >
+              <Terminal size={16} /> OPEN TERMINAL SHELL
+            </button>
+
             <div className="mobile-drawer-footer">
               <a 
                 href={getTrackedUrl(LINKTREE_URL)}
