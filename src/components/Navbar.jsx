@@ -40,7 +40,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
 
   const navItems = [
     { label: 'HOME', page: 'home' },
-    { label: '3D CONSOLE', page: 'home', section: 'monolith-3d' },
     { label: 'INITIATIVES', page: 'home', section: 'pillars' },
     { label: 'FAQ', page: 'home', section: 'faq' },
     { label: 'PRIVACY', page: 'privacy' },

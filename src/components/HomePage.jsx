@@ -6,7 +6,6 @@ import Hero3dObject from './Hero3dObject';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
-import Monolith3dSection from './Monolith3dSection';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick, playInversionSound, playHoverRumbleTick } from '../utils/soundEngine';
 
@@ -196,11 +195,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
         </div>
       </section>
 
-      {/* Interactive 3D Dimensional Monolith Console */}
-      <Monolith3dSection 
-        onOpenPitchModal={onOpenPitchModal} 
-        onOpenJoinModal={onOpenJoinModal} 
-      />
 
       {/* Initiatives / Pillars Section */}
       <section id="pillars" className="pillars-section">

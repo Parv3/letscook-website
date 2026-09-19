@@ -3,10 +3,9 @@ import { playTechClick } from '../utils/soundEngine';
 
 const SECTIONS = [
   { id: 'hero-top', label: '01 // HERO', targetId: null },
-  { id: 'monolith-3d', label: '02 // 3D CONSOLE', targetId: 'monolith-3d' },
-  { id: 'pillars', label: '03 // INITIATIVES', targetId: 'pillars' },
-  { id: 'access', label: '04 // ACCESS', targetId: 'access' },
-  { id: 'faq', label: '05 // FAQ', targetId: 'faq' },
+  { id: 'pillars', label: '02 // INITIATIVES', targetId: 'pillars' },
+  { id: 'access', label: '03 // ACCESS', targetId: 'access' },
+  { id: 'faq', label: '04 // FAQ', targetId: 'faq' },
 ];
 
 export default function ScrollCircuitRail() {
