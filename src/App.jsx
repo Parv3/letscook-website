@@ -11,18 +11,27 @@ import LaunchOverlay from './components/LaunchOverlay';
 import MacOsTimerWindow from './components/MacOsTimerWindow';
 import PitchIdeaModal from './components/PitchIdeaModal';
 import TerminalDrawer from './components/TerminalDrawer';
-import JoinSquadModal from './components/JoinSquadModal';
+import SquadThemeCanvas from './components/SquadThemeCanvas';
+import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('letscook_theme') || 'dark';
   });
+  
+  // Marvel Tri-Squad Universe State ('ironman' | 'captain' | 'thor' | 'core')
+  const [activeSquad, setActiveSquad] = useState(() => {
+    return localStorage.getItem('letscook_squad') || 'ironman';
+  });
+
+  // Active Cinematic Easter Egg ('snap' | 'bifrost' | 'jarvis' | 'worthy' | 'assemble' | null)
+  const [activeEasterEgg, setActiveEasterEgg] = useState(null);
+
   const [currentPage, setCurrentPage] = useState('home');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-  const [isJoinSquadOpen, setIsJoinSquadOpen] = useState(false);
   
   // Launch Experience States
   const [showLaunchOverlay, setShowLaunchOverlay] = useState(true);
@@ -42,6 +51,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
+  // Synchronize Dark/Light Mode
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -54,6 +64,14 @@ export default function App() {
     localStorage.setItem('letscook_theme', theme);
   }, [theme]);
 
+  // Synchronize Marvel Tri-Squad Global Universe Theme
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('theme-ironman', 'theme-captain', 'theme-thor', 'theme-core');
+    root.classList.add(`theme-${activeSquad}`);
+    localStorage.setItem('letscook_squad', activeSquad);
+  }, [activeSquad]);
+
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -65,7 +83,16 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* Dramatic Background Layer (Nebulas + Laser Lines + Embers) */}
+      {/* 1. Live Procedural 60 FPS Squad Theme Background Canvas */}
+      <SquadThemeCanvas squad={activeSquad} />
+
+      {/* 2. Full-Screen Cinematic Marvel Easter Egg FX Overlay */}
+      <CinematicEasterEggOverlay 
+        effect={activeEasterEgg} 
+        onComplete={() => setActiveEasterEgg(null)} 
+      />
+
+      {/* 3. Dramatic Background Laser Layer */}
       <div className="live-glowing-lines-bg no-print" aria-hidden="true">
         <div className="nebula-orb nebula-1" />
         <div className="nebula-orb nebula-2" />
@@ -83,7 +110,7 @@ export default function App() {
         <div className="bg-particle" style={{ left: '80%', animationDuration: '16s', animationDelay: '5s' }} />
       </div>
 
-      {/* 1. Full-Screen Launch Overlay */}
+      {/* 4. Full-Screen Launch Overlay */}
       {showLaunchOverlay && (
         <LaunchOverlay onReveal={handleRevealLaunch} />
       )}
@@ -95,7 +122,7 @@ export default function App() {
         aria-hidden={showLaunchOverlay ? "true" : undefined}
         inert={showLaunchOverlay ? "" : undefined}
       >
-        {/* 2. Sticky Navigation Header */}
+        {/* 5. Sticky Navigation Header */}
         <Navbar
           theme={theme}
           onToggleTheme={toggleTheme}
@@ -106,26 +133,27 @@ export default function App() {
           setCurrentPage={setCurrentPage}
         />
 
-        {/* 3. Main Content Views */}
+        {/* 6. Main Content Views */}
         <main>
           {currentPage === 'home' && (
             <HomePage 
               setCurrentPage={setCurrentPage} 
               onOpenPitchModal={() => setIsPitchModalOpen(true)}
-              onOpenJoinModal={() => setIsJoinSquadOpen(true)}
+              currentSquad={activeSquad}
+              onSelectSquad={setActiveSquad}
             />
           )}
           {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
           {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
         </main>
 
-        {/* 4. Floating Movable macOS Countdown Timer Window */}
+        {/* 7. Floating Movable macOS Countdown Timer Window */}
         <MacOsTimerWindow
           isVisible={showMacOsWindow}
           onClose={() => setShowMacOsWindow(false)}
         />
 
-        {/* 5. Global Interactive Overlays & Modals */}
+        {/* 8. Global Interactive Overlays & Modals */}
         <SearchModal
           isOpen={isSearchOpen}
           onClose={() => setIsSearchOpen(false)}
@@ -141,10 +169,8 @@ export default function App() {
           onOpenPitchModal={() => setIsPitchModalOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
-        />
-        <JoinSquadModal
-          isOpen={isJoinSquadOpen}
-          onClose={() => setIsJoinSquadOpen(false)}
+          onTriggerEasterEgg={setActiveEasterEgg}
+          onSelectSquad={setActiveSquad}
         />
         <FloatingContact />
         <CookieBanner />

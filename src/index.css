@@ -103,6 +103,114 @@ html.light {
   --logo-filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
+/* ========================================================= */
+/* MARVEL TRI-SQUAD UNIVERSE THEMES                          */
+/* ========================================================= */
+
+/* 1. TECH TEAM: IRON MAN (Stark Tech Labs) */
+html.theme-ironman {
+  --bg-main: #060408;
+  --bg-surface: #10060e;
+  --bg-surface-hover: #190916;
+  --bg-surface-active: #240d20;
+  --border-color: #2e0d1e;
+  --border-focus: #ff0055;
+  --accent-burgundy: #ff0055;
+  --accent-burgundy-hover: #ff2a75;
+  --accent-burgundy-light: rgba(255, 0, 85, 0.18);
+  --accent-burgundy-border: rgba(255, 0, 85, 0.55);
+  --secondary-accent: #00f0ff;
+  --accent-glow: rgba(255, 0, 85, 0.5);
+  --hero-highlight-bg: #ff0055;
+  --hero-highlight-text: #ffffff;
+  --badge-bg: rgba(0, 240, 255, 0.12);
+  --badge-text: #00f0ff;
+  --badge-border: rgba(0, 240, 255, 0.4);
+  --laser-color: #00f0ff;
+  --navbar-bg: rgba(6, 4, 8, 0.95);
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #ff0055;
+  --logo-filter: drop-shadow(0 0 8px rgba(255, 0, 85, 0.6));
+}
+
+/* 2. PR & MEDIA: CAPTAIN AMERICA (Vibranium Alliance) */
+html.theme-captain {
+  --bg-main: #030814;
+  --bg-surface: #071226;
+  --bg-surface-hover: #0c1b38;
+  --bg-surface-active: #11254d;
+  --border-color: #10264d;
+  --border-focus: #3b82f6;
+  --accent-burgundy: #2563eb;
+  --accent-burgundy-hover: #3b82f6;
+  --accent-burgundy-light: rgba(37, 99, 235, 0.18);
+  --accent-burgundy-border: rgba(59, 130, 246, 0.55);
+  --secondary-accent: #ef4444;
+  --accent-glow: rgba(37, 99, 235, 0.5);
+  --hero-highlight-bg: #2563eb;
+  --hero-highlight-text: #ffffff;
+  --badge-bg: rgba(59, 130, 246, 0.12);
+  --badge-text: #60a5fa;
+  --badge-border: rgba(59, 130, 246, 0.4);
+  --laser-color: #60a5fa;
+  --navbar-bg: rgba(3, 8, 20, 0.95);
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #3b82f6;
+  --logo-filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+}
+
+/* 3. EVENTS TEAM: THOR (Mjolnir Ops) */
+html.theme-thor {
+  --bg-main: #0a0601;
+  --bg-surface: #170e03;
+  --bg-surface-hover: #231605;
+  --bg-surface-active: #301f07;
+  --border-color: #362006;
+  --border-focus: #eab308;
+  --accent-burgundy: #d97706;
+  --accent-burgundy-hover: #f59e0b;
+  --accent-burgundy-light: rgba(217, 119, 6, 0.18);
+  --accent-burgundy-border: rgba(245, 158, 11, 0.55);
+  --secondary-accent: #38bdf8;
+  --accent-glow: rgba(234, 179, 8, 0.5);
+  --hero-highlight-bg: #d97706;
+  --hero-highlight-text: #050505;
+  --badge-bg: rgba(234, 179, 8, 0.12);
+  --badge-text: #facc15;
+  --badge-border: rgba(234, 179, 8, 0.4);
+  --laser-color: #facc15;
+  --navbar-bg: rgba(10, 6, 1, 0.95);
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #f59e0b;
+  --logo-filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+/* 4. CORE TEAM: FOUNDRY COMMAND (Avengers Level 7) */
+html.theme-core {
+  --bg-main: #050508;
+  --bg-surface: #0f070b;
+  --bg-surface-hover: #170b11;
+  --bg-surface-active: #210f19;
+  --border-color: #240e18;
+  --border-focus: #8b002e;
+  --accent-burgundy: #8b002e;
+  --accent-burgundy-hover: #a3083b;
+  --accent-burgundy-light: rgba(139, 0, 46, 0.2);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.5);
+  --secondary-accent: #f59e0b;
+  --accent-glow: rgba(139, 0, 46, 0.55);
+  --hero-highlight-bg: #8b002e;
+  --hero-highlight-text: #ffffff;
+  --badge-bg: rgba(245, 158, 11, 0.12);
+  --badge-text: #f59e0b;
+  --badge-border: rgba(245, 158, 11, 0.4);
+  --laser-color: #f59e0b;
+  --navbar-bg: rgba(5, 5, 8, 0.95);
+  --logo-stem-color: #ffffff;
+  --logo-accent-color: #ff2a6d;
+  --logo-filter: drop-shadow(0 0 8px rgba(255, 42, 109, 0.5));
+}
+
 /* Reset & High-Resolution Vector Rendering */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -493,6 +601,60 @@ button {
 
 .animate-fade-in {
   animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Marvel Cinematic Keyframe Animations */
+@keyframes violentShake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  10% { transform: translate(-10px, 8px) rotate(-1deg); }
+  20% { transform: translate(12px, -8px) rotate(1.2deg); }
+  30% { transform: translate(-8px, -6px) rotate(-0.8deg); }
+  40% { transform: translate(9px, 7px) rotate(0.9deg); }
+  50% { transform: translate(-7px, 5px) rotate(-0.5deg); }
+  60% { transform: translate(6px, -4px) rotate(0.4deg); }
+  70% { transform: translate(-4px, 3px); }
+  80% { transform: translate(3px, -2px); }
+}
+
+@keyframes bifrostPillar {
+  0% { transform: scaleX(0) translateY(-100%); opacity: 0; filter: blur(20px); }
+  20% { transform: scaleX(1.4) translateY(0); opacity: 1; filter: blur(0); }
+  80% { transform: scaleX(1) translateY(0); opacity: 1; filter: blur(0); }
+  100% { transform: scaleX(0.2) translateY(100%); opacity: 0; filter: blur(30px); }
+}
+
+@keyframes timeStoneSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg) scale(0.5); opacity: 0; }
+  20% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); opacity: 1; }
+  80% { transform: translate(-50%, -50%) rotate(540deg) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(720deg) scale(0); opacity: 0; }
+}
+
+@keyframes laserSweep {
+  0% { top: -10%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 110%; opacity: 0; }
+}
+
+@keyframes plasmaBorder {
+  0%, 100% { box-shadow: 0 0 15px #00f0ff, inset 0 0 15px #00f0ff; border-color: #00f0ff; }
+  50% { box-shadow: 0 0 35px #ff0055, inset 0 0 25px #ff0055; border-color: #ffffff; }
+}
+
+@keyframes avengersAAssemble {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; filter: blur(20px); }
+  30% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; filter: blur(0); }
+  80% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: blur(0); }
+  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; filter: blur(15px); }
+}
+
+.shake-active {
+  animation: violentShake 0.75s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.plasma-active {
+  animation: plasmaBorder 1.5s ease-in-out infinite alternate !important;
 }
 
 /* Light Theme Polish */

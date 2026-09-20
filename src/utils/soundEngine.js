@@ -239,3 +239,120 @@ export const playNeonIgniteSound = () => {
     // Ignore audio errors
   }
 };
+
+// Iron Man Repulsor Beam Power Surge & High-Frequency Discharge
+export const playRepulsorSound = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(1600, now + 0.22);
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+// Captain America Vibranium Shield Kinetic Resonant Chime
+export const playVibraniumPing = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(280, now + 0.38);
+    gain.gain.setValueAtTime(0.32, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+    osc.start(now);
+    osc.stop(now + 0.38);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+// Thor Mjolnir Atmospheric Crackle & Thunderclap
+export const playThunderStrike = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(22, now + 0.85);
+    gain.gain.setValueAtTime(0.45, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+    osc.start(now);
+    osc.stop(now + 0.85);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+// Avengers Assemble Brass Fanfare (Heroic Triad Harmonic)
+export const playAssembleFanfare = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [440, 554, 659, 880, 1108].forEach((freq, i) => {
+      const cOsc = ctx.createOscillator();
+      const cGain = ctx.createGain();
+      cOsc.connect(cGain);
+      cGain.connect(ctx.destination);
+      cOsc.type = 'triangle';
+      cOsc.frequency.setValueAtTime(freq, now + i * 0.07);
+      cGain.gain.setValueAtTime(0.2, now + i * 0.07);
+      cGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+      cOsc.start(now + i * 0.07);
+      cOsc.stop(now + 1.4);
+    });
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+// Doctor Strange Time Stone Entropy Reversal Chime
+export const playTimeStoneReversal = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    [600, 800, 1000, 1200, 900].forEach((freq, i) => {
+      const tOsc = ctx.createOscillator();
+      const tGain = ctx.createGain();
+      tOsc.connect(tGain);
+      tGain.connect(ctx.destination);
+      tOsc.type = 'sine';
+      tOsc.frequency.setValueAtTime(freq, now + i * 0.12);
+      tGain.gain.setValueAtTime(0.18, now + i * 0.12);
+      tGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
+      tOsc.start(now + i * 0.12);
+      tOsc.stop(now + i * 0.12 + 0.35);
+    });
+  } catch (err) {
+    // Ignore audio errors
+  }
+};

@@ -4,21 +4,34 @@ import { playTechClick, playNeonIgniteSound, playDecodeTick } from '../utils/sou
 
 const COMMANDS_HELP = [
   { cmd: 'help', desc: 'Display list of available commands' },
+  { cmd: 'squad <id>', desc: 'Deploy squad theme: tech, pr, events, core' },
   { cmd: 'projects', desc: 'List active open-source project initiatives' },
   { cmd: 'stack', desc: 'Output community core engineering stack' },
   { cmd: 'lore', desc: 'The origins and philosophy of Let\'s Cook' },
   { cmd: 'pitch', desc: 'Launch project proposal transmission terminal' },
   { cmd: 'whoami', desc: 'Display your current builder clearance tier' },
-  { cmd: 'theme', desc: 'Toggle system theme (theme dark / theme light)' },
+  { cmd: 'snap', desc: 'Execute the Decimation (Thanos snap with Time Stone reversal)' },
+  { cmd: 'bifrost', desc: 'Summon the Rainbow Bridge from Asgard' },
+  { cmd: 'jarvis', desc: 'Engage Stark Mark LXXXV Nanotech HUD' },
+  { cmd: 'worthy', desc: 'Attempt to wield Mjolnir' },
+  { cmd: 'assemble', desc: 'Broadcast priority Avengers Initiative beacon' },
   { cmd: 'clear', desc: 'Flush current terminal buffer' },
   { cmd: 'sudo cook', desc: 'Trigger community hardware overdrive' },
 ];
 
-export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, theme, onToggleTheme }) {
+export default function TerminalDrawer({ 
+  isOpen, 
+  onClose, 
+  onOpenPitchModal, 
+  theme, 
+  onToggleTheme,
+  onTriggerEasterEgg,
+  onSelectSquad
+}) {
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState([
-    { type: 'sys', text: 'LET\'S COOK SHELL v2.4.0 [x86_64-sprint-kernel]' },
-    { type: 'sys', text: 'Type "help" to display operational directives or "projects" to view active initiatives.' },
+    { type: 'sys', text: 'LET\'S COOK S.H.I.E.L.D. SHELL v3.0.0 [x86_64-avengers-kernel]' },
+    { type: 'sys', text: 'Type "help" to display operational directives or "squad tech" to deploy Stark Labs.' },
   ]);
   const [cmdHistory, setCmdHistory] = useState([]);
   const [cmdHistoryIdx, setCmdHistoryIdx] = useState(-1);
@@ -51,8 +64,46 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
     if (cmdLower === 'help') {
       newHistory.push({
         type: 'sys',
-        text: 'AVAILABLE DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(12)} - ${c.desc}`).join('\n')
+        text: 'AVAILABLE DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(14)} - ${c.desc}`).join('\n')
       });
+    } else if (cmdLower.startsWith('squad')) {
+      const parts = cmdLower.split(' ');
+      const target = parts[1];
+      if (target === 'tech' || target === 'ironman' || target === 'stark') {
+        if (onSelectSquad) onSelectSquad('ironman');
+        newHistory.push({ type: 'accent', text: '🔴 STARK TECH LABS DEPLOYED // Arc Reactor Online' });
+      } else if (target === 'pr' || target === 'cap' || target === 'captain' || target === 'vibranium') {
+        if (onSelectSquad) onSelectSquad('captain');
+        newHistory.push({ type: 'accent', text: '🔵 VIBRANIUM ALLIANCE DEPLOYED // Shield Sonar Online' });
+      } else if (target === 'events' || target === 'event' || target === 'thor' || target === 'mjolnir') {
+        if (onSelectSquad) onSelectSquad('thor');
+        newHistory.push({ type: 'accent', text: '🟡 MJOLNIR OPS DEPLOYED // Asgardian Lightning Charged' });
+      } else if (target === 'core' || target === 'shield' || target === 'foundry') {
+        if (onSelectSquad) onSelectSquad('core');
+        newHistory.push({ type: 'accent', text: '🟣 FOUNDRY COMMAND DEPLOYED // Quantum Singularity Synchronized' });
+      } else {
+        newHistory.push({ type: 'error', text: 'Usage: squad <tech | pr | events | core>' });
+      }
+    } else if (cmdLower === 'snap' || cmdLower === 'thanos') {
+      newHistory.push({ type: 'accent', text: '💀 "Dread it. Run from it. Destiny arrives all the same." [Executing Decimation...]' });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('snap');
+      onClose();
+    } else if (cmdLower === 'bifrost' || cmdLower === 'heimdall') {
+      newHistory.push({ type: 'accent', text: '🌈 "Heimdall, open the Bifrost!" [Cosmic Gateway Incoming...]' });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
+      onClose();
+    } else if (cmdLower === 'jarvis' || cmdLower === 'friday' || cmdLower === 'ironman') {
+      newHistory.push({ type: 'accent', text: '🤖 "Welcome home, sir. Nanotech flight systems initialized."' });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
+      onClose();
+    } else if (cmdLower === 'worthy' || cmdLower === 'mjolnir' || cmdLower === 'thor') {
+      newHistory.push({ type: 'accent', text: '⚡ "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor."' });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
+      onClose();
+    } else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
+      newHistory.push({ type: 'accent', text: '🛡️ "AVENGERS... ASSEMBLE!" [Initiative Priority Signal Broadcasted]' });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('assemble');
+      onClose();
     } else if (cmdLower === 'sprints' || cmdLower === 'projects' || cmdLower === 'initiatives') {
       newHistory.push({
         type: 'sys',
@@ -85,7 +136,7 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
     } else if (cmdLower === 'whoami') {
       newHistory.push({
         type: 'sys',
-        text: 'CLEARANCE: BUILDER TIER 01 [GUEST PROTOCOL]\nSTATUS: OPERATIONAL · ELIGIBLE FOR ACTIVE SPRINTS'
+        text: 'CLEARANCE: S.H.I.E.L.D. LEVEL 7 // BUILDER TIER 01\nSTATUS: OPERATIONAL · ELIGIBLE FOR AVENGERS INITIATIVE'
       });
     } else if (cmdLower.startsWith('theme')) {
       if (onToggleTheme) onToggleTheme();
