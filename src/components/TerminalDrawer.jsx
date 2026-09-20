@@ -12,22 +12,38 @@ import {
 
 const COMMANDS_HELP = [
   { cmd: 'help', desc: 'Display list of available operational directives' },
-  { cmd: 'assemble', desc: 'Initiate full Foundry Avengers protocol with heroic synthesizer chord' },
-  { cmd: 'jarvis', desc: 'Display Stark Diagnostics telemetry status report & HUD' },
-  { cmd: 'cap', desc: 'Steve Rogers\' code of conduct ("I can do this all day")' },
-  { cmd: 'worthy', desc: 'Test terminal clearance against the Mjolnir worthiness oath' },
-  { cmd: 'bifrost', desc: 'Teleport straight to the live community Discord via cosmic gate' },
-  { cmd: 'snap', desc: 'Thanos Decimation dust disintegration with Doctor Strange Time Heist' },
-  { cmd: 'shawarma', desc: 'Unlock secret post-sprint food break memo from Tony Stark' },
-  { cmd: 'level7', desc: 'Access S.H.I.E.L.D. Director Nick Fury\'s confidential memo' },
+  { cmd: 'assemble', desc: 'Full Avengers protocol + heroic orchestral synthesizer fanfare' },
+  { cmd: 'jarvis', desc: 'Stark Mark LXXXV HUD telemetry status report & laser scanner' },
+  { cmd: 'cap', desc: 'Steve Rogers code of conduct + Vibranium shield ricochet FX' },
+  { cmd: 'thor', desc: 'Thor Mjolnir lightning strike + Asgardian worthiness oath' },
+  { cmd: 'snap', desc: 'Thanos snap text/card disintegration + Doctor Strange Time Heist' },
+  { cmd: 'bifrost', desc: 'Cosmic Bifrost rainbow beam conduit to community Discord' },
+  { cmd: 'shawarma', desc: 'Tony Stark post-battle shawarma food break secret memo' },
+  { cmd: 'level7', desc: 'S.H.I.E.L.D. Director Nick Fury classified executive directive' },
   { cmd: 'squad <id>', desc: 'Deploy squad theme: tech, pr, events, core' },
-  { cmd: 'projects', desc: 'List active open-source project initiatives' },
-  { cmd: 'stack', desc: 'Output community core engineering stack' },
-  { cmd: 'lore', desc: 'The origins and philosophy of Let\'s Cook' },
-  { cmd: 'pitch', desc: 'Launch project proposal transmission terminal' },
-  { cmd: 'whoami', desc: 'Display your current builder clearance tier' },
-  { cmd: 'sudo cook', desc: 'Trigger community hardware overdrive' },
+  { cmd: 'projects', desc: 'Explore active open-source repositories and initiatives' },
+  { cmd: 'stack', desc: 'Inspect community core engineering & compiler stack' },
+  { cmd: 'lore', desc: 'Origin story and founding philosophy of Let\'s Cook' },
+  { cmd: 'pitch', desc: 'Transmit a student startup or open-source proposal' },
+  { cmd: 'whoami', desc: 'Display builder security clearance & credential tier' },
+  { cmd: 'sudo cook', desc: 'Overclock system hardware cores to 100% capacity' },
   { cmd: 'clear', desc: 'Flush current terminal buffer' },
+];
+
+const INITIAL_TERMINAL_HISTORY = [
+  { 
+    type: 'accent', 
+    text: '╔════════════════════════════════════════════════════════════════════════════════╗\n' +
+          '║             LET\'S COOK S.H.I.E.L.D. SHELL v3.2.0 [x86_64-avengers-kernel]       ║\n' +
+          '║             ALL AVENGERS INITIATIVE DIRECTIVES AUTHORIZED & READY              ║\n' +
+          '╚════════════════════════════════════════════════════════════════════════════════╝'
+  },
+  { 
+    type: 'sys', 
+    text: '⚡ AVAILABLE OPERATIONAL DIRECTIVES & EASTER EGGS:\n' +
+      COMMANDS_HELP.map(c => `  ● ${c.cmd.padEnd(14)} : ${c.desc}`).join('\n') +
+      '\n\n[Tip: Click any quick command chip below or type and press Enter]'
+  }
 ];
 
 export default function TerminalDrawer({ 
@@ -40,10 +56,7 @@ export default function TerminalDrawer({
   onSelectSquad
 }) {
   const [inputVal, setInputVal] = useState('');
-  const [history, setHistory] = useState([
-    { type: 'sys', text: 'LET\'S COOK S.H.I.E.L.D. SHELL v3.0.0 [x86_64-avengers-kernel]' },
-    { type: 'sys', text: 'Type "help" to display operational directives or "assemble" to initiate Avengers protocol.' },
-  ]);
+  const [history, setHistory] = useState(INITIAL_TERMINAL_HISTORY);
   const [cmdHistory, setCmdHistory] = useState([]);
   const [cmdHistoryIdx, setCmdHistoryIdx] = useState(-1);
   const inputRef = useRef(null);
@@ -382,6 +395,35 @@ export default function TerminalDrawer({
           <div ref={bottomRef} />
         </div>
 
+        {/* Interactive Quick-Execute Command Chips Bar */}
+        <div className="terminal-quick-chips">
+          <span className="chips-label">QUICK EXEC:</span>
+          {[
+            { label: 'assemble', cmd: 'assemble', color: '#f59e0b' },
+            { label: 'jarvis', cmd: 'jarvis', color: '#00f0ff' },
+            { label: 'cap', cmd: 'cap', color: '#3b82f6' },
+            { label: 'thor', cmd: 'thor', color: '#eab308' },
+            { label: 'snap', cmd: 'snap', color: '#10b981' },
+            { label: 'bifrost', cmd: 'bifrost', color: '#38bdf8' },
+            { label: 'shawarma', cmd: 'shawarma', color: '#fb923c' },
+            { label: 'level7', cmd: 'level7', color: '#a855f7' },
+            { label: 'squad tech', cmd: 'squad tech', color: '#ff0055' },
+            { label: 'projects', cmd: 'projects', color: '#94a3b8' },
+            { label: 'sudo cook', cmd: 'sudo cook', color: '#ef4444' }
+          ].map(item => (
+            <button
+              key={item.cmd}
+              type="button"
+              className="term-chip-btn"
+              style={{ '--chip-accent': item.color }}
+              onClick={() => handleCommand(item.cmd)}
+              title={`Execute directive '${item.cmd}'`}
+            >
+              ${item.label}
+            </button>
+          ))}
+        </div>
+
         {/* Command Input Row */}
         <div className="terminal-input-bar">
           <span className="input-prompt">builder@letscook:~$</span>
@@ -581,6 +623,59 @@ export default function TerminalDrawer({
 
         .btn-term-send:hover {
           color: var(--accent-burgundy);
+        }
+
+        .terminal-quick-chips {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          background-color: #0e0e14;
+          border-top: 1px solid #1e1e28;
+          overflow-x: auto;
+          white-space: nowrap;
+          scrollbar-width: thin;
+        }
+
+        .terminal-quick-chips::-webkit-scrollbar {
+          height: 4px;
+        }
+
+        .terminal-quick-chips::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.15);
+          border-radius: 2px;
+        }
+
+        .chips-label {
+          font-family: monospace;
+          font-size: 10px;
+          font-weight: 800;
+          color: #38bdf8;
+          letter-spacing: 0.1em;
+          margin-right: 4px;
+          flex-shrink: 0;
+        }
+
+        .term-chip-btn {
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #d4d4d8;
+          font-family: monospace;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 3px 9px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          flex-shrink: 0;
+        }
+
+        .term-chip-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: var(--chip-accent, #ff0055);
+          color: #ffffff;
+          box-shadow: 0 0 10px var(--chip-accent, #ff0055);
+          transform: translateY(-1px);
         }
       `}</style>
     </div>
