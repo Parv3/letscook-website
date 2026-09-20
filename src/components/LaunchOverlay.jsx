@@ -88,7 +88,7 @@ export default function LaunchOverlay({ onReveal }) {
       url.includes('unlock=1') || 
       url.includes('mobile=1')
     ) {
-      playCinematicShatter();
+      onReveal();
       return;
     }
 

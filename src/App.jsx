@@ -33,8 +33,21 @@ export default function App() {
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
-  // Launch Experience States
-  const [showLaunchOverlay, setShowLaunchOverlay] = useState(true);
+  // Launch Experience States (Auto-bypass if ?dev, ?cook, #dev, or ?access in URL)
+  const [showLaunchOverlay, setShowLaunchOverlay] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const url = window.location.href.toLowerCase();
+      if (
+        url.includes('dev') ||
+        url.includes('cook') ||
+        url.includes('access') ||
+        url.includes('unlock')
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
   const [showMacOsWindow, setShowMacOsWindow] = useState(false);
 
   useEffect(() => {
@@ -83,23 +96,6 @@ export default function App() {
         onComplete={() => setActiveEasterEgg(null)} 
       />
 
-      {/* 3. Dramatic Background Laser Layer */}
-      <div className="live-glowing-lines-bg no-print" aria-hidden="true">
-        <div className="nebula-orb nebula-1" />
-        <div className="nebula-orb nebula-2" />
-
-        <svg viewBox="0 0 1440 900" preserveAspectRatio="none" className="glowing-laser-svg">
-          <path d="M-100 150 Q 400 450 1540 100" fill="none" className="glow-line glow-line-1" />
-          <path d="M-100 700 Q 700 200 1540 800" fill="none" className="glow-line glow-line-2" />
-          <path d="M200 -100 Q 900 500 400 1000" fill="none" className="glow-line glow-line-3" />
-          <path d="M1200 -100 Q 500 500 1300 1000" fill="none" className="glow-line glow-line-4" />
-        </svg>
-
-        <div className="bg-particle" style={{ left: '15%', animationDuration: '14s', animationDelay: '0s' }} />
-        <div className="bg-particle" style={{ left: '35%', animationDuration: '18s', animationDelay: '3s' }} />
-        <div className="bg-particle" style={{ left: '60%', animationDuration: '11s', animationDelay: '1s' }} />
-        <div className="bg-particle" style={{ left: '80%', animationDuration: '16s', animationDelay: '5s' }} />
-      </div>
 
       {/* 4. Full-Screen Launch Overlay */}
       {showLaunchOverlay && (

@@ -89,15 +89,19 @@ export default function TerminalDrawer({
       if (onTriggerEasterEgg) onTriggerEasterEgg('snap');
     } else if (cmdLower === 'bifrost' || cmdLower === 'heimdall') {
       newHistory.push({ type: 'accent', text: '🌈 "Heimdall, open the Bifrost!" [Cosmic Gateway Incoming... Seismic shockwave registered!]' });
+      if (onSelectSquad) onSelectSquad('thor');
       if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
     } else if (cmdLower === 'jarvis' || cmdLower === 'friday' || cmdLower === 'ironman') {
       newHistory.push({ type: 'accent', text: '🤖 "Welcome home, sir. Nanotech flight systems initialized." [Projecting Mark LXXXV HUD targeting overlay...]' });
+      if (onSelectSquad) onSelectSquad('ironman');
       if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
     } else if (cmdLower === 'worthy' || cmdLower === 'mjolnir' || cmdLower === 'thor') {
       newHistory.push({ type: 'accent', text: '⚡ "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor." [Lightning blast discharged!]' });
+      if (onSelectSquad) onSelectSquad('thor');
       if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
     } else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
       newHistory.push({ type: 'accent', text: '🛡️ "AVENGERS... ASSEMBLE!" [Initiative Priority Signal Broadcasted... Golden crest activated!]' });
+      if (onSelectSquad) onSelectSquad('core');
       if (onTriggerEasterEgg) onTriggerEasterEgg('assemble');
     } else if (cmdLower === 'sprints' || cmdLower === 'projects' || cmdLower === 'initiatives') {
       newHistory.push({

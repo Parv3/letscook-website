@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   playRepulsorSound, 
   playThunderStrike, 
@@ -8,23 +8,29 @@ import {
 
 export default function CinematicEasterEggOverlay({ effect, onComplete }) {
   const canvasRef = useRef(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  const [showMandala, setShowMandala] = useState(false);
 
   useEffect(() => {
-    if (!effect) return;
+    if (!effect) {
+      setShowMandala(false);
+      return;
+    }
 
     if (effect === 'snap') {
-      // 1. THANOS SNAP & REAL ASH DUST DISINTEGRATION
+      // 1. THANOS SNAP & PHYSICAL ASH DUST DISINTEGRATION
       playThunderStrike();
       const canvas = canvasRef.current;
       let dustAnimId;
       if (canvas) {
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const w = (canvas.width = window.innerWidth);
+        const h = (canvas.height = window.innerHeight);
 
         const ashList = Array.from({ length: 280 }, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: Math.random() * w,
+          y: Math.random() * h,
           vx: Math.random() * 4 + 2,
           vy: (Math.random() - 0.5) * 3 - 2,
           size: Math.random() * 3.5 + 1.2,
@@ -51,8 +57,8 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         dustAnimId = requestAnimationFrame(renderAsh);
       }
 
-      // Disintegrate half the cards on page
-      const targetCards = document.querySelectorAll('.squad-card, .stat-card, .access-box, .initiative-mini-card');
+      // Disintegrate half the cards across the page
+      const targetCards = document.querySelectorAll('.squad-card, .stat-card, .access-box, .initiative-mini-card, .active-squad-spotlight');
       targetCards.forEach((c, idx) => {
         if (idx % 2 === 0) {
           c.style.transition = 'all 2.2s cubic-bezier(0.25, 1, 0.5, 1)';
@@ -65,8 +71,7 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
       // Doctor Strange Time Stone Reversal after 3 seconds
       const timer1 = setTimeout(() => {
         playTimeStoneReversal();
-        const mandala = document.getElementById('timestone-mandala-mount');
-        if (mandala) mandala.style.display = 'block';
+        setShowMandala(true);
 
         setTimeout(() => {
           targetCards.forEach(c => {
@@ -74,8 +79,8 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
             c.style.filter = '';
             c.style.transform = '';
           });
-          if (mandala) mandala.style.display = 'none';
-          if (onComplete) onComplete();
+          setShowMandala(false);
+          if (onCompleteRef.current) onCompleteRef.current();
         }, 3200);
       }, 3000);
 
@@ -86,82 +91,85 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
     } else if (effect === 'bifrost') {
       // 2. PRISMATIC BIFROST SLAM & SEISMIC RUMBLE
       playThunderStrike();
-      document.body.classList.add('shake-active');
+      document.body.classList.add('seismic-shake');
       const timer = setTimeout(() => {
-        document.body.classList.remove('shake-active');
-        if (onComplete) onComplete();
+        document.body.classList.remove('seismic-shake');
+        if (onCompleteRef.current) onCompleteRef.current();
       }, 1900);
       return () => {
-        document.body.classList.remove('shake-active');
+        document.body.classList.remove('seismic-shake');
         clearTimeout(timer);
       };
     } else if (effect === 'jarvis') {
       // 3. STARK MARK LXXXV TACTICAL HUD OVERLAY
       playRepulsorSound();
-      const cards = document.querySelectorAll('.squad-card, .stat-card, .active-squad-spotlight');
-      cards.forEach(c => c.classList.add('plasma-active'));
+      const cards = document.querySelectorAll('.squad-card, .stat-card, .active-squad-spotlight, .initiative-mini-card');
+      cards.forEach(c => c.classList.add('plasma-glow'));
       const timer = setTimeout(() => {
-        cards.forEach(c => c.classList.remove('plasma-active'));
-        if (onComplete) onComplete();
-      }, 4200);
+        cards.forEach(c => c.classList.remove('plasma-glow'));
+        if (onCompleteRef.current) onCompleteRef.current();
+      }, 3800);
       return () => {
-        cards.forEach(c => c.classList.remove('plasma-active'));
+        cards.forEach(c => c.classList.remove('plasma-glow'));
         clearTimeout(timer);
       };
     } else if (effect === 'worthy') {
       // 4. THOR MJOLNIR LIGHTNING WORTHINESS TEST
       playThunderStrike();
-      document.body.classList.add('shake-active');
-      const cards = document.querySelectorAll('.squad-card, .active-squad-spotlight');
-      cards.forEach(c => c.classList.add('plasma-active'));
+      document.body.classList.add('seismic-shake');
+      const cards = document.querySelectorAll('.squad-card, .active-squad-spotlight, .initiative-mini-card');
+      cards.forEach(c => c.classList.add('plasma-glow'));
       const timer = setTimeout(() => {
-        document.body.classList.remove('shake-active');
-        cards.forEach(c => c.classList.remove('plasma-active'));
-        if (onComplete) onComplete();
-      }, 2200);
+        document.body.classList.remove('seismic-shake');
+        cards.forEach(c => c.classList.remove('plasma-glow'));
+        if (onCompleteRef.current) onCompleteRef.current();
+      }, 1800);
       return () => {
-        document.body.classList.remove('shake-active');
-        cards.forEach(c => c.classList.remove('plasma-active'));
+        document.body.classList.remove('seismic-shake');
+        cards.forEach(c => c.classList.remove('plasma-glow'));
         clearTimeout(timer);
       };
     } else if (effect === 'assemble') {
       // 5. AVENGERS ASSEMBLE HOLOGRAPHIC CREST
       playAssembleFanfare();
+      document.body.classList.add('seismic-shake');
       const timer = setTimeout(() => {
-        if (onComplete) onComplete();
+        document.body.classList.remove('seismic-shake');
+        if (onCompleteRef.current) onCompleteRef.current();
       }, 2400);
-      return () => clearTimeout(timer);
+      return () => {
+        document.body.classList.remove('seismic-shake');
+        clearTimeout(timer);
+      };
     }
-  }, [effect, onComplete]);
+  }, [effect]);
 
   if (!effect) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 9998, pointerEvents: 'none' }} aria-hidden="true">
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9998, pointerEvents: 'none' }} aria-hidden="true">
       {/* 1. Canvas for Real Dust Disintegration */}
       {effect === 'snap' && (
         <>
           <canvas 
             ref={canvasRef} 
-            style={{ position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none' }} 
+            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }} 
           />
-          <div 
-            id="timestone-mandala-mount" 
-            className="timestone-mandala-screen"
-            style={{ display: 'none' }}
-          >
-            <svg 
-              style={{ width: '280px', height: '280px', color: '#34d399', filter: 'drop-shadow(0 0 45px #10b981)' }} 
-              viewBox="0 0 200 200"
-            >
-              <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="12 6" />
-              <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
-              <polygon points="100,15 175,100 100,185 25,100" fill="none" stroke="currentColor" strokeWidth="2" />
-              <polygon points="100,25 160,100 100,175 40,100" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <circle cx="100" cy="100" r="28" fill="#042f2e" stroke="currentColor" strokeWidth="3" />
-              <circle cx="100" cy="100" r="10" fill="#a7f3d0" />
-            </svg>
-          </div>
+          {showMandala && (
+            <div className="timestone-mandala-screen">
+              <svg 
+                style={{ width: '280px', height: '280px', color: '#34d399', filter: 'drop-shadow(0 0 45px #10b981)' }} 
+                viewBox="0 0 200 200"
+              >
+                <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="12 6" />
+                <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
+                <polygon points="100,15 175,100 100,185 25,100" fill="none" stroke="currentColor" strokeWidth="2" />
+                <polygon points="100,25 160,100 100,175 40,100" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="100" cy="100" r="28" fill="#042f2e" stroke="currentColor" strokeWidth="3" />
+                <circle cx="100" cy="100" r="10" fill="#a7f3d0" />
+              </svg>
+            </div>
+          )}
         </>
       )}
 
