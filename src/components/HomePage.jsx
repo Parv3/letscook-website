@@ -96,11 +96,83 @@ export const SQUADS_DATA = {
     arsenal: ['Hackathons', 'Keynotes', 'Live Arenas', 'Workshops', 'Tournaments', 'Demo Days'],
     sound: playThunderStrike,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20">
-        <rect x="26" y="22" width="48" height="26" rx="4" fill="none" stroke="#eab308" strokeWidth="3.5" />
-        <line x1="50" y1="48" x2="50" y2="82" stroke="#38bdf8" strokeWidth="4.5" strokeLinecap="round" />
-        <line x1="42" y1="82" x2="58" y2="82" stroke="#eab308" strokeWidth="4" strokeLinecap="round" />
-        <path d="M36 35 L64 35" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="4 4" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20" fill="none">
+        <defs>
+          <linearGradient id="uruStoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2a1d0d" />
+            <stop offset="50%" stopColor="#1a1208" />
+            <stop offset="100%" stopColor="#0d0904" />
+          </linearGradient>
+          <filter id="lightningGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+
+        {/* Crackling Electric Lightning Arcs around Hammer Head */}
+        <g filter="url(#lightningGlow)">
+          <path d="M12,24 L18,31 L14,36 L21,34" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
+          <path d="M88,24 L82,31 L86,36 L79,34" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
+          <path d="M47,12 L50,17 L53,15 L52,20" stroke="#38bdf8" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+        </g>
+
+        {/* Top Chamfer Cap of Hammer Head */}
+        <rect x="42" y="19" width="16" height="3" rx="1" fill="#f59e0b" stroke="#eab308" strokeWidth="0.8" />
+
+        {/* Mjolnir Heavy Uru Stone Head (Faceted Octagonal Prism) */}
+        <polygon 
+          points="22,22 78,22 84,28 84,48 78,54 22,54 16,48 16,28" 
+          fill="url(#uruStoneGrad)" 
+          stroke="#f59e0b" 
+          strokeWidth="2.5" 
+          strokeLinejoin="round" 
+        />
+
+        {/* Inner Recessed Face with Asgardian Border */}
+        <polygon 
+          points="26,26 74,26 79,31 79,45 74,50 26,50 21,45 21,31" 
+          fill="#130d06" 
+          stroke="#eab308" 
+          strokeWidth="1.2" 
+          opacity="0.9" 
+        />
+
+        {/* 3D Bevel Edge Ridges */}
+        <line x1="22" y1="22" x2="26" y2="26" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="78" y1="22" x2="74" y2="26" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="84" y1="28" x2="79" y2="31" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="84" y1="48" x2="79" y2="45" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="78" y1="54" x2="74" y2="50" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="22" y1="54" x2="26" y2="50" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="16" y1="48" x2="21" y2="45" stroke="#f59e0b" strokeWidth="1.5" />
+        <line x1="16" y1="28" x2="21" y2="31" stroke="#f59e0b" strokeWidth="1.5" />
+
+        {/* Center Nordic Celtic Triquetra Knot / Rune Ring */}
+        <circle cx="50" cy="38" r="8.5" stroke="#38bdf8" strokeWidth="1.5" opacity="0.85" />
+        <path d="M50,30 C55,35 55,41 50,46 C45,41 45,35 50,30 Z" stroke="#f59e0b" strokeWidth="1.4" />
+        <path d="M43,42 C48,40 52,45 49,49 C44,49 41,45 43,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
+        <path d="M57,42 C59,45 56,49 51,49 C48,45 52,40 57,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
+        <circle cx="50" cy="38" r="2.2" fill="#38bdf8" />
+
+        {/* Upper Handle Collar */}
+        <rect x="44" y="54" width="12" height="5" rx="1.5" fill="#d97706" stroke="#f59e0b" strokeWidth="1.2" />
+
+        {/* Textured Handle Shaft */}
+        <rect x="46" y="59" width="8" height="26" rx="1.5" fill="#1f1408" stroke="#d97706" strokeWidth="1.2" />
+
+        {/* Leather Grip Cross-Wrapping Bands */}
+        <line x1="46" y1="63" x2="54" y2="67" stroke="#eab308" strokeWidth="1.2" />
+        <line x1="46" y1="69" x2="54" y2="73" stroke="#eab308" strokeWidth="1.2" />
+        <line x1="46" y1="75" x2="54" y2="79" stroke="#eab308" strokeWidth="1.2" />
+        <line x1="54" y1="63" x2="46" y2="67" stroke="#eab308" strokeWidth="1.2" />
+        <line x1="54" y1="69" x2="46" y2="73" stroke="#eab308" strokeWidth="1.2" />
+        <line x1="54" y1="75" x2="46" y2="79" stroke="#eab308" strokeWidth="1.2" />
+
+        {/* Pommel Base Cap */}
+        <rect x="43" y="85" width="14" height="4.5" rx="2" fill="#f59e0b" stroke="#eab308" strokeWidth="1.2" />
+
+        {/* Asgardian Leather Wrist Strap Loop */}
+        <path d="M50,89.5 C45,95 45,99 50,100 C55,99 55,95 50,89.5" stroke="#d97706" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     )
   },

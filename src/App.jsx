@@ -51,18 +51,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  // Synchronize Dark/Light Mode
+  // Ensure the website permanently stays in dark mode
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('letscook_theme', theme);
-  }, [theme]);
+    root.classList.add('dark');
+    root.classList.remove('light');
+    localStorage.setItem('letscook_theme', 'dark');
+  }, []);
 
   // Synchronize Marvel Tri-Squad Global Universe Theme
   useEffect(() => {
@@ -71,10 +66,6 @@ export default function App() {
     root.classList.add(`theme-${activeSquad}`);
     localStorage.setItem('letscook_squad', activeSquad);
   }, [activeSquad]);
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-  };
 
   const handleRevealLaunch = () => {
     setShowLaunchOverlay(false);
@@ -124,8 +115,6 @@ export default function App() {
       >
         {/* 5. Sticky Navigation Header */}
         <Navbar
-          theme={theme}
-          onToggleTheme={toggleTheme}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenPitchModal={() => setIsPitchModalOpen(true)}
           onOpenTerminal={() => setIsTerminalOpen(true)}
@@ -167,8 +156,6 @@ export default function App() {
           isOpen={isTerminalOpen}
           onClose={() => setIsTerminalOpen(false)}
           onOpenPitchModal={() => setIsPitchModalOpen(true)}
-          theme={theme}
-          onToggleTheme={toggleTheme}
           onTriggerEasterEgg={setActiveEasterEgg}
           onSelectSquad={setActiveSquad}
         />

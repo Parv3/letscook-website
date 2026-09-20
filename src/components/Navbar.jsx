@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Search, Sun, Moon, ArrowUpRight, Lightbulb, Menu, X, Terminal } from 'lucide-react';
+import { Volume2, VolumeX, Search, ArrowUpRight, Lightbulb, Menu, X, Terminal } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { getTrackedUrl } from '../utils/utmTracker';
 import LogoMark from './LogoMark';
@@ -112,15 +112,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             aria-label="Search site"
           >
             <Search size={18} />
-          </button>
-
-          <button 
-            onClick={() => { playTechClick(); onToggleTheme(); }} 
-            className="icon-btn theme-toggle-btn" 
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
           <button 
