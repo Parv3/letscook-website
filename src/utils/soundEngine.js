@@ -325,24 +325,69 @@ export const playVibraniumPing = () => {
   }
 };
 
-// Thor Mjolnir Atmospheric Crackle & Thunderclap
+// Thor Stormbreaker Atmospheric Lightning Crack, Anvil Clink & Rolling Thunder
 export const playThunderStrike = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(180, now);
-    osc.frequency.exponentialRampToValueAtTime(22, now + 0.85);
-    gain.gain.setValueAtTime(0.45, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
-    osc.start(now);
-    osc.stop(now + 0.85);
+
+    // 1. Sharp Supersonic Lightning Arc Crack (High-voltage electrical snap)
+    const crackLen = ctx.sampleRate * 0.12;
+    const crackBuffer = ctx.createBuffer(1, crackLen, ctx.sampleRate);
+    const crackData = crackBuffer.getChannelData(0);
+    for (let i = 0; i < crackLen; i++) {
+      crackData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.025));
+    }
+    const crackSource = ctx.createBufferSource();
+    crackSource.buffer = crackBuffer;
+    const crackFilter = ctx.createBiquadFilter();
+    crackFilter.type = 'highpass';
+    crackFilter.frequency.setValueAtTime(1400, now);
+    const crackGain = ctx.createGain();
+    crackGain.gain.setValueAtTime(0.7, now);
+    crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    crackSource.connect(crackFilter);
+    crackFilter.connect(crackGain);
+    crackGain.connect(ctx.destination);
+    crackSource.start(now);
+
+    // 2. Nidavellir Uru Forged Anvil Clink (Resonant Asgardian steel impact overtone)
+    [880, 1320, 1760].forEach((freq, idx) => {
+      const metalOsc = ctx.createOscillator();
+      const metalGain = ctx.createGain();
+      metalOsc.type = 'sine';
+      metalOsc.frequency.setValueAtTime(freq, now);
+      metalOsc.frequency.exponentialRampToValueAtTime(freq * 0.96, now + 0.3);
+      metalGain.gain.setValueAtTime(0.25 / (idx + 1), now);
+      metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      metalOsc.connect(metalGain);
+      metalGain.connect(ctx.destination);
+      metalOsc.start(now);
+      metalOsc.stop(now + 0.35);
+    });
+
+    // 3. Rolling Concussive Thunder Rumble & Deep Sub-bass Drop
+    const thunderOsc = ctx.createOscillator();
+    const thunderGain = ctx.createGain();
+    const thunderFilter = ctx.createBiquadFilter();
+    thunderOsc.type = 'sawtooth';
+    thunderOsc.frequency.setValueAtTime(140, now);
+    thunderOsc.frequency.exponentialRampToValueAtTime(24, now + 1.4);
+
+    thunderFilter.type = 'lowpass';
+    thunderFilter.frequency.setValueAtTime(320, now);
+    thunderFilter.frequency.exponentialRampToValueAtTime(60, now + 1.4);
+
+    thunderGain.gain.setValueAtTime(0.8, now);
+    thunderGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+    thunderOsc.connect(thunderFilter);
+    thunderFilter.connect(thunderGain);
+    thunderGain.connect(ctx.destination);
+    thunderOsc.start(now);
+    thunderOsc.stop(now + 1.4);
   } catch (err) {
     // Ignore audio errors
   }

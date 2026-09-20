@@ -1333,7 +1333,95 @@ button {
 }
 
 /* ========================================================= */
-/* STORMBREAKER JAM INTO BUTTON ANIMATION                     */
+/* CINEMATIC BIFROST SKY CONDUIT & STORMBREAKER DIVE          */
+/* ========================================================= */
+.bifrost-summon-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bifrost-sky-storm-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 15%, rgba(3, 7, 18, 0.92) 0%, rgba(15, 23, 42, 0.85) 50%, rgba(0, 0, 0, 0.95) 100%);
+  animation: bifrostSkyAtmosphere 0.55s ease-out forwards;
+}
+
+@keyframes bifrostSkyAtmosphere {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  85% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+
+.bifrost-lightning-strobe-overlay {
+  position: absolute;
+  inset: 0;
+  animation: bifrostLightningStrobe 0.5s ease-out forwards;
+}
+
+@keyframes bifrostLightningStrobe {
+  0% { opacity: 0; background: transparent; }
+  12% { opacity: 0.9; background: rgba(255, 255, 255, 0.95); }
+  22% { opacity: 0.05; background: transparent; }
+  35% { opacity: 0.85; background: rgba(56, 189, 248, 0.75); }
+  48% { opacity: 0.15; background: transparent; }
+  65% { opacity: 0.95; background: rgba(255, 255, 255, 0.95); }
+  80% { opacity: 0.25; background: transparent; }
+  92% { opacity: 1; background: rgba(245, 158, 11, 0.65); }
+  100% { opacity: 0; background: transparent; }
+}
+
+.bifrost-sky-conduit-pillar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.bifrost-sky-rainbow-column {
+  position: absolute;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 240, 255, 0.35) 15%, rgba(168, 85, 247, 0.45) 32%, rgba(255, 255, 255, 0.95) 50%, rgba(245, 158, 11, 0.5) 68%, rgba(56, 189, 248, 0.35) 85%, transparent 100%);
+  filter: blur(10px);
+  animation: bifrostPillarGlow 0.5s ease-out forwards;
+}
+
+.bifrost-sky-lightning-core {
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: 0 0 60px #00f0ff, 0 0 120px #38bdf8, 0 0 200px #f59e0b;
+  animation: bifrostCorePulse 0.5s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes bifrostPillarGlow {
+  0% { transform: scaleX(0.2); opacity: 0; }
+  30% { transform: scaleX(1.4); opacity: 1; }
+  75% { transform: scaleX(1.1); opacity: 0.9; }
+  100% { transform: scaleX(0.1); opacity: 0; }
+}
+
+@keyframes bifrostCorePulse {
+  0% { transform: scaleX(0.1); opacity: 0; }
+  25% { transform: scaleX(1.6); opacity: 1; }
+  85% { transform: scaleX(1.2); opacity: 1; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+
+/* ========================================================= */
+/* STORMBREAKER JAM INTO BUTTON & REALISTIC EMBED FX         */
 /* ========================================================= */
 .stormbreaker-btn-wrap {
   position: relative;
@@ -1347,91 +1435,221 @@ button {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.button-molten-fractures {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  animation: moltenFracturePulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes moltenFracturePulse {
+  0% { opacity: 0.65; filter: drop-shadow(0 0 3px #f59e0b); }
+  50% { opacity: 1; filter: drop-shadow(0 0 8px #f59e0b) drop-shadow(0 0 12px #00f0ff); }
+  100% { opacity: 0.65; filter: drop-shadow(0 0 3px #f59e0b); }
+}
+
 .stormbreaker-jammed-btn {
   border-color: #f59e0b !important;
-  background: rgba(245, 158, 11, 0.25) !important;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), inset 0 0 12px rgba(0, 240, 255, 0.4) !important;
+  background: rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.7), inset 0 0 16px rgba(0, 240, 255, 0.5) !important;
   color: #ffffff !important;
-  animation: buttonImpactTremor 0.35s ease-out;
+  animation: buttonImpactTremor 0.45s ease-out;
 }
 
 @keyframes buttonImpactTremor {
   0% { transform: translateY(0) scale(1); }
-  25% { transform: translateY(3px) scale(0.97) rotate(-1deg); }
-  50% { transform: translateY(-2px) scale(1.02) rotate(1deg); }
-  75% { transform: translateY(1px) scale(0.99); }
+  20% { transform: translateY(4px) scale(0.96) rotate(-1.5deg); }
+  45% { transform: translateY(-3px) scale(1.03) rotate(1.2deg); }
+  70% { transform: translateY(1.5px) scale(0.99) rotate(-0.5deg); }
   100% { transform: translateY(0) scale(1); }
-}
-
-@keyframes stormbreakerDiveJam {
-  0% {
-    transform: translate(-40px, -260px) rotate(45deg) scale(2.2);
-    opacity: 0;
-    filter: drop-shadow(0 0 40px #00f0ff);
-  }
-  35% {
-    opacity: 1;
-    transform: translate(-15px, -120px) rotate(22deg) scale(1.5);
-  }
-  80% {
-    transform: translate(0, 2px) rotate(-16deg) scale(1.05);
-    filter: brightness(4) drop-shadow(0 0 70px #ffffff);
-  }
-  88% {
-    transform: translate(0, -5px) rotate(-14deg) scale(1.02);
-  }
-  100% {
-    transform: translate(0, 0) rotate(-15deg) scale(1);
-    filter: drop-shadow(0 0 20px #f59e0b);
-  }
 }
 
 .stormbreaker-strike-wedge {
   position: absolute;
-  top: -26px;
-  right: -16px;
+  top: -30px;
+  right: -22px;
   pointer-events: none;
-  z-index: 25;
+  z-index: 50;
 }
 
 .stormbreaker-strike-wedge.axe-striking {
-  animation: stormbreakerDiveJam 0.45s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+  animation: stormbreakerHypersonicDive 0.5s cubic-bezier(0.12, 0.95, 0.15, 1) forwards;
+}
+
+@keyframes stormbreakerHypersonicDive {
+  0% {
+    transform: translate(-60px, -450px) rotate(60deg) scale(2.8);
+    opacity: 0;
+    filter: drop-shadow(0 0 80px #00f0ff) brightness(3);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-30px, -240px) rotate(40deg) scale(2.0);
+    filter: drop-shadow(0 0 100px #ffffff) brightness(4);
+  }
+  75% {
+    transform: translate(-5px, -30px) rotate(-10deg) scale(1.2);
+    filter: drop-shadow(0 0 60px #f59e0b) brightness(3);
+  }
+  88% {
+    transform: translate(2px, 8px) rotate(-24deg) scale(1.08);
+    filter: brightness(5);
+  }
+  94% {
+    transform: translate(-1px, 2px) rotate(-19deg) scale(1.02);
+  }
+  100% {
+    transform: translate(0, 0) rotate(-20deg) scale(1);
+    filter: drop-shadow(0 0 25px #f59e0b) drop-shadow(0 0 40px #00f0ff);
+  }
 }
 
 .stormbreaker-strike-wedge.axe-lodged {
-  transform: translate(0, 0) rotate(-15deg) scale(1);
-  filter: drop-shadow(0 0 20px #f59e0b);
-  animation: lodgedAxeHum 1.6s ease-in-out infinite alternate;
+  transform: translate(0, 0) rotate(-20deg) scale(1);
+  filter: drop-shadow(0 0 22px #f59e0b) drop-shadow(0 0 35px #00f0ff);
+  animation: lodgedAxeAsgardianPulse 1.8s ease-in-out infinite alternate;
 }
 
-@keyframes lodgedAxeHum {
-  0% { filter: drop-shadow(0 0 15px #f59e0b) drop-shadow(0 0 25px #00f0ff); transform: translate(0, 0) rotate(-15deg); }
-  100% { filter: drop-shadow(0 0 25px #f59e0b) drop-shadow(0 0 40px #38bdf8); transform: translate(0, -2px) rotate(-14deg); }
+@keyframes lodgedAxeAsgardianPulse {
+  0% {
+    transform: translate(0, 0) rotate(-20deg) scale(1);
+    filter: drop-shadow(0 0 20px #f59e0b) drop-shadow(0 0 30px #00f0ff);
+  }
+  50% {
+    transform: translate(0, -2px) rotate(-19deg) scale(1.02);
+    filter: drop-shadow(0 0 38px #f59e0b) drop-shadow(0 0 55px #38bdf8) brightness(1.2);
+  }
+  100% {
+    transform: translate(0, 0) rotate(-20deg) scale(1);
+    filter: drop-shadow(0 0 20px #f59e0b) drop-shadow(0 0 30px #00f0ff);
+  }
+}
+
+.embedded-stormbreaker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .embedded-stormbreaker-svg {
-  width: 58px;
-  height: 58px;
-  filter: drop-shadow(0 0 10px #f59e0b);
+  width: 68px;
+  height: 68px;
+  filter: drop-shadow(0 0 12px #f59e0b);
 }
 
-.impact-lightning-sparks {
+/* Supernova Impact Blast at Point of Cleave */
+.impact-supernova-blast {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 65px;
-  height: 65px;
+  top: 40px;
+  left: 35px;
+  width: 140px;
+  height: 140px;
   transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #ffffff 0%, rgba(0, 240, 255, 0.9) 35%, rgba(245, 158, 11, 0.6) 65%, transparent 75%);
   border-radius: 50%;
-  border: 2px dashed rgba(0, 240, 255, 0.7);
-  box-shadow: 0 0 20px #00f0ff, inset 0 0 12px #f59e0b;
-  animation: rotateSparks 0.8s linear infinite;
+  pointer-events: none;
+  animation: supernovaBlast 0.65s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
 }
 
-@keyframes rotateSparks {
-  0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.85); opacity: 0.8; }
-  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.15); opacity: 1; }
-  100% { transform: translate(-50%, -50%) rotate(360deg) scale(0.85); opacity: 0.8; }
+@keyframes supernovaBlast {
+  0% { transform: translate(-50%, -50%) scale(0.1); opacity: 1; filter: blur(0px); }
+  40% { transform: translate(-50%, -50%) scale(1.8); opacity: 0.95; filter: blur(4px); }
+  100% { transform: translate(-50%, -50%) scale(3.2); opacity: 0; filter: blur(18px); }
+}
+
+/* Concentric Expanding Shockwave Ring */
+.impact-shockwave-ring {
+  position: absolute;
+  top: 40px;
+  left: 35px;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+  border: 3px solid #00f0ff;
+  box-shadow: 0 0 25px #00f0ff, inset 0 0 18px #f59e0b;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: shockwaveExpand 0.75s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes shockwaveExpand {
+  0% { transform: translate(-50%, -50%) scale(0.1); opacity: 1; border-width: 4px; }
+  65% { opacity: 0.85; }
+  100% { transform: translate(-50%, -50%) scale(4); opacity: 0; border-width: 1px; }
+}
+
+/* Live Electrostatic Arcs jumping into button */
+.live-electrostatic-arcs {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+}
+
+.live-lightning-arcs-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px #00f0ff);
+}
+
+.arc-pulse-1 {
+  animation: arcStrobe1 0.22s infinite alternate;
+}
+
+.arc-pulse-2 {
+  animation: arcStrobe2 0.18s infinite alternate-reverse;
+}
+
+.arc-pulse-3 {
+  animation: arcStrobe3 0.25s infinite alternate;
+}
+
+@keyframes arcStrobe1 {
+  0% { opacity: 0.2; stroke-dasharray: 4 2; }
+  100% { opacity: 1; stroke-dasharray: 10 4; }
+}
+
+@keyframes arcStrobe2 {
+  0% { opacity: 1; stroke-dasharray: 8 3; }
+  100% { opacity: 0.25; stroke-dasharray: 2 6; }
+}
+
+@keyframes arcStrobe3 {
+  0% { opacity: 0.35; }
+  100% { opacity: 1; }
+}
+
+/* Dynamic Sparks on Stormbreaker SVG */
+.lightning-spark-1 {
+  animation: sparkFlickerA 0.3s ease-in-out infinite alternate;
+}
+
+.lightning-spark-2 {
+  animation: sparkFlickerB 0.22s ease-in-out infinite alternate;
+}
+
+.lightning-spark-3 {
+  animation: sparkFlickerA 0.26s ease-in-out infinite alternate-reverse;
+}
+
+.lightning-spark-4 {
+  animation: sparkFlickerB 0.32s ease-in-out infinite alternate;
+}
+
+@keyframes sparkFlickerA {
+  0% { opacity: 0.25; stroke-width: 1.2px; }
+  100% { opacity: 1; stroke-width: 2.2px; filter: drop-shadow(0 0 6px #00f0ff); }
+}
+
+@keyframes sparkFlickerB {
+  0% { opacity: 1; stroke-width: 2px; filter: drop-shadow(0 0 6px #facc15); }
+  100% { opacity: 0.2; stroke-width: 1px; }
 }
 
 /* Light Theme Polish */

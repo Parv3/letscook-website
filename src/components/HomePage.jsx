@@ -13,10 +13,285 @@ import {
   playRepulsorSound,
   playVibraniumPing,
   playThunderStrike,
-  playAssembleFanfare
+  playAssembleFanfare,
+  playCinematicShatterSound
 } from '../utils/soundEngine';
 
 const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
+
+// Realistic Movie-Accurate Asgardian Stormbreaker Battle-Axe Component
+export function StormbreakerSVG({ idPrefix = 'sb', className = '', width = 80, height = 80, withLightning = true }) {
+  return (
+    <svg 
+      viewBox="0 0 100 100" 
+      className={className} 
+      width={width} 
+      height={height} 
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        {/* Nidavellir Forged Dark Uru Metal Gradient */}
+        <linearGradient id={`${idPrefix}-uruBody`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#475569" />
+          <stop offset="30%" stopColor="#1e293b" />
+          <stop offset="70%" stopColor="#0f172a" />
+          <stop offset="100%" stopColor="#020617" />
+        </linearGradient>
+
+        {/* Razor Edge Bifrost Energy Gleam */}
+        <linearGradient id={`${idPrefix}-bladeEdge`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="25%" stopColor="#e0f2fe" />
+          <stop offset="65%" stopColor="#38bdf8" />
+          <stop offset="100%" stopColor="#0284c7" />
+        </linearGradient>
+
+        {/* 3D Hammer Mallet Top Chamfer Facet */}
+        <linearGradient id={`${idPrefix}-hammerTop`} x1="0%" y1="0%" x2="100%" y2="50%">
+          <stop offset="0%" stopColor="#64748b" />
+          <stop offset="60%" stopColor="#334155" />
+          <stop offset="100%" stopColor="#1e293b" />
+        </linearGradient>
+
+        {/* 3D Hammer Striking Face */}
+        <linearGradient id={`${idPrefix}-hammerFace`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#334155" />
+          <stop offset="50%" stopColor="#1e293b" />
+          <stop offset="100%" stopColor="#0b1120" />
+        </linearGradient>
+
+        {/* Asgardian Gold / Bronze Forge Bands */}
+        <linearGradient id={`${idPrefix}-forgeGold`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="50%" stopColor="#fbbf24" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+
+        {/* Groot's Gnarled Living Wood Bark 1 */}
+        <linearGradient id={`${idPrefix}-grootBark1`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#78350f" />
+          <stop offset="40%" stopColor="#451a03" />
+          <stop offset="80%" stopColor="#2e1002" />
+          <stop offset="100%" stopColor="#1c0a01" />
+        </linearGradient>
+
+        {/* Groot's Gnarled Living Wood Bark 2 */}
+        <linearGradient id={`${idPrefix}-grootBark2`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#9a3412" />
+          <stop offset="50%" stopColor="#7c2d12" />
+          <stop offset="100%" stopColor="#431407" />
+        </linearGradient>
+
+        {/* High-Voltage Asgardian Glow Filter */}
+        <filter id={`${idPrefix}-bifrostGlow`} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="2.2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* GROOT'S LIVING WOOD HANDLE (Entwined branches with natural contours) */}
+      <g className="groot-handle-group">
+        {/* Base shadow of the handle */}
+        <path 
+          d="M48,50 C44,61 54,71 47,81 C43,87 49,94 46,99 C49,101 54,99 53,96 C56,88 50,81 54,73 C58,63 51,55 52,50 Z" 
+          fill="#1c0a01" 
+        />
+        {/* Main twisted branch 1 */}
+        <path 
+          d="M47,51 C43,62 53,70 47,80 C42,86 48,93 45,98 C46,99 50,99 49,96 C52,90 47,82 51,74 C56,64 49,56 50,51 Z" 
+          fill={`url(#${idPrefix}-grootBark1)`} 
+          stroke="#2e1002" 
+          strokeWidth="0.8" 
+        />
+        {/* Second entwined branch 2 coiling over trunk 1 */}
+        <path 
+          d="M50,51 C54,59 46,68 53,78 C56,84 50,92 53,97 C54,97 56,96 55,94 C52,87 58,81 55,72 C49,62 56,55 53,51 Z" 
+          fill={`url(#${idPrefix}-grootBark2)`} 
+          stroke="#451a03" 
+          strokeWidth="0.8" 
+        />
+        {/* Groot's severed root flare & jagged branch end (Avengers: Infinity War) */}
+        <path 
+          d="M44,97 C46,101 55,101 57,96 L53,93 L47,94 Z" 
+          fill="#53270c" 
+          stroke="#2e1002" 
+          strokeWidth="0.9" 
+        />
+        {/* Organic bark striations & fibrous wood ridges */}
+        <path d="M48,56 C46,64 51,72 48,79" stroke="#92400e" strokeWidth="0.8" strokeLinecap="round" opacity="0.8" />
+        <path d="M51,64 C53,72 49,81 52,89" stroke="#b45309" strokeWidth="0.7" strokeLinecap="round" opacity="0.85" />
+        <path d="M47,84 C45,89 49,94 47,97" stroke="#78350f" strokeWidth="0.8" strokeLinecap="round" />
+
+        {/* Living vine tendril cords coiled around socket eye */}
+        <path d="M44,51 C48,53 52,53 56,51" stroke="#ca8a04" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M44,54 C48,56 52,56 56,54" stroke="#854d0e" strokeWidth="1.4" strokeLinecap="round" />
+        <path d="M45,58 C49,60 52,60 55,58" stroke="#a16207" strokeWidth="1.2" strokeLinecap="round" />
+        {/* Budding leaf tendril knot */}
+        <circle cx="54" cy="62" r="1.2" fill="#65a30d" />
+        <circle cx="47" cy="73" r="1.1" fill="#4d7c0f" />
+      </g>
+
+      {/* FACETED 3D HAMMER MALLET POLL (Right Wing) */}
+      <g className="storm-hammer-group">
+        {/* Hammer Top Chamfer Facet */}
+        <polygon 
+          points="54,26 84,19 90,23 54,31" 
+          fill={`url(#${idPrefix}-hammerTop)`} 
+          stroke="#64748b" 
+          strokeWidth="0.8" 
+          strokeLinejoin="round" 
+        />
+        {/* Main Hammer Body / Side Facet */}
+        <polygon 
+          points="54,31 84,23 84,49 54,47" 
+          fill={`url(#${idPrefix}-uruBody)`} 
+          stroke="#475569" 
+          strokeWidth="1" 
+          strokeLinejoin="round" 
+        />
+        {/* Hammer Bottom Chamfer Facet */}
+        <polygon 
+          points="54,47 84,49 90,53 54,51" 
+          fill="#0f172a" 
+          stroke="#334155" 
+          strokeWidth="0.8" 
+          strokeLinejoin="round" 
+        />
+        {/* Heavy Textured Front Striking Face (3D Impact Mallet) */}
+        <polygon 
+          points="84,19 92,23 92,53 84,49" 
+          fill={`url(#${idPrefix}-hammerFace)`} 
+          stroke="#94a3b8" 
+          strokeWidth="1.2" 
+          strokeLinejoin="round" 
+        />
+        {/* Striking Face Inset Grid / Nidavellir Forged Notches */}
+        <line x1="86" y1="26" x2="90" y2="28" stroke="#64748b" strokeWidth="1" />
+        <line x1="86" y1="36" x2="90" y2="38" stroke="#64748b" strokeWidth="1" />
+        <line x1="86" y1="46" x2="90" y2="48" stroke="#64748b" strokeWidth="1" />
+
+        {/* Asgardian Forge Reinforcement Brackets */}
+        <rect x="76" y="24" width="3.5" height="25" fill={`url(#${idPrefix}-forgeGold)`} rx="0.5" />
+        <circle cx="77.7" cy="27" r="0.9" fill="#fef08a" />
+        <circle cx="77.7" cy="46" r="0.9" fill="#fef08a" />
+      </g>
+
+      {/* SWEPT BEARDED AXE BLADE (Left Wing - Nidavellir Uru Battle Blade) */}
+      <g className="storm-axe-group">
+        {/* Main Axe Blade Body (Dark Uru Metal with Full Beard) */}
+        <path 
+          d="M50,22 C32,20 18,24 8,36 C5,45 10,58 20,64 C25,66 38,65 50,56 L50,47 C37,53 28,52 23,48 C18,43 18,36 28,30 C35,27 44,26 50,26 Z" 
+          fill={`url(#${idPrefix}-uruBody)`} 
+          stroke="#334155" 
+          strokeWidth="1.2" 
+          strokeLinejoin="round" 
+        />
+
+        {/* Razor-Sharp Crystalline Cutting Edge (Bevel Grind Line) */}
+        <path 
+          d="M50,22 C32,20 18,24 8,36 C5,45 10,58 20,64 C25,66 38,65 50,56" 
+          stroke={`url(#${idPrefix}-bladeEdge)`} 
+          strokeWidth="2.4" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          filter={`url(#${idPrefix}-bifrostGlow)`} 
+        />
+        {/* Extreme Edge Gleam Line */}
+        <path 
+          d="M42,21.5 C28,21.5 16,25.5 8,36 C6,43 10,55 19,63" 
+          stroke="#ffffff" 
+          strokeWidth="0.9" 
+          strokeLinecap="round" 
+          opacity="0.9" 
+        />
+
+        {/* Top Spine Horn / Spike of the Axe */}
+        <polygon points="50,22 42,18 30,19 36,22" fill="#64748b" stroke="#94a3b8" strokeWidth="0.6" />
+
+        {/* Etched Asgardian Norse Runes on Blade Cheek */}
+        <g stroke="#38bdf8" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" opacity="0.92" filter={`url(#${idPrefix}-bifrostGlow)`}>
+          <path d="M26,34 L32,38 L26,42 M29,36 L29,48" />
+          <path d="M35,33 L40,37 L35,41 M38,35 L38,47" />
+          <line x1="22" y1="44" x2="30" y2="50" />
+          <line x1="28" y1="45" x2="24" y2="52" />
+        </g>
+      </g>
+
+      {/* CENTRAL FORGED EYE SOCKET & ASGARDIAN RUNE CORE */}
+      <g className="storm-socket-group">
+        {/* Forged Heavy Collar Sleeve */}
+        <rect 
+          x="44" 
+          y="21" 
+          width="12" 
+          height="32" 
+          rx="2" 
+          fill="#1e293b" 
+          stroke="#64748b" 
+          strokeWidth="1.8" 
+        />
+        {/* Gold Inlay Forge Rings on Socket */}
+        <line x1="44" y1="26" x2="56" y2="26" stroke="#f59e0b" strokeWidth="1.4" />
+        <line x1="44" y1="48" x2="56" y2="48" stroke="#f59e0b" strokeWidth="1.4" />
+
+        {/* Pulsing Celestial Bifrost Rune Node Core */}
+        <g className="bifrost-rune-node">
+          <circle cx="50" cy="37" r="6" fill="#0f172a" stroke="#38bdf8" strokeWidth="1.8" />
+          <circle cx="50" cy="37" r="4.2" fill="#0284c7" filter={`url(#${idPrefix}-bifrostGlow)`} />
+          {/* Asgardian Core Star / Iris */}
+          <polygon points="50,33 51.5,36 54.5,37 51.5,38 50,41 48.5,38 45.5,37 48.5,36" fill="#ffffff" />
+          <circle cx="50" cy="37" r="1.5" fill="#fef08a" />
+        </g>
+      </g>
+
+      {/* DYNAMIC ASGARDIAN ELECTROSTATIC LIGHTNING ARCS */}
+      {withLightning && (
+        <g filter={`url(#${idPrefix}-bifrostGlow)`} className="stormbreaker-electric-arcs">
+          {/* Arc 1: Dancing along the axe blade */}
+          <path 
+            d="M6,38 L12,32 L9,26 L16,21 L12,16" 
+            stroke="#38bdf8" 
+            strokeWidth="1.8" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="lightning-spark-1"
+          />
+          {/* Arc 2: Bearded hook spark leaping down */}
+          <path 
+            d="M18,63 L14,70 L20,74 L16,80" 
+            stroke="#00f0ff" 
+            strokeWidth="1.6" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="lightning-spark-2"
+          />
+          {/* Arc 3: Leaping across hammer poll */}
+          <path 
+            d="M86,21 L93,27 L88,34 L95,41 L89,48" 
+            stroke="#facc15" 
+            strokeWidth="1.8" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="lightning-spark-3"
+          />
+          {/* Arc 4: Coiling around Groot's handle */}
+          <path 
+            d="M45,68 L53,74 L46,82 L54,88 L48,94" 
+            stroke="#38bdf8" 
+            strokeWidth="1.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="lightning-spark-4"
+          />
+        </g>
+      )}
+    </svg>
+  );
+}
 
 export const SQUADS_DATA = {
   ironman: {
@@ -43,89 +318,45 @@ export const SQUADS_DATA = {
         <defs>
           <radialGradient id="arcCoreGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="30%" stopColor="#00f0ff" />
-            <stop offset="70%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#0c1b38" />
+            <stop offset="40%" stopColor="#00f0ff" />
+            <stop offset="85%" stopColor="#0077aa" />
+            <stop offset="100%" stopColor="#051525" />
           </radialGradient>
-          <filter id="arcGlowFilter" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
         </defs>
-
-        {/* 1. Outer Segmented Magnetic Coils Ring */}
-        <g stroke="#ff0055" strokeWidth="2.5" opacity="0.9">
-          <circle cx="50" cy="50" r="45" fill="none" strokeDasharray="10 4" className="spin-slow" />
-        </g>
-
-        {/* 2. Copper Power Deflection Windings */}
-        {[0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map((deg, i) => (
-          <line
-            key={i}
-            x1="50"
-            y1="4"
-            x2="50"
-            y2="11"
-            stroke="#f59e0b"
-            strokeWidth="2.2"
-            transform={`rotate(${deg} 50 50)`}
-          />
-        ))}
-
-        {/* 3. Palladium Rotor with Calibrated Tick Marks */}
-        <circle cx="50" cy="50" r="38" fill="#0d0814" stroke="#ff0055" strokeWidth="1.5" />
-        <circle cx="50" cy="50" r="34" fill="none" stroke="#00f0ff" strokeWidth="1.8" strokeDasharray="4 8" className="spin-reverse" />
-
-        {/* 4. Inverted Glowing Cyan Triangular Core Conduit */}
-        <polygon 
-          points="50,23 73,63 27,63" 
-          fill="rgba(0, 240, 255, 0.12)" 
-          stroke="#00f0ff" 
-          strokeWidth="2.8" 
-          className="pulse-core" 
-          filter="url(#arcGlowFilter)"
-        />
-
-        {/* 5. Inner Triangular Core Frame */}
-        <polygon 
-          points="50,31 66,60 34,60" 
-          fill="none" 
-          stroke="#38bdf8" 
-          strokeWidth="1.5" 
-          opacity="0.9"
-        />
-
-        {/* 6. High-Energy Central Arc Singularity */}
-        <circle cx="50" cy="49" r="10" fill="url(#arcCoreGlow)" style={{ filter: 'drop-shadow(0 0 10px #00f0ff)' }} />
-        <circle cx="50" cy="49" r="4" fill="#ffffff" />
+        <circle cx="50" cy="50" r="46" fill="#070c14" stroke="#00f0ff" strokeWidth="2.5" strokeDasharray="6 3" className="spin-slow" />
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#ff0055" strokeWidth="2" opacity="0.6" />
+        <circle cx="50" cy="50" r="30" fill="#0a1828" stroke="#00f0ff" strokeWidth="2" />
+        <polygon points="50,26 71,62 29,62" fill="none" stroke="#00f0ff" strokeWidth="3" className="pulse-slow" />
+        <polygon points="50,34 64,58 36,58" fill="url(#arcCoreGlow)" />
+        <circle cx="50" cy="50" r="6" fill="#ffffff" filter="drop-shadow(0 0 6px #00f0ff)" />
       </svg>
     )
   },
   captain: {
     key: 'captain',
-    team: 'PR & MEDIA TEAM',
+    team: 'PR TEAM',
     hero: 'CAPTAIN AMERICA',
     title: 'VIBRANIUM ALLIANCE',
-    badge: 'SECURITY TIER: VIBRANIUM CLASSIFIED',
-    status: 'ACTIVE // TACTICAL SHIELD READY',
+    badge: 'CLEARANCE: STRATEGIC SHIELD',
+    status: 'DEPLOYED // STAMINA 100%',
     quote: '"I can do this all day."',
-    desc: 'Global campus outreach, strategic industry partnerships, high-impact storytelling, brand narrative, and developer community expansion.',
-    color: '#2563eb',
-    secondaryColor: '#ef4444',
+    desc: 'Public relations, community diplomacy, university outreach, brand partnerships, and social storytelling across national developer ecosystems.',
+    color: '#0055ff',
+    secondaryColor: '#ffffff',
     linktree: `${LINKTREE_URL}&utm_source=squad_pr_captain`,
     initiatives: [
-      { title: 'Global Tech Alliances', desc: 'Partnerships with student developer clubs and industry leaders.' },
-      { title: 'Brand Narrative & Media Ops', desc: 'Cinematic visual engineering, developer journalism, and press.' },
-      { title: 'Community Growth Strategy', desc: 'Expanding Let\'s Cook chapters across universities nationwide.' }
+      { title: 'Global Campus Outreach', desc: 'Active student ambassador hubs across 40+ engineering colleges.' },
+      { title: 'Storytelling & Public Relations', desc: 'Showcasing student-shipped software to thousands of founders & devs.' },
+      { title: 'Ecosystem Alliances', desc: 'Partnering with top developer tooling platforms, hackathons, and VCs.' }
     ],
-    arsenal: ['Public Relations', 'Alliances', 'Growth', 'Storytelling', 'Media', 'Comms'],
+    arsenal: ['Community', 'Keynotes', 'Alliances', 'Outreach', 'Branding', 'Diplomacy'],
     sound: playVibraniumPing,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20 shield-anim" width="80" height="80">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#ef4444" strokeWidth="4" />
-        <circle cx="50" cy="50" r="34" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.95" />
-        <circle cx="50" cy="50" r="24" fill="none" stroke="#ef4444" strokeWidth="3" />
-        <circle cx="50" cy="50" r="14" fill="#2563eb" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20 cap-shield-insignia" width="80" height="80">
+        <circle cx="50" cy="50" r="46" fill="#b91c1c" stroke="#dc2626" strokeWidth="1.5" />
+        <circle cx="50" cy="50" r="37" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
+        <circle cx="50" cy="50" r="28" fill="#b91c1c" stroke="#dc2626" strokeWidth="1" />
+        <circle cx="50" cy="50" r="19" fill="#1d4ed8" stroke="#2563eb" strokeWidth="1" />
         <polygon points="50,38 53,46 61,46 55,51 57,59 50,54 43,59 45,51 39,46 47,46" fill="#ffffff" className="shield-star-spin" />
       </svg>
     )
@@ -150,68 +381,7 @@ export const SQUADS_DATA = {
     arsenal: ['Hackathons', 'Keynotes', 'Live Arenas', 'Workshops', 'Tournaments', 'Demo Days'],
     sound: playThunderStrike,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20" width="80" height="80" fill="none">
-        <defs>
-          <linearGradient id="stormUruGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#475569" />
-            <stop offset="50%" stopColor="#1e293b" />
-            <stop offset="100%" stopColor="#0f172a" />
-          </linearGradient>
-          <linearGradient id="stormBladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="60%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#1e293b" />
-          </linearGradient>
-          <filter id="stormLightningGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-
-        {/* Dynamic Asgardian Lightning Spark Arcs */}
-        <g filter="url(#stormLightningGlow)" className="spark-flicker">
-          <path d="M12,18 L16,26 L12,32 L20,30" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
-          <path d="M10,48 L15,56 L11,62 L18,60" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
-          <path d="M84,24 L78,32 L83,38" stroke="#facc15" strokeWidth="2" strokeLinecap="round" />
-          <path d="M50,10 L54,16 L49,21" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
-        </g>
-
-        {/* Stormbreaker Axe Blade (Left Wing) */}
-        <path 
-          d="M48,22 C34,22 18,28 14,40 C12,50 18,62 48,64 L48,54 C32,52 24,46 24,40 C24,34 32,28 48,28 Z" 
-          fill="url(#stormBladeGrad)" 
-          stroke="#38bdf8" 
-          strokeWidth="1.8" 
-          strokeLinejoin="round" 
-        />
-        {/* Razor Edge Highlight */}
-        <path d="M14,40 C12,50 18,62 48,64" stroke="#f0f9ff" strokeWidth="1.5" strokeLinecap="round" />
-
-        {/* Stormbreaker Hammer Mallet Poll (Right Wing) */}
-        <polygon 
-          points="52,28 78,24 86,28 86,52 78,56 52,52" 
-          fill="url(#stormUruGrad)" 
-          stroke="#f59e0b" 
-          strokeWidth="2" 
-          strokeLinejoin="round" 
-        />
-        <rect x="80" y="27" width="6" height="25" rx="1" fill="#0f172a" stroke="#d97706" strokeWidth="1" />
-
-        {/* Central Eye Socket & Asgardian Rune Collar */}
-        <rect x="44" y="24" width="12" height="32" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
-        <g className="rune-pulse">
-          <circle cx="50" cy="40" r="5" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
-          <circle cx="50" cy="40" r="2" fill="#ffffff" />
-        </g>
-
-        {/* Groot's Entwined Wood Vine Handle */}
-        <path d="M48,56 C46,65 52,72 49,82 C47,88 51,94 48,98" stroke="#78350f" strokeWidth="4.5" strokeLinecap="round" />
-        <path d="M52,56 C54,64 48,73 51,83 C53,89 49,94 52,98" stroke="#92400e" strokeWidth="3" strokeLinecap="round" />
-        {/* Vine Wrapping Bands */}
-        <line x1="47" y1="64" x2="53" y2="67" stroke="#ca8a04" strokeWidth="1.2" />
-        <line x1="46" y1="74" x2="54" y2="77" stroke="#ca8a04" strokeWidth="1.2" />
-        <line x1="47" y1="84" x2="53" y2="87" stroke="#ca8a04" strokeWidth="1.2" />
-      </svg>
+      <StormbreakerSVG idPrefix="sb_insignia" className="w-20 h-20" width={80} height={80} withLightning={true} />
     )
   },
   core: {
@@ -344,24 +514,25 @@ export default function HomePage({
     setStormSummoned(false);
     setStormbreakerJammed(false);
 
-    // Hypersonic lightning strike jams into button at 450ms
+    // Hypersonic descent along Bifrost conduit, slams into button at 500ms
     setTimeout(() => {
       document.body.classList.add('seismic-shake');
       playThunderStrike();
+      playCinematicShatterSound();
       setIsSummoningStorm(false);
       setStormbreakerJammed(true);
       setStormSummoned(true);
 
       setTimeout(() => {
         document.body.classList.remove('seismic-shake');
-      }, 500);
+      }, 600);
 
-      // Remains wedged in button for 7.5 seconds
+      // Remains wedged in button for 8 seconds
       setTimeout(() => {
         setStormbreakerJammed(false);
         setStormSummoned(false);
-      }, 7500);
-    }, 450);
+      }, 8000);
+    }, 500);
   };
 
   // Progressive Shake & Invert Easter Egg State
@@ -447,6 +618,18 @@ export default function HomePage({
     <div className="home-page animate-fade-in">
       {/* Dynamic Scroll Circuit Rail */}
       <ScrollCircuitRail />
+
+      {/* Dynamic Full-Screen Bifrost Sky Conduit & Lightning Summon */}
+      {isSummoningStorm && (
+        <div className="bifrost-summon-screen" aria-hidden="true">
+          <div className="bifrost-sky-storm-bg" />
+          <div className="bifrost-lightning-strobe-overlay" />
+          <div className="bifrost-sky-conduit-pillar">
+            <div className="bifrost-sky-rainbow-column" />
+            <div className="bifrost-sky-lightning-core" />
+          </div>
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* 1. HERO SECTION (TIGHT COMPOSITION & PROMINENT LIGHTING)  */}
@@ -707,6 +890,15 @@ export default function HomePage({
                         }}
                         title="Summon Stormbreaker with Asgardian Lightning"
                       >
+                        {/* Molten impact fracture cracks radiating through button surface when jammed */}
+                        {stormbreakerJammed && (
+                          <svg className="button-molten-fractures" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <path d="M195,6 L175,18 L152,14 L138,26" stroke="#f59e0b" strokeWidth="2" fill="none" opacity="0.9" />
+                            <path d="M185,15 L168,32 L146,38 L130,30" stroke="#00f0ff" strokeWidth="1.6" fill="none" opacity="0.85" />
+                            <path d="M192,12 L180,24 L164,48 L142,54" stroke="#facc15" strokeWidth="1.5" fill="none" opacity="0.8" />
+                          </svg>
+                        )}
+
                         {isSummoningStorm ? (
                           'CHANNELING BIFROST...'
                         ) : stormbreakerJammed ? (
@@ -721,26 +913,32 @@ export default function HomePage({
                         <div className={`stormbreaker-strike-wedge ${
                           isSummoningStorm ? 'axe-striking' : 'axe-lodged'
                         }`}>
-                          <svg width="64" height="64" viewBox="0 0 100 100" className="embedded-stormbreaker-svg">
-                            <defs>
-                              <linearGradient id="jamAxeBlade" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#f0f9ff" />
-                                <stop offset="30%" stopColor="#38bdf8" />
-                                <stop offset="80%" stopColor="#0369a1" />
-                                <stop offset="100%" stopColor="#0c4a6e" />
-                              </linearGradient>
-                            </defs>
-                            {/* Wooden Vine Handle */}
-                            <path d="M48,56 C46,65 52,72 49,82 C47,88 51,94 48,98" stroke="#78350f" strokeWidth="4.5" strokeLinecap="round" />
-                            {/* Curved Uru Axe Blade */}
-                            <path d="M48,22 C34,22 18,28 14,40 C12,50 18,62 48,64 Z" fill="url(#jamAxeBlade)" stroke="#ffffff" strokeWidth="1.5" />
-                            {/* Faceted Hammer Poll */}
-                            <polygon points="52,28 78,24 84,28 84,52 78,56 52,52" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
-                            {/* Rune Socket */}
-                            <rect x="44" y="24" width="12" height="32" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
-                            <circle cx="50" cy="40" r="4" fill="#facc15" filter="drop-shadow(0 0 4px #facc15)" />
-                          </svg>
-                          {stormbreakerJammed && <div className="impact-lightning-sparks" />}
+                          {/* Blinding Supernova Impact Blast */}
+                          {stormbreakerJammed && <div className="impact-supernova-blast" />}
+                          {/* Concentric Expanding Shockwave Ring */}
+                          {stormbreakerJammed && <div className="impact-shockwave-ring" />}
+
+                          {/* Authentic Movie-Accurate Stormbreaker SVG */}
+                          <div className="embedded-stormbreaker-container">
+                            <StormbreakerSVG 
+                              idPrefix="sb_jammed" 
+                              className="embedded-stormbreaker-svg" 
+                              width={70} 
+                              height={70} 
+                              withLightning={true} 
+                            />
+                          </div>
+
+                          {/* Live Electrostatic Lightning Bolts jumping into button */}
+                          {stormbreakerJammed && (
+                            <div className="live-electrostatic-arcs">
+                              <svg viewBox="0 0 100 100" className="live-lightning-arcs-svg">
+                                <path d="M50,40 L65,55 L58,68 L72,82" stroke="#00f0ff" strokeWidth="2.2" strokeLinecap="round" fill="none" className="arc-pulse-1" />
+                                <path d="M40,48 L26,60 L34,74 L20,86" stroke="#facc15" strokeWidth="1.8" strokeLinecap="round" fill="none" className="arc-pulse-2" />
+                                <path d="M52,36 L44,48 L48,60 L38,72" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" fill="none" className="arc-pulse-3" />
+                              </svg>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
