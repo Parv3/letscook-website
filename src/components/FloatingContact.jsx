@@ -201,6 +201,31 @@ export default function FloatingContact() {
         .contact-linktree:hover {
           color: var(--accent-burgundy);
         }
+
+        @media (max-width: 640px) {
+          .floating-contact {
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+            right: 14px;
+          }
+
+          .floating-trigger-btn {
+            width: 44px;
+            height: 44px;
+            box-shadow: 0 4px 16px rgba(139, 0, 46, 0.45);
+          }
+
+          .contact-card {
+            position: fixed;
+            bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+            left: 14px;
+            right: 14px;
+            width: auto;
+            max-width: 380px;
+            margin: 0 auto;
+            padding: 16px;
+            box-sizing: border-box;
+          }
+        }
       `}</style>
     </div>
   );

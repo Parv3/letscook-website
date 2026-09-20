@@ -51,6 +51,12 @@ export default function PasswordInput({ placeholder = "Enter password", value, o
           font-family: var(--font-body);
         }
 
+        @media (max-width: 640px) {
+          .pw-input-field {
+            font-size: 16px; /* Prevents iOS Safari auto-zoom */
+          }
+        }
+
         .pw-input-field:focus {
           border-color: var(--accent-burgundy);
           outline: none;

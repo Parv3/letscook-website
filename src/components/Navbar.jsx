@@ -397,30 +397,33 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
 
         @media (max-width: 600px) {
           .navbar-container {
-            padding: 8px 10px;
+            padding: 8px 12px;
           }
           .terminal-btn {
             display: none !important; /* Accessible inside mobile menu drawer */
           }
           .brand-logo-wrap {
-            padding: 2px 4px;
+            padding: 2px 2px;
+            gap: 8px;
           }
           .brand-logo {
-            height: 28px;
+            height: 26px;
           }
           .brand-title {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
+            letter-spacing: 0.04em;
           }
           .brand-subtitle {
-            display: none; /* Keep mobile header clean and high contrast */
+            display: none;
           }
           .nav-actions {
-            gap: 4px;
+            gap: 5px;
           }
           .icon-btn {
-            width: 32px;
-            height: 32px;
-            padding: 6px;
+            width: 35px;
+            height: 35px;
+            padding: 7px;
+            border-radius: var(--radius-btn);
           }
           .navbar-spacer {
             height: 52px;

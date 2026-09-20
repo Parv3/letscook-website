@@ -170,6 +170,28 @@ export default function FaqSection() {
           font-size: 0.95rem;
           line-height: 1.6;
         }
+
+        @media (max-width: 640px) {
+          .faq-section {
+            padding: 40px 16px;
+          }
+          .accordion-header {
+            padding: 14px 16px;
+            gap: 12px;
+          }
+          .question-text {
+            font-size: 0.92rem;
+            line-height: 1.35;
+          }
+          .accordion-body {
+            padding: 0 16px 16px 16px;
+            padding-top: 12px;
+          }
+          .accordion-body p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+          }
+        }
       `}</style>
     </section>
   );

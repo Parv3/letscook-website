@@ -785,38 +785,44 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
         }
 
         @media (max-width: 640px) {
+          .home-page {
+            padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+          }
           .hero-section {
-            padding: 36px 14px 32px 14px;
-            min-height: 70vh;
+            padding: 24px 16px 20px 16px;
+            min-height: auto;
           }
           .hero-content {
-            padding: 8px 10px;
-            margin-bottom: 24px;
+            padding: 4px 0;
+            margin-bottom: 20px;
           }
           .hero-title {
-            font-size: clamp(1.7rem, 6.8vw, 2.5rem);
-            line-height: 1.3;
-            margin-bottom: 16px;
+            font-size: clamp(1.65rem, 6.8vw, 2.25rem);
+            line-height: 1.25;
+            margin-bottom: 14px;
+            letter-spacing: -0.02em;
             text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
           }
           .highlight-box {
             display: inline-block;
-            vertical-align: middle;
-            padding: 2px 8px;
-            font-size: 0.92em;
-            margin: 2px 2px;
+            vertical-align: baseline;
+            line-height: 1.05;
+            padding: 2px 7px;
+            font-size: 0.9em;
+            margin: 0 2px;
+            border-radius: 4px;
           }
           .hero-subtitle {
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.88rem;
+            line-height: 1.55;
             margin-bottom: 20px;
-            padding: 0 4px;
-            max-width: 96%;
+            padding: 0;
+            max-width: 100%;
           }
           .hero-cta-group {
             flex-direction: column;
             width: 100%;
-            max-width: 300px;
+            max-width: 100%;
             margin: 0 auto;
             gap: 10px;
           }
@@ -824,17 +830,38 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             width: 100%;
             padding: 13px 18px;
             min-height: 48px;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
             justify-content: center;
           }
           .hero-stats-row {
-            grid-template-columns: 1fr;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
             gap: 10px;
             margin-top: 20px;
-            padding-top: 16px;
+            padding: 12px 2px 6px 2px;
+            border-top: 1px solid var(--border-color);
+            scrollbar-width: none;
+          }
+          .hero-stats-row::-webkit-scrollbar {
+            display: none;
           }
           .stat-card {
+            flex: 0 0 78%;
+            scroll-snap-align: start;
             padding: 12px 14px;
+            box-sizing: border-box;
+          }
+          .stat-card h4 {
+            font-size: 0.82rem;
+            margin-bottom: 2px;
+          }
+          .stat-card p {
+            font-size: 0.75rem;
+            line-height: 1.35;
           }
           .access-box {
             grid-template-columns: 1fr;
@@ -845,14 +872,15 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             padding: 18px 14px;
           }
           .pillars-section {
-            padding: 44px 14px;
+            padding: 40px 16px;
           }
           .access-section {
-            padding: 44px 14px;
+            padding: 40px 16px;
           }
           .footer-container {
             flex-direction: column;
-            gap: 28px;
+            gap: 24px;
+            padding: 0 16px;
           }
           .footer-links-group {
             flex-direction: column;

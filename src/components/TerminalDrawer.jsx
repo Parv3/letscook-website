@@ -373,6 +373,9 @@ export default function TerminalDrawer({ isOpen, onClose, onOpenPitchModal, them
           .input-prompt {
             display: none;
           }
+          .terminal-text-input {
+            font-size: 16px; /* Prevents iOS auto-zoom */
+          }
         }
       `}</style>
     </div>
