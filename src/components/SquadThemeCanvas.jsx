@@ -72,68 +72,62 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
       globalTick++;
       const currentSquad = squadRef.current;
 
-      // 1. IRON MAN: 3D HOLOGRAPHIC ARC REACTOR MATRIX
+      // 1. IRON MAN: 3D HOLOGRAPHIC ARC REACTOR MATRIX (Subtle & Uncluttered)
       if (currentSquad === 'ironman') {
         const cx = width * 0.5;
-        const cy = height * 0.45;
-        const rot = globalTick * 0.008;
+        const cy = height * 0.42;
+        const rot = globalTick * 0.005;
 
         // Interactive mouse parallax offset
-        const offsetX = (mouse.x - cx) * 0.03;
-        const offsetY = (mouse.y - cy) * 0.03;
+        const offsetX = (mouse.x - cx) * 0.02;
+        const offsetY = (mouse.y - cy) * 0.02;
 
-        // Concentric Holographic Telemetry Rings
+        // Concentric Holographic Rings (Soft & non-distracting)
         ctx.save();
         ctx.translate(cx + offsetX, cy + offsetY);
 
         // Ring 1 (Inner Cyan Arc)
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(0, 0, 180, 0, Math.PI * 2);
+        ctx.arc(0, 0, 160, 0, Math.PI * 2);
         ctx.stroke();
 
         // Ring 2 (Dashed Counter-Rotating Crimson Arc)
         ctx.save();
         ctx.rotate(-rot);
-        ctx.strokeStyle = 'rgba(255, 0, 85, 0.25)';
-        ctx.setLineDash([12, 18]);
+        ctx.strokeStyle = 'rgba(255, 0, 85, 0.12)';
+        ctx.setLineDash([8, 16]);
         ctx.beginPath();
-        ctx.arc(0, 0, 260, 0, Math.PI * 2);
+        ctx.arc(0, 0, 240, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
 
         // Ring 3 (Outer Cyan Track)
         ctx.save();
-        ctx.rotate(rot * 1.5);
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-        ctx.setLineDash([8, 12, 2, 12]);
+        ctx.rotate(rot * 1.2);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.06)';
+        ctx.setLineDash([4, 12]);
         ctx.beginPath();
-        ctx.arc(0, 0, 340, 0, Math.PI * 2);
+        ctx.arc(0, 0, 320, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
 
-        // Precision Crosshairs
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
-        ctx.setLineDash([]);
-        ctx.beginPath();
-        ctx.moveTo(-width, 0); ctx.lineTo(width, 0);
-        ctx.moveTo(0, -height); ctx.lineTo(0, height);
-        ctx.stroke();
-
         ctx.restore();
 
-        // Drifting Cyan Telemetry Data Nodes
+        // Ambient Nanotech Embers (Soft circular dust dots)
         particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
+          p.x += p.vx * 0.4;
+          p.y += p.vy * 0.4;
           if (p.x < 0) p.x = width;
           if (p.x > width) p.x = 0;
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
-          ctx.fillRect(p.x, p.y, p.size * 1.5, p.size * 1.5);
+          ctx.fillStyle = 'rgba(0, 240, 255, 0.22)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
+          ctx.fill();
         });
       }
 

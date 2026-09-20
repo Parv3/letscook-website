@@ -265,107 +265,23 @@ export const SQUADS_DATA = {
   }
 };
 
-export const TECH_CONSOLE_TRACKS = {
-  wasm: {
-    id: 'wasm',
-    label: '01 // SYSTEMS & COMPILERS',
-    lang: 'Rust / WebAssembly',
-    runtime: 'LLVM 18 · WASM-OPT O4',
-    code: `// Stark Tech Labs Systems Kernel [v85.4]
-use stark_hardware::arc_reactor::ArcFlux;
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-pub struct QuantumCompiler {
-    reactor: ArcFlux,
-    throughput_gbps: f64,
-}
-
-#[wasm_bindgen]
-impl QuantumCompiler {
-    pub fn ignite_reactor() -> Result<Self, JsValue> {
-        let reactor = ArcFlux::calibrate(3.2 /* GW */)?;
-        reactor.verify_nanotech_bounds()?;
-        Ok(Self { reactor, throughput_gbps: 42.8 })
-    }
-}`,
-    output: [
-      '[STARK COMPILER v85.4] cargo test --target wasm32-unknown-unknown',
-      '✔ Compiling systems-kernel v1.4.0 (Rust 2024 edition)',
-      '✔ Generating zero-allocation memory boundaries: 0.08ms',
-      '✔ Emitting optimized WebAssembly bytecode: 42.6 KB (gzipped: 9.8 KB)',
-      '★ TELEMETRY: 100% PASS · 0 RUNTIME PANICS · PRODUCTION VERIFIED'
-    ]
-  },
-  ai: {
-    id: 'ai',
-    label: '02 // AGENTIC NEURAL INFERENCE',
-    lang: 'Python / PyTorch',
-    runtime: 'CUDA 12.4 · INT4 Quantized',
-    code: `# Autonomous Agentic Reasoning Pipeline
-from stark_ai import NeuralMesh, Quantizer
-
-@NeuralMesh.agent(codename="FRIDAY_V8")
-async def dispatch_codebase_synthesis(task: BuilderDirective):
-    model = await Quantizer.load_int4("deepseek-r1-distill")
-    context = await task.ingest_ast_nodes(workers=16)
-    
-    # 0.8ms real-time speculative decoding on local hardware
-    async for token in model.stream_inference(context):
-        yield token.synthesize_production_patch()`,
-    output: [
-      '[FRIDAY TELEMETRY v9.2] Initializing local neural pipeline...',
-      '✔ Model weights loaded: DeepSeek-R1-Distill-INT4 [TensorRT-LLM]',
-      '✔ KV-Cache allocated: 1.2 GB VRAM (98.4% efficiency)',
-      '✔ Speculative decoding latency: 128 tok/sec (< 0.9ms TTFT)',
-      '★ AGENT ONLINE · AUTONOMOUS INFERENCE ENGAGED'
-    ]
-  },
-  cloud: {
-    id: 'cloud',
-    label: '03 // DISTRIBUTED EDGE CLUSTER',
-    lang: 'Docker / Edge Mesh',
-    runtime: 'Anycast · 128 University Nodes',
-    code: `# Distributed Student Builder Mesh
-apiVersion: stark.foundry/v1alpha1
-kind: DistributedEdgeCluster
-metadata:
-  name: letscook-campus-mesh
-spec:
-  replicas: 128
-  routing: Anycast-Global-Mesh
-  maxLatencyMs: 1.5
-  telemetry:
-    arcReactorSync: true
-    zeroDowntimeDeploy: true`,
-    output: [
-      '[STARK CLUSTER ORCHESTRATION] Deploying to campus edge nodes...',
-      '✔ Synchronizing 128 university node instances in parallel',
-      '✔ Anycast health checks passing: Average RTT 1.24ms',
-      '✔ Zero packet drops across 14,800 active builder websocket connections',
-      '★ CLUSTER ACTIVE · GLOBAL EDGE MESH RUNNING NOMINAL'
-    ]
-  }
-};
-
 export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSquad = 'ironman', onSelectSquad }) {
   const [accessCode, setAccessCode] = useState('');
   const activeSquad = SQUADS_DATA[currentSquad] || SQUADS_DATA.ironman;
 
-  // Stark Tech Interactive Console State
-  const [techConsoleTab, setTechConsoleTab] = useState('wasm');
-  const [techRunOutput, setTechRunOutput] = useState(null);
-  const [isCompiling, setIsCompiling] = useState(false);
+  // Stark Arc Flux Interactive State (Clean, instant feedback)
+  const [isTestingFlux, setIsTestingFlux] = useState(false);
+  const [fluxTested, setFluxTested] = useState(false);
 
-  const handleRunKernelTest = () => {
+  const handleTestArcFlux = () => {
     playRepulsorSound();
-    setIsCompiling(true);
-    setTechRunOutput(['> Initializing Stark Mark LXXXV compiler pipeline...']);
+    setIsTestingFlux(true);
+    setFluxTested(false);
     setTimeout(() => {
-      const track = TECH_CONSOLE_TRACKS[techConsoleTab] || TECH_CONSOLE_TRACKS.wasm;
-      setTechRunOutput(track.output);
-      setIsCompiling(false);
-    }, 600);
+      setIsTestingFlux(false);
+      setFluxTested(true);
+      setTimeout(() => setFluxTested(false), 5000);
+    }, 450);
   };
 
   // Progressive Shake & Invert Easter Egg State
@@ -625,6 +541,40 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                   >
                     ENLIST IN {activeSquad.team} <ArrowUpRight size={16} />
                   </a>
+
+                  {activeSquad.key === 'ironman' && (
+                    <button
+                      type="button"
+                      onClick={handleTestArcFlux}
+                      disabled={isTestingFlux}
+                      className="btn-secondary glow-btn"
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(255, 0, 85, 0.6)',
+                        color: '#ffffff',
+                        background: 'rgba(255, 0, 85, 0.12)'
+                      }}
+                      title="Test Stark Arc Reactor Energy Calibration"
+                    >
+                      {isTestingFlux ? '⚡ CALIBRATING ARC FLUX...' : '⚡ TEST ARC REACTOR'}
+                    </button>
+                  )}
+
+                  {fluxTested && (
+                    <span style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.74rem',
+                      color: '#00f0ff',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      animation: 'fadeIn 0.2s ease'
+                    }}>
+                      ✔ ARC FLUX: 3.2 GW NOMINAL (0.84ms)
+                    </span>
+                  )}
+
                   <span className="spotlight-cta-subtext">Direct Linktree community onboarding</span>
                 </div>
               </div>
@@ -636,98 +586,12 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                     {activeSquad.insigniaSvg}
                   </div>
                   <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
-                  <div className="insignia-sublabel">SYSTEM NOMINAL</div>
+                  <div className="insignia-sublabel">
+                    {activeSquad.key === 'ironman' ? 'ARC FLUX: 3.2 GW · NOMINAL' : 'SYSTEM NOMINAL'}
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Dedicated Stark Tech Labs Interactive Engineering Console */}
-            {activeSquad.key === 'ironman' && (
-              <div className="stark-tech-console-station">
-                <div className="stark-console-topbar">
-                  <div className="stark-hud-title">
-                    <span className="stark-hud-dot" />
-                    <span>STARK TECH LABS // INTERACTIVE KERNEL & TELEMETRY HUD</span>
-                  </div>
-                  <div className="stark-telemetry-metrics">
-                    <div className="metric-chip">
-                      <span className="metric-label">ARC FLUX:</span>
-                      <span className="metric-val">3.2 GW</span>
-                      <div className="metric-bar"><div className="metric-fill" /></div>
-                    </div>
-                    <div className="metric-chip">
-                      <span className="metric-label">LATENCY:</span>
-                      <span className="metric-val">&lt; 0.84ms</span>
-                    </div>
-                    <div className="metric-chip">
-                      <span className="metric-label">COMPILER:</span>
-                      <span className="metric-val">LLVM O4 / WASM</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interactive Track Tabs */}
-                <div className="stark-console-tabs">
-                  {Object.values(TECH_CONSOLE_TRACKS).map(track => (
-                    <button
-                      key={track.id}
-                      type="button"
-                      onClick={() => {
-                        playTechClick();
-                        setTechConsoleTab(track.id);
-                        setTechRunOutput(null);
-                      }}
-                      className={`stark-tab-btn ${techConsoleTab === track.id ? 'active' : ''}`}
-                    >
-                      {track.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Code Window with Run Action */}
-                {(() => {
-                  const currentTrack = TECH_CONSOLE_TRACKS[techConsoleTab] || TECH_CONSOLE_TRACKS.wasm;
-                  return (
-                    <div className="stark-code-box">
-                      <div className="code-box-header">
-                        <div className="code-header-meta">
-                          <span className="code-lang-tag">LANG: {currentTrack.lang}</span>
-                          <span className="code-runtime-tag">RUNTIME: {currentTrack.runtime}</span>
-                        </div>
-                        <button
-                          type="button"
-                          disabled={isCompiling}
-                          onClick={handleRunKernelTest}
-                          className="btn-stark-compile glow-btn"
-                          title="Execute test suite"
-                        >
-                          {isCompiling ? '⚡ COMPILING...' : '⚡ RUN STARK TEST PROTOCOL'}
-                        </button>
-                      </div>
-
-                      <pre className="stark-code-content">
-                        <code>{currentTrack.code}</code>
-                      </pre>
-
-                      {/* Interactive Compiler Output Terminal */}
-                      {techRunOutput && (
-                        <div className="stark-terminal-output">
-                          <div className="output-topbar">
-                            <span className="output-title">● STARK COMPILER TELEMETRY // TEST BENCHMARK</span>
-                            <span className="output-badge">STATUS: VERIFIED</span>
-                          </div>
-                          <div className="output-body">
-                            {techRunOutput.map((line, idx) => (
-                              <div key={idx} className="output-log-line">{line}</div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
           </div>
 
           {/* 4 Squad Cards Grid for Direct Theme Selection */}
@@ -1366,229 +1230,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           font-size: 0.65rem;
           color: var(--accent-burgundy);
           letter-spacing: 0.08em;
-        }
-
-        /* Stark Tech Labs Interactive Engineering Console */
-        .stark-tech-console-station {
-          margin-top: 28px;
-          padding-top: 24px;
-          border-top: 1px dashed var(--accent-burgundy-border);
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .stark-console-topbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 12px;
-          background: rgba(0, 0, 0, 0.4);
-          padding: 10px 16px;
-          border-radius: var(--radius-badge);
-          border: 1px solid rgba(255, 0, 85, 0.25);
-        }
-
-        .stark-hud-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-family: monospace;
-          font-size: 0.76rem;
-          font-weight: 800;
-          color: #00f0ff;
-          letter-spacing: 0.08em;
-        }
-
-        .stark-hud-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background-color: #ff0055;
-          box-shadow: 0 0 10px #ff0055;
-          animation: statusDotPulse 1.4s infinite ease-in-out;
-        }
-
-        .stark-telemetry-metrics {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .metric-chip {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-family: monospace;
-          font-size: 0.72rem;
-        }
-
-        .metric-label {
-          color: var(--text-dim);
-          font-weight: 600;
-        }
-
-        .metric-val {
-          color: #ffffff;
-          font-weight: 800;
-        }
-
-        .metric-bar {
-          width: 36px;
-          height: 6px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 3px;
-          overflow: hidden;
-        }
-
-        .metric-fill {
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, #ff0055, #00f0ff);
-          animation: laserSweep 2s ease-in-out infinite alternate;
-        }
-
-        .stark-console-tabs {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .stark-tab-btn {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-badge);
-          padding: 8px 14px;
-          color: var(--text-muted);
-          font-family: monospace;
-          font-size: 0.74rem;
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .stark-tab-btn:hover {
-          color: #ffffff;
-          border-color: #00f0ff;
-          background: rgba(0, 240, 255, 0.08);
-        }
-
-        .stark-tab-btn.active {
-          color: #ffffff;
-          border-color: #ff0055;
-          background: rgba(255, 0, 85, 0.14);
-          box-shadow: 0 0 14px rgba(255, 0, 85, 0.3);
-        }
-
-        .stark-code-box {
-          background-color: #080309;
-          border: 1px solid rgba(255, 0, 85, 0.4);
-          border-radius: var(--radius-card);
-          overflow: hidden;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-        }
-
-        .code-box-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px 16px;
-          background-color: #12050f;
-          border-bottom: 1px solid rgba(255, 0, 85, 0.2);
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .code-header-meta {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-family: monospace;
-          font-size: 0.7rem;
-        }
-
-        .code-lang-tag {
-          color: #00f0ff;
-          font-weight: 700;
-        }
-
-        .code-runtime-tag {
-          color: var(--text-dim);
-        }
-
-        .btn-stark-compile {
-          background: linear-gradient(135deg, #ff0055 0%, #a3083b 100%);
-          color: #ffffff;
-          border: 1px solid #ff2a75;
-          border-radius: var(--radius-badge);
-          padding: 6px 14px;
-          font-family: monospace;
-          font-size: 0.72rem;
-          font-weight: 800;
-          letter-spacing: 0.06em;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .btn-stark-compile:hover:not(:disabled) {
-          box-shadow: 0 0 16px rgba(255, 0, 85, 0.7);
-          transform: translateY(-1px);
-        }
-
-        .btn-stark-compile:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .stark-code-content {
-          margin: 0;
-          padding: 16px;
-          font-family: monospace;
-          font-size: 0.8rem;
-          line-height: 1.55;
-          color: #f4f4f5;
-          overflow-x: auto;
-          background: transparent;
-        }
-
-        .stark-terminal-output {
-          background-color: #040205;
-          border-top: 1px solid rgba(0, 240, 255, 0.3);
-          padding: 12px 16px;
-          font-family: monospace;
-          font-size: 0.75rem;
-          line-height: 1.5;
-        }
-
-        .output-topbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-          font-weight: 800;
-        }
-
-        .output-title {
-          color: #00f0ff;
-          letter-spacing: 0.06em;
-        }
-
-        .output-badge {
-          color: #10b981;
-          font-size: 0.7rem;
-        }
-
-        .output-log-line {
-          color: #a1a1aa;
-        }
-
-        .output-log-line:last-child {
-          color: #38bdf8;
-          font-weight: 700;
-          margin-top: 4px;
         }
 
         /* 4 Squad Cards Grid */
