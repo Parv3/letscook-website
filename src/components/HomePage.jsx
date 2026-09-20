@@ -121,7 +121,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
           {/* Main Headline with Progressive Shake & Double-Click/Touch Reset */}
           <div className="hero-content">
             <h1 className="hero-title">
-              CODE, BUILD{' '}
+              CODE, BUILD,{' '}
               <span 
                 ref={boxRef}
                 className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
