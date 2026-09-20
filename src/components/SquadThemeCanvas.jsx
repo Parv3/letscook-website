@@ -3,10 +3,10 @@ import React, { useRef, useEffect } from 'react';
 /**
  * SquadThemeCanvas: Procedural 60 FPS Canvas Background
  * Dynamically switches rendering algorithm based on active squad:
- * - ironman: 3D Holographic Arc Reactor Matrix & Crosshairs
- * - captain: Vibranium Shield Shockwaves & Radar Sweep
- * - thor: Fractal Branching Lightning & Molten Uru Embers
- * - core: Quantum Singularity & Tri-Conduit Convergence
+ * - ironman: 3D Holographic Arc Reactor Matrix & Volumetric Radiant Core
+ * - captain: Vibranium Shield Shockwaves, Tactical Radar & Starlight
+ * - thor: Fractal Branching Lightning, Molten Uru Embers & Asgardian Aura
+ * - core: Quantum Singularity, Tri-Conduit Convergence & Matrix Pulse
  */
 export default function SquadThemeCanvas({ squad = 'ironman' }) {
   const canvasRef = useRef(null);
@@ -34,13 +34,13 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Particle pool for ambient sparks & data
+    // Ambient floating particles
     const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 1.2,
       vy: (Math.random() - 0.5) * 1.2,
-      size: Math.random() * 2.5 + 1,
+      size: Math.random() * 2.5 + 1.2,
       alpha: Math.random() * 0.5 + 0.3
     }));
 
@@ -71,57 +71,86 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
       ctx.clearRect(0, 0, width, height);
       globalTick++;
       const currentSquad = squadRef.current;
+      const cx = width * 0.5;
+      const cy = Math.min(height * 0.42, 380);
 
-      // 1. IRON MAN: 3D HOLOGRAPHIC ARC REACTOR MATRIX
+      // 1. IRON MAN: 3D HOLOGRAPHIC ARC REACTOR MATRIX & VOLUMETRIC CORE
       if (currentSquad === 'ironman') {
-        const cx = width * 0.5;
-        const cy = height * 0.45;
         const rot = globalTick * 0.008;
 
-        const offsetX = (mouse.x - cx) * 0.03;
-        const offsetY = (mouse.y - cy) * 0.03;
+        // Volumetric Arc Reactor Atmospheric Glow
+        const coreGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, 520);
+        coreGlow.addColorStop(0, 'rgba(0, 240, 255, 0.18)');
+        coreGlow.addColorStop(0.35, 'rgba(255, 0, 85, 0.12)');
+        coreGlow.addColorStop(0.75, 'rgba(255, 0, 85, 0.03)');
+        coreGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = coreGlow;
+        ctx.fillRect(0, 0, width, height);
+
+        // Mouse Parallax Offset
+        const offsetX = (mouse.x - cx) * 0.025;
+        const offsetY = (mouse.y - cy) * 0.025;
 
         ctx.save();
         ctx.translate(cx + offsetX, cy + offsetY);
 
-        // Ring 1 (Cyan telemetry)
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
-        ctx.lineWidth = 1.5;
+        // Core Glowing Disc
+        const centerDisc = ctx.createRadialGradient(0, 0, 5, 0, 0, 65);
+        centerDisc.addColorStop(0, 'rgba(0, 240, 255, 0.35)');
+        centerDisc.addColorStop(0.8, 'rgba(0, 240, 255, 0.08)');
+        centerDisc.addColorStop(1, 'transparent');
+        ctx.fillStyle = centerDisc;
         ctx.beginPath();
-        ctx.arc(0, 0, 180, 0, Math.PI * 2);
+        ctx.arc(0, 0, 65, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ring 1 (Inner Arc Cyan Telemetry)
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, 0, 160, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Ring 2 (Dashed Crimson Counter-Rotating)
+        // Ring 2 (Dashed Crimson Counter-Rotating Ring)
         ctx.save();
         ctx.rotate(-rot);
-        ctx.strokeStyle = 'rgba(255, 0, 85, 0.2)';
-        ctx.setLineDash([12, 18]);
+        ctx.strokeStyle = 'rgba(255, 0, 85, 0.45)';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#ff0055';
+        ctx.shadowBlur = 15;
+        ctx.setLineDash([16, 20]);
         ctx.beginPath();
-        ctx.arc(0, 0, 260, 0, Math.PI * 2);
+        ctx.arc(0, 0, 240, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
 
-        // Ring 3 (Outer Cyan Track)
+        // Ring 3 (Outer Arc Track)
         ctx.save();
-        ctx.rotate(rot * 1.5);
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.18)';
-        ctx.setLineDash([8, 12, 2, 12]);
+        ctx.rotate(rot * 1.4);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 10;
+        ctx.setLineDash([8, 14, 2, 14]);
         ctx.beginPath();
-        ctx.arc(0, 0, 340, 0, Math.PI * 2);
+        ctx.arc(0, 0, 320, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
 
-        // Crosshairs
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+        // Precision Reticle Crosshairs
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+        ctx.shadowBlur = 0;
         ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.moveTo(-width, 0); ctx.lineTo(width, 0);
-        ctx.moveTo(0, -height); ctx.lineTo(0, height);
+        ctx.moveTo(-width * 0.6, 0); ctx.lineTo(width * 0.6, 0);
+        ctx.moveTo(0, -height * 0.6); ctx.lineTo(0, height * 0.6);
         ctx.stroke();
 
         ctx.restore();
 
-        // Data nodes
+        // Floating Cyan Telemetry Data Nodes
         particles.forEach(p => {
           p.x += p.vx;
           p.y += p.vy;
@@ -130,44 +159,55 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(0, 240, 255, 0.4)';
+          ctx.fillStyle = 'rgba(0, 240, 255, 0.55)';
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 6;
           ctx.fillRect(p.x, p.y, p.size * 1.5, p.size * 1.5);
         });
       }
 
       // 2. CAPTAIN AMERICA: TACTICAL VIBRANIUM SONAR & STARFIELD
       else if (currentSquad === 'captain') {
-        const cx = width * 0.5;
-        const cy = height * 0.4;
         const time = globalTick * 0.02;
 
-        // Expanding Vibranium Shield Wave Shockwaves
-        ctx.lineWidth = 1.5;
+        // Volumetric Vibranium Atmospheric Glow
+        const shieldGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, 550);
+        shieldGlow.addColorStop(0, 'rgba(59, 130, 246, 0.22)');
+        shieldGlow.addColorStop(0.4, 'rgba(37, 99, 235, 0.12)');
+        shieldGlow.addColorStop(0.8, 'rgba(239, 68, 68, 0.04)');
+        shieldGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = shieldGlow;
+        ctx.fillRect(0, 0, width, height);
+
+        // Concentric Vibranium Shockwaves
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 14;
         for (let i = 0; i < 6; i++) {
-          const radius = (time * 45 + i * 140) % 900;
-          const alpha = Math.max(0, 0.22 - radius / 1000);
+          const radius = (time * 45 + i * 130) % 850;
+          const alpha = Math.max(0, 0.38 - radius / 950);
           ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
+          ctx.shadowColor = '#3b82f6';
           ctx.beginPath();
           ctx.arc(cx, cy, radius, 0, Math.PI * 2);
           ctx.stroke();
         }
 
-        // Radar Sweep Ray
+        // Tactical Radar Sweep Ray
         ctx.save();
         ctx.translate(cx, cy);
-        ctx.rotate(time * 0.8);
-        const rayGrad = ctx.createLinearGradient(0, 0, 450, 0);
-        rayGrad.addColorStop(0, 'rgba(59, 130, 246, 0.25)');
+        ctx.rotate(time * 0.7);
+        const rayGrad = ctx.createLinearGradient(0, 0, 480, 0);
+        rayGrad.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
         rayGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = rayGrad;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.arc(0, 0, 450, -0.3, 0.3);
+        ctx.arc(0, 0, 480, -0.35, 0.35);
         ctx.closePath();
         ctx.fill();
         ctx.restore();
 
-        // Silver Star Particles
+        // Silver Starfield Particles
         particles.forEach(p => {
           p.x += p.vx * 0.5;
           p.y += p.vy * 0.5;
@@ -176,67 +216,75 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(241, 245, 249, 0.35)';
+          ctx.fillStyle = 'rgba(241, 245, 249, 0.45)';
+          ctx.shadowColor = '#ffffff';
+          ctx.shadowBlur = 4;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 0.8, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
         });
       }
 
       // 3. THOR: PROCEDURAL BRANCHING LIGHTNING & MOLTEN URU EMBERS
       else if (currentSquad === 'thor') {
-        // Dramatic Lightning Strike
-        if (globalTick % 70 === 0 && Math.random() < 0.6) {
+        // Asgardian Forge Atmospheric Glow
+        const forgeGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, 540);
+        forgeGlow.addColorStop(0, 'rgba(234, 179, 8, 0.22)');
+        forgeGlow.addColorStop(0.4, 'rgba(217, 119, 6, 0.12)');
+        forgeGlow.addColorStop(0.8, 'rgba(56, 189, 248, 0.05)');
+        forgeGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = forgeGlow;
+        ctx.fillRect(0, 0, width, height);
+
+        // Lightning Strike
+        if (globalTick % 65 === 0 && Math.random() < 0.65) {
           ctx.save();
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 3;
+          ctx.lineWidth = 3.5;
           ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = 25;
+          ctx.shadowBlur = 30;
 
           const startX = Math.random() * width;
-          const targetX = startX + (Math.random() - 0.5) * 200;
-          drawLightningBranch(startX, 0, targetX, height * 0.8, 0, 4);
+          const targetX = startX + (Math.random() - 0.5) * 250;
+          drawLightningBranch(startX, 0, targetX, height * 0.75, 0, 4);
 
-          // Full-screen ambient flash
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+          // Ambient Lightning Flash
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.12)';
           ctx.fillRect(0, 0, width, height);
           ctx.restore();
         }
 
         // Molten Uru Embers Floating Upward
         particles.forEach(p => {
-          p.y -= Math.abs(p.vy) * 1.5 + 0.8;
-          p.x += Math.sin(globalTick * 0.03 + p.y * 0.01) * 0.7;
+          p.y -= Math.abs(p.vy) * 1.6 + 0.8;
+          p.x += Math.sin(globalTick * 0.03 + p.y * 0.01) * 0.8;
           if (p.y < 0) {
             p.y = height;
             p.x = Math.random() * width;
           }
 
-          ctx.fillStyle = 'rgba(234, 179, 8, 0.6)';
+          ctx.fillStyle = 'rgba(234, 179, 8, 0.75)';
           ctx.shadowColor = '#f59e0b';
-          ctx.shadowBlur = 8;
+          ctx.shadowBlur = 10;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 1.1, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size * 1.2, 0, Math.PI * 2);
           ctx.fill();
         });
       }
 
       // 4. FOUNDRY CORE: QUANTUM SINGULARITY & CONVERGING CONDUITS
       else {
-        const cx = width * 0.5;
-        const cy = height * 0.45;
         const time = globalTick * 0.015;
 
-        // Core Pulsing Singularity
-        const pulse = Math.sin(time * 2) * 20 + 70;
-        const coreGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, pulse * 2);
-        coreGrad.addColorStop(0, 'rgba(255, 0, 85, 0.35)');
-        coreGrad.addColorStop(0.5, 'rgba(139, 0, 46, 0.15)');
+        // Singularity Atmospheric Glow
+        const pulse = Math.sin(time * 2) * 25 + 75;
+        const coreGrad = ctx.createRadialGradient(cx, cy, 15, cx, cy, pulse * 3.5);
+        coreGrad.addColorStop(0, 'rgba(255, 0, 85, 0.4)');
+        coreGrad.addColorStop(0.4, 'rgba(139, 0, 46, 0.2)');
+        coreGrad.addColorStop(0.8, 'rgba(245, 158, 11, 0.06)');
         coreGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = coreGrad;
-        ctx.beginPath();
-        ctx.arc(cx, cy, pulse * 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillRect(0, 0, width, height);
 
         // 3 Converging Conduit Beams (Crimson, Blue, Gold)
         const angles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
@@ -244,13 +292,13 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
 
         angles.forEach((angle, idx) => {
           const currentAngle = angle + time * 0.5;
-          const endX = cx + Math.cos(currentAngle) * 350;
-          const endY = cy + Math.sin(currentAngle) * 350;
+          const endX = cx + Math.cos(currentAngle) * 340;
+          const endY = cy + Math.sin(currentAngle) * 340;
 
           ctx.strokeStyle = conduitColors[idx];
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.5;
           ctx.shadowColor = conduitColors[idx];
-          ctx.shadowBlur = 15;
+          ctx.shadowBlur = 18;
           ctx.beginPath();
           ctx.moveTo(cx, cy);
           ctx.lineTo(endX, endY);
@@ -259,7 +307,7 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           // Node Orb
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(endX, endY, 5, 0, Math.PI * 2);
+          ctx.arc(endX, endY, 6, 0, Math.PI * 2);
           ctx.fill();
         });
 
@@ -272,7 +320,9 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(255, 42, 109, 0.4)';
+          ctx.fillStyle = 'rgba(255, 42, 109, 0.5)';
+          ctx.shadowColor = '#ff2a6d';
+          ctx.shadowBlur = 6;
           ctx.fillRect(p.x, p.y, p.size, p.size);
         });
       }
@@ -293,7 +343,7 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
     <canvas 
       ref={canvasRef} 
       className="fixed inset-0 pointer-events-none z-0" 
-      style={{ opacity: 0.85 }} 
+      style={{ opacity: 0.95 }} 
       aria-hidden="true" 
     />
   );

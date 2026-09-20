@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUpRight, Shield, Rocket, Sparkles, CheckCircle2, Lightbulb, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Shield, Rocket, Sparkles, CheckCircle2, Lightbulb } from 'lucide-react';
 import FaqSection from './FaqSection';
 import PasswordInput from './PasswordInput';
 import TextDecoder from './TextDecoder';
@@ -39,11 +39,11 @@ export const SQUADS_DATA = {
     arsenal: ['Rust', 'Python', 'WASM', 'FastAPI', 'Docker', 'PyTorch'],
     sound: playRepulsorSound,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-16 h-16">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#ff0055" strokeWidth="3" opacity="0.8" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#ff0055" strokeWidth="3" opacity="0.85" />
         <circle cx="50" cy="50" r="32" fill="none" stroke="#00f0ff" strokeWidth="2.5" strokeDasharray="8 6" />
         <polygon points="50,22 74,64 26,64" fill="none" stroke="#00f0ff" strokeWidth="3" />
-        <circle cx="50" cy="50" r="9" fill="#00f0ff" />
+        <circle cx="50" cy="50" r="10" fill="#00f0ff" />
       </svg>
     )
   },
@@ -67,7 +67,7 @@ export const SQUADS_DATA = {
     arsenal: ['Public Relations', 'Alliances', 'Growth', 'Storytelling', 'Media', 'Comms'],
     sound: playVibraniumPing,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-16 h-16">
+      <svg viewBox="0 0 100 100" className="w-20 h-20">
         <circle cx="50" cy="50" r="44" fill="none" stroke="#ef4444" strokeWidth="4" />
         <circle cx="50" cy="50" r="34" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.9" />
         <circle cx="50" cy="50" r="24" fill="none" stroke="#ef4444" strokeWidth="3" />
@@ -96,11 +96,11 @@ export const SQUADS_DATA = {
     arsenal: ['Hackathons', 'Keynotes', 'Live Arenas', 'Workshops', 'Tournaments', 'Demo Days'],
     sound: playThunderStrike,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-16 h-16">
-        <rect x="28" y="24" width="44" height="24" rx="4" fill="none" stroke="#eab308" strokeWidth="3" />
-        <line x1="50" y1="48" x2="50" y2="82" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
-        <line x1="44" y1="82" x2="56" y2="82" stroke="#eab308" strokeWidth="4" strokeLinecap="round" />
-        <path d="M38 36 L62 36" stroke="#38bdf8" strokeWidth="2" strokeDasharray="3 3" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20">
+        <rect x="26" y="22" width="48" height="26" rx="4" fill="none" stroke="#eab308" strokeWidth="3.5" />
+        <line x1="50" y1="48" x2="50" y2="82" stroke="#38bdf8" strokeWidth="4.5" strokeLinecap="round" />
+        <line x1="42" y1="82" x2="58" y2="82" stroke="#eab308" strokeWidth="4" strokeLinecap="round" />
+        <path d="M36 35 L64 35" stroke="#38bdf8" strokeWidth="2.5" strokeDasharray="4 4" />
       </svg>
     )
   },
@@ -124,11 +124,11 @@ export const SQUADS_DATA = {
     arsenal: ['Governance', 'Micro-Grants', 'Operations', 'Leadership', 'Strategy', 'Auditing'],
     sound: playAssembleFanfare,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-16 h-16">
+      <svg viewBox="0 0 100 100" className="w-20 h-20">
         <circle cx="50" cy="50" r="44" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="10 5" />
-        <circle cx="50" cy="50" r="34" fill="#0d0d14" stroke="#ff0055" strokeWidth="2" />
-        <path d="M48 24 L34 68 L42 68 L47 52 L60 52 L60 45 L48 45 L52 32 Z" fill="#f59e0b" />
-        <path d="M60 45 L72 68 L64 68 L60 60 L56 60 Z" fill="#f59e0b" />
+        <circle cx="50" cy="50" r="34" fill="#0d0d14" stroke="#ff0055" strokeWidth="2.5" />
+        <path d="M48 22 L32 68 L42 68 L47 52 L60 52 L60 44 L48 44 L52 30 Z" fill="#f59e0b" />
+        <path d="M60 44 L72 68 L64 68 L60 60 L56 60 Z" fill="#f59e0b" />
         <polygon points="56,52 78,52 68,44" fill="#ff0055" />
       </svg>
     )
@@ -204,7 +204,6 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
     }
   };
 
-  // Double Click Reset Handler with Sound (LETS COOK -> CREATE)
   const handleCreateDoubleClick = () => {
     if (isCreateInverted) {
       setIsCreateInverted(false);
@@ -224,9 +223,21 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
       {/* Dynamic Scroll Circuit Rail */}
       <ScrollCircuitRail />
 
-      {/* 1. Hero Section */}
+      {/* ========================================================= */}
+      {/* 1. HERO SECTION (TIGHT COMPOSITION & PROMINENT LIGHTING)  */}
+      {/* ========================================================= */}
       <section id="hero-top" className="hero-section">
         <div className="hero-container">
+          
+          {/* Top Anchor Badge - Establishes Instant Visual Focal Point */}
+          <div className="hero-top-badge">
+            <span className="badge-pulse-dot" />
+            <span className="badge-brand">THE FOUNDRY // LET'S COOK</span>
+            <span className="badge-divider">•</span>
+            <span className="badge-squad">{activeSquad.hero} PROTOCOL ONLINE</span>
+          </div>
+
+          {/* Main Headline */}
           <div className="hero-content">
             <h1 className="hero-title">
               <span className="hero-line-1">
@@ -273,24 +284,24 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
             </div>
           </div>
 
-          {/* Feature Highlights Grid */}
+          {/* Feature Highlights Grid (Completely Visible Above The Fold) */}
           <div className="hero-stats-row">
             <div className="stat-card hover-glow">
-              <Sparkles size={20} className="stat-icon pulse-icon" />
+              <Sparkles size={22} className="stat-icon pulse-icon" />
               <div>
                 <h4>STUDENT RUN</h4>
                 <p>100% peer led and community governed</p>
               </div>
             </div>
             <div className="stat-card hover-glow">
-              <Rocket size={20} className="stat-icon pulse-icon" />
+              <Rocket size={22} className="stat-icon pulse-icon" />
               <div>
                 <h4>PRODUCTION FIRST</h4>
                 <p>Focusing on deployed, working applications</p>
               </div>
             </div>
             <div className="stat-card hover-glow">
-              <Shield size={20} className="stat-icon pulse-icon" />
+              <Shield size={22} className="stat-icon pulse-icon" />
               <div>
                 <h4>ZERO COST</h4>
                 <p>Free open access for all student builders</p>
@@ -300,18 +311,24 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         </div>
       </section>
 
-      {/* 2. Marvel Tri-Squad Universe & Core Track */}
+      {/* ========================================================= */}
+      {/* 2. MARVEL TRI-SQUAD UNIVERSE & CORE COMMAND TRACK         */}
+      {/* ========================================================= */}
       <section id="squads" className="squads-section">
         <div className="squads-container">
-          <div className="section-label">THE FOUNDRY ECOSYSTEM</div>
-          <h2>
-            <TextDecoder text="THE BIG THREE & CORE SQUAD" />
-          </h2>
-          <p className="section-desc">
-            Choose your specialized division. Selecting a squad shifts the entire site's operational telemetry, live background, and color systems.
-          </p>
+          
+          {/* Section Header */}
+          <div className="section-header-box">
+            <div className="section-label-badge">// MARVEL SQUAD UNIVERSE</div>
+            <h2>
+              <TextDecoder text="CHOOSE YOUR SQUAD DIVISION" />
+            </h2>
+            <p className="section-desc">
+              Each squad commands a specialized engineering vertical. Switching squads dynamically transforms the entire website's operational telemetry, live canvas background, and synthesized audio.
+            </p>
+          </div>
 
-          {/* Interactive Squad Selector Tabs */}
+          {/* Interactive Squad Selector Tabs with Vibrant High-Contrast Focus */}
           <div className="squad-tabs-nav">
             {Object.values(SQUADS_DATA).map(sq => {
               const isActive = currentSquad === sq.key;
@@ -322,15 +339,19 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                   onClick={() => handleSquadClick(sq.key)}
                   className={`squad-tab-btn ${isActive ? 'active-squad-tab' : ''}`}
                 >
-                  <span className="tab-team-name">{sq.team}</span>
+                  <div className="tab-top-row">
+                    <span className="tab-team-name">{sq.team}</span>
+                    {isActive && <span className="tab-active-pill">● ACTIVE</span>}
+                  </div>
                   <span className="tab-hero-tag">{sq.hero}</span>
+                  {isActive && <div className="tab-active-indicator" />}
                 </button>
               );
             })}
           </div>
 
           {/* Spotlight Active Squad Showcase Card */}
-          <div className="active-squad-spotlight hover-glow">
+          <div className="active-squad-spotlight">
             <div className="spotlight-top-bar">
               <div className="spotlight-badge">{activeSquad.badge}</div>
               <div className="spotlight-status">
@@ -379,17 +400,20 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                 </div>
               </div>
 
-              {/* Insignia & Radar Display */}
+              {/* Insignia & Telemetry Display */}
               <div className="spotlight-insignia-panel">
                 <div className="insignia-wrapper">
-                  {activeSquad.insigniaSvg}
+                  <div className="insignia-glow-ring">
+                    {activeSquad.insigniaSvg}
+                  </div>
                   <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
+                  <div className="insignia-sublabel">SYSTEM NOMINAL</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 4 Squad Cards Grid for Direct Selection */}
+          {/* 4 Squad Cards Grid for Direct Theme Selection */}
           <div className="squads-cards-grid">
             {Object.values(SQUADS_DATA).map(sq => {
               const isSelected = currentSquad === sq.key;
@@ -406,7 +430,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                   <h4>{sq.title}</h4>
                   <p>{sq.desc}</p>
                   <div className="card-footer-action">
-                    <span>{isSelected ? 'ACTIVE THEME' : 'SELECT THEME'}</span>
+                    <span>{isSelected ? '● ACTIVE THEME' : 'ACTIVATE THEME'}</span>
                     <ArrowUpRight size={14} />
                   </div>
                 </div>
@@ -416,7 +440,9 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         </div>
       </section>
 
-      {/* 3. Member Access / Form Showcase Section with PW Visibility Toggle */}
+      {/* ========================================================= */}
+      {/* 3. ACCESS / FORM SHOWCASE SECTION                         */}
+      {/* ========================================================= */}
       <section id="access" className="access-section">
         <div className="access-container">
           <div className="access-box hover-glow">
@@ -454,10 +480,14 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         </div>
       </section>
 
-      {/* 4. Expandable FAQs Section */}
+      {/* ========================================================= */}
+      {/* 4. EXPANDABLE FAQS SECTION                                */}
+      {/* ========================================================= */}
       <FaqSection />
 
-      {/* 5. Footer */}
+      {/* ========================================================= */}
+      {/* 5. FOOTER                                                 */}
+      {/* ========================================================= */}
       <footer className="site-footer">
         <div className="footer-container">
           <div className="footer-brand">
@@ -507,6 +537,9 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         </div>
       </footer>
 
+      {/* ========================================================= */}
+      {/* COMPONENT STYLES WITH TIGHT VERTICAL HIERARCHY            */}
+      {/* ========================================================= */}
       <style>{`
         .home-page {
           width: 100%;
@@ -517,17 +550,21 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           z-index: 10;
         }
 
+        /* 1. HERO SECTION */
         .hero-section {
           position: relative;
-          padding: 80px 24px 60px 24px;
+          padding: 24px 20px 48px 20px;
           border-bottom: 1px solid var(--border-color);
           overflow: hidden;
           width: 100%;
           max-width: 100vw;
-          min-height: 80vh;
+          min-height: calc(100vh - 65px);
           display: flex;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
           box-sizing: border-box;
+          background: radial-gradient(circle at 50% 32%, var(--accent-burgundy-light) 0%, transparent 65%);
         }
 
         .hero-container {
@@ -543,28 +580,68 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           box-sizing: border-box;
         }
 
+        /* Hero Top Badge */
+        .hero-top-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background-color: var(--bg-surface);
+          border: 1px solid var(--accent-burgundy-border);
+          border-radius: var(--radius-badge);
+          font-family: monospace;
+          font-size: 0.76rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          color: var(--text-main);
+          box-shadow: 0 4px 18px var(--accent-burgundy-light);
+          margin-bottom: 18px;
+          backdrop-filter: blur(8px);
+        }
+
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background-color: var(--accent-burgundy);
+          box-shadow: 0 0 10px var(--accent-burgundy);
+          animation: statusDotPulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes statusDotPulse {
+          0%, 100% { opacity: 0.4; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        .badge-divider {
+          color: var(--text-dim);
+        }
+
+        .badge-squad {
+          color: var(--badge-text);
+          font-weight: 800;
+        }
+
         .hero-content {
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
-          margin-bottom: 40px;
-          max-width: 880px;
+          margin-bottom: 34px;
+          max-width: 900px;
           position: relative;
           z-index: 10;
-          padding: 10px 20px;
-          background: radial-gradient(ellipse at 50% 50%, rgba(6, 6, 8, 0.75) 0%, rgba(6, 6, 8, 0) 75%);
-          border-radius: var(--radius-card);
         }
 
         .hero-title {
           font-family: var(--font-display);
-          font-size: clamp(2.4rem, 6vw, 4.2rem);
-          font-weight: 800;
-          line-height: 1.15;
+          font-size: clamp(2.3rem, 5.5vw, 4.4rem);
+          font-weight: 900;
+          line-height: 1.14;
           letter-spacing: -0.02em;
-          margin-bottom: 20px;
-          color: var(--text-main);
+          margin-bottom: 18px;
+          color: #ffffff;
+          text-shadow: 0 2px 24px rgba(0, 0, 0, 0.85);
         }
 
         .highlight-box {
@@ -575,7 +652,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           margin: 0 4px;
           border-radius: var(--radius-badge);
           font-weight: 900;
-          box-shadow: 0 0 20px var(--accent-burgundy-light);
+          box-shadow: 0 0 24px var(--accent-burgundy);
           cursor: pointer;
           user-select: none;
           transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -584,15 +661,16 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .highlight-box.inverted-mode {
           background-color: #ffffff !important;
           color: #060608 !important;
-          box-shadow: 0 0 25px rgba(255, 255, 255, 0.7) !important;
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.9) !important;
         }
 
         .hero-subtitle {
-          font-size: clamp(1rem, 2vw, 1.25rem);
-          color: var(--text-muted);
+          font-size: clamp(0.95rem, 1.8vw, 1.18rem);
+          color: #cbd5e1;
           max-width: 680px;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
           line-height: 1.6;
+          text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
         }
 
         .hero-cta-group {
@@ -605,21 +683,29 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .hero-stats-row {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          gap: 18px;
           width: 100%;
-          margin-top: 20px;
+          max-width: 1000px;
         }
 
         .stat-card {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 20px;
+          padding: 18px 20px;
           background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
+          border: 1px solid var(--accent-burgundy-border);
           border-radius: var(--radius-card);
           text-align: left;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(8px);
           transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .stat-card:hover {
+          border-color: var(--accent-burgundy);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px var(--accent-burgundy-light);
         }
 
         .stat-icon {
@@ -629,25 +715,27 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
 
         .stat-card h4 {
           font-family: var(--font-display);
-          font-size: 0.95rem;
+          font-size: 0.92rem;
           font-weight: 700;
-          margin-bottom: 4px;
+          margin-bottom: 3px;
           color: var(--text-main);
+          letter-spacing: 0.02em;
         }
 
         .stat-card p {
-          font-size: 0.82rem;
+          font-size: 0.78rem;
           color: var(--text-muted);
-          line-height: 1.4;
+          line-height: 1.35;
         }
 
-        /* Squads Section */
+        /* 2. SQUADS SECTION */
         .squads-section {
           padding: 80px 24px;
           background-color: var(--bg-surface);
           border-bottom: 1px solid var(--border-color);
           width: 100%;
           box-sizing: border-box;
+          position: relative;
         }
 
         .squads-container {
@@ -655,17 +743,27 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           margin: 0 auto;
         }
 
-        .section-label {
-          font-size: 0.75rem;
+        .section-header-box {
+          margin-bottom: 36px;
+        }
+
+        .section-label-badge {
+          display: inline-block;
+          font-family: monospace;
+          font-size: 0.74rem;
           font-weight: 700;
-          letter-spacing: 0.15em;
-          color: var(--accent-burgundy);
-          margin-bottom: 8px;
+          letter-spacing: 0.12em;
+          color: var(--badge-text);
+          background-color: var(--badge-bg);
+          border: 1px solid var(--badge-border);
+          padding: 4px 10px;
+          border-radius: var(--radius-badge);
+          margin-bottom: 12px;
         }
 
         .squads-section h2 {
           font-family: var(--font-display);
-          font-size: clamp(1.8rem, 4vw, 2.6rem);
+          font-size: clamp(1.8rem, 4vw, 2.7rem);
           font-weight: 800;
           margin-bottom: 12px;
           color: var(--text-main);
@@ -673,87 +771,119 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
 
         .section-desc {
           color: var(--text-muted);
-          max-width: 600px;
-          margin-bottom: 32px;
+          max-width: 680px;
           font-size: 0.95rem;
+          line-height: 1.6;
         }
 
-        /* Squad Tabs */
+        /* Squad Tabs with Active Indicator Bar & Accent Lighting */
         .squad-tabs-nav {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 12px;
-          margin-bottom: 24px;
+          gap: 14px;
+          margin-bottom: 28px;
         }
 
         .squad-tab-btn {
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          padding: 14px 18px;
+          padding: 16px 18px;
           background-color: var(--bg-main);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
           cursor: pointer;
           transition: all var(--transition-fast);
           text-align: left;
+          overflow: hidden;
         }
 
         .squad-tab-btn:hover {
           border-color: var(--border-focus);
           transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
         .squad-tab-btn.active-squad-tab {
           border-color: var(--accent-burgundy);
-          background-color: var(--bg-surface-hover);
-          box-shadow: 0 0 20px var(--accent-burgundy-light);
+          background: linear-gradient(135deg, var(--bg-surface-hover) 0%, var(--bg-main) 100%);
+          box-shadow: 0 0 25px var(--accent-glow);
+          transform: translateY(-3px);
+        }
+
+        .tab-top-row {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
 
         .tab-team-name {
           font-family: var(--font-display);
-          font-size: 0.85rem;
-          font-weight: 700;
+          font-size: 0.86rem;
+          font-weight: 800;
           color: var(--text-main);
+          letter-spacing: 0.02em;
+        }
+
+        .tab-active-pill {
+          font-family: monospace;
+          font-size: 0.65rem;
+          font-weight: 800;
+          color: var(--accent-burgundy);
+          letter-spacing: 0.05em;
         }
 
         .tab-hero-tag {
-          font-size: 0.7rem;
-          font-weight: 600;
+          font-size: 0.72rem;
+          font-weight: 700;
           letter-spacing: 0.08em;
-          color: var(--accent-burgundy);
-          margin-top: 2px;
+          color: var(--badge-text);
+          margin-top: 4px;
         }
 
-        /* Spotlight Active Card */
+        .tab-active-indicator {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background-color: var(--accent-burgundy);
+          box-shadow: 0 0 10px var(--accent-burgundy);
+        }
+
+        /* Active Spotlight Card */
         .active-squad-spotlight {
-          background-color: var(--bg-main);
-          border: 1px solid var(--accent-burgundy-border);
+          background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-main) 100%);
+          border: 1.5px solid var(--accent-burgundy);
           border-radius: var(--radius-card);
-          padding: 28px;
+          padding: 32px;
           margin-bottom: 32px;
-          box-shadow: 0 0 30px var(--accent-burgundy-light);
+          box-shadow: 0 0 40px var(--accent-burgundy-light), 0 16px 36px rgba(0, 0, 0, 0.6);
         }
 
         .spotlight-top-bar {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
+          margin-bottom: 24px;
           flex-wrap: wrap;
           gap: 12px;
+          border-bottom: 1px solid var(--border-color);
+          padding-bottom: 16px;
         }
 
         .spotlight-badge {
           font-family: monospace;
-          font-size: 0.72rem;
-          font-weight: 700;
-          padding: 4px 10px;
+          font-size: 0.74rem;
+          font-weight: 800;
+          padding: 5px 12px;
           border-radius: var(--radius-badge);
           background-color: var(--badge-bg);
           color: var(--badge-text);
           border: 1px solid var(--badge-border);
-          letter-spacing: 0.05em;
+          letter-spacing: 0.06em;
         }
 
         .spotlight-status {
@@ -761,8 +891,8 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           align-items: center;
           gap: 8px;
           font-family: monospace;
-          font-size: 0.75rem;
-          font-weight: 600;
+          font-size: 0.76rem;
+          font-weight: 700;
           color: var(--text-muted);
         }
 
@@ -771,69 +901,71 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           height: 8px;
           border-radius: 50%;
           background-color: var(--accent-burgundy);
-          box-shadow: 0 0 8px var(--accent-burgundy);
-          animation: pulseDot 2s infinite ease-in-out;
-        }
-
-        @keyframes pulseDot {
-          0%, 100% { opacity: 0.4; transform: scale(0.9); }
-          50% { opacity: 1; transform: scale(1.2); }
+          box-shadow: 0 0 10px var(--accent-burgundy);
+          animation: statusDotPulse 1.8s infinite ease-in-out;
         }
 
         .spotlight-main-grid {
           display: grid;
-          grid-template-columns: 1fr 240px;
-          gap: 32px;
+          grid-template-columns: 1fr 260px;
+          gap: 36px;
           align-items: center;
         }
 
         .spotlight-title {
           font-family: var(--font-display);
-          font-size: clamp(1.5rem, 3vw, 2.2rem);
-          font-weight: 800;
-          color: var(--text-main);
+          font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+          font-weight: 900;
+          color: #ffffff;
           margin-bottom: 6px;
         }
 
         .spotlight-quote {
           font-style: italic;
-          color: var(--accent-burgundy);
-          font-size: 0.9rem;
-          margin-bottom: 12px;
+          color: var(--badge-text);
+          font-size: 0.94rem;
+          margin-bottom: 14px;
+          font-weight: 600;
         }
 
         .spotlight-desc {
           color: var(--text-muted);
-          font-size: 0.95rem;
-          line-height: 1.55;
-          margin-bottom: 20px;
+          font-size: 0.96rem;
+          line-height: 1.6;
+          margin-bottom: 22px;
         }
 
         .initiatives-subgrid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 12px;
-          margin-bottom: 20px;
+          margin-bottom: 22px;
         }
 
         .initiative-mini-card {
-          background-color: var(--bg-surface);
+          background-color: var(--bg-surface-hover);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
-          padding: 12px;
+          padding: 14px;
+          transition: border-color var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .initiative-mini-card:hover {
+          border-color: var(--accent-burgundy-border);
+          transform: translateY(-2px);
         }
 
         .initiative-mini-card h5 {
-          font-size: 0.82rem;
+          font-size: 0.84rem;
           font-weight: 700;
-          color: var(--text-main);
+          color: #ffffff;
           margin-bottom: 4px;
         }
 
         .initiative-mini-card p {
-          font-size: 0.74rem;
+          font-size: 0.76rem;
           color: var(--text-muted);
-          line-height: 1.35;
+          line-height: 1.4;
         }
 
         .arsenal-row {
@@ -860,8 +992,9 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .arsenal-tag {
           font-family: monospace;
           font-size: 0.72rem;
+          font-weight: 600;
           padding: 3px 8px;
-          background-color: var(--bg-surface);
+          background-color: var(--bg-main);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-badge);
           color: var(--text-main);
@@ -875,7 +1008,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         }
 
         .spotlight-cta-subtext {
-          font-size: 0.78rem;
+          font-size: 0.8rem;
           color: var(--text-dim);
         }
 
@@ -889,21 +1022,38 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 12px;
-          padding: 24px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
+          gap: 14px;
+          padding: 28px 20px;
+          background-color: var(--bg-main);
+          border: 1px solid var(--accent-burgundy-border);
           border-radius: var(--radius-card);
           width: 100%;
           text-align: center;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .insignia-glow-ring {
+          padding: 12px;
+          border-radius: 50%;
+          background: radial-gradient(circle, var(--accent-burgundy-light) 0%, transparent 70%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .insignia-label {
           font-family: monospace;
-          font-size: 0.7rem;
-          font-weight: 700;
+          font-size: 0.72rem;
+          font-weight: 800;
           letter-spacing: 0.1em;
-          color: var(--text-muted);
+          color: var(--text-main);
+        }
+
+        .insignia-sublabel {
+          font-family: monospace;
+          font-size: 0.65rem;
+          color: var(--accent-burgundy);
+          letter-spacing: 0.08em;
         }
 
         /* 4 Squad Cards Grid */
@@ -928,7 +1078,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .squad-card:hover {
           border-color: var(--border-focus);
           transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
 
         .squad-card.selected-squad-card {
@@ -953,7 +1103,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .card-hero-badge {
           font-family: monospace;
           font-size: 0.68rem;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--accent-burgundy);
         }
 
@@ -984,7 +1134,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           padding-top: 10px;
         }
 
-        /* Access Section */
+        /* 3. ACCESS SECTION */
         .access-section {
           padding: 80px 24px;
           background-color: var(--bg-main);
@@ -1065,7 +1215,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           margin-top: 8px;
         }
 
-        /* Footer */
+        /* 4. FOOTER */
         .site-footer {
           padding: 60px 24px 30px 24px;
           background-color: var(--bg-main);
@@ -1161,7 +1311,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           color: var(--text-dim);
         }
 
-        /* Buttons & Utility */
+        /* BUTTONS */
         .btn-primary {
           display: inline-flex;
           align-items: center;
@@ -1169,10 +1319,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           gap: 8px;
           background-color: var(--accent-burgundy);
           color: #ffffff;
-          padding: 10px 20px;
+          padding: 12px 24px;
           border-radius: var(--radius-btn);
           font-weight: 700;
-          font-size: 0.9rem;
+          font-size: 0.92rem;
           border: 1px solid transparent;
           cursor: pointer;
           text-decoration: none;
@@ -1182,7 +1332,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .btn-primary:hover {
           background-color: var(--accent-burgundy-hover);
           transform: translateY(-2px);
-          box-shadow: 0 4px 16px var(--accent-burgundy-light);
+          box-shadow: 0 4px 20px var(--accent-burgundy);
         }
 
         .btn-secondary {
@@ -1192,10 +1342,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
           gap: 8px;
           background-color: var(--bg-surface);
           color: var(--text-main);
-          padding: 10px 20px;
+          padding: 12px 24px;
           border-radius: var(--radius-btn);
           font-weight: 700;
-          font-size: 0.9rem;
+          font-size: 0.92rem;
           border: 1px solid var(--border-color);
           cursor: pointer;
           transition: all var(--transition-fast);
@@ -1208,15 +1358,15 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         }
 
         .btn-lg {
-          padding: 14px 28px;
+          padding: 14px 30px;
           font-size: 1rem;
         }
 
         .glow-btn {
-          box-shadow: 0 0 15px var(--accent-burgundy-light);
+          box-shadow: 0 0 20px var(--accent-burgundy);
         }
 
-        /* Mobile Responsive Adjustments */
+        /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 900px) {
           .squad-tabs-nav {
             grid-template-columns: repeat(2, 1fr);
@@ -1252,10 +1402,10 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
             grid-template-columns: 1fr;
           }
           .hero-section {
-            padding: 60px 16px 40px 16px;
+            padding: 30px 16px 36px 16px;
           }
           .squads-section, .access-section, .site-footer {
-            padding: 50px 16px;
+            padding: 40px 16px;
           }
           .active-squad-spotlight {
             padding: 20px 16px;
