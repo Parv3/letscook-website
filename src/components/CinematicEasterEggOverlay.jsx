@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import JarvisNanotechHUD from './JarvisNanotechHUD';
 import { 
   playRepulsorSound, 
   playThunderStrike, 
@@ -138,17 +139,11 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         clearTimeout(timer);
       };
     } else if (effect === 'jarvis') {
-      // 3. STARK MARK LXXXV TACTICAL HUD OVERLAY
-      playRepulsorSound();
+      // 3. STARK MARK LXXXV TACTICAL HUD & NANOTECH SWARM
       const cards = document.querySelectorAll('.squad-card, .stat-card, .active-squad-spotlight, .initiative-mini-card');
       cards.forEach(c => c.classList.add('plasma-glow'));
-      const timer = setTimeout(() => {
-        cards.forEach(c => c.classList.remove('plasma-glow'));
-        if (onCompleteRef.current) onCompleteRef.current();
-      }, 3800);
       return () => {
         cards.forEach(c => c.classList.remove('plasma-glow'));
-        clearTimeout(timer);
       };
     } else if (effect === 'worthy') {
       // 4. THOR MJOLNIR LIGHTNING WORTHINESS TEST
@@ -328,40 +323,15 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         </div>
       )}
 
-      {/* 3. Stark Nanotech Interior HUD Overlay */}
+      {/* 3. Stark Mark LXXXV J.A.R.V.I.S. HUD & Nanotech Swarm Assembly */}
       {effect === 'jarvis' && (
-        <div className="jarvis-hud-screen">
-          <div className="jarvis-laser-sweep" />
-          
-          <div className="jarvis-telemetry-top">
-            <div style={{ fontWeight: 800, letterSpacing: '0.08em' }}>
-              ● MARK LXXXV // STARK HUD ONLINE
-            </div>
-            <div style={{ color: '#a1a1aa' }}>REPULSOR POWER: 100% · F.R.I.D.A.Y. RUNTIME: NOMINAL</div>
-            <div style={{ color: '#a1a1aa' }}>ALTITUDE: 12,400 FT · ARC REACTOR: 3.2 GW</div>
-          </div>
-
-          <div className="jarvis-reticle-center">
-            <div className="jarvis-reticle-spin" />
-            <div className="jarvis-reticle-target" />
-            <div style={{ 
-              position: 'absolute', 
-              top: '-24px', 
-              fontFamily: 'monospace', 
-              fontSize: '10px', 
-              color: '#00f0ff', 
-              letterSpacing: '0.15em',
-              fontWeight: 800 
-            }}>
-              TARGET ACQUIRED
-            </div>
-          </div>
-
-          <div className="jarvis-telemetry-bottom">
-            <div>TELEMETRY: ALL STABILIZERS NOMINAL</div>
-            <div style={{ color: '#a1a1aa' }}>STATUS: PROOF THAT TONY STARK HAS A HEART</div>
-          </div>
-        </div>
+        <JarvisNanotechHUD 
+          onComplete={() => {
+            const cards = document.querySelectorAll('.squad-card, .stat-card, .active-squad-spotlight, .initiative-mini-card');
+            cards.forEach(c => c.classList.remove('plasma-glow'));
+            if (onCompleteRef.current) onCompleteRef.current();
+          }} 
+        />
       )}
 
       {/* 4. Mjolnir Worthiness Lightning Flash */}

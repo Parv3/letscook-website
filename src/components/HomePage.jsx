@@ -467,18 +467,21 @@ export default function HomePage({
     setIsArcFlickering(true);
     setIsArc3D(false);
 
-    // 1. Violent electrical plasma flicker for 700ms
+    if (onTriggerEasterEgg) {
+      onTriggerEasterEgg('jarvis');
+    }
+
+    // Violent electrical plasma flicker for 500ms
     setTimeout(() => {
       setIsArcFlickering(false);
       setIsArc3D(true);
-      playRepulsorSound();
       setIsTestingFlux(false);
       setFluxTested(true);
 
-      setTimeout(() => setFluxTested(false), 5000);
-      // 3D holographic mode remains active for 8.5s
-      setTimeout(() => setIsArc3D(false), 8500);
-    }, 700);
+      setTimeout(() => setFluxTested(false), 7000);
+      // 3D holographic mode remains active for 9s
+      setTimeout(() => setIsArc3D(false), 9000);
+    }, 500);
   };
 
   // Captain America Vibranium Shield State
@@ -809,13 +812,13 @@ export default function HomePage({
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        border: '1px solid rgba(255, 0, 85, 0.6)',
+                        border: '1px solid rgba(0, 240, 255, 0.6)',
                         color: '#ffffff',
-                        background: 'rgba(255, 0, 85, 0.12)'
+                        background: 'rgba(0, 240, 255, 0.12)'
                       }}
-                      title="Test Stark Arc Reactor Energy Calibration"
+                      title="Initialize Stark J.A.R.V.I.S. HUD & Nanotech Swarm Assembly"
                     >
-                      {isTestingFlux ? 'CALIBRATING ARC FLUX...' : isArc3D ? '3D MATRIX ACTIVE' : 'TEST ARC REACTOR'}
+                      {isTestingFlux ? 'INITIALIZING HUD...' : isArc3D ? 'J.A.R.V.I.S. & NANOTECH ACTIVE' : 'INITIALIZE J.A.R.V.I.S. & NANOTECH'}
                     </button>
                   )}
 
@@ -828,7 +831,7 @@ export default function HomePage({
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      ARC FLUX: 3.2 GW NOMINAL (0.84ms)
+                      STARK J.A.R.V.I.S. & NANOTECH MATRIX ONLINE // ARC FLUX 3.2 GW
                     </span>
                   )}
 
@@ -957,7 +960,12 @@ export default function HomePage({
 
               {/* Insignia & Telemetry Display */}
               <div className="spotlight-insignia-panel">
-                <div className="insignia-wrapper">
+                <div 
+                  className="insignia-wrapper"
+                  onClick={activeSquad.key === 'ironman' ? handleTestArcFlux : undefined}
+                  style={activeSquad.key === 'ironman' ? { cursor: 'pointer' } : undefined}
+                  title={activeSquad.key === 'ironman' ? "Click to deploy J.A.R.V.I.S. HUD & Nanotech Swarm" : undefined}
+                >
                   <div className={`insignia-glow-ring ${
                     activeSquad.key === 'ironman' && isArcFlickering ? 'arc-reactor-flickering' : ''
                   } ${
@@ -976,7 +984,7 @@ export default function HomePage({
                       : activeSquad.key === 'captain'
                         ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
                         : activeSquad.key === 'ironman'
-                          ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · NOMINAL')
+                          ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY HUD')
                           : 'SYSTEM NOMINAL'}
                   </div>
                 </div>

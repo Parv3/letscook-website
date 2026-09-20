@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
+import { getNextTuesdayNoon, calculateTimeLeft } from '../utils/countdown';
 import { playCinematicShatterSound, playNeonIgniteSound } from '../utils/soundEngine';
 import LogoMark from './LogoMark';
 
@@ -7,7 +7,7 @@ import LogoMark from './LogoMark';
  * LaunchOverlay: Live Official Launch Screen with Cinematic Logo Reveal
  * 
  * Transition Phases:
- * 1. idle: Live countdown timer ticking to Monday 12:00 PM IST.
+ * 1. idle: Live countdown timer ticking to Tuesday 12:00 PM IST.
  * 2. charging: Sub-bass boom & physical screen rumble.
  * 3. cracking: Spiderweb glass fracturing shockwave dissolves countdown.
  * 4. logo-flicker: Logo reveals in center, flickers with electric neon CRT discharge.
@@ -15,7 +15,7 @@ import LogoMark from './LogoMark';
  * 6. dissolve: Smooth cinematic dissolve & zoom into the live website.
  */
 export default function LaunchOverlay({ onReveal }) {
-  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextTuesdayNoon()));
   const [animPhase, setAnimPhase] = useState('idle'); // 'idle' | 'charging' | 'cracking' | 'logo-flicker' | 'logo-present' | 'dissolve'
   const [shockwaveRadius, setShockwaveRadius] = useState(0);
   const hasTriggeredRef = useRef(false);
@@ -133,7 +133,7 @@ export default function LaunchOverlay({ onReveal }) {
 
   // Live 1-second countdown tick & auto-trigger when completed
   useEffect(() => {
-    const target = getNextMondayNoon();
+    const target = getNextTuesdayNoon();
 
     const checkAndTick = () => {
       const remaining = calculateTimeLeft(target);
@@ -177,7 +177,7 @@ export default function LaunchOverlay({ onReveal }) {
         {isCountdownPhase ? (
           <div className="countdown-view-group">
             <h1 className="cinematic-heading">
-              MONDAY 12:00 PM IST
+              TUESDAY 12:00 PM IST
             </h1>
 
             {/* GIANT COUNTDOWN TIMER */}

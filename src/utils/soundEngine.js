@@ -472,3 +472,222 @@ export const playTimeStoneReversal = () => {
     // Ignore audio errors
   }
 };
+
+/**
+ * J.A.R.V.I.S. HUD Boot Sequence Sound Engine
+ * Synthesizes reactor ignition sub-bass, electronic frequency sweep,
+ * lock chirps arpeggio, target lock chime, and systems online confirmation fanfare.
+ */
+export const playJarvisBootSequence = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // 1. Sub-bass Reactor Ignite (Deep sine sweep)
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(65, now);
+    subOsc.frequency.exponentialRampToValueAtTime(220, now + 1.8);
+    subGain.gain.setValueAtTime(0.35, now);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 1.8);
+
+    // 2. High-Tech Electronic Sweep (Sawtooth frequency ramp)
+    setTimeout(() => {
+      if (soundMuted) return;
+      const tNow = ctx.currentTime;
+      const sweepOsc = ctx.createOscillator();
+      const sweepGain = ctx.createGain();
+      sweepOsc.type = 'sawtooth';
+      sweepOsc.frequency.setValueAtTime(280, tNow);
+      sweepOsc.frequency.exponentialRampToValueAtTime(1400, tNow + 0.8);
+      sweepGain.gain.setValueAtTime(0.1, tNow);
+      sweepGain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.8);
+      sweepOsc.connect(sweepGain);
+      sweepGain.connect(ctx.destination);
+      sweepOsc.start(tNow);
+      sweepOsc.stop(tNow + 0.8);
+    }, 200);
+
+    // 3. Computer Lock Chirps Arpeggio
+    const chirps = [880, 1174, 1318, 1760, 2093];
+    chirps.forEach((freq, idx) => {
+      setTimeout(() => {
+        if (soundMuted) return;
+        const tNow = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, tNow);
+        gain.gain.setValueAtTime(0.09, tNow);
+        gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(tNow);
+        osc.stop(tNow + 0.12);
+      }, 550 + idx * 100);
+    });
+
+    // 4. Target Lock Double Chime at 2.2s
+    setTimeout(() => {
+      if (soundMuted) return;
+      const tNow = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'triangle';
+      osc1.frequency.setValueAtTime(1567, tNow);
+      gain1.gain.setValueAtTime(0.15, tNow);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.2);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(tNow);
+      osc1.stop(tNow + 0.2);
+
+      setTimeout(() => {
+        if (soundMuted) return;
+        const tNow2 = ctx.currentTime;
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(2093, tNow2);
+        gain2.gain.setValueAtTime(0.18, tNow2);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, tNow2 + 0.35);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(tNow2);
+        osc2.stop(tNow2 + 0.35);
+      }, 100);
+    }, 2200);
+
+    // 5. Systems Online Confirmation Chime Fanfare at 3.0s (C-major triad ascension)
+    setTimeout(() => {
+      if (soundMuted) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        setTimeout(() => {
+          if (soundMuted) return;
+          const tNow = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, tNow);
+          gain.gain.setValueAtTime(0.16, tNow);
+          gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(tNow);
+          osc.stop(tNow + 0.5);
+        }, i * 110);
+      });
+    }, 3000);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+/**
+ * Nanotech Micro Snap sound (crisp snap click when particle locks into place)
+ */
+export const playNaniteSnap = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1400 + Math.random() * 400, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+    gain.gain.setValueAtTime(0.09, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.045);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+/**
+ * Nanotech Swarm Launch sound (futuristic swoop)
+ */
+export const playNanotechLaunch = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, now);
+    osc.frequency.exponentialRampToValueAtTime(850, now + 0.4);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.5);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+/**
+ * Nanotech Assembly Complete Fanfare
+ */
+export const playNanotechAssemblyComplete = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.5);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.8);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+
+/**
+ * J.A.R.V.I.S. Diagnostic Typing Micro Blip
+ */
+export const playJarvisTypeBlip = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200 + Math.random() * 800, now);
+    gain.gain.setValueAtTime(0.025, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.04);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
+

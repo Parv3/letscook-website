@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Clock, Move } from 'lucide-react';
-import { getNextMondayNoon, calculateTimeLeft } from '../utils/countdown';
+import { getNextTuesdayNoon, calculateTimeLeft } from '../utils/countdown';
 
 export default function MacOsTimerWindow({ isVisible, onClose }) {
   const [isMinimized, setIsMinimized] = useState(false);
@@ -8,11 +8,11 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const posStartRef = useRef({ x: 0, y: 0 });
-  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextMondayNoon()));
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(getNextTuesdayNoon()));
 
   // Live timer tick
   useEffect(() => {
-    const target = getNextMondayNoon();
+    const target = getNextTuesdayNoon();
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft(target));
     }, 1000);

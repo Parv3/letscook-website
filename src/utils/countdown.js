@@ -1,27 +1,30 @@
 /**
- * Calculates time remaining until the upcoming Monday at 12:00 PM (Noon).
+ * Calculates time remaining until the upcoming Tuesday at 12:00 PM (Noon) IST.
  */
 
-export const getNextMondayNoon = () => {
+export const getNextTuesdayNoon = () => {
   const now = new Date();
   const resultDate = new Date(now);
   
-  // Calculate days until Monday (1 in JS Date, 0 is Sunday, 5 is Friday, 6 is Saturday)
+  // Calculate days until Tuesday (2 in JS Date: 0 is Sunday, 1 is Monday, 2 is Tuesday)
   const dayOfWeek = now.getDay();
-  let daysUntilMonday = (1 - dayOfWeek + 7) % 7;
+  let daysUntilTuesday = (2 - dayOfWeek + 7) % 7;
   
-  // If today is Monday and it's already past 12:00 PM, target next Monday
-  if (daysUntilMonday === 0 && (now.getHours() > 12 || (now.getHours() === 12 && now.getMinutes() > 0))) {
-    daysUntilMonday = 7;
-  } else if (daysUntilMonday === 0 && now.getHours() < 12) {
-    daysUntilMonday = 0;
+  // If today is Tuesday and it's already past 12:00 PM, target next Tuesday
+  if (daysUntilTuesday === 0 && (now.getHours() > 12 || (now.getHours() === 12 && now.getMinutes() > 0))) {
+    daysUntilTuesday = 7;
+  } else if (daysUntilTuesday === 0 && now.getHours() < 12) {
+    daysUntilTuesday = 0;
   }
 
-  resultDate.setDate(now.getDate() + daysUntilMonday);
+  resultDate.setDate(now.getDate() + daysUntilTuesday);
   resultDate.setHours(12, 0, 0, 0);
 
   return resultDate;
 };
+
+// Backwards compatibility alias
+export const getNextMondayNoon = getNextTuesdayNoon;
 
 export const calculateTimeLeft = (targetDate) => {
   const difference = +targetDate - +new Date();

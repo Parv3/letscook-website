@@ -115,8 +115,9 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
 
         ctx.restore();
 
-        // Ambient Nanotech Embers (Soft circular dust dots)
-        particles.forEach(p => {
+        // Ambient Nanotech Particles with Subtle Hexagonal Geometry & Lattice Bonding
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
           p.x += p.vx * 0.4;
           p.y += p.vy * 0.4;
           if (p.x < 0) p.x = width;
@@ -124,11 +125,43 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(0, 240, 255, 0.22)';
+          // Draw faint lattice bond to nearby particle
+          if (i < 20) {
+            for (let j = i + 1; j < Math.min(i + 6, particles.length); j++) {
+              const p2 = particles[j];
+              const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+              if (dist < 85) {
+                const alpha = (1 - dist / 85) * 0.12;
+                ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+                ctx.lineWidth = 0.6;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+              }
+            }
+          }
+
+          // Draw Hexagonal Nanite Node
+          ctx.save();
+          ctx.translate(p.x, p.y);
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 0.75, 0, Math.PI * 2);
+          const r = p.size * 1.1;
+          for (let k = 0; k < 6; k++) {
+            const a = (k * Math.PI) / 3;
+            const px = r * Math.cos(a);
+            const py = r * Math.sin(a);
+            if (k === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fillStyle = i % 4 === 0 ? 'rgba(255, 0, 85, 0.22)' : 'rgba(0, 240, 255, 0.25)';
           ctx.fill();
-        });
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+          ctx.restore();
+        }
       }
 
       // 2. CAPTAIN AMERICA: TACTICAL VIBRANIUM SONAR & STARFIELD

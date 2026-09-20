@@ -954,78 +954,648 @@ button {
   animation: timeStoneSpin 3.2s ease-in-out forwards;
 }
 
-.jarvis-hud-screen {
+/* ========================================================= */
+/* J.A.R.V.I.S. HUD & NANOTECH SWARM ASSEMBLY - MARK LXXXV   */
+/* ========================================================= */
+.jarvis-hud-root {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 9999;
-  pointer-events: none;
-  border: 2px solid rgba(0, 240, 255, 0.35);
-  background-color: rgba(0, 240, 255, 0.05);
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
-}
-
-.jarvis-laser-sweep {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #00f0ff, transparent);
-  box-shadow: 0 0 25px #00f0ff;
-  animation: laserSweep 3s linear infinite;
-}
-
-.jarvis-telemetry-top {
-  position: absolute;
-  top: 24px;
-  left: 24px;
-  font-family: monospace;
-  font-size: 11px;
+  background-color: rgba(10, 10, 20, 0.94);
   color: #00f0ff;
-  line-height: 1.6;
-  filter: drop-shadow(0 0 8px #00f0ff);
+  font-family: "Consolas", "Courier New", monospace;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 
-.jarvis-reticle-center {
+/* Visor Glare & CRT Scanlines */
+.visor-glare {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(0, 240, 255, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 20;
+}
+
+.helmet-curvature {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 100px 30px rgba(10, 10, 20, 0.95), inset 0 0 200px 60px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  z-index: 21;
+}
+
+.radar-grid-canvas,
+.nanotech-swarm-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.radar-grid-canvas { z-index: 5; }
+.nanotech-swarm-canvas { z-index: 15; }
+
+/* Calipers */
+.hud-caliper-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.35);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.08) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  z-index: 30;
+  animation: caliperSlideDown 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.caliper-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.caliper-top-left .brand-title {
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+.caliper-top-left .brand-sep {
+  color: rgba(0, 240, 255, 0.4);
+}
+
+.caliper-top-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.timer-ring-svg {
+  width: 18px;
+  height: 18px;
+  transform: rotate(-90deg);
+}
+
+.timer-circle-bg {
+  fill: none;
+  stroke: rgba(0, 240, 255, 0.2);
+  stroke-width: 2.5;
+}
+
+.timer-circle-bar {
+  fill: none;
+  stroke: #00f0ff;
+  stroke-width: 2.5;
+  stroke-dasharray: 56.54;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.timer-countdown-text {
+  font-weight: 700;
+  color: #00f0ff;
+}
+
+/* Side Calipers & Hex Streams */
+.hud-caliper-left {
+  position: absolute;
+  top: 48px;
+  bottom: 70px;
+  left: 0;
+  width: 220px;
+  border-right: 1px solid rgba(0, 240, 255, 0.15);
+  padding: 12px 10px;
+  overflow: hidden;
+  z-index: 25;
+  animation: caliperSlideRight 0.6s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.hud-caliper-right {
+  position: absolute;
+  top: 48px;
+  bottom: 70px;
+  right: 0;
+  width: 220px;
+  border-left: 1px solid rgba(255, 0, 85, 0.2);
+  padding: 12px 10px;
+  overflow: hidden;
+  text-align: right;
+  z-index: 25;
+  animation: caliperSlideLeft 0.6s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.stream-header {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(0, 240, 255, 0.5);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.12);
+}
+
+.stream-header.red-header {
+  color: rgba(255, 0, 85, 0.6);
+  border-bottom-color: rgba(255, 0, 85, 0.2);
+}
+
+.hex-stream-container {
+  height: calc(100% - 24px);
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+.hex-column {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: rgba(0, 240, 255, 0.45);
+}
+
+.hex-column.red-column {
+  color: rgba(255, 0, 85, 0.5);
+}
+
+.hex-head {
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+.hex-head.red-head {
+  text-shadow: 0 0 8px #ff0055;
+}
+
+/* Center Stage (Arc Reactor & Nanotech Ring) */
+.hud-center-stage {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 250px;
-  height: 250px;
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  border-radius: 50%;
+  width: 440px;
+  height: 440px;
+  z-index: 18;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
-.jarvis-reticle-spin {
-  width: 190px;
-  height: 190px;
-  border: 1px dashed rgba(0, 240, 255, 0.6);
+.hud-center-cross-svg {
+  position: absolute;
+  width: 580px;
+  height: 580px;
+  pointer-events: none;
+}
+
+.arc-reactor-housing {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.65));
+}
+
+.arc-reactor-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.arc-outer-ring {
+  transform-origin: 220px 220px;
+  animation: rotateCW 26s linear infinite;
+}
+
+.arc-middle-ring {
+  transform-origin: 220px 220px;
+  animation: rotateCCW 16s linear infinite;
+}
+
+.arc-triangle-ring {
+  transform-origin: 220px 220px;
+  animation: rotateCW 32s linear infinite;
+}
+
+.arc-inner-ring {
+  transform-origin: 220px 220px;
+  animation: rotateCCW 8s linear infinite;
+}
+
+.arc-core-pulse {
+  transform-origin: 220px 220px;
+  animation: reactorPulseGlow 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes reactorPulseGlow {
+  0% { transform: scale(1); opacity: 0.9; filter: drop-shadow(0 0 8px #00f0ff); }
+  100% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 24px #ffffff) drop-shadow(0 0 40px #00f0ff); }
+}
+
+/* Shockwave Ring */
+.arc-shockwave-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  animation: rotateCW 12s linear infinite;
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 20px #00f0ff;
+  transform: translate(-50%, -50%) scale(0);
+  animation: shockwaveExplode 1.1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  pointer-events: none;
 }
 
-.jarvis-reticle-target {
-  width: 16px;
+@keyframes shockwaveExplode {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 4px; }
+  100% { transform: translate(-50%, -50%) scale(65); opacity: 0; border-width: 1px; }
+}
+
+/* 200MM Nanotech Target Matrix */
+.nanotech-target-zone {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(0, 240, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nanotech-target-zone.solidified {
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.7), inset 0 0 20px rgba(0, 240, 255, 0.35);
+  background-color: rgba(0, 240, 255, 0.03);
+}
+
+.target-tick {
+  position: absolute;
+  background: rgba(0, 240, 255, 0.4);
+}
+.tick-top { top: -8px; left: 50%; width: 1px; height: 16px; transform: translateX(-50%); }
+.tick-bottom { bottom: -8px; left: 50%; width: 1px; height: 16px; transform: translateX(-50%); }
+.tick-left { left: -8px; top: 50%; width: 16px; height: 1px; transform: translateY(-50%); }
+.tick-right { right: -8px; top: 50%; width: 16px; height: 1px; transform: translateY(-50%); }
+
+.target-guide {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 240, 255, 0.15);
+}
+.guide-60 { width: 60px; height: 60px; }
+.guide-120 { width: 120px; height: 120px; }
+
+/* Targeting Reticles Layer */
+.hud-reticles-container {
+  position: absolute;
+  inset: 0;
+  z-index: 26;
+  pointer-events: none;
+}
+
+.hud-reticle-box {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0.9);
+  animation: reticleFadeIn 0.4s ease forwards;
+}
+
+.reticle-svg {
+  width: 120px;
+  height: 120px;
+}
+
+.reticle-spin-cw {
+  transform-origin: center;
+  animation: rotateCW 6s linear infinite;
+}
+
+.reticle-spin-ccw {
+  transform-origin: center;
+  animation: rotateCCW 4s linear infinite;
+}
+
+.reticle-pulse {
+  animation: reactorPulseGlow 1.2s ease-in-out infinite alternate;
+}
+
+.reticle-badge {
+  position: absolute;
+  top: 122px;
+  left: 6px;
+  white-space: nowrap;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  background: rgba(10, 10, 20, 0.85);
+  border: 1px solid #00f0ff;
+  padding: 2px 6px;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.hud-reticle-box.hostile .reticle-badge {
+  border-color: #ff0055;
+  box-shadow: 0 0 8px rgba(255, 0, 85, 0.4);
+}
+
+/* 4-Corner Auto-Typing Diagnostics */
+.hud-diag-panel {
+  position: absolute;
+  z-index: 28;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  padding: 10px 14px;
+  background: rgba(10, 10, 20, 0.55);
+  backdrop-filter: blur(4px);
+  min-width: 240px;
+  border-radius: 2px;
+}
+
+.diag-tl { top: 58px; left: 236px; border-left: 2px solid #00f0ff; }
+.diag-tr { top: 58px; right: 236px; border-right: 2px solid #ff0055; text-align: right; }
+.diag-bl { bottom: 82px; left: 236px; border-left: 2px solid #00f0ff; }
+.diag-br { bottom: 82px; right: 236px; border-right: 2px solid #00f0ff; text-align: right; }
+
+.diag-head {
+  font-size: 8.5px;
+  letter-spacing: 2.5px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.diag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(0, 240, 255, 0.8);
+  white-space: pre;
+}
+
+.diag-tr .diag-row,
+.diag-br .diag-row {
+  justify-content: flex-end;
+}
+
+.vital-tag {
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(0, 240, 255, 0.2);
+  padding: 1px 5px;
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+.alert-tag {
+  font-weight: 700;
+  color: #ffffff;
+  background: rgba(255, 0, 85, 0.3);
+  padding: 1px 5px;
+  text-shadow: 0 0 8px #ff0055;
+}
+
+/* Bottom Caliper & Live Status Bar */
+.hud-caliper-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  border-top: 1px solid rgba(0, 240, 255, 0.35);
+  background: linear-gradient(0deg, rgba(0, 240, 255, 0.08) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  z-index: 30;
+  animation: caliperSlideUp 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.status-bar-box {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.status-row-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+}
+
+.subsystem-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-pill {
+  background: rgba(0, 240, 255, 0.2);
+  border: 1px solid #00f0ff;
+  padding: 2px 7px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.metric-pill {
+  color: rgba(0, 240, 255, 0.7);
+}
+
+.pct-pill {
+  font-weight: 800;
+  color: #ffffff;
+  font-size: 11px;
+}
+
+.progress-track-shell {
+  position: relative;
+  width: 100%;
   height: 16px;
-  border: 2px solid #ff0055;
-  position: absolute;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  padding: 2px;
+  overflow: hidden;
 }
 
-.jarvis-telemetry-bottom {
+.progress-fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.4) 0%, #00f0ff 85%, #ffffff 100%);
+  box-shadow: 0 0 14px #00f0ff;
+  transition: width 0.08s linear;
+}
+
+.progress-slits {
   position: absolute;
-  bottom: 24px;
-  right: 24px;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 16px, rgba(10, 10, 20, 0.85) 16px, rgba(10, 10, 20, 0.85) 18px);
+  pointer-events: none;
+}
+
+.status-banner-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+.status-banner-text.complete {
+  color: #00f0ff;
+  animation: flashTextBanner 0.45s ease-in-out 3;
+}
+
+@keyframes flashTextBanner {
+  0%, 100% { opacity: 1; text-shadow: 0 0 15px #00f0ff, 0 0 25px #ffffff; }
+  50% { opacity: 0.3; text-shadow: none; }
+}
+
+/* Interactive Controls Dock */
+.hud-controls-dock {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10000;
+  pointer-events: auto !important;
+}
+
+.hud-dock-btn {
+  background: rgba(10, 10, 20, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #00f0ff;
   font-family: monospace;
   font-size: 11px;
-  color: #00f0ff;
-  text-align: right;
-  line-height: 1.6;
-  filter: drop-shadow(0 0 8px #00f0ff);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  pointer-events: auto !important;
 }
+
+.hud-dock-btn:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+  color: #ffffff;
+}
+
+.hud-dock-btn.active-cyan {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  color: #ffffff;
+}
+
+.hud-dock-btn.active-red {
+  border-color: #ff0055;
+  color: #ff0055;
+  background: rgba(255, 0, 85, 0.15);
+}
+
+.hud-dock-btn.close-btn {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.hud-dock-btn.close-btn:hover {
+  background: rgba(255, 0, 85, 0.35);
+  border-color: #ff0055;
+  box-shadow: 0 0 14px rgba(255, 0, 85, 0.6);
+}
+
+/* 4 Frame Corners */
+.hud-corner {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-color: #00f0ff;
+  border-style: solid;
+  pointer-events: none;
+  z-index: 30;
+}
+.c-tl { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+.c-tr { top: 16px; right: 16px; border-width: 2px 2px 0 0; }
+.c-bl { bottom: 16px; left: 16px; border-width: 0 0 2px 2px; }
+.c-br { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+@keyframes caliperSlideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+@keyframes caliperSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes caliperSlideRight {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes caliperSlideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes reticleFadeIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .hud-caliper-left, .hud-caliper-right {
+    display: none;
+  }
+  .diag-tl { left: 24px; top: 56px; }
+  .diag-tr { right: 24px; top: 56px; }
+  .diag-bl { left: 24px; bottom: 80px; }
+  .diag-br { right: 24px; bottom: 80px; }
+}
+
+@media (max-width: 768px) {
+  .hud-diag-panel {
+    display: none;
+  }
+  .hud-center-stage {
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+}
+
+/* ========================================================= */
+
 
 /* ========================================================= */
 /* AVENGERS ASSEMBLE: UNIFIED STRIKE & KILL THANOS CLIMAX    */
