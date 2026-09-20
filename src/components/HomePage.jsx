@@ -245,40 +245,123 @@ export const SQUADS_DATA = {
   }
 };
 
-export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSquad = 'ironman', onSelectSquad }) {
+// 3D Holographic Stark Arc Reactor Component
+function ArcReactor3D() {
+  return (
+    <div className="arc-reactor-3d-container" aria-label="3D Stark Arc Reactor">
+      {/* 3D Holographic Outer Ring with Rotating Gimbal */}
+      <div className="arc-3d-outer-gimbal">
+        <div className="arc-3d-ring-outer" />
+        <div className="arc-3d-ring-middle" />
+        {/* Floating Concentric Energy Triangle & Unibeam Core */}
+        <div className="arc-3d-core-triangle">
+          <svg viewBox="0 0 100 100" className="arc-3d-triangle-svg">
+            <polygon 
+              points="50,22 74,64 26,64" 
+              fill="rgba(0, 240, 255, 0.35)" 
+              stroke="#00f0ff" 
+              strokeWidth="4" 
+              filter="drop-shadow(0 0 12px #00f0ff)"
+            />
+            <circle cx="50" cy="50" r="12" fill="#ffffff" filter="drop-shadow(0 0 15px #ffffff)" />
+          </svg>
+        </div>
+      </div>
+      {/* Rotating 3D Particle Light Rings */}
+      <div className="arc-3d-orbit-ring-1" />
+      <div className="arc-3d-orbit-ring-2" />
+    </div>
+  );
+}
+
+export default function HomePage({ 
+  setCurrentPage, 
+  onOpenPitchModal, 
+  currentSquad = 'ironman', 
+  onSelectSquad,
+  onTriggerEasterEgg 
+}) {
   const [accessCode, setAccessCode] = useState('');
   const activeSquad = SQUADS_DATA[currentSquad] || SQUADS_DATA.ironman;
 
-  // Stark Arc Flux Interactive State (Clean, instant feedback)
+  // Stark Arc Flux & 3D Holographic State
   const [isTestingFlux, setIsTestingFlux] = useState(false);
   const [fluxTested, setFluxTested] = useState(false);
+  const [isArcFlickering, setIsArcFlickering] = useState(false);
+  const [isArc3D, setIsArc3D] = useState(false);
 
   const handleTestArcFlux = () => {
     playRepulsorSound();
     setIsTestingFlux(true);
     setFluxTested(false);
+    setIsArcFlickering(true);
+    setIsArc3D(false);
+
+    // 1. Violent electrical plasma flicker for 700ms
     setTimeout(() => {
+      setIsArcFlickering(false);
+      setIsArc3D(true);
+      playRepulsorSound();
       setIsTestingFlux(false);
       setFluxTested(true);
+
       setTimeout(() => setFluxTested(false), 5000);
-    }, 450);
+      // 3D holographic mode remains active for 8.5s
+      setTimeout(() => setIsArc3D(false), 8500);
+    }, 700);
   };
 
-  // Asgardian Stormbreaker Interactive State
+  // Captain America Vibranium Shield State
+  const [isDeployingShield, setIsDeployingShield] = useState(false);
+  const [shieldDeployed, setShieldDeployed] = useState(false);
+
+  const handleDeployShield = () => {
+    playVibraniumPing();
+    document.body.classList.add('seismic-shake');
+    setIsDeployingShield(true);
+    setShieldDeployed(false);
+
+    if (onTriggerEasterEgg) {
+      onTriggerEasterEgg('shield');
+    }
+
+    setTimeout(() => {
+      document.body.classList.remove('seismic-shake');
+      setIsDeployingShield(false);
+      setShieldDeployed(true);
+      setTimeout(() => setShieldDeployed(false), 5000);
+    }, 800);
+  };
+
+  // Asgardian Stormbreaker Jammed State
   const [isSummoningStorm, setIsSummoningStorm] = useState(false);
   const [stormSummoned, setStormSummoned] = useState(false);
+  const [stormbreakerJammed, setStormbreakerJammed] = useState(false);
 
   const handleSummonStormbreaker = () => {
     playThunderStrike();
-    document.body.classList.add('seismic-shake');
     setIsSummoningStorm(true);
     setStormSummoned(false);
+    setStormbreakerJammed(false);
+
+    // Hypersonic lightning strike jams into button at 450ms
     setTimeout(() => {
-      document.body.classList.remove('seismic-shake');
+      document.body.classList.add('seismic-shake');
+      playThunderStrike();
       setIsSummoningStorm(false);
+      setStormbreakerJammed(true);
       setStormSummoned(true);
-      setTimeout(() => setStormSummoned(false), 5000);
-    }, 600);
+
+      setTimeout(() => {
+        document.body.classList.remove('seismic-shake');
+      }, 500);
+
+      // Remains wedged in button for 7.5 seconds
+      setTimeout(() => {
+        setStormbreakerJammed(false);
+        setStormSummoned(false);
+      }, 7500);
+    }, 450);
   };
 
   // Progressive Shake & Invert Easter Egg State
@@ -555,7 +638,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                       }}
                       title="Test Stark Arc Reactor Energy Calibration"
                     >
-                      {isTestingFlux ? 'CALIBRATING ARC FLUX...' : 'TEST ARC REACTOR'}
+                      {isTestingFlux ? 'CALIBRATING ARC FLUX...' : isArc3D ? '3D MATRIX ACTIVE' : 'TEST ARC REACTOR'}
                     </button>
                   )}
 
@@ -572,24 +655,95 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                     </span>
                   )}
 
-                  {activeSquad.key === 'thor' && (
+                  {activeSquad.key === 'captain' && (
                     <button
                       type="button"
-                      onClick={handleSummonStormbreaker}
-                      disabled={isSummoningStorm}
+                      onClick={handleDeployShield}
+                      disabled={isDeployingShield}
                       className="btn-secondary glow-btn"
                       style={{
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        border: '1px solid rgba(255, 170, 0, 0.6)',
+                        border: '1px solid rgba(59, 130, 246, 0.6)',
                         color: '#ffffff',
-                        background: 'rgba(255, 170, 0, 0.15)'
+                        background: 'rgba(59, 130, 246, 0.15)'
                       }}
-                      title="Summon Stormbreaker with Asgardian Lightning"
+                      title="Deploy Vibranium Shield Ricochet Protocol"
                     >
-                      {isSummoningStorm ? 'CHANNELING BIFROST...' : 'SUMMON STORMBREAKER'}
+                      {isDeployingShield ? 'RICOCHETING SHIELD...' : 'DEPLOY VIBRANIUM SHIELD'}
                     </button>
+                  )}
+
+                  {shieldDeployed && (
+                    <span style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.74rem',
+                      color: '#38bdf8',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      animation: 'fadeIn 0.2s ease'
+                    }}>
+                      VIBRANIUM SHIELD DEPLOYED // KINETIC ABSORPTION 100%
+                    </span>
+                  )}
+
+                  {activeSquad.key === 'thor' && (
+                    <div className="stormbreaker-btn-wrap">
+                      <button
+                        type="button"
+                        onClick={handleSummonStormbreaker}
+                        disabled={isSummoningStorm}
+                        className={`btn-secondary glow-btn stormbreaker-summon-btn ${
+                          stormbreakerJammed ? 'stormbreaker-jammed-btn' : ''
+                        }`}
+                        style={{
+                          fontFamily: 'monospace',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          border: '1px solid rgba(255, 170, 0, 0.6)',
+                          color: '#ffffff',
+                          background: 'rgba(255, 170, 0, 0.15)'
+                        }}
+                        title="Summon Stormbreaker with Asgardian Lightning"
+                      >
+                        {isSummoningStorm ? (
+                          'CHANNELING BIFROST...'
+                        ) : stormbreakerJammed ? (
+                          'STORMBREAKER EMBEDDED // BIFROST ACTIVE'
+                        ) : (
+                          'SUMMON STORMBREAKER'
+                        )}
+                      </button>
+
+                      {/* Animated Stormbreaker Axe Jamming Into Button */}
+                      {(isSummoningStorm || stormbreakerJammed) && (
+                        <div className={`stormbreaker-strike-wedge ${
+                          isSummoningStorm ? 'axe-striking' : 'axe-lodged'
+                        }`}>
+                          <svg width="64" height="64" viewBox="0 0 100 100" className="embedded-stormbreaker-svg">
+                            <defs>
+                              <linearGradient id="jamAxeBlade" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#f0f9ff" />
+                                <stop offset="30%" stopColor="#38bdf8" />
+                                <stop offset="80%" stopColor="#0369a1" />
+                                <stop offset="100%" stopColor="#0c4a6e" />
+                              </linearGradient>
+                            </defs>
+                            {/* Wooden Vine Handle */}
+                            <path d="M48,56 C46,65 52,72 49,82 C47,88 51,94 48,98" stroke="#78350f" strokeWidth="4.5" strokeLinecap="round" />
+                            {/* Curved Uru Axe Blade */}
+                            <path d="M48,22 C34,22 18,28 14,40 C12,50 18,62 48,64 Z" fill="url(#jamAxeBlade)" stroke="#ffffff" strokeWidth="1.5" />
+                            {/* Faceted Hammer Poll */}
+                            <polygon points="52,28 78,24 84,28 84,52 78,56 52,52" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
+                            {/* Rune Socket */}
+                            <rect x="44" y="24" width="12" height="32" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+                            <circle cx="50" cy="40" r="4" fill="#facc15" filter="drop-shadow(0 0 4px #facc15)" />
+                          </svg>
+                          {stormbreakerJammed && <div className="impact-lightning-sparks" />}
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {stormSummoned && (
@@ -612,16 +766,26 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
               {/* Insignia & Telemetry Display */}
               <div className="spotlight-insignia-panel">
                 <div className="insignia-wrapper">
-                  <div className="insignia-glow-ring">
-                    {activeSquad.insigniaSvg}
+                  <div className={`insignia-glow-ring ${
+                    activeSquad.key === 'ironman' && isArcFlickering ? 'arc-reactor-flickering' : ''
+                  } ${
+                    activeSquad.key === 'ironman' && isArc3D ? 'arc-reactor-3d-active' : ''
+                  }`}>
+                    {activeSquad.key === 'ironman' && isArc3D ? (
+                      <ArcReactor3D />
+                    ) : (
+                      activeSquad.insigniaSvg
+                    )}
                   </div>
                   <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
                   <div className="insignia-sublabel">
                     {activeSquad.key === 'thor'
                       ? 'STORMBREAKER // BIFROST READY'
-                      : activeSquad.key === 'ironman'
-                        ? 'ARC FLUX: 3.2 GW · NOMINAL'
-                        : 'SYSTEM NOMINAL'}
+                      : activeSquad.key === 'captain'
+                        ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
+                        : activeSquad.key === 'ironman'
+                          ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · NOMINAL')
+                          : 'SYSTEM NOMINAL'}
                   </div>
                 </div>
               </div>

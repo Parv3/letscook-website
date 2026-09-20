@@ -13,6 +13,7 @@ import PitchIdeaModal from './components/PitchIdeaModal';
 import TerminalDrawer from './components/TerminalDrawer';
 import SquadThemeCanvas from './components/SquadThemeCanvas';
 import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
+import ClickSpark from './components/ClickSpark';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
@@ -85,80 +86,97 @@ export default function App() {
     setShowMacOsWindow(true);
   };
 
+  const sparkColor = activeSquad === 'thor' 
+    ? '#f59e0b' 
+    : activeSquad === 'captain' 
+      ? '#38bdf8' 
+      : activeSquad === 'core' 
+        ? '#a855f7' 
+        : '#00f0ff';
+
   return (
-    <div className="app-root">
-      {/* 1. Live Procedural 60 FPS Squad Theme Background Canvas */}
-      <SquadThemeCanvas squad={activeSquad} />
+    <ClickSpark
+      sparkColor={sparkColor}
+      sparkSize={10}
+      sparkRadius={16}
+      sparkCount={8}
+      duration={400}
+    >
+      <div className="app-root">
+        {/* 1. Live Procedural 60 FPS Squad Theme Background Canvas */}
+        <SquadThemeCanvas squad={activeSquad} />
 
-      {/* 2. Full-Screen Cinematic Marvel Easter Egg FX Overlay */}
-      <CinematicEasterEggOverlay 
-        effect={activeEasterEgg} 
-        onComplete={() => setActiveEasterEgg(null)} 
-      />
-
-
-      {/* 4. Full-Screen Launch Overlay */}
-      {showLaunchOverlay && (
-        <LaunchOverlay onReveal={handleRevealLaunch} />
-      )}
-
-      {/* Main Site Container: Access strictly blocked until launch countdown finishes */}
-      <div 
-        className="site-main-wrapper" 
-        style={showLaunchOverlay ? { pointerEvents: 'none', userSelect: 'none' } : undefined}
-        aria-hidden={showLaunchOverlay ? "true" : undefined}
-        inert={showLaunchOverlay ? "" : undefined}
-      >
-        {/* 5. Sticky Navigation Header */}
-        <Navbar
-          onOpenSearch={() => setIsSearchOpen(true)}
-          onOpenPitchModal={() => setIsPitchModalOpen(true)}
-          onOpenTerminal={() => setIsTerminalOpen(true)}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+        {/* 2. Full-Screen Cinematic Marvel Easter Egg FX Overlay */}
+        <CinematicEasterEggOverlay 
+          effect={activeEasterEgg} 
+          onComplete={() => setActiveEasterEgg(null)} 
         />
 
-        {/* 6. Main Content Views */}
-        <main>
-          {currentPage === 'home' && (
-            <HomePage 
-              setCurrentPage={setCurrentPage} 
-              onOpenPitchModal={() => setIsPitchModalOpen(true)}
-              currentSquad={activeSquad}
-              onSelectSquad={setActiveSquad}
-            />
-          )}
-          {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
-          {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
-        </main>
 
-        {/* 7. Floating Movable macOS Countdown Timer Window */}
-        <MacOsTimerWindow
-          isVisible={showMacOsWindow}
-          onClose={() => setShowMacOsWindow(false)}
-        />
+        {/* 4. Full-Screen Launch Overlay */}
+        {showLaunchOverlay && (
+          <LaunchOverlay onReveal={handleRevealLaunch} />
+        )}
 
-        {/* 8. Global Interactive Overlays & Modals */}
-        <SearchModal
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-          setCurrentPage={setCurrentPage}
-        />
-        <PitchIdeaModal
-          isOpen={isPitchModalOpen}
-          onClose={() => setIsPitchModalOpen(false)}
-        />
-        <TerminalDrawer
-          isOpen={isTerminalOpen}
-          onClose={() => setIsTerminalOpen(false)}
-          onOpenPitchModal={() => setIsPitchModalOpen(true)}
-          onTriggerEasterEgg={setActiveEasterEgg}
-          onSelectSquad={setActiveSquad}
-        />
-        <FloatingContact />
-        <CookieBanner />
-        <ScrollTopButton />
+        {/* Main Site Container: Access strictly blocked until launch countdown finishes */}
+        <div 
+          className="site-main-wrapper" 
+          style={showLaunchOverlay ? { pointerEvents: 'none', userSelect: 'none' } : undefined}
+          aria-hidden={showLaunchOverlay ? "true" : undefined}
+          inert={showLaunchOverlay ? "" : undefined}
+        >
+          {/* 5. Sticky Navigation Header */}
+          <Navbar
+            onOpenSearch={() => setIsSearchOpen(true)}
+            onOpenPitchModal={() => setIsPitchModalOpen(true)}
+            onOpenTerminal={() => setIsTerminalOpen(true)}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+
+          {/* 6. Main Content Views */}
+          <main>
+            {currentPage === 'home' && (
+              <HomePage 
+                setCurrentPage={setCurrentPage} 
+                onOpenPitchModal={() => setIsPitchModalOpen(true)}
+                currentSquad={activeSquad}
+                onSelectSquad={setActiveSquad}
+                onTriggerEasterEgg={setActiveEasterEgg}
+              />
+            )}
+            {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
+            {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
+          </main>
+
+          {/* 7. Floating Movable macOS Countdown Timer Window */}
+          <MacOsTimerWindow
+            isVisible={showMacOsWindow}
+            onClose={() => setShowMacOsWindow(false)}
+          />
+
+          {/* 8. Global Interactive Overlays & Modals */}
+          <SearchModal
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            setCurrentPage={setCurrentPage}
+          />
+          <PitchIdeaModal
+            isOpen={isPitchModalOpen}
+            onClose={() => setIsPitchModalOpen(false)}
+          />
+          <TerminalDrawer
+            isOpen={isTerminalOpen}
+            onClose={() => setIsTerminalOpen(false)}
+            onOpenPitchModal={() => setIsPitchModalOpen(true)}
+            onTriggerEasterEgg={setActiveEasterEgg}
+            onSelectSquad={setActiveSquad}
+          />
+          <FloatingContact />
+          <CookieBanner />
+          <ScrollTopButton />
+        </div>
       </div>
-    </div>
+    </ClickSpark>
   );
 }
