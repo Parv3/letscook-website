@@ -162,52 +162,91 @@ export const playInversionSound = () => {
   }
 };
 
-// Dramatic Cinematic Timer Glass Shatter Sound (Ultra Loud & Impactful)
+// Dramatic Cinematic Kinetic Strike & Armor Fracture Sound (Intense, Seismic & Heavy)
 export const playCinematicShatterSound = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
 
-    // 1. Sub-bass boom (Louder gain: 0.95)
+    // 1. Massive Sub-bass Concussion (Deep seismic implosion)
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(220, ctx.currentTime);
-    subOsc.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 1.5);
-    subGain.gain.setValueAtTime(0.95, ctx.currentTime);
-    subGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+    subOsc.frequency.setValueAtTime(180, now);
+    subOsc.frequency.exponentialRampToValueAtTime(16, now + 1.8);
+    subGain.gain.setValueAtTime(1.0, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
 
     subOsc.connect(subGain);
     subGain.connect(ctx.destination);
-    subOsc.start();
-    subOsc.stop(ctx.currentTime + 1.5);
+    subOsc.start(now);
+    subOsc.stop(now + 1.8);
 
-    // 2. High glass shatter noise burst (Louder gain: 0.75)
-    const bufferSize = ctx.sampleRate * 1.0;
+    // 2. Heavy Kinetic Impact Crunch & White-Noise Shockwave
+    const bufferSize = ctx.sampleRate * 0.9;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.22));
     }
-
     const noise = ctx.createBufferSource();
     noise.buffer = buffer;
 
     const filter = ctx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.setValueAtTime(1500, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(10000, ctx.currentTime + 1.0);
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(750, now);
+    filter.frequency.exponentialRampToValueAtTime(110, now + 0.9);
+    filter.Q.setValueAtTime(2.5, now);
 
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.75, ctx.currentTime + 1.2);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.4);
+    noiseGain.gain.setValueAtTime(0.9, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
 
     noise.connect(filter);
     filter.connect(noiseGain);
     noiseGain.connect(ctx.destination);
+    noise.start(now);
+  } catch (err) {
+    // Ignore audio errors
+  }
+};
 
-    noise.start(ctx.currentTime + 1.2);
+// Ominous Thanos Manifest Threat Drone & Sub Rumble (Dark, Foreboding & Dramatic)
+export const playThanosThreatSound = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Dark dissonant tritone drone (F1: 43.65Hz + B1: 61.74Hz)
+    const tritoneFreqs = [43.65, 61.74, 87.3];
+    tritoneFreqs.forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(f, now);
+      osc.frequency.linearRampToValueAtTime(f * 0.94, now + 1.6);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(180, now);
+      filter.frequency.exponentialRampToValueAtTime(50, now + 1.6);
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.35 / (idx + 1), now + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.6);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 1.6);
+    });
   } catch (err) {
     // Ignore audio errors
   }
@@ -309,25 +348,57 @@ export const playThunderStrike = () => {
   }
 };
 
-// Avengers Assemble Brass Fanfare (Heroic Triad Harmonic)
+// Avengers Assemble Dramatic Cinematic War Horn / Braam (Dark, Monumental & Epic)
 export const playAssembleFanfare = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
-    [440, 554, 659, 880, 1108].forEach((freq, i) => {
-      const cOsc = ctx.createOscillator();
-      const cGain = ctx.createGain();
-      cOsc.connect(cGain);
-      cGain.connect(ctx.destination);
-      cOsc.type = 'triangle';
-      cOsc.frequency.setValueAtTime(freq, now + i * 0.07);
-      cGain.gain.setValueAtTime(0.2, now + i * 0.07);
-      cGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
-      cOsc.start(now + i * 0.07);
-      cOsc.stop(now + 1.4);
+
+    // 1. Heavy cinematic low brass power fifths (A1: 55Hz, E2: 82.41Hz, A2: 110Hz, E3: 164.8Hz)
+    const freqs = [55, 82.41, 110, 164.8];
+    freqs.forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc.type = idx % 2 === 0 ? 'sawtooth' : 'triangle';
+      osc.frequency.setValueAtTime(f, now);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.98, now + 2.0);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, now);
+      filter.frequency.exponentialRampToValueAtTime(1200, now + 0.22);
+      filter.frequency.exponentialRampToValueAtTime(100, now + 2.0);
+      filter.Q.setValueAtTime(3.5, now);
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.28, now + 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 2.0);
     });
+
+    // 2. Sub-bass Ground Impact (Dark Sub-drop Rumble)
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(95, now);
+    subOsc.frequency.exponentialRampToValueAtTime(26, now + 1.8);
+
+    subGain.gain.setValueAtTime(0.65, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(now);
+    subOsc.stop(now + 1.8);
   } catch (err) {
     // Ignore audio errors
   }

@@ -40,7 +40,7 @@ const INITIAL_TERMINAL_HISTORY = [
   },
   { 
     type: 'sys', 
-    text: '⚡ AVAILABLE OPERATIONAL DIRECTIVES & EASTER EGGS:\n' +
+    text: 'AVAILABLE OPERATIONAL DIRECTIVES & EASTER EGGS:\n' +
       COMMANDS_HELP.map(c => `  ● ${c.cmd.padEnd(14)} : ${c.desc}`).join('\n') +
       '\n\n[Tip: Click any quick command chip below or type and press Enter]'
   }
@@ -89,12 +89,12 @@ export default function TerminalDrawer({
         text: 'AVAILABLE OPERATIONAL DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(14)} - ${c.desc}`).join('\n')
       });
     } 
-    // 1. ASSEMBLE: Initiates the full Foundry Avengers protocol with a heroic synthesizer chord
+    // 1. ASSEMBLE: Initiates the full Foundry Avengers protocol
     else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
       playAssembleFanfare();
       newHistory.push({
         type: 'accent',
-        text: '🛡️ "AVENGERS... ASSEMBLE!"\n' +
+        text: '"AVENGERS... ASSEMBLE!"\n' +
           '--------------------------------------------------\n' +
           'INITIATIVE DIRECTIVE: LEVEL 7 BROADCAST\n' +
           'Tri-Squad conduits unified: Tech, PR, and Events online.\n' +
@@ -111,7 +111,7 @@ export default function TerminalDrawer({
       playRepulsorSound();
       newHistory.push({
         type: 'accent',
-        text: '🤖 MARK LXXXV // STARK DIAGNOSTICS & TELEMETRY REPORT\n' +
+        text: 'MARK LXXXV // STARK DIAGNOSTICS & TELEMETRY REPORT\n' +
           '--------------------------------------------------\n' +
           '· F.R.I.D.A.Y. CORE RUNTIME  : NOMINAL (99.98% UPTIME)\n' +
           '· ARC REACTOR CORE           : 3.2 GIGAWATTS [100% OPERATIONAL]\n' +
@@ -132,7 +132,7 @@ export default function TerminalDrawer({
       playVibraniumPing();
       newHistory.push({
         type: 'accent',
-        text: '★ CAPTAIN AMERICA // STEVE ROGERS\' CODE OF CONDUCT (SSR-1941)\n' +
+        text: 'CAPTAIN AMERICA // STEVE ROGERS\' CODE OF CONDUCT (SSR-1941)\n' +
           '--------------------------------------------------\n' +
           '"I don\'t like bullies; I don\'t care where they\'re from."\n' +
           '"I can do this all day."\n\n' +
@@ -153,7 +153,7 @@ export default function TerminalDrawer({
       playThunderStrike();
       newHistory.push({
         type: 'accent',
-        text: '⚡ MJOLNIR WORTHINESS CLEARANCE PROTOCOL // REALM: ASGARD FORGE\n' +
+        text: 'STORMBREAKER WORTHINESS CLEARANCE PROTOCOL // REALM: ASGARD FORGE\n' +
           '--------------------------------------------------\n' +
           'OATH OF ODIN ALL-FATHER:\n' +
           '"Whosoever holds this hammer, if they be worthy,\n' +
@@ -165,7 +165,7 @@ export default function TerminalDrawer({
           '· ASGARDIAN LIGHTNING SYNC : [100% CHARGE]\n\n' +
           'RESULT: CLEARANCE GRANTED. YOU ARE DEEMED WORTHY!\n' +
           '--------------------------------------------------\n' +
-          '⚡ Unleashing Asgardian lightning blast · MINIMIZING TERMINAL FOR CINEMATIC'
+          'Unleashing Asgardian lightning blast · MINIMIZING TERMINAL FOR CINEMATIC'
       });
       if (onSelectSquad) onSelectSquad('thor');
       if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
@@ -176,12 +176,12 @@ export default function TerminalDrawer({
       playThunderStrike();
       newHistory.push({
         type: 'accent',
-        text: '🌈 ASGARDIAN BIFROST CONDUIT // HEIMDALL ACTIVATION\n' +
+        text: 'ASGARDIAN BIFROST CONDUIT // HEIMDALL ACTIVATION\n' +
           '--------------------------------------------------\n' +
           'Heimdall aligns the cosmic observatory bridge...\n' +
           'Conduit Energy Surge: 1.21 Gigawatts.\n' +
           'Destination Coordinates: Let\'s Cook Community Discord Gateway.\n\n' +
-          '⚡ TELEPORTING STRAIGHT TO LIVE COMMUNITY DISCORD...\n' +
+          'TELEPORTING STRAIGHT TO LIVE COMMUNITY DISCORD...\n' +
           '--------------------------------------------------\n' +
           '[STATUS: COSMIC BEAM DISCHARGE · MINIMIZING TERMINAL FOR CINEMATIC]'
       });
@@ -194,7 +194,7 @@ export default function TerminalDrawer({
       playThunderStrike();
       newHistory.push({
         type: 'accent',
-        text: '💀 "DREAD IT. RUN FROM IT. DESTINY ARRIVES ALL THE SAME."\n' +
+        text: '"DREAD IT. RUN FROM IT. DESTINY ARRIVES ALL THE SAME."\n' +
           '--------------------------------------------------\n' +
           '[Snap registered]: Physical ash dust particles unleashed!\n' +
           'Disintegrating terminal buffer and 50% of website content...\n' +
@@ -210,7 +210,7 @@ export default function TerminalDrawer({
       playTechClick();
       newHistory.push({
         type: 'accent',
-        text: '🌯 THE FOUNDRY // POST-BATTLE MEMO: SHAWARMA PROTOCOL\n' +
+        text: 'THE FOUNDRY // POST-BATTLE MEMO: SHAWARMA PROTOCOL\n' +
           '--------------------------------------------------\n' +
           'FROM: Tony Stark (Stark Tower Penthouse)\n' +
           'TO  : The Avengers & Let\'s Cook Builders\n' +
@@ -231,7 +231,7 @@ export default function TerminalDrawer({
       playNeonIgniteSound();
       newHistory.push({
         type: 'accent',
-        text: '📁 S.H.I.E.L.D. LEVEL 7 // CONFIDENTIAL EXECUTIVE DIRECTIVE\n' +
+        text: 'S.H.I.E.L.D. LEVEL 7 // CONFIDENTIAL EXECUTIVE DIRECTIVE\n' +
           '--------------------------------------------------\n' +
           'SECURITY CLASSIFICATION: EYES-ONLY // DIRECTOR\'S DESK\n' +
           'AUTHOR: NICK FURY, EXECUTIVE DIRECTOR\n' +
@@ -255,16 +255,16 @@ export default function TerminalDrawer({
       const target = parts[1];
       if (target === 'tech' || target === 'ironman' || target === 'stark') {
         if (onSelectSquad) onSelectSquad('ironman');
-        newHistory.push({ type: 'accent', text: '🔴 STARK TECH LABS DEPLOYED // Arc Reactor Online' });
+        newHistory.push({ type: 'accent', text: '// STARK TECH LABS DEPLOYED // Arc Reactor Online' });
       } else if (target === 'pr' || target === 'cap' || target === 'captain' || target === 'vibranium') {
         if (onSelectSquad) onSelectSquad('captain');
-        newHistory.push({ type: 'accent', text: '🔵 VIBRANIUM ALLIANCE DEPLOYED // Shield Sonar Online' });
+        newHistory.push({ type: 'accent', text: '// VIBRANIUM ALLIANCE DEPLOYED // Shield Sonar Online' });
       } else if (target === 'events' || target === 'event' || target === 'thor' || target === 'mjolnir') {
         if (onSelectSquad) onSelectSquad('thor');
-        newHistory.push({ type: 'accent', text: '🟡 MJOLNIR OPS DEPLOYED // Asgardian Lightning Charged' });
+        newHistory.push({ type: 'accent', text: '// STORMBREAKER OPS DEPLOYED // Asgardian Lightning Charged' });
       } else if (target === 'core' || target === 'shield' || target === 'foundry') {
         if (onSelectSquad) onSelectSquad('core');
-        newHistory.push({ type: 'accent', text: '🟣 FOUNDRY COMMAND DEPLOYED // Quantum Singularity Synchronized' });
+        newHistory.push({ type: 'accent', text: '// FOUNDRY COMMAND DEPLOYED // Quantum Singularity Synchronized' });
       } else {
         newHistory.push({ type: 'error', text: 'Usage: squad <tech | pr | events | core>' });
       }
@@ -313,7 +313,7 @@ export default function TerminalDrawer({
       playNeonIgniteSound();
       newHistory.push({
         type: 'accent',
-        text: '⚡ [OVERDRIVE ENGAGED] ALL CORES RUNNING AT MAXIMUM CLOCK FREQUENCY. LET\'S COOK!'
+        text: '[OVERDRIVE ENGAGED] ALL CORES RUNNING AT MAXIMUM CLOCK FREQUENCY. LET\'S COOK!'
       });
     } else {
       newHistory.push({

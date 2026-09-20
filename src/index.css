@@ -981,61 +981,96 @@ button {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, rgba(30, 10, 45, 0.85) 0%, rgba(5, 2, 8, 0.96) 80%);
+  background: radial-gradient(circle at 50% 50%, rgba(24, 6, 36, 0.94) 0%, rgba(4, 1, 8, 0.99) 75%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-@keyframes thanosRise {
-  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; filter: drop-shadow(0 0 20px #a855f7); }
-  15% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; filter: drop-shadow(0 0 50px #a855f7); }
-  35% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: drop-shadow(0 0 35px #a855f7); }
-  45% { transform: translate(-50%, -50%) scale(1.05) rotate(-2deg); opacity: 1; }
-  48% { transform: translate(-50%, -50%) scale(1.25) rotate(4deg); filter: brightness(4) drop-shadow(0 0 90px #ffffff); opacity: 1; }
-  54% { transform: translate(-50%, -50%) scale(0.95) skewX(18deg); filter: grayscale(1) blur(6px); opacity: 0.75; }
-  70% { transform: translate(-50%, -65%) scale(0.65) skewX(40deg); filter: grayscale(1) blur(14px); opacity: 0.25; }
-  85%, 100% { transform: translate(-50%, -85%) scale(0.1) skewX(60deg); filter: blur(30px); opacity: 0; }
+/* Thanos Entity: Heavy, menacing, realistic cinematic presence */
+@keyframes thanosCinematic {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    filter: brightness(0.2) contrast(1.5) drop-shadow(0 0 20px #581c87);
+  }
+  14% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    filter: brightness(1) contrast(1.15) drop-shadow(0 0 50px #7e22ce);
+  }
+  46% {
+    transform: translate(-50%, -50%) scale(1.02);
+    opacity: 1;
+    filter: brightness(1.2) contrast(1.2) drop-shadow(0 0 70px #9333ea);
+  }
+  /* Hypersonic Strike Impact Instant */
+  48% {
+    transform: translate(-50%, -50%) scale(1.06);
+    filter: brightness(7) contrast(2.5) drop-shadow(0 0 120px #ffffff);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.02);
+    filter: brightness(2.2) contrast(1.8) drop-shadow(0 0 80px #ef4444);
+    opacity: 1;
+  }
+  /* Armor and Form Shattering into Dark Particulate Ash */
+  56% {
+    transform: translate(-50%, -50%) scale(0.98);
+    filter: grayscale(0.85) contrast(1.6) brightness(0.5) blur(3px);
+    opacity: 0.85;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(0.95);
+    filter: grayscale(1) contrast(2) brightness(0.2) blur(10px);
+    opacity: 0.4;
+  }
+  88%, 100% {
+    transform: translate(-50%, -50%) scale(0.9);
+    filter: grayscale(1) brightness(0) blur(24px);
+    opacity: 0;
+  }
 }
 
 .thanos-entity {
   position: absolute;
   top: 50%;
   left: 50%;
-  animation: thanosRise 4.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: thanosCinematic 4.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes strikeLogoTL {
-  0% { transform: translate(-60vw, -60vh) rotate(-360deg) scale(0.4); opacity: 0; }
-  22% { opacity: 1; }
-  48% { transform: translate(-45px, -45px) rotate(0deg) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #00f0ff); }
-  58% { transform: translate(-15px, -15px) scale(0.9); opacity: 0.8; }
-  72%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+  0% { transform: translate(-60vw, -60vh) scale(0.5); opacity: 0; }
+  18% { opacity: 1; }
+  48% { transform: translate(-32px, -32px) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #00f0ff); }
+  54% { transform: translate(-8px, -8px) scale(0.8); opacity: 0.6; }
+  68%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
 }
 
 @keyframes strikeLogoTR {
-  0% { transform: translate(60vw, -60vh) rotate(360deg) scale(0.4); opacity: 0; }
-  22% { opacity: 1; }
-  48% { transform: translate(45px, -45px) rotate(0deg) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #3b82f6); }
-  58% { transform: translate(15px, -15px) scale(0.9); opacity: 0.8; }
-  72%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+  0% { transform: translate(60vw, -60vh) scale(0.5); opacity: 0; }
+  18% { opacity: 1; }
+  48% { transform: translate(32px, -32px) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #3b82f6); }
+  54% { transform: translate(8px, -8px) scale(0.8); opacity: 0.6; }
+  68%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
 }
 
 @keyframes strikeLogoBL {
-  0% { transform: translate(-60vw, 60vh) rotate(-360deg) scale(0.4); opacity: 0; }
-  22% { opacity: 1; }
-  48% { transform: translate(-45px, 45px) rotate(0deg) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #f59e0b); }
-  58% { transform: translate(-15px, 15px) scale(0.9); opacity: 0.8; }
-  72%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+  0% { transform: translate(-60vw, 60vh) scale(0.5); opacity: 0; }
+  18% { opacity: 1; }
+  48% { transform: translate(-32px, 32px) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #f59e0b); }
+  54% { transform: translate(-8px, 8px) scale(0.8); opacity: 0.6; }
+  68%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
 }
 
 @keyframes strikeLogoBR {
-  0% { transform: translate(60vw, 60vh) rotate(360deg) scale(0.4); opacity: 0; }
-  22% { opacity: 1; }
-  48% { transform: translate(45px, 45px) rotate(0deg) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #ff0055); }
-  58% { transform: translate(15px, 15px) scale(0.9); opacity: 0.8; }
-  72%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+  0% { transform: translate(60vw, 60vh) scale(0.5); opacity: 0; }
+  18% { opacity: 1; }
+  48% { transform: translate(32px, 32px) scale(1.3); opacity: 1; filter: drop-shadow(0 0 40px #ff0055); }
+  54% { transform: translate(8px, 8px) scale(0.8); opacity: 0.6; }
+  68%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
 }
 
 .strike-logo-tl {
@@ -1067,29 +1102,29 @@ button {
 }
 
 @keyframes assembleNovaBlast {
-  0%, 45% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
-  48% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 12px; }
-  70% { transform: translate(-50%, -50%) scale(4); opacity: 0.8; border-width: 4px; }
-  100% { transform: translate(-50%, -50%) scale(7.5); opacity: 0; border-width: 1px; }
+  0%, 46% { transform: translate(-50%, -50%) scale(0.05); opacity: 0; }
+  48% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; border-width: 14px; }
+  65% { transform: translate(-50%, -50%) scale(4.5); opacity: 0.85; border-width: 5px; }
+  100% { transform: translate(-50%, -50%) scale(9); opacity: 0; border-width: 1px; }
 }
 
 .assemble-nova-wave {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
-  border: 8px solid #ffffff;
-  box-shadow: 0 0 8px #ffffff, 0 0 60px #f59e0b, 0 0 120px #00f0ff;
-  animation: assembleNovaBlast 4.6s ease-out forwards;
+  border: 10px solid #ffffff;
+  box-shadow: 0 0 15px #ffffff, 0 0 60px #00f0ff, 0 0 120px #ff0055;
+  animation: assembleNovaBlast 4.6s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
 }
 
 @keyframes victoryCrestAscent {
-  0%, 55% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  65% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; filter: drop-shadow(0 0 70px #f59e0b); }
-  80% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: drop-shadow(0 0 50px #ff0055); }
-  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; filter: drop-shadow(0 0 90px #f59e0b); }
+  0%, 58% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  68% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; filter: drop-shadow(0 0 60px #f59e0b); }
+  82% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: drop-shadow(0 0 50px #ff0055); }
+  100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; filter: drop-shadow(0 0 80px #f59e0b); }
 }
 
 .assemble-victory-crest {
@@ -1105,13 +1140,18 @@ button {
   left: 50%;
   transform: translateX(-50%);
   font-family: monospace;
-  font-weight: 900;
-  font-size: clamp(1rem, 2.5vw, 1.8rem);
+  font-weight: 800;
+  font-size: clamp(0.85rem, 2vw, 1.25rem);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
+  background: rgba(10, 10, 16, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 24px;
+  border-radius: 4px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
 }
 
 .lightning-flash-screen {

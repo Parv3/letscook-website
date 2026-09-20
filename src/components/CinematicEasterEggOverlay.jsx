@@ -5,7 +5,8 @@ import {
   playAssembleFanfare, 
   playTimeStoneReversal,
   playVibraniumPing,
-  playCinematicShatterSound
+  playCinematicShatterSound,
+  playThanosThreatSound
 } from '../utils/soundEngine';
 
 export default function CinematicEasterEggOverlay({ effect, onComplete }) {
@@ -165,14 +166,64 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
       };
     } else if (effect === 'assemble') {
       // 5. ALL LOGOS CONVERGE & KILL THANOS CLIMAX
-      setAssembleStep(1); // Thanos manifests ("I am inevitable")
-      playThunderStrike();
+      setAssembleStep(1); // Hostile Titan manifests
+      playThanosThreatSound();
 
-      // Step 2: Cap calls Assemble, fanfare sounds, 4 logos converge inwards
+      let cinderAnimId;
+      const canvas = canvasRef.current;
+      let particleTimer;
+
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const w = (canvas.width = window.innerWidth);
+        const h = (canvas.height = window.innerHeight);
+        const cx = w / 2;
+        const cy = h / 2;
+
+        particleTimer = setTimeout(() => {
+          const particles = Array.from({ length: 200 }, () => {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 9 + 3;
+            return {
+              x: cx,
+              y: cy,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              size: Math.random() * 3.5 + 1.5,
+              alpha: 1,
+              decay: Math.random() * 0.016 + 0.008,
+              color: Math.random() > 0.4 ? '234, 179, 8' : Math.random() > 0.5 ? '168, 85, 247' : '239, 68, 68'
+            };
+          });
+
+          const renderParticles = () => {
+            ctx.clearRect(0, 0, w, h);
+            let alive = false;
+            particles.forEach(p => {
+              p.x += p.vx;
+              p.y += p.vy;
+              p.vx *= 0.96;
+              p.vy *= 0.96;
+              p.alpha -= p.decay;
+              if (p.alpha > 0) {
+                alive = true;
+                ctx.fillStyle = `rgba(${p.color}, ${Math.max(0, p.alpha)})`;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+              }
+            });
+            if (alive) {
+              cinderAnimId = requestAnimationFrame(renderParticles);
+            }
+          };
+          cinderAnimId = requestAnimationFrame(renderParticles);
+        }, 2200);
+      }
+
+      // Step 2: Dramatic cinematic war horn sounds, 4 logos converge inwards
       const timer1 = setTimeout(() => {
         setAssembleStep(2);
         playAssembleFanfare();
-      }, 950);
+      }, 1000);
 
       // Step 3: Massive kinetic impact, shatter sound, Thanos crushed
       const timer2 = setTimeout(() => {
@@ -200,6 +251,8 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         clearTimeout(timer2);
         clearTimeout(timer3);
         clearTimeout(timer4);
+        clearTimeout(particleTimer);
+        if (cinderAnimId) cancelAnimationFrame(cinderAnimId);
         document.body.classList.remove('seismic-shake');
         setAssembleStep(0);
       };
@@ -210,13 +263,17 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9998, pointerEvents: 'none' }} aria-hidden="true">
-      {/* 1. Canvas for Real Dust Disintegration */}
+      {/* Dynamic Canvas for Real Dust / Ash Disintegration */}
+      {(effect === 'snap' || effect === 'assemble') && (
+        <canvas 
+          ref={canvasRef} 
+          style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }} 
+        />
+      )}
+
+      {/* 1. Doctor Strange Time Heist */}
       {effect === 'snap' && (
         <>
-          <canvas 
-            ref={canvasRef} 
-            style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }} 
-          />
           {showMandala && (
             <div className="doctor-strange-mandala">
               <div className="chronal-ripple-wave" />
@@ -322,7 +379,7 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
             textAlign: 'center',
             textShadow: '0 0 25px #eab308'
           }}>
-            ⚡ WHOSOEVER HOLDS THIS HAMMER... ⚡
+            WHOSOEVER HOLDS THIS HAMMER...
           </div>
         </div>
       )}
@@ -330,58 +387,128 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
       {/* 5. Avengers Assemble: Unified Strike & Kill Thanos Climax */}
       {effect === 'assemble' && (
         <div className="assemble-battle-screen">
-          {/* A. Thanos Entity at Center */}
+          {/* A. Thanos Entity at Center: High-fidelity Titan Commander */}
           <div className="thanos-entity" aria-label="Thanos">
             <svg 
-              width="240" 
-              height="240" 
-              viewBox="0 0 200 200" 
+              width="280" 
+              height="280" 
+              viewBox="0 0 260 260" 
               fill="none"
-              style={{ filter: 'drop-shadow(0 0 40px rgba(168, 85, 247, 0.9))' }}
+              style={{ filter: 'drop-shadow(0 0 50px rgba(147, 51, 234, 0.85))' }}
             >
               <defs>
-                <linearGradient id="thanosSkin" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#9333ea" />
-                  <stop offset="50%" stopColor="#7e22ce" />
-                  <stop offset="100%" stopColor="#581c87" />
+                <linearGradient id="titanSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#7c3aed" />
+                  <stop offset="45%" stopColor="#581c87" />
+                  <stop offset="100%" stopColor="#2e1065" />
                 </linearGradient>
-                <linearGradient id="thanosGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="titanGoldArmor" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#fef08a" />
-                  <stop offset="40%" stopColor="#eab308" />
-                  <stop offset="100%" stopColor="#854d0e" />
+                  <stop offset="35%" stopColor="#eab308" />
+                  <stop offset="70%" stopColor="#ca8a04" />
+                  <stop offset="100%" stopColor="#713f12" />
                 </linearGradient>
+                <linearGradient id="titanDarkPlate" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#1e1b4b" />
+                  <stop offset="50%" stopColor="#0f172a" />
+                  <stop offset="100%" stopColor="#020617" />
+                </linearGradient>
+                <radialGradient id="eyeCosmicGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#ffffff" />
+                  <stop offset="40%" stopColor="#facc15" />
+                  <stop offset="100%" stopColor="#b45309" stopOpacity="0" />
+                </radialGradient>
+                <filter id="cosmicStoneGlow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
 
-              {/* Thanos Head / Body */}
-              <circle cx="100" cy="95" r="54" fill="url(#thanosSkin)" stroke="#3b0764" strokeWidth="2" />
-              
-              {/* Ridged Titan Jawline */}
-              <path d="M78 112 C78 136 122 136 122 112 Z" fill="url(#thanosSkin)" stroke="#3b0764" strokeWidth="2" />
-              <line x1="88" y1="118" x2="88" y2="132" stroke="#4c1d95" strokeWidth="2.5" strokeLinecap="round" />
-              <line x1="96" y1="120" x2="96" y2="134" stroke="#4c1d95" strokeWidth="2.5" strokeLinecap="round" />
-              <line x1="104" y1="120" x2="104" y2="134" stroke="#4c1d95" strokeWidth="2.5" strokeLinecap="round" />
-              <line x1="112" y1="118" x2="112" y2="132" stroke="#4c1d95" strokeWidth="2.5" strokeLinecap="round" />
+              {/* Massive Armored Pauldrons (Shoulders) */}
+              <path d="M25 210 L50 155 L100 170 L90 230 L20 220 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="2.5" />
+              <path d="M235 210 L210 155 L160 170 L170 230 L240 220 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="2.5" />
+              <polygon points="50,155 75,145 100,170 65,178" fill="#ca8a04" />
+              <polygon points="210,155 185,145 160,170 195,178" fill="#ca8a04" />
 
-              {/* Menacing Glowing Eyes */}
-              <ellipse cx="84" cy="92" rx="6" ry="3" fill="#facc15" />
-              <ellipse cx="116" cy="92" rx="6" ry="3" fill="#facc15" />
-              <ellipse cx="84" cy="92" rx="2" ry="2" fill="#ffffff" />
-              <ellipse cx="116" cy="92" rx="2" ry="2" fill="#ffffff" />
+              {/* Heavy Chestplate & Under-armor */}
+              <path d="M85 165 L130 180 L175 165 L170 240 L90 240 Z" fill="url(#titanDarkPlate)" stroke="#312e81" strokeWidth="2" />
+              <polygon points="130,185 155,230 105,230" fill="url(#titanGoldArmor)" stroke="#713f12" strokeWidth="1.5" />
+              <line x1="130" y1="185" x2="130" y2="230" stroke="#451a03" strokeWidth="2" />
 
-              {/* Golden Titan Battle Helmet & Crest */}
-              <path d="M62 76 C62 48 138 48 138 76 L134 94 L126 78 L74 78 L66 94 Z" fill="url(#thanosGold)" stroke="#713f12" strokeWidth="2" />
-              <polygon points="100,42 108,68 92,68" fill="#38bdf8" stroke="#0284c7" strokeWidth="1" />
+              {/* Muscular Titan Neck */}
+              <path d="M102 125 L92 168 L168 168 L158 125 Z" fill="url(#titanSkin)" stroke="#2e1065" strokeWidth="2" />
+              <path d="M110 135 C118 152 125 160 130 166 C135 160 142 152 150 135" fill="none" stroke="#3b0764" strokeWidth="3" />
 
-              {/* Raised Golden Infinity Gauntlet */}
-              <g transform="translate(130, 95) scale(0.65)">
-                <rect x="0" y="0" width="46" height="60" rx="10" fill="url(#thanosGold)" stroke="#713f12" strokeWidth="2" />
-                {/* 6 Infinity Stones */}
-                <circle cx="12" cy="18" r="4" fill="#ef4444" filter="drop-shadow(0 0 6px #ef4444)" />
-                <circle cx="23" cy="12" r="4" fill="#38bdf8" filter="drop-shadow(0 0 6px #38bdf8)" />
-                <circle cx="34" cy="18" r="4" fill="#a855f7" filter="drop-shadow(0 0 6px #a855f7)" />
-                <circle cx="12" cy="34" r="4" fill="#f97316" filter="drop-shadow(0 0 6px #f97316)" />
-                <circle cx="34" cy="34" r="4" fill="#10b981" filter="drop-shadow(0 0 6px #10b981)" />
-                <polygon points="23,22 28,29 18,29" fill="#facc15" filter="drop-shadow(0 0 10px #facc15)" />
+              {/* Sculpted Titan Head (Anatomical Jaw & Brow) */}
+              <path d="M92 90 C85 110 88 135 100 148 L130 155 L160 148 C172 135 175 110 168 90 C162 60 98 60 92 90 Z" fill="url(#titanSkin)" stroke="#1e1035" strokeWidth="2.5" />
+
+              {/* Signature 7 Vertical Scarred Chin Grooves */}
+              <g stroke="#2e1065" strokeWidth="2.2" strokeLinecap="round">
+                <line x1="108" y1="132" x2="110" y2="147" />
+                <line x1="115" y1="134" x2="117" y2="150" />
+                <line x1="122" y1="135" x2="123" y2="152" />
+                <line x1="130" y1="136" x2="130" y2="153" stroke="#1e1035" strokeWidth="3" />
+                <line x1="138" y1="135" x2="137" y2="152" />
+                <line x1="145" y1="134" x2="143" y2="150" />
+                <line x1="152" y1="132" x2="150" y2="147" />
+              </g>
+
+              {/* Menacing Deep-Set Piercing Cosmic Eyes */}
+              <path d="M106 102 C110 98 118 98 122 103 C118 106 110 106 106 102 Z" fill="#0f051d" />
+              <circle cx="114" cy="102" r="3.5" fill="url(#eyeCosmicGlow)" filter="drop-shadow(0 0 4px #facc15)" />
+              <circle cx="114" cy="102" r="1.2" fill="#ffffff" />
+
+              <path d="M138 103 C142 98 150 98 154 102 C150 106 142 106 138 103 Z" fill="#0f051d" />
+              <circle cx="146" cy="102" r="3.5" fill="url(#eyeCosmicGlow)" filter="drop-shadow(0 0 4px #facc15)" />
+              <circle cx="146" cy="102" r="1.2" fill="#ffffff" />
+
+              {/* Scowling Brow Ridge Shadow */}
+              <path d="M102 96 C115 99 125 102 130 104 C135 102 145 99 158 96" stroke="#2e1065" strokeWidth="3.5" strokeLinecap="round" />
+
+              {/* Mad Titan Golden Battle Helmet */}
+              <path d="M86 85 C84 62 105 44 130 42 C155 44 176 62 174 85 L168 95 L160 80 L130 84 L100 80 L92 95 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="2.5" />
+              {/* Central Helmet Crest Spine */}
+              <polygon points="130,36 135,76 125,76" fill="#fef08a" stroke="#a16207" strokeWidth="1" />
+              {/* Flared Cheek Guards */}
+              <path d="M88 85 L84 122 L96 115 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="1.5" />
+              <path d="M172 85 L176 122 L164 115 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="1.5" />
+
+              {/* Raised Golden Infinity Gauntlet (Left Foreground) */}
+              <g transform="translate(160, 115)" filter="drop-shadow(0 0 25px rgba(234, 179, 8, 0.7))">
+                {/* Armored Forearm Bracer */}
+                <path d="M15 45 L58 35 L70 95 L25 105 Z" fill="url(#titanGoldArmor)" stroke="#581c87" strokeWidth="2" />
+                {/* Articulated Back of Hand / Knuckle Plate */}
+                <path d="M10 15 L50 6 L60 48 L15 54 Z" fill="url(#titanGoldArmor)" stroke="#451a03" strokeWidth="2" />
+
+                {/* Cosmic Energy Conduits Connecting Stones */}
+                <path d="M18 16 L32 28 M30 12 L32 28 M42 12 L32 28 M52 16 L32 28" stroke="#fef08a" strokeWidth="1.5" strokeDasharray="2 2" />
+
+                {/* 1. Time Stone (Green, Thumb) */}
+                <circle cx="10" cy="24" r="4.5" fill="#10b981" filter="url(#cosmicStoneGlow)" />
+                <circle cx="10" cy="24" r="2" fill="#d1fae5" />
+
+                {/* 2. Power Stone (Purple, Index) */}
+                <circle cx="18" cy="14" r="4.5" fill="#a855f7" filter="url(#cosmicStoneGlow)" />
+                <circle cx="18" cy="14" r="2" fill="#f3e8ff" />
+
+                {/* 3. Space Stone (Blue, Middle) */}
+                <circle cx="30" cy="10" r="4.5" fill="#0ea5e9" filter="url(#cosmicStoneGlow)" />
+                <circle cx="30" cy="10" r="2" fill="#e0f2fe" />
+
+                {/* 4. Reality Stone (Red, Ring) */}
+                <circle cx="42" cy="10" r="4.5" fill="#ef4444" filter="url(#cosmicStoneGlow)" />
+                <circle cx="42" cy="10" r="2" fill="#fee2e2" />
+
+                {/* 5. Soul Stone (Orange, Pinky) */}
+                <circle cx="52" cy="14" r="4.5" fill="#f97316" filter="url(#cosmicStoneGlow)" />
+                <circle cx="52" cy="14" r="2" fill="#ffedd5" />
+
+                {/* 6. Mind Stone (Large Solar Diamond at Dorsal Center) */}
+                <polygon points="32,20 40,28 32,36 24,28" fill="#facc15" filter="url(#cosmicStoneGlow)" />
+                <polygon points="32,23 37,28 32,33 27,28" fill="#ffffff" />
               </g>
             </svg>
           </div>
@@ -446,14 +573,15 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
             </svg>
           </div>
 
-          {/* E. Dynamic Climax Battle Text */}
+          {/* E. Tactical Monospace HUD Operation Readout */}
           <div className="assemble-banner-text" style={{
             color: assembleStep >= 3 ? '#facc15' : assembleStep === 2 ? '#38bdf8' : '#e879f9',
             textShadow: assembleStep >= 3 ? '0 0 25px #eab308' : '0 0 20px #a855f7'
           }}>
-            {assembleStep <= 1 && '💀 THANOS: "I AM INEVITABLE."'}
-            {assembleStep === 2 && '⚡ "AVENGERS... ASSEMBLE!"'}
-            {assembleStep >= 3 && '★ AND WE... ARE THE FOUNDRY! (THANOS ELIMINATED) ★'}
+            {assembleStep <= 1 && '[TITAN THREAT DETECTED] INFINITY CARRIER MANIFESTED'}
+            {assembleStep === 2 && '[SQUAD PROTOCOL ENGAGED] ALL ASSETS CONVERGE // ASSEMBLE'}
+            {assembleStep === 3 && '[CRITICAL STRIKE] TARGET DESTABILIZED // OMEGA BREACH'}
+            {assembleStep >= 4 && '[THREAT NEUTRALIZED] THE FOUNDRY // EARTH\'S MIGHTIEST DEVELOPERS'}
           </div>
         </div>
       )}

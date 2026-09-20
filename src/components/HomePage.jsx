@@ -555,7 +555,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                       }}
                       title="Test Stark Arc Reactor Energy Calibration"
                     >
-                      {isTestingFlux ? '⚡ CALIBRATING ARC FLUX...' : '⚡ TEST ARC REACTOR'}
+                      {isTestingFlux ? 'CALIBRATING ARC FLUX...' : 'TEST ARC REACTOR'}
                     </button>
                   )}
 
@@ -568,7 +568,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      ✔ ARC FLUX: 3.2 GW NOMINAL (0.84ms)
+                      ARC FLUX: 3.2 GW NOMINAL (0.84ms)
                     </span>
                   )}
 
@@ -588,7 +588,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                       }}
                       title="Summon Stormbreaker with Asgardian Lightning"
                     >
-                      {isSummoningStorm ? '⚡ CHANNELING BIFROST...' : '⚡ SUMMON STORMBREAKER'}
+                      {isSummoningStorm ? 'CHANNELING BIFROST...' : 'SUMMON STORMBREAKER'}
                     </button>
                   )}
 
@@ -601,7 +601,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      ⚡ STORMBREAKER READY // BIFROST CHANNEL ACTIVE
+                      STORMBREAKER READY // BIFROST CHANNEL ACTIVE
                     </span>
                   )}
 
