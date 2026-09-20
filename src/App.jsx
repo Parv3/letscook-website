@@ -13,6 +13,7 @@ import PitchIdeaModal from './components/PitchIdeaModal';
 import TerminalDrawer from './components/TerminalDrawer';
 import SquadThemeCanvas from './components/SquadThemeCanvas';
 import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
+import ClickSpark from './components/ClickSpark';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
@@ -86,7 +87,14 @@ export default function App() {
   };
 
   return (
-    <div className="app-root">
+    <ClickSpark
+      sparkColor="#fff"
+      sparkSize={10}
+      sparkRadius={15}
+      sparkCount={8}
+      duration={400}
+    >
+      <div className="app-root">
       {/* 1. Live Procedural 60 FPS Squad Theme Background Canvas */}
       <SquadThemeCanvas squad={activeSquad} />
 
@@ -160,5 +168,6 @@ export default function App() {
         <ScrollTopButton />
       </div>
     </div>
+    </ClickSpark>
   );
 }
