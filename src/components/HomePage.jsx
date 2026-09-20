@@ -134,11 +134,11 @@ export const SQUADS_DATA = {
     key: 'thor',
     team: 'EVENTS TEAM',
     hero: 'THOR',
-    title: 'MJOLNIR OPS',
-    badge: 'REALM: ASGARD FORGE',
-    status: 'HIGH VOLTAGE // THUNDER SURGE',
+    title: 'STORMBREAKER OPS',
+    badge: 'REALM: NIDAVELLIR FORGE',
+    status: 'HIGH VOLTAGE // BIFROST SURGE',
     quote: '"Bring me Thanos!"',
-    desc: 'High-octane 48-hour national hackathons, live code tournaments, campus speaker arenas, and lightning sprint demo stages.',
+    desc: 'High-octane 48-hour national hackathons, live code tournaments, campus speaker arenas, and lightning sprint demo stages powered by Asgardian energy.',
     color: '#d97706',
     secondaryColor: '#38bdf8',
     linktree: `${LINKTREE_URL}&utm_source=squad_events_thor`,
@@ -152,85 +152,65 @@ export const SQUADS_DATA = {
     insigniaSvg: (
       <svg viewBox="0 0 100 100" className="w-20 h-20" width="80" height="80" fill="none">
         <defs>
-          <linearGradient id="uruStoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2a1d0d" />
-            <stop offset="50%" stopColor="#1a1208" />
-            <stop offset="100%" stopColor="#0d0904" />
+          <linearGradient id="stormUruGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="50%" stopColor="#1e293b" />
+            <stop offset="100%" stopColor="#0f172a" />
           </linearGradient>
-          <filter id="lightningGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
+          <linearGradient id="stormBladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="60%" stopColor="#0284c7" />
+            <stop offset="100%" stopColor="#1e293b" />
+          </linearGradient>
+          <filter id="stormLightningGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {/* Animated crackling electric lightning arcs */}
-        <g filter="url(#lightningGlow)" className="spark-flicker">
-          <path d="M12,24 L18,31 L14,36 L21,34" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
-          <path d="M88,24 L82,31 L86,36 L79,34" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
-          <path d="M47,12 L50,17 L53,15 L52,20" stroke="#facc15" strokeWidth="2" strokeLinecap="round" />
-          <path d="M30,56 L24,62 L28,66" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M70,56 L76,62 L72,66" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Dynamic Asgardian Lightning Spark Arcs */}
+        <g filter="url(#stormLightningGlow)" className="spark-flicker">
+          <path d="M12,18 L16,26 L12,32 L20,30" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M10,48 L15,56 L11,62 L18,60" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" />
+          <path d="M84,24 L78,32 L83,38" stroke="#facc15" strokeWidth="2" strokeLinecap="round" />
+          <path d="M50,10 L54,16 L49,21" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
         </g>
 
-        {/* Top Chamfer Cap of Hammer Head */}
-        <rect x="42" y="19" width="16" height="3" rx="1" fill="#f59e0b" stroke="#eab308" strokeWidth="0.8" />
-
-        {/* Mjolnir Heavy Uru Stone Head (Faceted Octagonal Prism) */}
-        <polygon 
-          points="22,22 78,22 84,28 84,48 78,54 22,54 16,48 16,28" 
-          fill="url(#uruStoneGrad)" 
-          stroke="#f59e0b" 
-          strokeWidth="2.5" 
+        {/* Stormbreaker Axe Blade (Left Wing) */}
+        <path 
+          d="M48,22 C34,22 18,28 14,40 C12,50 18,62 48,64 L48,54 C32,52 24,46 24,40 C24,34 32,28 48,28 Z" 
+          fill="url(#stormBladeGrad)" 
+          stroke="#38bdf8" 
+          strokeWidth="1.8" 
           strokeLinejoin="round" 
         />
+        {/* Razor Edge Highlight */}
+        <path d="M14,40 C12,50 18,62 48,64" stroke="#f0f9ff" strokeWidth="1.5" strokeLinecap="round" />
 
-        {/* Inner Recessed Face with Asgardian Border */}
+        {/* Stormbreaker Hammer Mallet Poll (Right Wing) */}
         <polygon 
-          points="26,26 74,26 79,31 79,45 74,50 26,50 21,45 21,31" 
-          fill="#130d06" 
-          stroke="#eab308" 
-          strokeWidth="1.2" 
-          opacity="0.9" 
+          points="52,28 78,24 86,28 86,52 78,56 52,52" 
+          fill="url(#stormUruGrad)" 
+          stroke="#f59e0b" 
+          strokeWidth="2" 
+          strokeLinejoin="round" 
         />
+        <rect x="80" y="27" width="6" height="25" rx="1" fill="#0f172a" stroke="#d97706" strokeWidth="1" />
 
-        {/* 3D Bevel Edge Ridges */}
-        <line x1="22" y1="22" x2="26" y2="26" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="78" y1="22" x2="74" y2="26" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="84" y1="28" x2="79" y2="31" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="84" y1="48" x2="79" y2="45" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="78" y1="54" x2="74" y2="50" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="22" y1="54" x2="26" y2="50" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="16" y1="48" x2="21" y2="45" stroke="#f59e0b" strokeWidth="1.5" />
-        <line x1="16" y1="28" x2="21" y2="31" stroke="#f59e0b" strokeWidth="1.5" />
-
-        {/* Center Nordic Celtic Triquetra Knot / Rune Ring */}
+        {/* Central Eye Socket & Asgardian Rune Collar */}
+        <rect x="44" y="24" width="12" height="32" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
         <g className="rune-pulse">
-          <circle cx="50" cy="38" r="8.5" stroke="#38bdf8" strokeWidth="1.5" opacity="0.85" />
-          <path d="M50,30 C55,35 55,41 50,46 C45,41 45,35 50,30 Z" stroke="#f59e0b" strokeWidth="1.4" />
-          <path d="M43,42 C48,40 52,45 49,49 C44,49 41,45 43,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
-          <path d="M57,42 C59,45 56,49 51,49 C48,45 52,40 57,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
-          <circle cx="50" cy="38" r="2.2" fill="#38bdf8" />
+          <circle cx="50" cy="40" r="5" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+          <circle cx="50" cy="40" r="2" fill="#ffffff" />
         </g>
 
-        {/* Upper Handle Collar */}
-        <rect x="44" y="54" width="12" height="5" rx="1.5" fill="#d97706" stroke="#f59e0b" strokeWidth="1.2" />
-
-        {/* Textured Handle Shaft */}
-        <rect x="46" y="59" width="8" height="26" rx="1.5" fill="#1f1408" stroke="#d97706" strokeWidth="1.2" />
-
-        {/* Leather Grip Cross-Wrapping Bands */}
-        <line x1="46" y1="63" x2="54" y2="67" stroke="#eab308" strokeWidth="1.2" />
-        <line x1="46" y1="69" x2="54" y2="73" stroke="#eab308" strokeWidth="1.2" />
-        <line x1="46" y1="75" x2="54" y2="79" stroke="#eab308" strokeWidth="1.2" />
-        <line x1="54" y1="63" x2="46" y2="67" stroke="#eab308" strokeWidth="1.2" />
-        <line x1="54" y1="69" x2="46" y2="73" stroke="#eab308" strokeWidth="1.2" />
-        <line x1="54" y1="75" x2="46" y2="79" stroke="#eab308" strokeWidth="1.2" />
-
-        {/* Pommel Base Cap */}
-        <rect x="43" y="85" width="14" height="4.5" rx="2" fill="#f59e0b" stroke="#eab308" strokeWidth="1.2" />
-
-        {/* Asgardian Leather Wrist Strap Loop */}
-        <path d="M50,89.5 C45,95 45,99 50,100 C55,99 55,95 50,89.5" stroke="#d97706" strokeWidth="1.8" strokeLinecap="round" />
+        {/* Groot's Entwined Wood Vine Handle */}
+        <path d="M48,56 C46,65 52,72 49,82 C47,88 51,94 48,98" stroke="#78350f" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M52,56 C54,64 48,73 51,83 C53,89 49,94 52,98" stroke="#92400e" strokeWidth="3" strokeLinecap="round" />
+        {/* Vine Wrapping Bands */}
+        <line x1="47" y1="64" x2="53" y2="67" stroke="#ca8a04" strokeWidth="1.2" />
+        <line x1="46" y1="74" x2="54" y2="77" stroke="#ca8a04" strokeWidth="1.2" />
+        <line x1="47" y1="84" x2="53" y2="87" stroke="#ca8a04" strokeWidth="1.2" />
       </svg>
     )
   },
@@ -282,6 +262,23 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
       setFluxTested(true);
       setTimeout(() => setFluxTested(false), 5000);
     }, 450);
+  };
+
+  // Asgardian Stormbreaker Interactive State
+  const [isSummoningStorm, setIsSummoningStorm] = useState(false);
+  const [stormSummoned, setStormSummoned] = useState(false);
+
+  const handleSummonStormbreaker = () => {
+    playThunderStrike();
+    document.body.classList.add('seismic-shake');
+    setIsSummoningStorm(true);
+    setStormSummoned(false);
+    setTimeout(() => {
+      document.body.classList.remove('seismic-shake');
+      setIsSummoningStorm(false);
+      setStormSummoned(true);
+      setTimeout(() => setStormSummoned(false), 5000);
+    }, 600);
   };
 
   // Progressive Shake & Invert Easter Egg State
@@ -575,6 +572,39 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                     </span>
                   )}
 
+                  {activeSquad.key === 'thor' && (
+                    <button
+                      type="button"
+                      onClick={handleSummonStormbreaker}
+                      disabled={isSummoningStorm}
+                      className="btn-secondary glow-btn"
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(255, 170, 0, 0.6)',
+                        color: '#ffffff',
+                        background: 'rgba(255, 170, 0, 0.15)'
+                      }}
+                      title="Summon Stormbreaker with Asgardian Lightning"
+                    >
+                      {isSummoningStorm ? '⚡ CHANNELING BIFROST...' : '⚡ SUMMON STORMBREAKER'}
+                    </button>
+                  )}
+
+                  {stormSummoned && (
+                    <span style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.74rem',
+                      color: '#ffbb00',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      animation: 'fadeIn 0.2s ease'
+                    }}>
+                      ⚡ STORMBREAKER READY // BIFROST CHANNEL ACTIVE
+                    </span>
+                  )}
+
                   <span className="spotlight-cta-subtext">Direct Linktree community onboarding</span>
                 </div>
               </div>
@@ -587,7 +617,11 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
                   </div>
                   <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
                   <div className="insignia-sublabel">
-                    {activeSquad.key === 'ironman' ? 'ARC FLUX: 3.2 GW · NOMINAL' : 'SYSTEM NOMINAL'}
+                    {activeSquad.key === 'thor'
+                      ? 'STORMBREAKER // BIFROST READY'
+                      : activeSquad.key === 'ironman'
+                        ? 'ARC FLUX: 3.2 GW · NOMINAL'
+                        : 'SYSTEM NOMINAL'}
                   </div>
                 </div>
               </div>
