@@ -85,25 +85,20 @@ export default function TerminalDrawer({
         newHistory.push({ type: 'error', text: 'Usage: squad <tech | pr | events | core>' });
       }
     } else if (cmdLower === 'snap' || cmdLower === 'thanos') {
-      newHistory.push({ type: 'accent', text: '💀 "Dread it. Run from it. Destiny arrives all the same." [Executing Decimation...]' });
+      newHistory.push({ type: 'accent', text: '💀 "Dread it. Run from it. Destiny arrives all the same." [Executing Decimation... Disintegrating 50% of website content into ash particles!]' });
       if (onTriggerEasterEgg) onTriggerEasterEgg('snap');
-      onClose();
     } else if (cmdLower === 'bifrost' || cmdLower === 'heimdall') {
-      newHistory.push({ type: 'accent', text: '🌈 "Heimdall, open the Bifrost!" [Cosmic Gateway Incoming...]' });
+      newHistory.push({ type: 'accent', text: '🌈 "Heimdall, open the Bifrost!" [Cosmic Gateway Incoming... Seismic shockwave registered!]' });
       if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
-      onClose();
     } else if (cmdLower === 'jarvis' || cmdLower === 'friday' || cmdLower === 'ironman') {
-      newHistory.push({ type: 'accent', text: '🤖 "Welcome home, sir. Nanotech flight systems initialized."' });
+      newHistory.push({ type: 'accent', text: '🤖 "Welcome home, sir. Nanotech flight systems initialized." [Projecting Mark LXXXV HUD targeting overlay...]' });
       if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
-      onClose();
     } else if (cmdLower === 'worthy' || cmdLower === 'mjolnir' || cmdLower === 'thor') {
-      newHistory.push({ type: 'accent', text: '⚡ "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor."' });
+      newHistory.push({ type: 'accent', text: '⚡ "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor." [Lightning blast discharged!]' });
       if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
-      onClose();
     } else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
-      newHistory.push({ type: 'accent', text: '🛡️ "AVENGERS... ASSEMBLE!" [Initiative Priority Signal Broadcasted]' });
+      newHistory.push({ type: 'accent', text: '🛡️ "AVENGERS... ASSEMBLE!" [Initiative Priority Signal Broadcasted... Golden crest activated!]' });
       if (onTriggerEasterEgg) onTriggerEasterEgg('assemble');
-      onClose();
     } else if (cmdLower === 'sprints' || cmdLower === 'projects' || cmdLower === 'initiatives') {
       newHistory.push({
         type: 'sys',

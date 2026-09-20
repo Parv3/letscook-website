@@ -657,6 +657,148 @@ button {
   animation: plasmaBorder 1.5s ease-in-out infinite alternate !important;
 }
 
+/* ========================================================= */
+/* CINEMATIC MARVEL EASTER EGG OVERLAYS (PURE CSS)           */
+/* ========================================================= */
+
+.bifrost-overlay-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bifrost-beam-pillar {
+  width: 100%;
+  max-width: 850px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(0,240,255,0.85) 25%, rgba(255,255,255,0.95) 50%, rgba(245,158,11,0.85) 75%, transparent 100%);
+  opacity: 0.95;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 120px #00f0ff;
+  animation: bifrostPillar 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.bifrost-runes-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: clamp(0.75rem, 2vw, 1.1rem);
+  color: #fde047;
+  font-weight: 900;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0 20px #eab308);
+  opacity: 0.9;
+}
+
+.timestone-mandala-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  animation: timeStoneSpin 3.2s ease-in-out forwards;
+}
+
+.jarvis-hud-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  border: 2px solid rgba(0, 240, 255, 0.35);
+  background-color: rgba(0, 240, 255, 0.05);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+.jarvis-laser-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+  box-shadow: 0 0 25px #00f0ff;
+  animation: laserSweep 3s linear infinite;
+}
+
+.jarvis-telemetry-top {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #00f0ff;
+  line-height: 1.6;
+  filter: drop-shadow(0 0 8px #00f0ff);
+}
+
+.jarvis-reticle-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jarvis-reticle-spin {
+  width: 190px;
+  height: 190px;
+  border: 1px dashed rgba(0, 240, 255, 0.6);
+  border-radius: 50%;
+  animation: rotateCW 12s linear infinite;
+}
+
+.jarvis-reticle-target {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ff0055;
+  position: absolute;
+}
+
+.jarvis-telemetry-bottom {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #00f0ff;
+  text-align: right;
+  line-height: 1.6;
+  filter: drop-shadow(0 0 8px #00f0ff);
+}
+
+.assemble-crest-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  animation: avengersAAssemble 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lightning-flash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.75) 0%, rgba(234, 179, 8, 0.4) 40%, transparent 80%);
+  animation: fadeIn 0.15s ease-out;
+}
+
 /* Light Theme Polish */
 html.light .nebula-orb {
   opacity: 0.12;

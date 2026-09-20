@@ -625,16 +625,11 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         /* 1. HERO SECTION */
         .hero-section {
           position: relative;
-          padding: 24px 20px 48px 20px;
+          padding: 36px 20px 56px 20px;
           border-bottom: 1px solid var(--border-color);
           overflow: hidden;
           width: 100%;
           max-width: 100vw;
-          min-height: calc(100vh - 65px);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
           box-sizing: border-box;
           background: radial-gradient(circle at 50% 32%, var(--accent-burgundy-light) 0%, transparent 65%);
         }
@@ -642,7 +637,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, currentSqua
         .hero-container {
           position: relative;
           z-index: 10;
-          max-width: 1100px;
+          max-width: 1000px;
           margin: 0 auto;
           width: 100%;
           display: flex;

@@ -72,7 +72,7 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
       globalTick++;
       const currentSquad = squadRef.current;
       const cx = width * 0.5;
-      const cy = Math.min(height * 0.42, 380);
+      const cy = height * 0.45;
 
       // 1. IRON MAN: 3D HOLOGRAPHIC ARC REACTOR MATRIX & VOLUMETRIC CORE
       if (currentSquad === 'ironman') {
