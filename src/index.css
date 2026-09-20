@@ -748,34 +748,88 @@ button {
 /* ========================================================= */
 @keyframes vibraniumBouncePath {
   0% {
-    top: 95%;
-    left: -10%;
-    transform: translate(-50%, -50%) rotate(0deg) scale(0.6);
+    top: 96%;
+    left: -12%;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.65);
+    opacity: 0;
   }
-  20% {
-    top: 15%;
+  4% {
+    opacity: 1;
+  }
+  /* 1st Ricochet: Top Right */
+  18% {
+    top: 14%;
     left: 88%;
     transform: translate(-50%, -50%) rotate(720deg) scale(0.95);
   }
-  42% {
-    top: 85%;
+  /* 2nd Ricochet: Bottom Left */
+  36% {
+    top: 84%;
     left: 12%;
     transform: translate(-50%, -50%) rotate(1440deg) scale(1.1);
   }
-  65% {
+  /* 3rd Ricochet: Top Left */
+  54% {
     top: 18%;
-    left: 18%;
-    transform: translate(-50%, -50%) rotate(2160deg) scale(1.2);
+    left: 20%;
+    transform: translate(-50%, -50%) rotate(2160deg) scale(1.25);
   }
-  82% {
-    top: 75%;
+  /* 4th Ricochet: Bottom Right */
+  68% {
+    top: 76%;
     left: 82%;
-    transform: translate(-50%, -50%) rotate(2880deg) scale(1.3);
+    transform: translate(-50%, -50%) rotate(2880deg) scale(1.4);
   }
+  /* Smooth Glide to Dead Center - Locks & Hovers */
+  78% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(3600deg) scale(1.9);
+    opacity: 1;
+    filter: drop-shadow(0 0 35px rgba(59, 130, 246, 0.95)) drop-shadow(0 0 15px #ffffff);
+  }
+  /* Holds in center, glowing proudly */
+  84% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(3620deg) scale(1.95);
+    opacity: 1;
+    filter: drop-shadow(0 0 45px #38bdf8) drop-shadow(0 0 20px #ffffff);
+  }
+  /* High-Tech Vibranium Holographic Stutter & Flicker */
+  86% {
+    opacity: 0.15;
+    filter: brightness(4) drop-shadow(0 0 60px #ffffff);
+    transform: translate(-50%, -50%) rotate(3624deg) scale(1.98);
+  }
+  88% {
+    opacity: 0.95;
+    filter: brightness(1.2);
+    transform: translate(-50%, -50%) rotate(3628deg) scale(1.95);
+  }
+  90% {
+    opacity: 0.2;
+    filter: brightness(3.5) drop-shadow(0 0 50px #38bdf8);
+  }
+  92% {
+    opacity: 0.9;
+    filter: brightness(1.5);
+  }
+  94% {
+    opacity: 0.15;
+    filter: brightness(3);
+  }
+  96% {
+    opacity: 0.8;
+    filter: brightness(2);
+  }
+  /* Final Phase-Out Disappearance */
   100% {
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(3600deg) scale(1.6);
+    transform: translate(-50%, -50%) rotate(3660deg) scale(2.25);
+    opacity: 0;
+    filter: blur(18px) brightness(5);
   }
 }
 
@@ -785,8 +839,8 @@ button {
   height: 140px;
   z-index: 10000;
   pointer-events: none;
-  animation: vibraniumBouncePath 2.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  filter: drop-shadow(0 0 25px rgba(37, 99, 235, 0.8)) drop-shadow(0 0 10px #ffffff);
+  animation: vibraniumBouncePath 5.2s cubic-bezier(0.25, 0.9, 0.25, 1) forwards;
+  filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.85)) drop-shadow(0 0 12px #ffffff);
 }
 
 /* ========================================================= */

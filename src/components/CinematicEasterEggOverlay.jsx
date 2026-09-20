@@ -100,25 +100,27 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
       playVibraniumPing();
       document.body.classList.add('seismic-shake');
 
-      const ping1 = setTimeout(() => playVibraniumPing(), 550);
-      const ping2 = setTimeout(() => playVibraniumPing(), 1100);
-      const ping3 = setTimeout(() => playVibraniumPing(), 1700);
-      const ping4 = setTimeout(() => playVibraniumPing(), 2150);
+      const ping1 = setTimeout(() => playVibraniumPing(), 900);
+      const ping2 = setTimeout(() => playVibraniumPing(), 1800);
+      const ping3 = setTimeout(() => playVibraniumPing(), 2700);
+      const ping4 = setTimeout(() => playVibraniumPing(), 3500); // Centered lock & hover!
+      const ping5 = setTimeout(() => playVibraniumPing(), 4400); // Hologram flicker resonance
 
       const shakeTimer = setTimeout(() => {
         document.body.classList.remove('seismic-shake');
-      }, 2500);
+      }, 3600);
 
       const timer = setTimeout(() => {
         document.body.classList.remove('seismic-shake');
         if (onCompleteRef.current) onCompleteRef.current();
-      }, 2800);
+      }, 5200);
 
       return () => {
         clearTimeout(ping1);
         clearTimeout(ping2);
         clearTimeout(ping3);
         clearTimeout(ping4);
+        clearTimeout(ping5);
         clearTimeout(shakeTimer);
         clearTimeout(timer);
         document.body.classList.remove('seismic-shake');

@@ -330,7 +330,7 @@ export default function HomePage({
       setIsDeployingShield(false);
       setShieldDeployed(true);
       setTimeout(() => setShieldDeployed(false), 5000);
-    }, 800);
+    }, 5200);
   };
 
   // Asgardian Stormbreaker Jammed State
