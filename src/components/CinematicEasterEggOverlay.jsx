@@ -3,7 +3,8 @@ import {
   playRepulsorSound, 
   playThunderStrike, 
   playAssembleFanfare, 
-  playTimeStoneReversal 
+  playTimeStoneReversal,
+  playVibraniumPing 
 } from '../utils/soundEngine';
 
 export default function CinematicEasterEggOverlay({ effect, onComplete }) {
@@ -28,7 +29,7 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         const w = (canvas.width = window.innerWidth);
         const h = (canvas.height = window.innerHeight);
 
-        const ashList = Array.from({ length: 280 }, () => ({
+        const ashList = Array.from({ length: 320 }, () => ({
           x: Math.random() * w,
           y: Math.random() * h,
           vx: Math.random() * 4 + 2,
@@ -57,14 +58,16 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         dustAnimId = requestAnimationFrame(renderAsh);
       }
 
-      // Disintegrate half the cards across the page
-      const targetCards = document.querySelectorAll('.squad-card, .stat-card, .access-box, .initiative-mini-card, .active-squad-spotlight');
-      targetCards.forEach((c, idx) => {
+      // Disintegrate half the cards AND key text elements across the page
+      const targetElements = document.querySelectorAll(
+        '.squad-card, .stat-card, .access-box, .initiative-mini-card, .active-squad-spotlight, h1, h2, h3, .hero-subtitle, .badge-squad, .section-desc, .feature-bullet'
+      );
+      targetElements.forEach((el, idx) => {
         if (idx % 2 === 0) {
-          c.style.transition = 'all 2.2s cubic-bezier(0.25, 1, 0.5, 1)';
-          c.style.opacity = '0.08';
-          c.style.filter = 'grayscale(1) blur(6px)';
-          c.style.transform = 'translateY(-12px) skewX(6deg)';
+          el.style.transition = 'all 2.4s cubic-bezier(0.25, 1, 0.5, 1)';
+          el.style.opacity = '0.04';
+          el.style.filter = 'grayscale(1) blur(7px)';
+          el.style.transform = 'translateY(-14px) skewX(8deg) scale(0.97)';
         }
       });
 
@@ -74,19 +77,47 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
         setShowMandala(true);
 
         setTimeout(() => {
-          targetCards.forEach(c => {
-            c.style.opacity = '';
-            c.style.filter = '';
-            c.style.transform = '';
+          targetElements.forEach(el => {
+            el.style.opacity = '';
+            el.style.filter = '';
+            el.style.transform = '';
           });
           setShowMandala(false);
           if (onCompleteRef.current) onCompleteRef.current();
-        }, 3200);
+        }, 3400);
       }, 3000);
 
       return () => {
         if (dustAnimId) cancelAnimationFrame(dustAnimId);
         clearTimeout(timer1);
+      };
+    } else if (effect === 'shield') {
+      // CAPTAIN AMERICA VIBRANIUM SHIELD RICOCHET
+      playVibraniumPing();
+      document.body.classList.add('seismic-shake');
+
+      const ping1 = setTimeout(() => playVibraniumPing(), 550);
+      const ping2 = setTimeout(() => playVibraniumPing(), 1100);
+      const ping3 = setTimeout(() => playVibraniumPing(), 1700);
+      const ping4 = setTimeout(() => playVibraniumPing(), 2150);
+
+      const shakeTimer = setTimeout(() => {
+        document.body.classList.remove('seismic-shake');
+      }, 2500);
+
+      const timer = setTimeout(() => {
+        document.body.classList.remove('seismic-shake');
+        if (onCompleteRef.current) onCompleteRef.current();
+      }, 2800);
+
+      return () => {
+        clearTimeout(ping1);
+        clearTimeout(ping2);
+        clearTimeout(ping3);
+        clearTimeout(ping4);
+        clearTimeout(shakeTimer);
+        clearTimeout(timer);
+        document.body.classList.remove('seismic-shake');
       };
     } else if (effect === 'bifrost') {
       // 2. PRISMATIC BIFROST SLAM & SEISMIC RUMBLE
@@ -156,18 +187,42 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
             style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9999, pointerEvents: 'none' }} 
           />
           {showMandala && (
-            <div className="timestone-mandala-screen">
+            <div className="doctor-strange-mandala">
+              <div className="chronal-ripple-wave" />
               <svg 
-                style={{ width: '280px', height: '280px', color: '#34d399', filter: 'drop-shadow(0 0 45px #10b981)' }} 
+                style={{ width: '380px', height: '380px', color: '#10b981', filter: 'drop-shadow(0 0 50px #10b981) drop-shadow(0 0 90px #059669)' }} 
                 viewBox="0 0 200 200"
               >
-                <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="12 6" />
-                <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 8" />
-                <polygon points="100,15 175,100 100,185 25,100" fill="none" stroke="currentColor" strokeWidth="2" />
-                <polygon points="100,25 160,100 100,175 40,100" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="100" cy="100" r="28" fill="#042f2e" stroke="currentColor" strokeWidth="3" />
-                <circle cx="100" cy="100" r="10" fill="#a7f3d0" />
+                <circle cx="100" cy="100" r="95" fill="none" stroke="#10b981" strokeWidth="2.5" strokeDasharray="16 6 4 6" />
+                <circle cx="100" cy="100" r="82" fill="none" stroke="#34d399" strokeWidth="1.8" strokeDasharray="8 8" />
+                <circle cx="100" cy="100" r="68" fill="none" stroke="#6ee7b7" strokeWidth="1.2" />
+                {/* Mystic Geometric Squares & Stars */}
+                <polygon points="100,8 192,100 100,192 8,100" fill="none" stroke="#10b981" strokeWidth="2" />
+                <polygon points="35,35 165,35 165,165 35,165" fill="none" stroke="#34d399" strokeWidth="1.5" />
+                <polygon points="100,20 180,100 100,180 20,100" fill="none" stroke="#059669" strokeWidth="1" strokeDasharray="5 5" />
+                {/* Inner Runes & Core Eye */}
+                <circle cx="100" cy="100" r="38" fill="rgba(6, 78, 59, 0.75)" stroke="#34d399" strokeWidth="2.5" />
+                <circle cx="100" cy="100" r="16" fill="#a7f3d0" filter="drop-shadow(0 0 15px #6ee7b7)" />
+                {/* Mystic Ring Glyph Accents */}
+                <path d="M100 5 L100 25 M100 175 L100 195 M5 100 L25 100 M175 100 L195 100" stroke="#a7f3d0" strokeWidth="2" />
               </svg>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: '#6ee7b7',
+                fontFamily: 'monospace',
+                fontWeight: 900,
+                letterSpacing: '0.25em',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                textShadow: '0 0 12px #10b981',
+                whiteSpace: 'nowrap',
+                pointerEvents: 'none'
+              }}>
+                TIME STONE // ENTROPY REVERSED
+              </div>
             </div>
           )}
         </>
@@ -253,6 +308,31 @@ export default function CinematicEasterEggOverlay({ effect, onComplete }) {
             <path d="M96 28 L62 145 L84 145 L94 105 L128 105 L128 88 L98 88 L108 52 Z" fill="currentColor" />
             <path d="M128 88 L160 145 L138 145 L128 125 L118 125 Z" fill="currentColor" />
             <polygon points="120,105 180,105 155,85" fill="#ff0055" />
+          </svg>
+        </div>
+      )}
+
+      {/* 6. Captain America Vibranium Shield Ricochet */}
+      {effect === 'shield' && (
+        <div className="vibranium-bouncing-shield" aria-hidden="true">
+          <svg viewBox="0 0 200 200" style={{ width: '100%', height: '100%' }}>
+            <defs>
+              <radialGradient id="shieldSheen" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stopColor="#ffffff" stopOpacity="0.45" />
+                <stop offset="50%" stopColor="#ffffff" stopOpacity="0" />
+                <stop offset="100%" stopColor="#000000" stopOpacity="0.35" />
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="96" fill="#dc2626" stroke="#991b1b" strokeWidth="2" />
+            <circle cx="100" cy="100" r="76" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" />
+            <circle cx="100" cy="100" r="56" fill="#dc2626" stroke="#991b1b" strokeWidth="1" />
+            <circle cx="100" cy="100" r="36" fill="#1e40af" stroke="#1e3a8a" strokeWidth="1" />
+            <polygon 
+              points="100,67 108,86 128,86 112,98 118,118 100,106 82,118 88,98 72,86 92,86" 
+              fill="#ffffff" 
+              filter="drop-shadow(0 0 5px rgba(255,255,255,0.9))"
+            />
+            <circle cx="100" cy="100" r="96" fill="url(#shieldSheen)" />
           </svg>
         </div>
       )}

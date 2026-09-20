@@ -114,8 +114,8 @@ export default function TerminalDrawer({
       if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
       onClose();
     }
-    // 3. CAP / STAMINA: Prints Steve Rogers' code of conduct ("I can do this all day")
-    else if (cmdLower === 'cap' || cmdLower === 'stamina' || cmdLower === 'rogers') {
+    // 3. CAP / STAMINA: Prints Steve Rogers' code of conduct ("I can do this all day") and launches shield ricochet
+    else if (cmdLower === 'cap' || cmdLower === 'stamina' || cmdLower === 'rogers' || cmdLower === 'captain' || cmdLower === 'shield') {
       playVibraniumPing();
       newHistory.push({
         type: 'accent',
@@ -129,12 +129,14 @@ export default function TerminalDrawer({
           '[03] INTEGRITY FIRST   - Real engineering strength is in character, not hype.\n' +
           '--------------------------------------------------\n' +
           'Clearance: Vibranium Alliance Tier 1 Active.\n' +
-          'Deploying PR & Media Squad Protocol.'
+          'Vibranium shield ricochet deployed · MINIMIZING TERMINAL FOR CINEMATIC'
       });
       if (onSelectSquad) onSelectSquad('captain');
+      if (onTriggerEasterEgg) onTriggerEasterEgg('shield');
+      onClose();
     }
-    // 4. WORTHY: Tests the user's terminal clearance against the Mjolnir worthiness oath
-    else if (cmdLower === 'worthy' || cmdLower === 'mjolnir') {
+    // 4. THOR / WORTHY: Tests the user's terminal clearance against the Mjolnir worthiness oath
+    else if (cmdLower === 'worthy' || cmdLower === 'mjolnir' || cmdLower === 'thor' || cmdLower === 'odinson') {
       playThunderStrike();
       newHistory.push({
         type: 'accent',
@@ -172,7 +174,6 @@ export default function TerminalDrawer({
       });
       if (onSelectSquad) onSelectSquad('thor');
       if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
-      window.open('https://linktr.ee/letscookfoundry?utm_source=bifrost_discord', '_blank');
       onClose();
     }
     // 6. THANOS / SNAP: Playfully dissolves terminal text before a "Time Heist" restores it
@@ -213,7 +214,7 @@ export default function TerminalDrawer({
       });
     }
     // 8. LEVEL7: S.H.I.E.L.D. director's confidential memo
-    else if (cmdLower === 'level7' || cmdLower === 'fury' || cmdLower === 'shield') {
+    else if (cmdLower === 'level7' || cmdLower === 'fury' || cmdLower === 'shield-memo') {
       playNeonIgniteSound();
       newHistory.push({
         type: 'accent',
@@ -314,6 +315,8 @@ export default function TerminalDrawer({
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
       handleCommand(inputVal);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();

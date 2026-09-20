@@ -39,11 +39,11 @@ export const SQUADS_DATA = {
     arsenal: ['Rust', 'Python', 'WASM', 'FastAPI', 'Docker', 'PyTorch'],
     sound: playRepulsorSound,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#ff0055" strokeWidth="3" opacity="0.85" />
-        <circle cx="50" cy="50" r="32" fill="none" stroke="#00f0ff" strokeWidth="2.5" strokeDasharray="8 6" />
-        <polygon points="50,22 74,64 26,64" fill="none" stroke="#00f0ff" strokeWidth="3" />
-        <circle cx="50" cy="50" r="10" fill="#00f0ff" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20" width="80" height="80">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#ff0055" strokeWidth="2.5" strokeDasharray="8 6" className="spin-slow" />
+        <circle cx="50" cy="50" r="32" fill="#12050f" stroke="#00f0ff" strokeWidth="2.5" strokeDasharray="6 4" className="spin-reverse" />
+        <polygon points="50,22 74,64 26,64" fill="none" stroke="#00f0ff" strokeWidth="3" className="pulse-core" />
+        <circle cx="50" cy="50" r="9" fill="#00f0ff" style={{ filter: 'drop-shadow(0 0 8px #00f0ff)' }} />
       </svg>
     )
   },
@@ -67,12 +67,12 @@ export const SQUADS_DATA = {
     arsenal: ['Public Relations', 'Alliances', 'Growth', 'Storytelling', 'Media', 'Comms'],
     sound: playVibraniumPing,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20">
+      <svg viewBox="0 0 100 100" className="w-20 h-20 shield-anim" width="80" height="80">
         <circle cx="50" cy="50" r="44" fill="none" stroke="#ef4444" strokeWidth="4" />
-        <circle cx="50" cy="50" r="34" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.9" />
+        <circle cx="50" cy="50" r="34" fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.95" />
         <circle cx="50" cy="50" r="24" fill="none" stroke="#ef4444" strokeWidth="3" />
         <circle cx="50" cy="50" r="14" fill="#2563eb" />
-        <polygon points="50,38 53,46 61,46 55,51 57,59 50,54 43,59 45,51 39,46 47,46" fill="#ffffff" />
+        <polygon points="50,38 53,46 61,46 55,51 57,59 50,54 43,59 45,51 39,46 47,46" fill="#ffffff" className="shield-star-spin" />
       </svg>
     )
   },
@@ -96,7 +96,7 @@ export const SQUADS_DATA = {
     arsenal: ['Hackathons', 'Keynotes', 'Live Arenas', 'Workshops', 'Tournaments', 'Demo Days'],
     sound: playThunderStrike,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20" fill="none">
+      <svg viewBox="0 0 100 100" className="w-20 h-20" width="80" height="80" fill="none">
         <defs>
           <linearGradient id="uruStoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#2a1d0d" />
@@ -109,11 +109,13 @@ export const SQUADS_DATA = {
           </filter>
         </defs>
 
-        {/* Crackling Electric Lightning Arcs around Hammer Head */}
-        <g filter="url(#lightningGlow)">
-          <path d="M12,24 L18,31 L14,36 L21,34" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
-          <path d="M88,24 L82,31 L86,36 L79,34" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" opacity="0.9" />
-          <path d="M47,12 L50,17 L53,15 L52,20" stroke="#38bdf8" strokeWidth="1.6" strokeLinecap="round" opacity="0.85" />
+        {/* Animated crackling electric lightning arcs */}
+        <g filter="url(#lightningGlow)" className="spark-flicker">
+          <path d="M12,24 L18,31 L14,36 L21,34" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M88,24 L82,31 L86,36 L79,34" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M47,12 L50,17 L53,15 L52,20" stroke="#facc15" strokeWidth="2" strokeLinecap="round" />
+          <path d="M30,56 L24,62 L28,66" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M70,56 L76,62 L72,66" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" />
         </g>
 
         {/* Top Chamfer Cap of Hammer Head */}
@@ -148,11 +150,13 @@ export const SQUADS_DATA = {
         <line x1="16" y1="28" x2="21" y2="31" stroke="#f59e0b" strokeWidth="1.5" />
 
         {/* Center Nordic Celtic Triquetra Knot / Rune Ring */}
-        <circle cx="50" cy="38" r="8.5" stroke="#38bdf8" strokeWidth="1.5" opacity="0.85" />
-        <path d="M50,30 C55,35 55,41 50,46 C45,41 45,35 50,30 Z" stroke="#f59e0b" strokeWidth="1.4" />
-        <path d="M43,42 C48,40 52,45 49,49 C44,49 41,45 43,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
-        <path d="M57,42 C59,45 56,49 51,49 C48,45 52,40 57,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
-        <circle cx="50" cy="38" r="2.2" fill="#38bdf8" />
+        <g className="rune-pulse">
+          <circle cx="50" cy="38" r="8.5" stroke="#38bdf8" strokeWidth="1.5" opacity="0.85" />
+          <path d="M50,30 C55,35 55,41 50,46 C45,41 45,35 50,30 Z" stroke="#f59e0b" strokeWidth="1.4" />
+          <path d="M43,42 C48,40 52,45 49,49 C44,49 41,45 43,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
+          <path d="M57,42 C59,45 56,49 51,49 C48,45 52,40 57,42 Z" stroke="#f59e0b" strokeWidth="1.4" />
+          <circle cx="50" cy="38" r="2.2" fill="#38bdf8" />
+        </g>
 
         {/* Upper Handle Collar */}
         <rect x="44" y="54" width="12" height="5" rx="1.5" fill="#d97706" stroke="#f59e0b" strokeWidth="1.2" />
@@ -196,8 +200,8 @@ export const SQUADS_DATA = {
     arsenal: ['Governance', 'Micro-Grants', 'Operations', 'Leadership', 'Strategy', 'Auditing'],
     sound: playAssembleFanfare,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="10 5" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20 avengers-anim" width="80" height="80">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="10 5" className="spin-slow" />
         <circle cx="50" cy="50" r="34" fill="#0d0d14" stroke="#ff0055" strokeWidth="2.5" />
         <path d="M48 22 L32 68 L42 68 L47 52 L60 52 L60 44 L48 44 L52 30 Z" fill="#f59e0b" />
         <path d="M60 44 L72 68 L64 68 L60 60 L56 60 Z" fill="#f59e0b" />

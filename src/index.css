@@ -659,6 +659,177 @@ button {
   animation: plasmaBorder 0.4s ease infinite !important;
 }
 
+/* ========================================================= */
+/* ANIMATED SQUAD INSIGNIAS                                  */
+/* ========================================================= */
+@keyframes rotateCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateCCW {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes arcPulse {
+  0% { transform: scale(0.92); opacity: 0.7; filter: drop-shadow(0 0 4px #00f0ff); }
+  50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 16px #00f0ff); }
+  100% { transform: scale(0.92); opacity: 0.7; filter: drop-shadow(0 0 4px #00f0ff); }
+}
+
+@keyframes shieldSpinSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shieldGleam {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.6)); }
+  50% { filter: drop-shadow(0 0 22px rgba(239, 68, 68, 0.9)) drop-shadow(0 0 10px #ffffff); }
+}
+
+@keyframes sparkFlicker {
+  0% { opacity: 0.2; stroke-dashoffset: 0; }
+  25% { opacity: 1; stroke-dashoffset: 6; stroke: #ffffff; }
+  50% { opacity: 0.4; stroke: #38bdf8; }
+  75% { opacity: 1; stroke-dashoffset: -4; stroke: #fde047; }
+  100% { opacity: 0.2; stroke-dashoffset: 0; }
+}
+
+@keyframes runeGlow {
+  0%, 100% { opacity: 0.7; transform: scale(0.95); filter: drop-shadow(0 0 4px #eab308); }
+  50% { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 14px #38bdf8); }
+}
+
+@keyframes avengersShimmer {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)); }
+  50% { filter: drop-shadow(0 0 20px rgba(255, 0, 85, 0.8)) drop-shadow(0 0 8px #f59e0b); }
+}
+
+.spin-slow {
+  animation: rotateCW 16s linear infinite;
+  transform-origin: 50px 50px;
+}
+
+.spin-reverse {
+  animation: rotateCCW 12s linear infinite;
+  transform-origin: 50px 50px;
+}
+
+.pulse-core {
+  animation: arcPulse 2s ease-in-out infinite;
+  transform-origin: 50px 50px;
+}
+
+.shield-anim {
+  animation: shieldGleam 2.5s ease-in-out infinite;
+}
+
+.shield-star-spin {
+  animation: shieldSpinSlow 20s linear infinite;
+  transform-origin: 50px 50px;
+}
+
+.spark-flicker {
+  animation: sparkFlicker 0.35s ease infinite;
+}
+
+.rune-pulse {
+  animation: runeGlow 2s ease-in-out infinite;
+  transform-origin: 50px 38px;
+}
+
+.avengers-anim {
+  animation: avengersShimmer 2.4s ease-in-out infinite;
+}
+
+/* ========================================================= */
+/* VIBRANIUM BOUNCING SHIELD CINEMATIC EFFECT                */
+/* ========================================================= */
+@keyframes vibraniumBouncePath {
+  0% {
+    top: 95%;
+    left: -10%;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.6);
+  }
+  20% {
+    top: 15%;
+    left: 88%;
+    transform: translate(-50%, -50%) rotate(720deg) scale(0.95);
+  }
+  42% {
+    top: 85%;
+    left: 12%;
+    transform: translate(-50%, -50%) rotate(1440deg) scale(1.1);
+  }
+  65% {
+    top: 18%;
+    left: 18%;
+    transform: translate(-50%, -50%) rotate(2160deg) scale(1.2);
+  }
+  82% {
+    top: 75%;
+    left: 82%;
+    transform: translate(-50%, -50%) rotate(2880deg) scale(1.3);
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(3600deg) scale(1.6);
+  }
+}
+
+.vibranium-bouncing-shield {
+  position: fixed;
+  width: 140px;
+  height: 140px;
+  z-index: 10000;
+  pointer-events: none;
+  animation: vibraniumBouncePath 2.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  filter: drop-shadow(0 0 25px rgba(37, 99, 235, 0.8)) drop-shadow(0 0 10px #ffffff);
+}
+
+/* ========================================================= */
+/* DOCTOR STRANGE SUPREME ELDRITCH MANDALA                   */
+/* ========================================================= */
+@keyframes eldritchMandalaSpin {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.2); opacity: 0; }
+  15% { transform: translate(-50%, -50%) rotate(90deg) scale(1.1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) rotate(270deg) scale(1); opacity: 1; }
+  85% { transform: translate(-50%, -50%) rotate(450deg) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(540deg) scale(0); opacity: 0; }
+}
+
+@keyframes timeStoneRipples {
+  0% { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+
+.doctor-strange-mandala {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  pointer-events: none;
+  animation: eldritchMandalaSpin 3.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.chronal-ripple-wave {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 400px;
+  margin-top: -200px;
+  margin-left: -200px;
+  border-radius: 50%;
+  border: 2px solid rgba(16, 185, 129, 0.8);
+  box-shadow: 0 0 40px #10b981;
+  pointer-events: none;
+  z-index: 9998;
+  animation: timeStoneRipples 1.8s ease-out infinite;
+}
+
 /* Core Layout & Geometry Utility Classes */
 .fixed { position: fixed !important; }
 .absolute { position: absolute !important; }

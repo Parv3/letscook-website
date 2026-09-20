@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { playTechClick } from '../utils/soundEngine';
 
 const SECTIONS = [
-  { id: 'hero-top', label: '01 // HERO', targetId: null },
-  { id: 'pillars', label: '02 // INITIATIVES', targetId: 'pillars' },
+  { id: 'hero-top', label: '01 // HERO', targetId: 'hero-top' },
+  { id: 'squads', label: '02 // SQUADS', targetId: 'squads' },
   { id: 'access', label: '03 // ACCESS', targetId: 'access' },
   { id: 'faq', label: '04 // FAQ', targetId: 'faq' },
 ];
@@ -25,11 +25,10 @@ export default function ScrollCircuitRail() {
           }
 
           // Section detection
-          const scrollPos = scrollY + window.innerHeight * 0.35;
+          const scrollPos = scrollY + 120;
           let current = 'hero-top';
 
           for (const sec of SECTIONS) {
-            if (!sec.targetId) continue;
             const el = document.getElementById(sec.targetId);
             if (el && el.offsetTop <= scrollPos) {
               current = sec.id;
@@ -49,12 +48,14 @@ export default function ScrollCircuitRail() {
 
   const scrollToSection = (sec) => {
     playTechClick();
-    if (!sec.targetId) {
+    if (sec.targetId === 'hero-top') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const el = document.getElementById(sec.targetId);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
+        const navHeight = 70;
+        const targetPos = el.getBoundingClientRect().top + window.pageYOffset - navHeight;
+        window.scrollTo({ top: targetPos, behavior: 'smooth' });
       }
     }
   };
@@ -88,7 +89,7 @@ export default function ScrollCircuitRail() {
       <style>{`
         .scroll-circuit-rail {
           position: fixed;
-          left: 20px;
+          left: 14px;
           top: 50%;
           transform: translateY(-50%);
           z-index: 4500;
@@ -136,7 +137,8 @@ export default function ScrollCircuitRail() {
           background: none;
           border: none;
           cursor: pointer;
-          padding: 4px;
+          padding: 6px;
+          pointer-events: auto;
         }
 
         .node-square {
@@ -164,7 +166,7 @@ export default function ScrollCircuitRail() {
 
         .node-label {
           position: absolute;
-          left: 18px;
+          left: 22px;
           font-family: var(--font-display);
           font-size: 0.65rem;
           font-weight: 700;
@@ -176,9 +178,10 @@ export default function ScrollCircuitRail() {
           transition: all var(--transition-fast);
           pointer-events: none;
           background-color: var(--bg-surface);
-          padding: 2px 8px;
+          padding: 3px 8px;
           border-radius: var(--radius-badge);
           border: 1px solid var(--border-color);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
         .circuit-node-btn:hover .node-label,
@@ -189,7 +192,8 @@ export default function ScrollCircuitRail() {
           border-color: var(--logo-accent-color, #ff2a6d);
         }
 
-        @media (max-width: 1140px) {
+        /* Prevent collision on viewports under 1320px */
+        @media (max-width: 1320px) {
           .scroll-circuit-rail {
             display: none !important;
           }
