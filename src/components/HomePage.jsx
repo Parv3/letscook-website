@@ -637,13 +637,7 @@ export default function HomePage({
       <section id="hero-top" className="hero-section">
         <div className="hero-container">
           
-          {/* Top Anchor Badge - Establishes Instant Visual Focal Point */}
-          <div className="hero-top-badge">
-            <span className="badge-pulse-dot" />
-            <span className="badge-brand">THE FOUNDRY // LET'S COOK</span>
-            <span className="badge-divider">•</span>
-            <span className="badge-squad">{activeSquad.hero} PROTOCOL ONLINE</span>
-          </div>
+
 
           {/* Main Headline */}
           <div className="hero-content">
