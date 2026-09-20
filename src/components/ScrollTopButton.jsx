@@ -60,6 +60,12 @@ export default function ScrollTopButton() {
           color: var(--accent-burgundy-hover);
           transform: translateY(-2px);
         }
+
+        @media (max-width: 768px) {
+          .top-scroll-btn {
+            display: none !important;
+          }
+        }
       `}</style>
     </button>
   );

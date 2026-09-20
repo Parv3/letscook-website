@@ -207,7 +207,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
           </h2>
           <p className="section-desc">Structured tracks designed to move students from tutorials to shipping production software.</p>
 
-          <div className="asymmetric-grid pillars-grid">
+          <div className="pillars-grid">
             {pillars.map((item, idx) => {
               const IconComp = item.icon;
               const isHovered = hoveredPillar === idx;
@@ -539,12 +539,13 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
         }
 
         .pillars-grid {
+          display: grid;
           grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 20px;
         }
 
         .pillar-card {
           position: relative;
-          grid-column: span 3;
           background-color: var(--bg-surface);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
@@ -877,7 +878,16 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             line-height: 1.35;
           }
           .pillars-section {
-            padding: 44px 16px;
+            padding: 40px 16px;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+          .pillars-container {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
           }
           .pillars-section h2 {
             font-size: clamp(1.35rem, 5.2vw, 1.7rem);
@@ -889,24 +899,49 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             line-height: 1.48;
             margin-bottom: 24px;
           }
+          .pillars-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+          }
           .pillar-card {
-            grid-column: span 12;
-            padding: 16px 14px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 16px 16px;
             border-radius: var(--radius-card);
           }
           .pillar-card h3 {
             font-size: 1.02rem;
             margin-bottom: 6px;
+            word-break: break-word;
           }
           .pillar-card p {
             font-size: 0.82rem;
             line-height: 1.45;
+            word-break: break-word;
           }
           .access-section {
-            padding: 44px 16px;
+            padding: 40px 16px;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+          .access-container {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
           }
           .access-box {
-            grid-template-columns: 1fr;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             padding: 20px 16px;
             gap: 20px;
             border-radius: var(--radius-card);
