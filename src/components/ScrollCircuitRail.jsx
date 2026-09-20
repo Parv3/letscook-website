@@ -16,6 +16,7 @@ export default function ScrollCircuitRail() {
     let ticking = false;
 
     const handleScroll = () => {
+      if (window.innerWidth <= 1320) return;
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;

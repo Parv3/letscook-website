@@ -294,9 +294,20 @@ export default function JarvisNanotechHUD({ onComplete }) {
 
     animId = requestAnimationFrame(renderRadar);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        if (!animId) animId = requestAnimationFrame(renderRadar);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('resize', resizeCanvas);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
@@ -326,8 +337,11 @@ export default function JarvisNanotechHUD({ onComplete }) {
       centerPos.y = height / 2;
       targetPoints = [];
 
-      // 1. Outer Circle: 36 points at r = 84px
-      const rOuter = 84;
+      // Scale coordinates gracefully on small mobile screens to align with scaled reactor
+      const scale = width < 600 ? 0.72 : 1;
+
+      // 1. Outer Circle: 36 points
+      const rOuter = 84 * scale;
       for (let i = 0; i < 36; i++) {
         const angle = (i / 36) * Math.PI * 2 - Math.PI / 2;
         targetPoints.push({
@@ -336,8 +350,8 @@ export default function JarvisNanotechHUD({ onComplete }) {
         });
       }
 
-      // 2. Inverted Triangle: 24 points (8 per edge) at r = 60px
-      const rTri = 60;
+      // 2. Inverted Triangle: 24 points (8 per edge)
+      const rTri = 60 * scale;
       const v0 = {
         x: centerPos.x + rTri * Math.cos(-5 * Math.PI / 6),
         y: centerPos.y + rTri * Math.sin(-5 * Math.PI / 6)
@@ -364,8 +378,8 @@ export default function JarvisNanotechHUD({ onComplete }) {
         targetPoints.push({ x: v2.x + (v0.x - v2.x) * t, y: v2.y + (v0.y - v2.y) * t });
       }
 
-      // 3. Inner Core Ring: 14 points at r = 26px
-      const rInner = 26;
+      // 3. Inner Core Ring: 14 points
+      const rInner = 26 * scale;
       for (let i = 0; i < 14; i++) {
         const angle = (i / 14) * Math.PI * 2 - Math.PI / 2;
         targetPoints.push({
@@ -374,9 +388,9 @@ export default function JarvisNanotechHUD({ onComplete }) {
         });
       }
 
-      // 4. Center Cluster: 7 points (1 center + 6 surrounding at r = 10px)
+      // 4. Center Cluster: 7 points
       targetPoints.push({ x: centerPos.x, y: centerPos.y });
-      const rCluster = 10;
+      const rCluster = 10 * scale;
       for (let i = 0; i < 6; i++) {
         const angle = (i / 6) * Math.PI * 2;
         targetPoints.push({
@@ -753,11 +767,22 @@ export default function JarvisNanotechHUD({ onComplete }) {
       animId = requestAnimationFrame(render);
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        if (!animId) animId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     animId = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

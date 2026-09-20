@@ -1209,7 +1209,7 @@ export default function HomePage({
 
         .hero-title {
           font-family: var(--font-display);
-          font-size: clamp(2.3rem, 5.5vw, 4.4rem);
+          font-size: clamp(1.75rem, 6vw, 4.4rem);
           font-weight: 900;
           line-height: 1.14;
           letter-spacing: -0.02em;
@@ -1970,22 +1970,48 @@ export default function HomePage({
 
         @media (max-width: 600px) {
           .squad-tabs-nav {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+          }
+          .squad-tab-btn {
+            padding: 10px 8px;
+            font-size: 0.82rem;
           }
           .squads-cards-grid {
             grid-template-columns: 1fr;
           }
           .hero-section {
-            padding: 30px 16px 36px 16px;
+            padding: 24px 14px 32px 14px;
+          }
+          .hero-cta-group {
+            flex-direction: column;
+            width: 100%;
+          }
+          .hero-cta-group .btn {
+            width: 100%;
+            justify-content: center;
+          }
+          .spotlight-cta-row {
+            flex-direction: column;
+            width: 100%;
+            align-items: stretch;
+          }
+          .spotlight-cta-row .btn-primary,
+          .spotlight-cta-row .btn-secondary {
+            width: 100%;
+            justify-content: center;
           }
           .squads-section, .access-section, .site-footer {
-            padding: 40px 16px;
+            padding: 36px 14px;
           }
           .active-squad-spotlight {
-            padding: 20px 16px;
+            padding: 18px 12px;
           }
           .access-box {
-            padding: 24px 16px;
+            padding: 22px 14px;
+          }
+          .stat-card {
+            padding: 14px 14px;
           }
         }
       `}</style>

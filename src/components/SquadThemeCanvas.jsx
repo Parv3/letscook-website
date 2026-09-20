@@ -20,32 +20,49 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+    const isMobile = width < 768;
 
+    let resizeTimer = null;
     const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      if (resizeTimer) cancelAnimationFrame(resizeTimer);
+      resizeTimer = requestAnimationFrame(() => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     let mouse = { x: width / 2, y: height / 2 };
+    let mouseTicking = false;
     const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+      if (!mouseTicking) {
+        requestAnimationFrame(() => {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+          mouseTicking = false;
+        });
+        mouseTicking = true;
+      }
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    
+    // Only listen to mouse move on desktop pointer devices
+    if (window.matchMedia('(pointer: fine)').matches) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
 
-    // Ambient floating particles
-    const particles = Array.from({ length: 60 }, () => ({
+    // Ambient floating particles (Scaled dynamically: 22 on mobile, 50 on desktop)
+    const particleCount = isMobile ? 22 : 50;
+    const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 1.2,
-      vy: (Math.random() - 0.5) * 1.2,
-      size: Math.random() * 2.5 + 1,
-      alpha: Math.random() * 0.5 + 0.3
+      vx: (Math.random() - 0.5) * 1.0,
+      vy: (Math.random() - 0.5) * 1.0,
+      size: Math.random() * 2.2 + 1,
+      alpha: Math.random() * 0.4 + 0.25
     }));
 
     let globalTick = 0;
-    let animId;
+    let animId = null;
 
     // Recursive Branching Fractal Lightning Generator
     function drawLightningBranch(startX, startY, endX, endY, branchLevel, maxBranches) {
@@ -307,10 +324,21 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
 
     animId = requestAnimationFrame(render);
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        if (!animId) animId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

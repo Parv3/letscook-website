@@ -677,6 +677,20 @@ export default function TerminalDrawer({
           box-shadow: 0 0 10px var(--chip-accent, #ff0055);
           transform: translateY(-1px);
         }
+
+        @media (max-width: 640px) {
+          .terminal-drawer-window {
+            height: 85vh;
+            border-radius: 14px 14px 0 0;
+          }
+          .terminal-drawer-body {
+            padding: 12px;
+            font-size: 0.78rem;
+          }
+          .terminal-input-bar {
+            padding: 10px 12px;
+          }
+        }
       `}</style>
     </div>
   );

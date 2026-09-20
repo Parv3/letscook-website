@@ -57,12 +57,20 @@ const ClickSpark = ({
     [easing]
   );
 
+  const isAnimatingRef = useRef(false);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    let animationId;
+    let animationId = null;
+
+    const startAnimation = () => {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
+      animationId = requestAnimationFrame(draw);
+    };
 
     const draw = timestamp => {
       if (!startTimeRef.current) {
@@ -97,41 +105,41 @@ const ClickSpark = ({
         return true;
       });
 
-      animationId = requestAnimationFrame(draw);
+      if (sparksRef.current.length > 0) {
+        animationId = requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        isAnimatingRef.current = false;
+      }
     };
 
-    animationId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
-
-  useEffect(() => {
     const handleClick = e => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      // When fixed, clientX and clientY exactly match the canvas coordinates
       const x = e.clientX;
       const y = e.clientY;
 
+      const isMobile = window.innerWidth < 768;
+      const count = isMobile ? Math.min(sparkCount, 4) : sparkCount;
+
       const now = performance.now();
-      const newSparks = Array.from({ length: sparkCount }, (_, i) => ({
+      const newSparks = Array.from({ length: count }, (_, i) => ({
         x,
         y,
-        angle: (2 * Math.PI * i) / sparkCount,
+        angle: (2 * Math.PI * i) / count,
         startTime: now
       }));
 
       sparksRef.current.push(...newSparks);
+      startAnimation();
     };
 
-    window.addEventListener('click', handleClick);
+    window.addEventListener('click', handleClick, { passive: true });
+
     return () => {
       window.removeEventListener('click', handleClick);
+      if (animationId) cancelAnimationFrame(animationId);
+      isAnimatingRef.current = false;
     };
-  }, [sparkCount]);
+  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale]);
 
   return (
     <>
