@@ -121,23 +121,25 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
           {/* Main Headline with Progressive Shake & Double-Click/Touch Reset */}
           <div className="hero-content">
             <h1 className="hero-title">
-              CODE, BUILD,{' '}
-              <span 
-                ref={boxRef}
-                className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
-                onMouseEnter={handleCreateMouseEnter}
-                onMouseLeave={handleCreateMouseLeave}
-                onTouchStart={handleCreateMouseEnter}
-                onTouchEnd={handleCreateMouseLeave}
-                onDoubleClick={handleCreateDoubleClick}
-                onClick={() => {
-                  if (isCreateInverted) handleCreateDoubleClick();
-                }}
-                title={isCreateInverted ? "Tap or double-click to reset back to CREATE!" : "Hold or hover to break into LETS COOK!"}
-              >
-                {isCreateInverted ? 'LETS COOK' : 'CREATE'}
+              <span className="hero-line-1">
+                CODE, BUILD,{' '}
+                <span 
+                  ref={boxRef}
+                  className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
+                  onMouseEnter={handleCreateMouseEnter}
+                  onMouseLeave={handleCreateMouseLeave}
+                  onTouchStart={handleCreateMouseEnter}
+                  onTouchEnd={handleCreateMouseLeave}
+                  onDoubleClick={handleCreateDoubleClick}
+                  onClick={() => {
+                    if (isCreateInverted) handleCreateDoubleClick();
+                  }}
+                  title={isCreateInverted ? "Tap or double-click to reset back to CREATE!" : "Hold or hover to break into LETS COOK!"}
+                >
+                  {isCreateInverted ? 'LETS COOK' : 'CREATE'}
+                </span>
               </span>{' '}
-              AND SHIP PRODUCTS
+              <span className="hero-line-2">AND SHIP PRODUCTS</span>
             </h1>
 
             <p className="hero-subtitle">
@@ -793,44 +795,53 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             min-height: auto;
           }
           .hero-content {
-            padding: 4px 0;
+            padding: 4px 0 0 0;
             margin-bottom: 20px;
           }
           .hero-title {
-            font-size: clamp(1.65rem, 6.8vw, 2.25rem);
+            font-size: clamp(1.4rem, 5.8vw, 1.85rem);
             line-height: 1.25;
             margin-bottom: 14px;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.015em;
             text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
+          }
+          .hero-line-1 {
+            display: block;
+          }
+          .hero-line-2 {
+            display: block;
+            margin-top: 3px;
           }
           .highlight-box {
             display: inline-block;
             vertical-align: baseline;
-            line-height: 1.05;
+            line-height: 1.1;
             padding: 2px 7px;
-            font-size: 0.9em;
+            font-size: 0.88em;
             margin: 0 2px;
-            border-radius: 4px;
+            border-radius: var(--radius-badge);
           }
           .hero-subtitle {
-            font-size: 0.88rem;
-            line-height: 1.55;
+            font-size: 0.85rem;
+            line-height: 1.52;
             margin-bottom: 20px;
-            padding: 0;
-            max-width: 100%;
+            padding: 0 6px;
+            max-width: 360px;
+            margin-left: auto;
+            margin-right: auto;
           }
           .hero-cta-group {
             flex-direction: column;
             width: 100%;
-            max-width: 100%;
+            max-width: 320px;
             margin: 0 auto;
-            gap: 10px;
+            gap: 9px;
           }
           .btn-lg {
             width: 100%;
-            padding: 13px 18px;
-            min-height: 48px;
-            font-size: 0.9rem;
+            padding: 12px 18px;
+            min-height: 46px;
+            font-size: 0.88rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             justify-content: center;
@@ -841,7 +852,7 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 22px;
             padding: 12px 2px 6px 2px;
             border-top: 1px solid var(--border-color);
             scrollbar-width: none;
@@ -850,37 +861,99 @@ export default function HomePage({ setCurrentPage, onOpenPitchModal, onOpenJoinM
             display: none;
           }
           .stat-card {
-            flex: 0 0 78%;
+            flex: 0 0 76%;
             scroll-snap-align: start;
             padding: 12px 14px;
             box-sizing: border-box;
+            border-radius: var(--radius-card);
           }
           .stat-card h4 {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             margin-bottom: 2px;
+            letter-spacing: 0.04em;
           }
           .stat-card p {
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             line-height: 1.35;
           }
-          .access-box {
-            grid-template-columns: 1fr;
-            padding: 20px 14px;
+          .pillars-section {
+            padding: 44px 16px;
+          }
+          .pillars-section h2 {
+            font-size: clamp(1.35rem, 5.2vw, 1.7rem);
+            line-height: 1.25;
+            margin-bottom: 8px;
+          }
+          .section-desc {
+            font-size: 0.84rem;
+            line-height: 1.48;
+            margin-bottom: 24px;
           }
           .pillar-card {
             grid-column: span 12;
-            padding: 18px 14px;
+            padding: 16px 14px;
+            border-radius: var(--radius-card);
           }
-          .pillars-section {
-            padding: 40px 16px;
+          .pillar-card h3 {
+            font-size: 1.02rem;
+            margin-bottom: 6px;
+          }
+          .pillar-card p {
+            font-size: 0.82rem;
+            line-height: 1.45;
           }
           .access-section {
-            padding: 40px 16px;
+            padding: 44px 16px;
+          }
+          .access-box {
+            grid-template-columns: 1fr;
+            padding: 20px 16px;
+            gap: 20px;
+            border-radius: var(--radius-card);
+          }
+          .access-info h3 {
+            font-size: 1.25rem;
+            line-height: 1.3;
+            margin-bottom: 8px;
+          }
+          .access-info p {
+            font-size: 0.84rem;
+            line-height: 1.48;
+            margin-bottom: 14px;
+          }
+          .checklist {
+            gap: 8px;
+          }
+          .checklist li {
+            font-size: 0.8rem;
+          }
+          .access-form-box {
+            padding: 16px;
+            border-radius: var(--radius-card);
+          }
+          .form-label {
+            font-size: 0.7rem;
+            margin-bottom: 6px;
+          }
+          .form-hint {
+            font-size: 0.74rem;
+            margin-top: 6px;
           }
           .footer-container {
             flex-direction: column;
             gap: 24px;
             padding: 0 16px;
+          }
+          .footer-col h4 {
+            font-size: 0.82rem;
+            margin-bottom: 8px;
+          }
+          .footer-col a, .footer-col button {
+            font-size: 0.82rem;
+          }
+          .footer-bottom {
+            font-size: 0.75rem;
+            padding-top: 18px;
           }
           .footer-links-group {
             flex-direction: column;

@@ -173,7 +173,17 @@ export default function FaqSection() {
 
         @media (max-width: 640px) {
           .faq-section {
-            padding: 40px 16px;
+            padding: 44px 16px;
+          }
+          .section-header h2 {
+            font-size: clamp(1.35rem, 5.2vw, 1.7rem);
+            line-height: 1.25;
+            margin-bottom: 8px;
+          }
+          .section-header p {
+            font-size: 0.84rem;
+            line-height: 1.48;
+            margin-bottom: 24px;
           }
           .accordion-header {
             padding: 14px 16px;
