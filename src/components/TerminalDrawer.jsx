@@ -1,22 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal as TerminalIcon, X, Minus, Maximize2, Send, CornerDownLeft } from 'lucide-react';
-import { playTechClick, playNeonIgniteSound, playDecodeTick } from '../utils/soundEngine';
+import { 
+  playTechClick, 
+  playNeonIgniteSound, 
+  playDecodeTick,
+  playAssembleFanfare,
+  playRepulsorSound,
+  playVibraniumPing,
+  playThunderStrike
+} from '../utils/soundEngine';
 
 const COMMANDS_HELP = [
-  { cmd: 'help', desc: 'Display list of available commands' },
+  { cmd: 'help', desc: 'Display list of available operational directives' },
+  { cmd: 'assemble', desc: 'Initiate full Foundry Avengers protocol with heroic synthesizer chord' },
+  { cmd: 'jarvis', desc: 'Display Stark Diagnostics telemetry status report & HUD' },
+  { cmd: 'cap', desc: 'Steve Rogers\' code of conduct ("I can do this all day")' },
+  { cmd: 'worthy', desc: 'Test terminal clearance against the Mjolnir worthiness oath' },
+  { cmd: 'bifrost', desc: 'Teleport straight to the live community Discord via cosmic gate' },
+  { cmd: 'snap', desc: 'Thanos Decimation dust disintegration with Doctor Strange Time Heist' },
+  { cmd: 'shawarma', desc: 'Unlock secret post-sprint food break memo from Tony Stark' },
+  { cmd: 'level7', desc: 'Access S.H.I.E.L.D. Director Nick Fury\'s confidential memo' },
   { cmd: 'squad <id>', desc: 'Deploy squad theme: tech, pr, events, core' },
   { cmd: 'projects', desc: 'List active open-source project initiatives' },
   { cmd: 'stack', desc: 'Output community core engineering stack' },
   { cmd: 'lore', desc: 'The origins and philosophy of Let\'s Cook' },
   { cmd: 'pitch', desc: 'Launch project proposal transmission terminal' },
   { cmd: 'whoami', desc: 'Display your current builder clearance tier' },
-  { cmd: 'snap', desc: 'Execute the Decimation (Thanos snap with Time Stone reversal)' },
-  { cmd: 'bifrost', desc: 'Summon the Rainbow Bridge from Asgard' },
-  { cmd: 'jarvis', desc: 'Engage Stark Mark LXXXV Nanotech HUD' },
-  { cmd: 'worthy', desc: 'Attempt to wield Mjolnir' },
-  { cmd: 'assemble', desc: 'Broadcast priority Avengers Initiative beacon' },
-  { cmd: 'clear', desc: 'Flush current terminal buffer' },
   { cmd: 'sudo cook', desc: 'Trigger community hardware overdrive' },
+  { cmd: 'clear', desc: 'Flush current terminal buffer' },
 ];
 
 export default function TerminalDrawer({ 
@@ -31,7 +42,7 @@ export default function TerminalDrawer({
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState([
     { type: 'sys', text: 'LET\'S COOK S.H.I.E.L.D. SHELL v3.0.0 [x86_64-avengers-kernel]' },
-    { type: 'sys', text: 'Type "help" to display operational directives or "squad tech" to deploy Stark Labs.' },
+    { type: 'sys', text: 'Type "help" to display operational directives or "assemble" to initiate Avengers protocol.' },
   ]);
   const [cmdHistory, setCmdHistory] = useState([]);
   const [cmdHistoryIdx, setCmdHistoryIdx] = useState(-1);
@@ -48,8 +59,6 @@ export default function TerminalDrawer({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [history]);
 
-  if (!isOpen) return null;
-
   const handleCommand = (rawCmd) => {
     const trimmed = rawCmd.trim();
     if (!trimmed) return;
@@ -64,9 +73,170 @@ export default function TerminalDrawer({
     if (cmdLower === 'help') {
       newHistory.push({
         type: 'sys',
-        text: 'AVAILABLE DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(14)} - ${c.desc}`).join('\n')
+        text: 'AVAILABLE OPERATIONAL DIRECTIVES:\n' + COMMANDS_HELP.map(c => `  ${c.cmd.padEnd(14)} - ${c.desc}`).join('\n')
       });
-    } else if (cmdLower.startsWith('squad')) {
+    } 
+    // 1. ASSEMBLE: Initiates the full Foundry Avengers protocol with a heroic synthesizer chord
+    else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
+      playAssembleFanfare();
+      newHistory.push({
+        type: 'accent',
+        text: '🛡️ "AVENGERS... ASSEMBLE!"\n' +
+          '--------------------------------------------------\n' +
+          'INITIATIVE DIRECTIVE: LEVEL 7 BROADCAST\n' +
+          'Tri-Squad conduits unified: Tech, PR, and Events online.\n' +
+          'Switching system telemetry to THE AVENGERS INITIATIVE (Foundry Command).\n' +
+          '--------------------------------------------------\n' +
+          '[STATUS: 100% SQUAD OVERDRIVE ENGAGED · MINIMIZING TERMINAL FOR CINEMATIC]'
+      });
+      if (onSelectSquad) onSelectSquad('core');
+      if (onTriggerEasterEgg) onTriggerEasterEgg('assemble');
+      onClose();
+    }
+    // 2. JARVIS / FRIDAY: Displays a Stark Diagnostics telemetry status report
+    else if (cmdLower === 'jarvis' || cmdLower === 'friday' || cmdLower === 'stark') {
+      playRepulsorSound();
+      newHistory.push({
+        type: 'accent',
+        text: '🤖 MARK LXXXV // STARK DIAGNOSTICS & TELEMETRY REPORT\n' +
+          '--------------------------------------------------\n' +
+          '· F.R.I.D.A.Y. CORE RUNTIME  : NOMINAL (99.98% UPTIME)\n' +
+          '· ARC REACTOR CORE           : 3.2 GIGAWATTS [100% OPERATIONAL]\n' +
+          '· NANOTECH REPOSITORIES      : ARSENAL LEVEL 9 LOADED\n' +
+          '· REPULSOR CAPACITORS        : CALIBRATED & FULLY CHARGED\n' +
+          '· AVIONICS & FLIGHT ENGINES  : MACH 3 READY // STABILIZERS NOMINAL\n' +
+          '· HEAD-UP DISPLAY (HUD)      : MARK LXXXV RETICLE TARGET LOCK\n' +
+          '· STARK INDUSTRIES MOTTO     : "PROOF THAT TONY STARK HAS A HEART"\n' +
+          '--------------------------------------------------\n' +
+          '[STATUS: TACTICAL HUD ONLINE · MINIMIZING TERMINAL FOR CINEMATIC]'
+      });
+      if (onSelectSquad) onSelectSquad('ironman');
+      if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
+      onClose();
+    }
+    // 3. CAP / STAMINA: Prints Steve Rogers' code of conduct ("I can do this all day")
+    else if (cmdLower === 'cap' || cmdLower === 'stamina' || cmdLower === 'rogers') {
+      playVibraniumPing();
+      newHistory.push({
+        type: 'accent',
+        text: '★ CAPTAIN AMERICA // STEVE ROGERS\' CODE OF CONDUCT (SSR-1941)\n' +
+          '--------------------------------------------------\n' +
+          '"I don\'t like bullies; I don\'t care where they\'re from."\n' +
+          '"I can do this all day."\n\n' +
+          'TACTICAL SPRINT PRINCIPLES:\n' +
+          '[01] STAND FIRM        - Plant yourself like a tree when the world says move.\n' +
+          '[02] NO BUILDER BEHIND - Every teammate crosses the deployment line together.\n' +
+          '[03] INTEGRITY FIRST   - Real engineering strength is in character, not hype.\n' +
+          '--------------------------------------------------\n' +
+          'Clearance: Vibranium Alliance Tier 1 Active.\n' +
+          'Deploying PR & Media Squad Protocol.'
+      });
+      if (onSelectSquad) onSelectSquad('captain');
+    }
+    // 4. WORTHY: Tests the user's terminal clearance against the Mjolnir worthiness oath
+    else if (cmdLower === 'worthy' || cmdLower === 'mjolnir') {
+      playThunderStrike();
+      newHistory.push({
+        type: 'accent',
+        text: '⚡ MJOLNIR WORTHINESS CLEARANCE PROTOCOL // REALM: ASGARD FORGE\n' +
+          '--------------------------------------------------\n' +
+          'OATH OF ODIN ALL-FATHER:\n' +
+          '"Whosoever holds this hammer, if they be worthy,\n' +
+          ' shall possess the power of Thor."\n\n' +
+          'RUNNING TERMINAL CLEARANCE SCAN...\n' +
+          '· BUILDER COMMIT INTEGRITY : [VERIFIED]\n' +
+          '· OPEN SOURCE NOBILITY    : [VERIFIED]\n' +
+          '· ZERO HUBRIS / HIGH GRIT  : [VERIFIED]\n' +
+          '· ASGARDIAN LIGHTNING SYNC : [100% CHARGE]\n\n' +
+          'RESULT: CLEARANCE GRANTED. YOU ARE DEEMED WORTHY!\n' +
+          '--------------------------------------------------\n' +
+          '⚡ Unleashing Asgardian lightning blast · MINIMIZING TERMINAL FOR CINEMATIC'
+      });
+      if (onSelectSquad) onSelectSquad('thor');
+      if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
+      onClose();
+    }
+    // 5. BIFROST: Teleports the user straight to the live community Discord
+    else if (cmdLower === 'bifrost' || cmdLower === 'heimdall') {
+      playThunderStrike();
+      newHistory.push({
+        type: 'accent',
+        text: '🌈 ASGARDIAN BIFROST CONDUIT // HEIMDALL ACTIVATION\n' +
+          '--------------------------------------------------\n' +
+          'Heimdall aligns the cosmic observatory bridge...\n' +
+          'Conduit Energy Surge: 1.21 Gigawatts.\n' +
+          'Destination Coordinates: Let\'s Cook Community Discord Gateway.\n\n' +
+          '⚡ TELEPORTING STRAIGHT TO LIVE COMMUNITY DISCORD...\n' +
+          '--------------------------------------------------\n' +
+          '[STATUS: COSMIC BEAM DISCHARGE · MINIMIZING TERMINAL FOR CINEMATIC]'
+      });
+      if (onSelectSquad) onSelectSquad('thor');
+      if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
+      window.open('https://linktr.ee/letscookfoundry?utm_source=bifrost_discord', '_blank');
+      onClose();
+    }
+    // 6. THANOS / SNAP: Playfully dissolves terminal text before a "Time Heist" restores it
+    else if (cmdLower === 'snap' || cmdLower === 'thanos') {
+      playThunderStrike();
+      newHistory.push({
+        type: 'accent',
+        text: '💀 "DREAD IT. RUN FROM IT. DESTINY ARRIVES ALL THE SAME."\n' +
+          '--------------------------------------------------\n' +
+          '[Snap registered]: Physical ash dust particles unleashed!\n' +
+          'Disintegrating terminal buffer and 50% of website content...\n' +
+          'Doctor Strange initiating Time Heist reversal in 3 seconds...\n' +
+          '--------------------------------------------------\n' +
+          '[STATUS: ENTROPY ACTIVE · MINIMIZING TERMINAL FOR CINEMATIC]'
+      });
+      if (onTriggerEasterEgg) onTriggerEasterEgg('snap');
+      onClose();
+    }
+    // 7. SHAWARMA: Unlocks the secret post-sprint food break memo
+    else if (cmdLower === 'shawarma' || cmdLower === 'food') {
+      playTechClick();
+      newHistory.push({
+        type: 'accent',
+        text: '🌯 THE FOUNDRY // POST-BATTLE MEMO: SHAWARMA PROTOCOL\n' +
+          '--------------------------------------------------\n' +
+          'FROM: Tony Stark (Stark Tower Penthouse)\n' +
+          'TO  : The Avengers & Let\'s Cook Builders\n' +
+          'DATE: Post-Sprint Sunday, 18:00 IST\n\n' +
+          '"Alright people, incredible build sprint. Nobody talk to me\n' +
+          ' about merge conflicts or Docker containers for the next 45\n' +
+          ' minutes.\n\n' +
+          ' There\'s a shawarma joint two blocks down. I don\'t know\n' +
+          ' what it is, but I wanna try it.\n\n' +
+          ' Sprint retro can wait. Put down the keyboards.\n' +
+          ' First round of shawarmas is on Stark Labs."\n' +
+          '--------------------------------------------------\n' +
+          '[CLEARANCE: ALL BUILDERS DISMISSED TO REFUEL]'
+      });
+    }
+    // 8. LEVEL7: S.H.I.E.L.D. director's confidential memo
+    else if (cmdLower === 'level7' || cmdLower === 'fury' || cmdLower === 'shield') {
+      playNeonIgniteSound();
+      newHistory.push({
+        type: 'accent',
+        text: '📁 S.H.I.E.L.D. LEVEL 7 // CONFIDENTIAL EXECUTIVE DIRECTIVE\n' +
+          '--------------------------------------------------\n' +
+          'SECURITY CLASSIFICATION: EYES-ONLY // DIRECTOR\'S DESK\n' +
+          'AUTHOR: NICK FURY, EXECUTIVE DIRECTOR\n' +
+          'DOCUMENT ID: SHIELD-DIR-MEMO-7701\n\n' +
+          '"There was an idea, Stark knows this, called the Avengers\n' +
+          ' Initiative. The idea was to bring together a group of\n' +
+          ' remarkable people, see if they could become something more.\n' +
+          ' See if they could work together when we needed them to,\n' +
+          ' to build and fight the battles that we never could.\n\n' +
+          ' To every student engineer and builder reading this:\n' +
+          ' Stop asking for permission to build something great.\n' +
+          ' Write the code. Ship the product. Protect the vision.\n\n' +
+          ' Let\'s cook."\n' +
+          '--------------------------------------------------\n' +
+          'VERIFICATION HASH: 0x7F4A99C2B · S.H.I.E.L.D. LEVEL 7 ACTIVE'
+      });
+    }
+    // SQUAD SELECTION
+    else if (cmdLower.startsWith('squad')) {
       const parts = cmdLower.split(' ');
       const target = parts[1];
       if (target === 'tech' || target === 'ironman' || target === 'stark') {
@@ -84,25 +254,6 @@ export default function TerminalDrawer({
       } else {
         newHistory.push({ type: 'error', text: 'Usage: squad <tech | pr | events | core>' });
       }
-    } else if (cmdLower === 'snap' || cmdLower === 'thanos') {
-      newHistory.push({ type: 'accent', text: '💀 "Dread it. Run from it. Destiny arrives all the same." [Executing Decimation... Disintegrating 50% of website content into ash particles!]' });
-      if (onTriggerEasterEgg) onTriggerEasterEgg('snap');
-    } else if (cmdLower === 'bifrost' || cmdLower === 'heimdall') {
-      newHistory.push({ type: 'accent', text: '🌈 "Heimdall, open the Bifrost!" [Cosmic Gateway Incoming... Seismic shockwave registered!]' });
-      if (onSelectSquad) onSelectSquad('thor');
-      if (onTriggerEasterEgg) onTriggerEasterEgg('bifrost');
-    } else if (cmdLower === 'jarvis' || cmdLower === 'friday' || cmdLower === 'ironman') {
-      newHistory.push({ type: 'accent', text: '🤖 "Welcome home, sir. Nanotech flight systems initialized." [Projecting Mark LXXXV HUD targeting overlay...]' });
-      if (onSelectSquad) onSelectSquad('ironman');
-      if (onTriggerEasterEgg) onTriggerEasterEgg('jarvis');
-    } else if (cmdLower === 'worthy' || cmdLower === 'mjolnir' || cmdLower === 'thor') {
-      newHistory.push({ type: 'accent', text: '⚡ "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor." [Lightning blast discharged!]' });
-      if (onSelectSquad) onSelectSquad('thor');
-      if (onTriggerEasterEgg) onTriggerEasterEgg('worthy');
-    } else if (cmdLower === 'assemble' || cmdLower === 'avengers') {
-      newHistory.push({ type: 'accent', text: '🛡️ "AVENGERS... ASSEMBLE!" [Initiative Priority Signal Broadcasted... Golden crest activated!]' });
-      if (onSelectSquad) onSelectSquad('core');
-      if (onTriggerEasterEgg) onTriggerEasterEgg('assemble');
     } else if (cmdLower === 'sprints' || cmdLower === 'projects' || cmdLower === 'initiatives') {
       newHistory.push({
         type: 'sys',
@@ -187,7 +338,11 @@ export default function TerminalDrawer({
   };
 
   return (
-    <div className="terminal-drawer-overlay no-print" onClick={onClose}>
+    <div 
+      className="terminal-drawer-overlay no-print" 
+      style={{ display: isOpen ? 'flex' : 'none' }}
+      onClick={onClose}
+    >
       <div className="terminal-drawer-window" onClick={(e) => e.stopPropagation()}>
         {/* Titlebar */}
         <div className="terminal-drawer-titlebar">
@@ -233,7 +388,7 @@ export default function TerminalDrawer({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="type directive (e.g. 'help', 'projects', 'sudo cook')..."
+            placeholder="type directive (e.g. 'help', 'assemble', 'jarvis', 'worthy')..."
             className="terminal-text-input"
             autoFocus
             spellCheck={false}
@@ -308,21 +463,26 @@ export default function TerminalDrawer({
         .titlebar-title {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
           font-family: monospace;
           font-size: 0.76rem;
-          color: #a1a1aa;
+          color: var(--text-muted);
+          font-weight: 600;
         }
 
         .titlebar-icon {
-          color: var(--logo-accent-color, #ff2a6d);
+          color: var(--accent-burgundy);
         }
 
         .titlebar-close-btn {
-          color: #71717a;
           background: none;
           border: none;
+          color: var(--text-dim);
           cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 2px;
+          transition: color 0.15s;
         }
 
         .titlebar-close-btn:hover {
@@ -331,66 +491,67 @@ export default function TerminalDrawer({
 
         .terminal-drawer-body {
           flex: 1;
-          padding: 16px 20px;
           overflow-y: auto;
-          font-family: 'JetBrains Mono', 'Fira Code', monospace;
-          font-size: 0.84rem;
+          padding: 16px;
+          font-family: monospace;
+          font-size: 0.82rem;
           line-height: 1.55;
-          color: #f4f4f6;
-          background-color: #0a0a0e;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          background-color: #0c0c10;
         }
 
-        .log-line {
-          margin-bottom: 8px;
-        }
-
-        .log-line.user {
+        .log-line.user .user-prompt {
           color: #ffffff;
         }
 
-        .user-prompt {
-          font-weight: 600;
-        }
-
         .prompt-at {
-          color: #22c55e;
+          color: var(--accent-burgundy);
+          font-weight: 700;
         }
 
         .prompt-sym {
-          color: var(--logo-accent-color, #ff2a6d);
+          color: #38bdf8;
+          font-weight: 700;
         }
 
-        .sys-output {
-          font-family: inherit;
-          font-size: inherit;
-          color: #a1a1aa;
-          white-space: pre-wrap;
+        .log-line.sys .sys-output {
+          color: #94a3b8;
           margin: 0;
+          white-space: pre-wrap;
+          font-family: inherit;
         }
 
         .log-line.accent .sys-output {
-          color: var(--logo-accent-color, #ff2a6d);
+          color: #f59e0b;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: inherit;
           font-weight: 700;
         }
 
         .log-line.error .sys-output {
           color: #ef4444;
+          margin: 0;
+          white-space: pre-wrap;
+          font-family: inherit;
         }
 
         .terminal-input-bar {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 16px;
+          padding: 12px 16px;
           background-color: #121218;
           border-top: 1px solid #22222e;
         }
 
         .input-prompt {
           font-family: monospace;
-          font-size: 0.82rem;
+          font-size: 0.8rem;
+          color: var(--accent-burgundy);
           font-weight: 700;
-          color: #22c55e;
           white-space: nowrap;
         }
 
@@ -398,34 +559,25 @@ export default function TerminalDrawer({
           flex: 1;
           background: none;
           border: none;
+          outline: none;
           color: #ffffff;
           font-family: monospace;
-          font-size: 0.88rem;
-          outline: none;
+          font-size: 0.85rem;
         }
 
         .btn-term-send {
-          color: #a1a1aa;
           background: none;
           border: none;
+          color: var(--text-dim);
           cursor: pointer;
+          display: flex;
+          align-items: center;
           padding: 4px;
+          transition: color 0.15s;
         }
 
         .btn-term-send:hover {
-          color: #ffffff;
-        }
-
-        @media (max-width: 600px) {
-          .terminal-drawer-window {
-            height: 70vh;
-          }
-          .input-prompt {
-            display: none;
-          }
-          .terminal-text-input {
-            font-size: 16px; /* Prevents iOS auto-zoom */
-          }
+          color: var(--accent-burgundy);
         }
       `}</style>
     </div>
