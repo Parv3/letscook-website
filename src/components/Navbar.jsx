@@ -208,6 +208,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+          height: 64px;
         }
 
         html.light .sticky-header {
@@ -215,22 +216,27 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
         }
 
         .navbar-spacer {
-          height: 65px;
+          height: 64px;
           width: 100%;
           flex-shrink: 0;
         }
 
         .scroll-progress-bar {
+          position: absolute;
+          top: 0;
+          left: 0;
           height: 3px;
           background-color: var(--accent-burgundy);
           transition: width 0.1s ease-out;
+          z-index: 1001;
         }
 
         .navbar-container {
           width: 100%;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 12px 16px;
+          padding: 0 16px;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -378,27 +384,37 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
         }
 
         @media (max-width: 960px) {
-          .desktop-nav, .desktop-cta {
-            display: none;
+          .desktop-nav {
+            display: none !important;
+          }
+          .desktop-cta {
+            display: none !important;
           }
           .mobile-menu-btn {
-            display: flex;
+            display: flex !important;
           }
         }
 
         @media (max-width: 600px) {
+          .sticky-header {
+            height: 56px;
+          }
+          .navbar-spacer {
+            height: 56px;
+          }
           .navbar-container {
-            padding: 8px 12px;
+            padding: 0 12px;
           }
           .terminal-btn {
             display: none !important; /* Accessible inside mobile menu drawer */
           }
           .brand-logo-wrap {
-            padding: 2px 2px;
-            gap: 8px;
+            padding: 2px 4px;
+            gap: 6px;
           }
           .brand-logo {
             height: 26px;
+            width: auto;
           }
           .brand-title {
             font-size: 0.92rem;
@@ -408,16 +424,13 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             display: none;
           }
           .nav-actions {
-            gap: 5px;
+            gap: 6px;
           }
           .icon-btn {
-            width: 35px;
-            height: 35px;
-            padding: 7px;
+            width: 36px;
+            height: 36px;
+            padding: 0;
             border-radius: var(--radius-btn);
-          }
-          .navbar-spacer {
-            height: 52px;
           }
         }
       `}</style>

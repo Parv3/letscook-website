@@ -1969,49 +1969,234 @@ export default function HomePage({
         }
 
         @media (max-width: 600px) {
-          .squad-tabs-nav {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-          }
-          .squad-tab-btn {
-            padding: 10px 8px;
-            font-size: 0.82rem;
-          }
-          .squads-cards-grid {
-            grid-template-columns: 1fr;
-          }
           .hero-section {
-            padding: 24px 14px 32px 14px;
+            padding: 24px 16px 36px 16px;
+          }
+          .hero-content {
+            margin-bottom: 20px;
+          }
+          .hero-title {
+            font-size: clamp(1.35rem, 5.8vw, 1.85rem);
+            line-height: 1.22;
+            letter-spacing: -0.015em;
+            margin-bottom: 12px;
+          }
+          .highlight-box {
+            padding: 1px 8px;
+            margin: 0 2px;
+            border-radius: 3px;
+            font-size: 0.92em;
+            box-shadow: 0 0 14px var(--accent-burgundy);
+          }
+          .hero-subtitle {
+            font-size: clamp(0.82rem, 3.4vw, 0.94rem);
+            line-height: 1.5;
+            margin-bottom: 18px;
+            max-width: 95%;
           }
           .hero-cta-group {
             flex-direction: column;
             width: 100%;
+            max-width: 340px;
+            gap: 10px;
+            margin: 0 auto;
           }
-          .hero-cta-group .btn {
+          .hero-cta-group .btn-primary,
+          .hero-cta-group .btn-secondary,
+          .hero-cta-group .btn-lg {
             width: 100%;
+            height: 44px;
+            padding: 0 16px;
+            font-size: 0.86rem;
+            letter-spacing: 0.03em;
             justify-content: center;
+            box-sizing: border-box;
+          }
+          .hero-cta-group .glow-btn {
+            box-shadow: 0 0 14px var(--accent-burgundy);
+          }
+          .hero-stats-row {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            width: 100%;
+            max-width: 340px;
+            margin: 20px auto 0 auto;
+          }
+          .stat-card {
+            padding: 10px 14px;
+            gap: 12px;
+            border-radius: 6px;
+          }
+          .stat-card h4 {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            margin-bottom: 2px;
+          }
+          .stat-card p {
+            font-size: 0.74rem;
+            line-height: 1.35;
+            color: var(--text-muted);
+          }
+          .stat-icon {
+            width: 18px;
+            height: 18px;
+          }
+
+          .squads-section {
+            padding: 32px 14px;
+          }
+          .squads-section h2 {
+            font-size: clamp(1.35rem, 5.5vw, 1.85rem);
+            margin-bottom: 8px;
+          }
+          .section-desc {
+            font-size: 0.82rem;
+            line-height: 1.45;
+          }
+          .section-header-box {
+            margin-bottom: 18px;
+          }
+          .squad-tabs-nav {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 16px;
+          }
+          .squad-tab-btn {
+            padding: 10px 8px;
+            gap: 2px;
+          }
+          .tab-team-name {
+            font-size: 0.78rem;
+          }
+          .tab-hero-tag {
+            font-size: 0.68rem;
+          }
+          .tab-active-pill {
+            font-size: 0.6rem;
+          }
+          .squads-cards-grid {
+            grid-template-columns: 1fr;
+          }
+          .active-squad-spotlight {
+            padding: 16px 12px;
+            border-radius: 8px;
+          }
+          .spotlight-header h3 {
+            font-size: 1.18rem;
+          }
+          .spotlight-tagline {
+            font-size: 0.82rem;
+            line-height: 1.35;
+            margin-bottom: 10px;
+          }
+          .spotlight-desc {
+            font-size: 0.8rem;
+            line-height: 1.45;
+            margin-bottom: 16px;
+          }
+          .initiatives-subgrid {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+          }
+          .initiative-mini-card {
+            padding: 10px 12px;
+          }
+          .initiative-mini-card h5 {
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+          }
+          .initiative-mini-card p {
+            font-size: 0.74rem;
+          }
+          .arsenal-row {
+            gap: 6px;
+            margin-bottom: 16px;
+          }
+          .arsenal-label {
+            font-size: 0.68rem;
+          }
+          .arsenal-tag {
+            font-size: 0.68rem;
+            padding: 2px 6px;
           }
           .spotlight-cta-row {
             flex-direction: column;
             width: 100%;
+            gap: 8px;
             align-items: stretch;
           }
           .spotlight-cta-row .btn-primary,
           .spotlight-cta-row .btn-secondary {
             width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            font-size: 0.84rem;
             justify-content: center;
           }
-          .squads-section, .access-section, .site-footer {
-            padding: 36px 14px;
+          .spotlight-cta-subtext {
+            font-size: 0.74rem;
+            text-align: center;
           }
-          .active-squad-spotlight {
-            padding: 18px 12px;
+          .insignia-wrapper {
+            padding: 16px 12px;
+            gap: 10px;
+          }
+
+          .access-section {
+            padding: 32px 14px;
           }
           .access-box {
-            padding: 22px 14px;
+            padding: 18px 12px;
+            border-radius: 8px;
+            gap: 16px;
           }
-          .stat-card {
-            padding: 14px 14px;
+          .access-box h3 {
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+          }
+          .access-sub {
+            font-size: 0.8rem;
+            line-height: 1.4;
+          }
+          .access-action-col .btn-primary {
+            width: 100%;
+            height: 44px;
+            justify-content: center;
+            font-size: 0.84rem;
+          }
+          .access-guarantee {
+            font-size: 0.72rem;
+            text-align: center;
+          }
+
+          .site-footer {
+            padding: 28px 14px calc(74px + env(safe-area-inset-bottom, 0px)) 14px;
+          }
+          .footer-brand h3 {
+            font-size: 0.96rem;
+          }
+          .footer-tagline {
+            font-size: 0.78rem;
+          }
+          .footer-links-group {
+            gap: 16px;
+          }
+          .footer-col h5 {
+            font-size: 0.78rem;
+            margin-bottom: 8px;
+          }
+          .footer-col a {
+            font-size: 0.74rem;
+            line-height: 1.8;
+          }
+          .footer-bottom {
+            padding-top: 16px;
+            font-size: 0.72rem;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
           }
         }
       `}</style>
