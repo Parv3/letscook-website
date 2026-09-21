@@ -1,7 +1,7 @@
 /**
  * Dynamic UTM Tracker Utility
  * Captures incoming UTM parameters from the URL and persists them in sessionStorage.
- * Appends tracked parameters to all outbound CTA links (e.g., Linktree).
+ * Appends tracked parameters to all outbound CTA links (e.g., WhatsApp, socials, community links).
  */
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'ltsid'];

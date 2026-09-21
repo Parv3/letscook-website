@@ -1,8 +1,5 @@
 import React from 'react';
 import { Shield, ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { getTrackedUrl } from '../utils/utmTracker';
-
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
 export default function PrivacyPolicyPage({ setCurrentPage }) {
   return (
@@ -56,7 +53,7 @@ export default function PrivacyPolicyPage({ setCurrentPage }) {
           <section className="policy-section">
             <h2>4. THIRD-PARTY LINKS & PLATFORMS</h2>
             <p>
-              Our website links directly to community channels hosted on external platforms including Linktree, WhatsApp, GitHub, and Discord. We encourage you to review the privacy policies of any third-party service you visit via our links.
+              Our website links directly to community channels hosted on external platforms including WhatsApp, GitHub, LinkedIn, and Discord. We encourage you to review the privacy policies of any third-party service you visit via our links.
             </p>
           </section>
 
@@ -70,14 +67,18 @@ export default function PrivacyPolicyPage({ setCurrentPage }) {
           <div className="legal-cta-box">
             <h3>HAVE QUESTIONS ABOUT PRIVACY?</h3>
             <p>Reach out to our team or join our community portal directly.</p>
-            <a 
-              href={getTrackedUrl(LINKTREE_URL)}
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => {
+                if (window.history && window.history.pushState) {
+                  window.history.pushState(null, '', '/links');
+                }
+                setCurrentPage('links');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="btn-primary mt-3"
             >
-              VISIT COMMUNITY LINKTREE <ArrowUpRight size={16} />
-            </a>
+              VISIT COMMUNITY LINKS <ArrowUpRight size={16} />
+            </button>
           </div>
         </div>
       </div>

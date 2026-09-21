@@ -20,7 +20,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Where do community discussions take place?',
-    a: 'Our main communication channels are hosted on Discord and WhatsApp, accessible through our official Linktree community portal.'
+    a: 'Our main communication channels are hosted on Discord and WhatsApp, accessible through our official community links page.'
   }
 ];
 

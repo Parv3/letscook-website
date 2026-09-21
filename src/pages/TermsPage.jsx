@@ -1,8 +1,5 @@
 import React from 'react';
 import { FileText, ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { getTrackedUrl } from '../utils/utmTracker';
-
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
 export default function TermsPage({ setCurrentPage }) {
   return (
@@ -66,15 +63,19 @@ export default function TermsPage({ setCurrentPage }) {
 
           <div className="legal-cta-box">
             <h3>QUESTIONS REGARDING COMMUNITY TERMS?</h3>
-            <p>Connect with our student organizing committee on Linktree.</p>
-            <a 
-              href={getTrackedUrl(LINKTREE_URL)}
-              target="_blank" 
-              rel="noopener noreferrer"
+            <p>Connect with our student organizing committee via our community links.</p>
+            <button 
+              onClick={() => {
+                if (window.history && window.history.pushState) {
+                  window.history.pushState(null, '', '/links');
+                }
+                setCurrentPage('links');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="btn-primary mt-3"
             >
-              CONNECT VIA LINKTREE <ArrowUpRight size={16} />
-            </a>
+              CONNECT VIA COMMUNITY LINKS <ArrowUpRight size={16} />
+            </button>
           </div>
         </div>
       </div>

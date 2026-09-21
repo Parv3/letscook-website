@@ -1,30 +1,21 @@
 /**
- * Calculates time remaining until the upcoming Tuesday at 12:00 PM (Noon) IST.
+ * Calculates time remaining until 6:00 PM today IST.
  */
 
-export const getNextTuesdayNoon = () => {
-  const now = new Date();
-  const resultDate = new Date(now);
+export const getTargetLaunchTime = () => {
+  const target = new Date();
+  target.setHours(18, 0, 0, 0); // 6:00 PM today
   
-  // Calculate days until Tuesday (2 in JS Date: 0 is Sunday, 1 is Monday, 2 is Tuesday)
-  const dayOfWeek = now.getDay();
-  let daysUntilTuesday = (2 - dayOfWeek + 7) % 7;
-  
-  // If today is Tuesday and it's already past 12:00 PM, target next Tuesday
-  if (daysUntilTuesday === 0 && (now.getHours() > 12 || (now.getHours() === 12 && now.getMinutes() > 0))) {
-    daysUntilTuesday = 7;
-  } else if (daysUntilTuesday === 0 && now.getHours() < 12) {
-    daysUntilTuesday = 0;
+  // If already past 6:00 PM, target 6:00 PM tomorrow
+  if (target.getTime() <= Date.now()) {
+    target.setDate(target.getDate() + 1);
   }
-
-  resultDate.setDate(now.getDate() + daysUntilTuesday);
-  resultDate.setHours(12, 0, 0, 0);
-
-  return resultDate;
+  return target;
 };
 
-// Backwards compatibility alias
-export const getNextMondayNoon = getNextTuesdayNoon;
+// Aliases for backwards compatibility
+export const getNextTuesdayNoon = getTargetLaunchTime;
+export const getNextMondayNoon = getTargetLaunchTime;
 
 export const calculateTimeLeft = (targetDate) => {
   const difference = +targetDate - +new Date();

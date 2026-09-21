@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Sparkles, ExternalLink, CheckCircle2, Terminal, Move, Minus, Maximize2 } from 'lucide-react';
-import { getTrackedUrl } from '../utils/utmTracker';
 import { playTechClick } from '../utils/soundEngine';
 import { submitPitchData } from '../utils/pitchSubmission';
-
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
 /**
  * PitchIdeaModal: macOS Terminal Window Sliding Up From Bottom
@@ -219,13 +216,11 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
               <h4>[SUCCESS 200 OK] PITCH SUBMITTED!</h4>
               <p>Your idea has been logged in the Let's Cook sprint queue. Community leads will contact you shortly via email or Discord.</p>
               <a 
-                href={getTrackedUrl(LINKTREE_URL)}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/links"
                 className="btn-primary mt-3 glow-btn"
                 onClick={playTechClick}
               >
-                OPEN LINKTREE COMMUNITY PORTAL <ExternalLink size={14} />
+                OPEN COMMUNITY LINKS PORTAL <ExternalLink size={14} />
               </a>
             </div>
           ) : (

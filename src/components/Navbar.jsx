@@ -4,8 +4,6 @@ import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine
 import { getTrackedUrl } from '../utils/utmTracker';
 import LogoMark from './LogoMark';
 
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
-
 export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal, theme, onToggleTheme, currentPage, setCurrentPage }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -42,12 +40,16 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
     { label: 'HOME', page: 'home' },
     { label: 'INITIATIVES', page: 'home', section: 'pillars' },
     { label: 'FAQ', page: 'home', section: 'faq' },
+    { label: 'LINKS', page: 'links' },
     { label: 'PRIVACY', page: 'privacy' },
     { label: 'TERMS', page: 'terms' }
   ];
 
   const handleNavClick = (item) => {
     playTechClick();
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, '', item.page === 'home' ? '/' : `/${item.page}`);
+    }
     setCurrentPage(item.page);
     setMobileMenuOpen(false);
 
@@ -130,15 +132,19 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             <Lightbulb size={16} /> PITCH IDEA
           </button>
 
-          <a 
-            href={getTrackedUrl(LINKTREE_URL)}
-            target="_blank" 
-            rel="noopener noreferrer"
+          <button 
+            onClick={() => {
+              playTechClick();
+              if (window.history && window.history.pushState) {
+                window.history.pushState(null, '', '/links');
+              }
+              setCurrentPage('links');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="btn-primary desktop-cta"
-            onClick={playTechClick}
           >
             JOIN US <ArrowUpRight size={16} />
-          </a>
+          </button>
 
           <button 
             className="mobile-menu-btn icon-btn"
@@ -179,15 +185,20 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             </button>
 
             <div className="mobile-drawer-footer">
-              <a 
-                href={getTrackedUrl(LINKTREE_URL)}
-                target="_blank" 
-                rel="noopener noreferrer"
+              <button 
+                onClick={() => {
+                  playTechClick();
+                  setMobileMenuOpen(false);
+                  if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', '/links');
+                  }
+                  setCurrentPage('links');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 className="btn-primary w-full"
-                onClick={playTechClick}
               >
                 JOIN COMMUNITY <ArrowUpRight size={16} />
-              </a>
+              </button>
             </div>
           </div>
         </div>

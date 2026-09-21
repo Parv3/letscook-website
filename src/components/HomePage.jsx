@@ -17,8 +17,6 @@ import {
   playCinematicShatterSound
 } from '../utils/soundEngine';
 
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
-
 // Realistic Movie-Accurate Asgardian Stormbreaker Battle-Axe Component
 export function StormbreakerSVG({ idPrefix = 'sb', className = '', width = 80, height = 80, withLightning = true }) {
   return (
@@ -305,7 +303,7 @@ export const SQUADS_DATA = {
     desc: 'Systems architecture, high-performance web tooling, distributed compilers, and autonomous AI agents. We build production tools and developer infrastructure.',
     color: '#ff0055',
     secondaryColor: '#00f0ff',
-    linktree: `${LINKTREE_URL}&utm_source=squad_tech_ironman`,
+    linksUrl: '/links?utm_source=squad_tech_ironman',
     initiatives: [
       { title: 'AI & Local Inference Runtimes', desc: 'On-device LLM quantization and low-latency agentic pipelines.' },
       { title: 'Systems & Micro-Compilers', desc: 'Rust, WASM, and high-throughput network engines.' },
@@ -343,7 +341,7 @@ export const SQUADS_DATA = {
     desc: 'Public relations, community diplomacy, university outreach, brand partnerships, and social storytelling across national developer ecosystems.',
     color: '#0055ff',
     secondaryColor: '#ffffff',
-    linktree: `${LINKTREE_URL}&utm_source=squad_pr_captain`,
+    linksUrl: '/links?utm_source=squad_pr_captain',
     initiatives: [
       { title: 'Global Campus Outreach', desc: 'Active student ambassador hubs across 40+ engineering colleges.' },
       { title: 'Storytelling & Public Relations', desc: 'Showcasing student-shipped software to thousands of founders & devs.' },
@@ -372,7 +370,7 @@ export const SQUADS_DATA = {
     desc: 'High-octane 48-hour national hackathons, live code tournaments, campus speaker arenas, and lightning sprint demo stages powered by Asgardian energy.',
     color: '#d97706',
     secondaryColor: '#38bdf8',
-    linktree: `${LINKTREE_URL}&utm_source=squad_events_thor`,
+    linksUrl: '/links?utm_source=squad_events_thor',
     initiatives: [
       { title: '48-Hour Hackathon Sprints', desc: 'High-voltage hackathons where builders ship real products in 2 days.' },
       { title: 'Live Stage & Keynote Arenas', desc: 'Campus tech conferences, live demos, and builder speaker sessions.' },
@@ -395,7 +393,7 @@ export const SQUADS_DATA = {
     desc: 'Executive council coordinating cross-squad logistics, treasury micro-grants, national expansion, and overarching community governance.',
     color: '#8b002e',
     secondaryColor: '#f59e0b',
-    linktree: `${LINKTREE_URL}&utm_source=squad_core_command`,
+    linksUrl: '/links?utm_source=squad_core_command',
     initiatives: [
       { title: 'Community Governance', desc: 'Meritocratic council elections, operational bylaws, and quality standards.' },
       { title: 'Treasury & Micro-Grants', desc: 'Funding student prototypes, server hosting, and event hardware.' },
@@ -671,15 +669,19 @@ export default function HomePage({
             </p>
 
             <div className="hero-cta-group">
-              <a 
-                href={getTrackedUrl(activeSquad.linktree)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button 
+                onClick={() => {
+                  playTechClick();
+                  if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', '/links');
+                  }
+                  setCurrentPage('links');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 className="btn-primary btn-lg glow-btn"
-                onClick={playTechClick}
               >
                 JOIN THE SQUAD <ArrowUpRight size={18} />
-              </a>
+              </button>
               <button 
                 onClick={() => { playTechClick(); onOpenPitchModal(); }}
                 className="btn-secondary btn-lg"
@@ -792,15 +794,19 @@ export default function HomePage({
                 </div>
 
                 <div className="spotlight-cta-row">
-                  <a
-                    href={getTrackedUrl(activeSquad.linktree)}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => {
+                      playTechClick();
+                      if (window.history && window.history.pushState) {
+                        window.history.pushState(null, '', '/links');
+                      }
+                      setCurrentPage('links');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     className="btn-primary glow-btn"
-                    onClick={playTechClick}
                   >
                     ENLIST IN {activeSquad.team} <ArrowUpRight size={16} />
-                  </a>
+                  </button>
 
                   {activeSquad.key === 'ironman' && (
                     <button
@@ -954,7 +960,7 @@ export default function HomePage({
                     </span>
                   )}
 
-                  <span className="spotlight-cta-subtext">Direct Linktree community onboarding</span>
+                  <span className="spotlight-cta-subtext">Direct community onboarding & links</span>
                 </div>
               </div>
 
@@ -1027,7 +1033,7 @@ export default function HomePage({
           <div className="access-box hover-glow">
             <div className="access-info">
               <h3>JOIN THE LET'S COOK NETWORK</h3>
-              <p>Ready to build? Access our WhatsApp community, Discord server, and upcoming sprint schedules via Linktree.</p>
+              <p>Ready to build? Access our WhatsApp community, Discord server, and upcoming sprint schedules via our community links.</p>
               <ul className="checklist">
                 <li><CheckCircle2 size={16} className="check-icon" /> Active peer code reviews</li>
                 <li><CheckCircle2 size={16} className="check-icon" /> Weekly hackathon team forming</li>
@@ -1045,15 +1051,19 @@ export default function HomePage({
               />
               <p className="form-hint">Feature demonstration of instant password visibility toggle.</p>
 
-              <a 
-                href={getTrackedUrl(activeSquad.linktree || LINKTREE_URL)}
-                target="_blank" 
-                rel="noopener noreferrer"
+              <button 
+                onClick={() => {
+                  playTechClick();
+                  if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', '/links');
+                  }
+                  setCurrentPage('links');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 className="btn-primary w-full mt-4 glow-btn"
-                onClick={playTechClick}
               >
-                OPEN LINKTREE PORTAL <ArrowUpRight size={16} />
-              </a>
+                OPEN COMMUNITY LINKS <ArrowUpRight size={16} />
+              </button>
             </div>
           </div>
         </div>
@@ -1103,9 +1113,19 @@ export default function HomePage({
 
             <div className="footer-col">
               <h5>CONNECT</h5>
-              <a href={getTrackedUrl(activeSquad.linktree)} target="_blank" rel="noopener noreferrer">
-                Official Linktree <ArrowUpRight size={12} />
-              </a>
+              <button 
+                onClick={() => {
+                  playTechClick();
+                  if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', '/links');
+                  }
+                  setCurrentPage('links');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="footer-link-btn"
+              >
+                Official Community Links <ArrowUpRight size={12} />
+              </button>
               <span className="footer-domain">Domain: letscook.co.in</span>
             </div>
           </div>

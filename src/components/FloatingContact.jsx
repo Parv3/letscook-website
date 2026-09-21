@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { MessageSquare, X, Send, ExternalLink } from 'lucide-react';
-import { getTrackedUrl } from '../utils/utmTracker';
-
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
 
 export default function FloatingContact() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,12 +60,10 @@ export default function FloatingContact() {
                 SEND MESSAGE <Send size={14} />
               </button>
               <a
-                href={getTrackedUrl(LINKTREE_URL)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="contact-linktree"
+                href="/links"
+                className="contact-links-btn"
               >
-                Or join directly on Linktree <ExternalLink size={12} />
+                Or view all community links <ExternalLink size={12} />
               </a>
             </form>
           )}
@@ -187,7 +182,7 @@ export default function FloatingContact() {
           text-align: center;
         }
 
-        .contact-linktree {
+        .contact-links-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -198,7 +193,7 @@ export default function FloatingContact() {
           text-decoration: underline;
         }
 
-        .contact-linktree:hover {
+        .contact-links-btn:hover {
           color: var(--accent-burgundy);
         }
 

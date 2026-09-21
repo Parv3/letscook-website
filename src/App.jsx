@@ -4,6 +4,7 @@ import SearchModal from './components/SearchModal';
 import HomePage from './components/HomePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
+import LinksPage from './pages/LinksPage';
 import FloatingContact from './components/FloatingContact';
 import CookieBanner from './components/CookieBanner';
 import ScrollTopButton from './components/ScrollTopButton';
@@ -29,12 +30,28 @@ export default function App() {
   // Active Cinematic Easter Egg ('snap' | 'bifrost' | 'jarvis' | 'worthy' | 'assemble' | null)
   const [activeEasterEgg, setActiveEasterEgg] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      if (path.includes('links') || hash.includes('links') || search.includes('links')) {
+        return 'links';
+      }
+      if (path.includes('privacy') || hash.includes('privacy')) {
+        return 'privacy';
+      }
+      if (path.includes('terms') || hash.includes('terms')) {
+        return 'terms';
+      }
+    }
+    return 'home';
+  });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
-  // Launch Experience States (Auto-bypass if ?dev, ?cook, #dev, or ?access in URL)
+  // Launch Experience States (Auto-bypass if ?dev, ?cook, #dev, ?access, or /links in URL)
   const [showLaunchOverlay, setShowLaunchOverlay] = useState(() => {
     if (typeof window !== 'undefined') {
       const url = window.location.href.toLowerCase();
@@ -42,7 +59,8 @@ export default function App() {
         url.includes('dev') ||
         url.includes('cook') ||
         url.includes('access') ||
-        url.includes('unlock')
+        url.includes('unlock') ||
+        url.includes('links')
       ) {
         return false;
       }
@@ -54,6 +72,22 @@ export default function App() {
   useEffect(() => {
     captureUtmParams();
 
+    // Browser navigation (Back / Forward) support
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes('links') || hash.includes('links')) {
+        setCurrentPage('links');
+      } else if (path.includes('privacy') || hash.includes('privacy')) {
+        setCurrentPage('privacy');
+      } else if (path.includes('terms') || hash.includes('terms')) {
+        setCurrentPage('terms');
+      } else {
+        setCurrentPage('home');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+
     // Global Terminal Shortcut: Ctrl + ~ or Cmd + ~
     const handleGlobalKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === '`' || e.key === '~')) {
@@ -62,7 +96,10 @@ export default function App() {
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   // Ensure the website permanently stays in dark mode
@@ -147,6 +184,7 @@ export default function App() {
             )}
             {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
             {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
+            {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
           </main>
 
           {/* 7. Floating Movable macOS Countdown Timer Window */}

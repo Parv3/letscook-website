@@ -145,7 +145,7 @@ export default function MacOsTimerWindow({ isVisible, onClose }) {
       {/* macOS Window Body */}
       <div className="mac-body">
         <div className="mac-timer-header">
-          <span>UNLOCKS MONDAY 12:00 PM IST</span>
+          <span>UNLOCKS TODAY 6:00 PM IST</span>
         </div>
 
         <div className="mac-countdown-row">

@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, ArrowRight } from 'lucide-react';
 import { getTrackedUrl } from '../utils/utmTracker';
 
-const LINKTREE_URL = 'https://linktr.ee/letscookfoundry?utm_source=linktree_profile_share&ltsid=7956c057-e413-4ae2-ad41-c9a226a89e24';
-
 const SEARCH_ITEMS = [
   { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder Let\'s Cook community.' },
   { title: 'Let\'s Cook Initiatives', category: 'Program', page: 'home', section: 'pillars', snippet: 'Hackathons, open-source build tracks, and peer mentorship.' },
+  { title: 'Community Links & Socials', category: 'Page', page: 'links', snippet: 'Official community links, WhatsApp groups, socials, and GitHub.' },
   { title: 'Frequently Asked Questions', category: 'Help', page: 'home', section: 'faq', snippet: 'How to join, membership cost, tech stacks, and team projects.' },
   { title: 'Privacy Policy', category: 'Legal', page: 'privacy', snippet: 'Data protection and user rights policy at letscook.co.in.' },
-  { title: 'Terms & Conditions', category: 'Legal', page: 'terms', snippet: 'Community guidelines and platform usage terms.' },
-  { title: 'Linktree Community Links', category: 'External', url: LINKTREE_URL, snippet: 'Official community links, WhatsApp groups, and socials.' }
+  { title: 'Terms & Conditions', category: 'Legal', page: 'terms', snippet: 'Community guidelines and platform usage terms.' }
 ];
 
 export default function SearchModal({ isOpen, onClose, setCurrentPage }) {
@@ -55,6 +53,9 @@ export default function SearchModal({ isOpen, onClose, setCurrentPage }) {
     if (item.url) {
       window.open(getTrackedUrl(item.url), '_blank');
       return;
+    }
+    if (window.history && window.history.pushState) {
+      window.history.pushState(null, '', item.page === 'home' ? '/' : `/${item.page}`);
     }
     setCurrentPage(item.page);
     if (item.section && item.page === 'home') {

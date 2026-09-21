@@ -177,7 +177,7 @@ export default function LaunchOverlay({ onReveal }) {
         {isCountdownPhase ? (
           <div className="countdown-view-group">
             <h1 className="cinematic-heading">
-              TUESDAY 12:00 PM IST
+              TODAY 6:00 PM IST
             </h1>
 
             {/* GIANT COUNTDOWN TIMER */}
