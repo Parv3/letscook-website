@@ -51,17 +51,20 @@ export default function App() {
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
-  // Launch Experience States (Auto-bypass if ?dev, ?cook, #dev, ?access, or /links in URL)
+  // Launch Experience States: Prevent entry to the website until 6:00 PM today.
+  // Access is granted via the ` (backtick) key on the overlay, or automatically after 6:00 PM today.
   const [showLaunchOverlay, setShowLaunchOverlay] = useState(() => {
     if (typeof window !== 'undefined') {
-      const url = window.location.href.toLowerCase();
-      if (
-        url.includes('dev') ||
-        url.includes('cook') ||
-        url.includes('access') ||
-        url.includes('unlock') ||
-        url.includes('links')
-      ) {
+      const now = Date.now();
+      const targetTime = new Date();
+      targetTime.setHours(18, 0, 0, 0); // 6:00 PM today
+      if (now >= targetTime.getTime()) {
+        return false; // Automatically unlock when past 6:00 PM today
+      }
+
+      // Explicit bypass query param only: e.g. ?unlock=1 or ?bypass=1
+      const search = window.location.search.toLowerCase();
+      if (search.includes('unlock=1') || search.includes('bypass=1')) {
         return false;
       }
     }

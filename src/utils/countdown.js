@@ -5,11 +5,6 @@
 export const getTargetLaunchTime = () => {
   const target = new Date();
   target.setHours(18, 0, 0, 0); // 6:00 PM today
-  
-  // If already past 6:00 PM, target 6:00 PM tomorrow
-  if (target.getTime() <= Date.now()) {
-    target.setDate(target.getDate() + 1);
-  }
   return target;
 };
 
@@ -17,7 +12,7 @@ export const getTargetLaunchTime = () => {
 export const getNextTuesdayNoon = getTargetLaunchTime;
 export const getNextMondayNoon = getTargetLaunchTime;
 
-export const calculateTimeLeft = (targetDate) => {
+export const calculateTimeLeft = (targetDate = getTargetLaunchTime()) => {
   const difference = +targetDate - +new Date();
   
   if (difference <= 0) {

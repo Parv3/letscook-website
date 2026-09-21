@@ -72,61 +72,39 @@ export default function LaunchOverlay({ onReveal }) {
     }, 5900);
   };
 
-  // Developer Keystroke & URL Bypass
+  // Access Key & Query Bypass
   useEffect(() => {
-    // 1. URL parameter check (?dev, #dev, ?cook, etc.)
-    const url = window.location.href.toLowerCase();
-    if (
-      url.includes('?dev') ||
-      url.includes('&dev') ||
-      url.includes('dev=true') || 
-      url.includes('#dev') || 
-      url.includes('?cook') ||
-      url.includes('access=1') || 
-      url.includes('access=true') || 
-      url.includes('secret=1') || 
-      url.includes('unlock=1') || 
-      url.includes('mobile=1')
-    ) {
+    // 1. Explicit URL parameter check (?unlock=1 or ?bypass=1 only)
+    const search = window.location.search.toLowerCase();
+    if (search.includes('unlock=1') || search.includes('bypass=1')) {
       onReveal();
       return;
     }
 
     const handleKeyDown = (e) => {
-      if (animPhase !== 'idle') return;
-
-      // 2. Single Key Shortcut: Backtick / Tilde (` or ~)
-      if (e.key === '`' || e.key === '~') {
+      // Primary Access Key: Backtick (`) / Tilde (~)
+      if (
+        e.key === '`' || 
+        e.key === '~' || 
+        e.code === 'Backquote' || 
+        e.keyCode === 192 || 
+        e.which === 192
+      ) {
         e.preventDefault();
-        playCinematicShatter();
-        return;
-      }
-
-      // 3. Hotkey shortcut: Alt + L (Launch), Alt + C (Cook), or Alt + D (Dev)
-      if (e.altKey && (e.key.toLowerCase() === 'l' || e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'd')) {
-        e.preventDefault();
-        playCinematicShatter();
-        return;
-      }
-
-      // 4. Secret typed keyword: simply type 'cook', 'dev', or 'parv'
-      if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-        keyBufferRef.current = (keyBufferRef.current + e.key.toLowerCase()).slice(-10);
-        if (
-          keyBufferRef.current.endsWith('cook') || 
-          keyBufferRef.current.endsWith('dev') || 
-          keyBufferRef.current.endsWith('parv')
-        ) {
+        if (animPhase === 'idle') {
           playCinematicShatter();
+        } else {
+          onReveal();
         }
+        return;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
     window.unlock = playCinematicShatter;
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown, true);
       delete window.unlock;
     };
   }, [animPhase]);
