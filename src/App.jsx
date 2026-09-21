@@ -16,6 +16,7 @@ import SquadThemeCanvas from './components/SquadThemeCanvas';
 import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
 import ClickSpark from './components/ClickSpark';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
@@ -218,6 +219,7 @@ export default function App() {
           <CookieBanner />
           <ScrollTopButton />
           <Analytics />
+          <SpeedInsights />
         </div>
       </div>
     </ClickSpark>
