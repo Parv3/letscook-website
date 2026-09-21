@@ -15,6 +15,7 @@ import TerminalDrawer from './components/TerminalDrawer';
 import SquadThemeCanvas from './components/SquadThemeCanvas';
 import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
 import ClickSpark from './components/ClickSpark';
+import { Analytics } from '@vercel/analytics/react';
 import { captureUtmParams } from './utils/utmTracker';
 
 export default function App() {
@@ -216,6 +217,7 @@ export default function App() {
           <FloatingContact />
           <CookieBanner />
           <ScrollTopButton />
+          <Analytics />
         </div>
       </div>
     </ClickSpark>
