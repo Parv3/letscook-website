@@ -1,28 +1,16 @@
-import React, { useState } from 'react';
-import { ArrowUpRight, Zap, Shield, Sparkles, Activity } from 'lucide-react';
-import { StormbreakerSVG } from './HomePage';
+import React, { useState, useRef } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 
 export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }) {
   const [isSurging, setIsSurging] = useState(false);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
 
   const handleCoreClick = () => {
     setIsSurging(true);
     if (onPlaySound && squad?.sound) {
       squad.sound();
     }
-    setTimeout(() => setIsSurging(false), 800);
-  };
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -16;
-    setTilt({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 });
+    setTimeout(() => setIsSurging(false), 900);
   };
 
   const squadKey = squad?.key || 'ironman';
@@ -31,282 +19,278 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
 
   return (
     <div className="interactive-core-card">
-      {/* 1. Header Telemetry & Waveform Equalizer */}
-      <div className="core-telemetry-header">
-        <div className="core-badge-pill" style={{ borderColor: `${color}40`, color: color }}>
-          <span className="core-pulse-dot" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
-          <span>
-            {squadKey === 'ironman' && 'STARK QUANTUM CORE // 3.2 GW'}
-            {squadKey === 'captain' && 'VIBRANIUM ALLIANCE // SHIELD 100%'}
-            {squadKey === 'thor' && 'BIFROST PLASMA FORGE // 1.21 MV'}
-            {squadKey === 'core' && 'AVENGERS PROTOCOL // LEVEL 7 ACTIVE'}
-          </span>
-        </div>
-
-        {/* Live Equalizer Waveform Bars */}
-        <div className="core-equalizer-bars" aria-hidden="true">
-          <span className="eq-bar eq-1" style={{ background: color }} />
-          <span className="eq-bar eq-2" style={{ background: secondary }} />
-          <span className="eq-bar eq-3" style={{ background: color }} />
-          <span className="eq-bar eq-4" style={{ background: secondary }} />
-        </div>
-      </div>
-
-      {/* 2. Interactive Holographic Energy Reactor (Tilt & Surge on Click) */}
+      {/* Interactive Holographic Energy Reactor (Zero clutter, pure visual animation) */}
       <div 
+        ref={containerRef}
         className={`core-reactor-stage ${isSurging ? 'core-surging' : ''}`}
         onClick={handleCoreClick}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          transform: `perspective(600px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-          cursor: 'pointer'
-        }}
-        title="Click to pulse energy shockwave"
+        title="Tap to pulse energy"
       >
         {/* Ambient Radial Energy Aura */}
         <div 
           className="core-aura-glow" 
           style={{
-            background: `radial-gradient(circle, ${color}35 0%, transparent 70%)`
+            background: `radial-gradient(circle, ${color}30 0%, ${secondary}15 45%, transparent 70%)`
           }} 
         />
 
-        {/* Dynamic Expanding Shockwave Ring on Click */}
+        {/* Dynamic Expanding Shockwave Rings on Surge */}
         {isSurging && (
-          <div 
-            className="core-shockwave-ring" 
-            style={{
-              borderColor: secondary,
-              boxShadow: `0 0 30px ${color}`
-            }} 
-          />
+          <>
+            <div className="core-shockwave-ring wave-1" style={{ borderColor: secondary }} />
+            <div className="core-shockwave-ring wave-2" style={{ borderColor: color }} />
+          </>
         )}
 
-        {/* A. IRON MAN: Arc Reactor Cybernetic Rings */}
+        {/* ======================================================== */}
+        {/* A. IRON MAN: Authentic 10-Coil Stark Arc Reactor         */}
+        {/* ======================================================== */}
         {squadKey === 'ironman' && (
           <div className="reactor-svg-wrap">
-            <svg viewBox="0 0 200 200" className="reactor-svg">
+            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Stark Arc Reactor">
               <defs>
-                <radialGradient id="starkCore" cx="50%" cy="50%" r="50%">
+                <radialGradient id="unibeamCore" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="35%" stopColor="#00f0ff" />
-                  <stop offset="75%" stopColor="#ff0055" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#070c14" stopOpacity="0" />
+                  <stop offset="30%" stopColor="#00f0ff" />
+                  <stop offset="70%" stopColor="#0088cc" />
+                  <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
+                <linearGradient id="starkCoil" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#00f0ff" />
+                  <stop offset="50%" stopColor="#ff0055" />
+                  <stop offset="100%" stopColor="#00f0ff" />
+                </linearGradient>
+                <filter id="arcNeonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              {/* Outer Gimbal Ring */}
-              <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(0, 240, 255, 0.25)" strokeWidth="2" strokeDasharray="8 6" className="spin-slow" />
-              <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255, 0, 85, 0.4)" strokeWidth="1.5" strokeDasharray="16 8" className="spin-reverse" />
-              <circle cx="100" cy="100" r="64" fill="rgba(10, 16, 26, 0.85)" stroke="#00f0ff" strokeWidth="2.5" />
+
+              {/* Outer Cybernetic Ring with HUD Ticks */}
+              <circle cx="120" cy="120" r="108" fill="none" stroke="rgba(0, 240, 255, 0.25)" strokeWidth="1.5" strokeDasharray="4 8" className="spin-slow" />
+              <circle cx="120" cy="120" r="98" fill="none" stroke="rgba(255, 0, 85, 0.35)" strokeWidth="2" strokeDasharray="14 10" className="spin-reverse" />
               
-              {/* Triangular Core Unibeam */}
-              <polygon points="100,48 144,124 56,124" fill="none" stroke="#00f0ff" strokeWidth="3" className="pulse-slow" />
-              <polygon points="100,58 132,118 68,118" fill="url(#starkCore)" />
-              <circle cx="100" cy="100" r="14" fill="#ffffff" filter="drop-shadow(0 0 10px #00f0ff)" />
+              {/* Heavy Outer Titanium Chasis */}
+              <circle cx="120" cy="120" r="86" fill="rgba(8, 12, 20, 0.85)" stroke="rgba(0, 240, 255, 0.6)" strokeWidth="2.5" />
               
-              {/* Crosshair HUD Elements */}
-              <line x1="100" y1="18" x2="100" y2="34" stroke="#00f0ff" strokeWidth="2" />
-              <line x1="100" y1="166" x2="100" y2="182" stroke="#00f0ff" strokeWidth="2" />
-              <line x1="18" y1="100" x2="34" y2="100" stroke="#00f0ff" strokeWidth="2" />
-              <line x1="166" y1="100" x2="182" y2="100" stroke="#00f0ff" strokeWidth="2" />
+              {/* 10 Realistic Arc Reactor Magnetic Induction Coils */}
+              {[0, 36, 72, 108, 144, 180, 216, 252, 288, 324].map((deg) => (
+                <g key={deg} transform={`rotate(${deg} 120 120)`} className="arc-coil-group">
+                  <rect x="116" y="38" width="8" height="18" rx="2" fill="url(#starkCoil)" stroke="#00f0ff" strokeWidth="1" filter="url(#arcNeonGlow)" />
+                  <line x1="120" y1="56" x2="120" y2="70" stroke="rgba(0, 240, 255, 0.5)" strokeWidth="1.5" />
+                </g>
+              ))}
+
+              {/* Inner Counter-Rotating Hexagonal Ring */}
+              <circle cx="120" cy="120" r="62" fill="none" stroke="#00f0ff" strokeWidth="2" strokeDasharray="10 6" className="spin-fast" />
+              <circle cx="120" cy="120" r="50" fill="rgba(6, 10, 16, 0.9)" stroke="rgba(255, 0, 85, 0.7)" strokeWidth="1.5" />
+
+              {/* Floating Concentric Energy Triangle */}
+              <polygon points="120,74 158,140 82,140" fill="none" stroke="#00f0ff" strokeWidth="2.5" className="pulse-fast" filter="url(#arcNeonGlow)" />
+              <polygon points="120,82 150,134 90,134" fill="url(#unibeamCore)" opacity="0.8" />
+
+              {/* Pure White High-Intensity Reactor Center */}
+              <circle cx="120" cy="120" r="16" fill="#ffffff" filter="url(#arcNeonGlow)" className="pulse-fast" />
+
+              {/* Targeting HUD Reticles */}
+              <line x1="120" y1="14" x2="120" y2="30" stroke="#00f0ff" strokeWidth="2" />
+              <line x1="120" y1="210" x2="120" y2="226" stroke="#00f0ff" strokeWidth="2" />
+              <line x1="14" y1="120" x2="30" y2="120" stroke="#00f0ff" strokeWidth="2" />
+              <line x1="210" y1="120" x2="226" y2="120" stroke="#00f0ff" strokeWidth="2" />
             </svg>
           </div>
         )}
 
-        {/* B. CAPTAIN AMERICA: Vibranium Kinetic Shield Core */}
+        {/* ======================================================== */}
+        {/* B. CAPTAIN AMERICA: Vibranium Shield Kinetic Matrix      */}
+        {/* ======================================================== */}
         {squadKey === 'captain' && (
           <div className="reactor-svg-wrap">
-            <svg viewBox="0 0 200 200" className="reactor-svg">
+            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Vibranium Shield">
               <defs>
-                <radialGradient id="vibraniumCore" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="60%" stopColor="#38bdf8" />
-                  <stop offset="100%" stopColor="#0055ff" stopOpacity="0.2" />
-                </radialGradient>
+                <linearGradient id="shieldSheen" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0.6)" />
+                  <stop offset="45%" stopColor="transparent" />
+                  <stop offset="100%" stopColor="rgba(56, 189, 248, 0.4)" />
+                </linearGradient>
+                <filter id="shieldGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              {/* Concentric Shield Rings */}
-              <circle cx="100" cy="100" r="90" fill="#991b1b" stroke="#dc2626" strokeWidth="2" className="pulse-slow" />
-              <circle cx="100" cy="100" r="74" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
-              <circle cx="100" cy="100" r="58" fill="#991b1b" stroke="#dc2626" strokeWidth="2" />
-              <circle cx="100" cy="100" r="42" fill="#1d4ed8" stroke="#3b82f6" strokeWidth="2" />
-              
-              {/* Outer Orbital Targeting Reticle */}
-              <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(56, 189, 248, 0.4)" strokeWidth="1.5" strokeDasharray="12 8" className="spin-slow" />
-              
-              {/* Center 5-Point Star */}
+
+              {/* Outer Orbital Kinetic Dampener Ring */}
+              <circle cx="120" cy="120" r="110" fill="none" stroke="rgba(56, 189, 248, 0.4)" strokeWidth="1.5" strokeDasharray="16 10" className="spin-slow" />
+              <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" strokeDasharray="6 6" className="spin-reverse" />
+
+              {/* Concentric Vibranium Bands */}
+              <circle cx="120" cy="120" r="92" fill="#991b1b" stroke="#dc2626" strokeWidth="2" />
+              <circle cx="120" cy="120" r="76" fill="#e2e8f0" stroke="#f8fafc" strokeWidth="1.5" />
+              <circle cx="120" cy="120" r="60" fill="#991b1b" stroke="#dc2626" strokeWidth="2" />
+              <circle cx="120" cy="120" r="44" fill="#1d4ed8" stroke="#3b82f6" strokeWidth="2" />
+
+              {/* Dynamic Rotating Specular Sheen */}
+              <circle cx="120" cy="120" r="92" fill="url(#shieldSheen)" className="spin-slow" />
+
+              {/* Center Polished Silver Star */}
               <polygon 
-                points="100,68 107,84 124,84 111,94 116,110 100,100 84,110 89,94 76,84 93,84" 
+                points="120,82 129,102 150,102 133,115 140,135 120,123 100,135 107,115 90,102 111,102" 
                 fill="#ffffff" 
-                filter="drop-shadow(0 0 8px #ffffff)" 
-                className="spin-reverse"
+                filter="url(#shieldGlow)"
+                className="pulse-fast"
               />
+
+              {/* 8 Kinetic Dampener Nodes */}
+              {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+                <circle key={deg} cx={120 + 102 * Math.cos(deg * Math.PI / 180)} cy={120 + 102 * Math.sin(deg * Math.PI / 180)} r="3" fill="#38bdf8" />
+              ))}
             </svg>
           </div>
         )}
 
-        {/* C. THOR: Asgardian Bifrost Plasma Sphere */}
+        {/* ======================================================== */}
+        {/* C. THOR: Asgardian Bifrost Plasma Forge                  */}
+        {/* ======================================================== */}
         {squadKey === 'thor' && (
           <div className="reactor-svg-wrap">
-            <svg viewBox="0 0 200 200" className="reactor-svg">
+            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Bifrost Forge">
               <defs>
-                <radialGradient id="asgardGlow" cx="50%" cy="50%" r="50%">
+                <radialGradient id="plasmaGlow" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="40%" stopColor="#f59e0b" />
-                  <stop offset="80%" stopColor="#38bdf8" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#070c14" stopOpacity="0" />
+                  <stop offset="35%" stopColor="#f59e0b" />
+                  <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
+                <filter id="lightningGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              {/* Runes & Lightning Rings */}
-              <circle cx="100" cy="100" r="92" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="14 6" className="spin-slow" />
-              <circle cx="100" cy="100" r="78" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="6 8" className="spin-reverse" />
-              <circle cx="100" cy="100" r="62" fill="rgba(20, 14, 8, 0.85)" stroke="#f59e0b" strokeWidth="2.5" />
-              
-              {/* Crackling Lightning Bolts */}
-              <path d="M100,38 L115,70 L95,85 L125,120 L85,160" stroke="#38bdf8" strokeWidth="2.5" fill="none" strokeLinecap="round" className="lightning-flicker-1" />
-              <path d="M85,55 L70,85 L85,100 L65,135" stroke="#f59e0b" strokeWidth="2" fill="none" strokeLinecap="round" className="lightning-flicker-2" />
-              
-              <circle cx="100" cy="100" r="22" fill="url(#asgardGlow)" />
-              <circle cx="100" cy="100" r="8" fill="#ffffff" filter="drop-shadow(0 0 10px #f59e0b)" />
+
+              {/* Outer Nordic Rune Rings */}
+              <circle cx="120" cy="120" r="108" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="18 8" className="spin-slow" />
+              <circle cx="120" cy="120" r="96" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="8 8" className="spin-reverse" />
+              <circle cx="120" cy="120" r="78" fill="rgba(18, 12, 8, 0.88)" stroke="#f59e0b" strokeWidth="2.5" />
+
+              {/* Swirling Bifrost Plasma Center */}
+              <circle cx="120" cy="120" r="48" fill="url(#plasmaGlow)" className="pulse-fast" filter="url(#lightningGlow)" />
+
+              {/* Crackling High-Voltage Lightning Bolts */}
+              <path d="M120,44 L138,82 L112,102 L148,142 L100,192" stroke="#38bdf8" strokeWidth="2.8" fill="none" strokeLinecap="round" className="lightning-bolt bolt-1" filter="url(#lightningGlow)" />
+              <path d="M102,64 L86,102 L104,122 L78,162" stroke="#facc15" strokeWidth="2.2" fill="none" strokeLinecap="round" className="lightning-bolt bolt-2" filter="url(#lightningGlow)" />
+              <path d="M140,78 L156,112 L132,132 L150,166" stroke="#ffffff" strokeWidth="1.8" fill="none" strokeLinecap="round" className="lightning-bolt bolt-3" />
+
+              {/* Core Supernova Spark */}
+              <circle cx="120" cy="120" r="14" fill="#ffffff" filter="url(#lightningGlow)" />
             </svg>
           </div>
         )}
 
-        {/* D. CORE TEAM: Avengers Command Quantum Nexus */}
+        {/* ======================================================== */}
+        {/* D. CORE TEAM: Avengers Command Quantum Nexus             */}
+        {/* ======================================================== */}
         {squadKey === 'core' && (
           <div className="reactor-svg-wrap">
-            <svg viewBox="0 0 200 200" className="reactor-svg">
+            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Avengers Quantum Nexus">
               <defs>
-                <radialGradient id="avengersGlow" cx="50%" cy="50%" r="50%">
+                <radialGradient id="avengersCoreGlow" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#ffffff" />
                   <stop offset="40%" stopColor="#f59e0b" />
-                  <stop offset="85%" stopColor="#8b002e" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#0a0a0e" stopOpacity="0" />
+                  <stop offset="85%" stopColor="#8b002e" stopOpacity="0.75" />
+                  <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
+                <filter id="coreGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              {/* Gyroscopic Command Rings */}
-              <circle cx="100" cy="100" r="92" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="16 8" className="spin-slow" />
-              <circle cx="100" cy="100" r="76" fill="none" stroke="#ff0055" strokeWidth="1.8" strokeDasharray="8 6" className="spin-reverse" />
-              <circle cx="100" cy="100" r="60" fill="rgba(14, 10, 12, 0.9)" stroke="#f59e0b" strokeWidth="2" />
-              
-              {/* Avengers Emblem */}
-              <path d="M96 48 L68 138 L86 138 L96 106 L122 106 L122 92 L98 92 L104 64 Z" fill="#f59e0b" />
-              <path d="M122 92 L144 138 L128 138 L122 122 L114 122 Z" fill="#f59e0b" />
-              <polygon points="114,106 156,106 136,92" fill="#ff0055" />
-              
-              <circle cx="100" cy="100" r="10" fill="url(#avengersGlow)" />
+
+              {/* Concentric Command Rings */}
+              <circle cx="120" cy="120" r="108" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="20 10" className="spin-slow" />
+              <circle cx="120" cy="120" r="92" fill="none" stroke="#ff0055" strokeWidth="1.8" strokeDasharray="10 8" className="spin-reverse" />
+              <circle cx="120" cy="120" r="74" fill="rgba(14, 8, 12, 0.9)" stroke="#f59e0b" strokeWidth="2" />
+
+              {/* Rotating Concentric Chevron Ring */}
+              <circle cx="120" cy="120" r="54" fill="url(#avengersCoreGlow)" opacity="0.85" className="pulse-fast" />
+
+              {/* Avengers Emblem In Gold & Ruby */}
+              <g filter="url(#coreGlow)">
+                <path d="M116 58 L82 168 L104 168 L116 128 L148 128 L148 112 L118 112 L126 78 Z" fill="#f59e0b" />
+                <path d="M148 112 L174 168 L154 168 L148 148 L138 148 Z" fill="#f59e0b" />
+                <polygon points="138,128 190,128 166,112" fill="#ff0055" />
+              </g>
+
+              {/* Orbital Particle Nodes */}
+              {[0, 60, 120, 180, 240, 300].map(deg => (
+                <circle key={deg} cx={120 + 92 * Math.cos(deg * Math.PI / 180)} cy={120 + 92 * Math.sin(deg * Math.PI / 180)} r="3" fill="#f59e0b" />
+              ))}
             </svg>
           </div>
         )}
-
-        {/* Click Hint Overlay */}
-        <div className="core-click-hint">
-          <span>{isSurging ? '⚡ ENERGY SURGE DISCHARGED' : 'TAP CORE TO PULSE ENERGY'}</span>
-        </div>
       </div>
 
-      {/* 3. Primary Network Navigation CTA */}
+      {/* Only Single Clean CTA: JOIN COMMUNITY */}
       <div className="core-action-footer">
         <button 
           onClick={onOpenLinks}
           className="btn-primary w-full glow-btn core-access-btn"
           style={{
             background: `linear-gradient(135deg, ${color} 0%, #8b002e 100%)`,
-            boxShadow: `0 4px 24px ${color}35`
+            boxShadow: `0 6px 28px ${color}40`
           }}
         >
-          OPEN COMMUNITY LINKS <ArrowUpRight size={17} />
+          JOIN COMMUNITY <ArrowUpRight size={18} />
         </button>
-        <span className="core-footer-caption">Instant access to WhatsApp, Discord, GitHub & Socials</span>
       </div>
 
       <style>{`
         .interactive-core-card {
           position: relative;
           background: linear-gradient(165deg, rgba(20, 20, 26, 0.85) 0%, rgba(10, 10, 14, 0.95) 100%);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           border: 1px solid rgba(255, 255, 255, 0.09);
-          border-radius: 18px;
-          padding: 26px;
+          border-radius: 20px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
           gap: 20px;
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
           overflow: hidden;
-        }
-
-        .core-telemetry-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 10px;
-          padding-bottom: 14px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-        }
-
-        .core-badge-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          font-family: var(--font-mono, monospace);
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          padding: 4px 10px;
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid;
-        }
-
-        .core-pulse-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          animation: statusDotPulse 1.8s infinite ease-in-out;
-        }
-
-        .core-equalizer-bars {
-          display: flex;
-          align-items: flex-end;
-          gap: 3px;
-          height: 16px;
-        }
-
-        .eq-bar {
-          width: 3px;
-          border-radius: 2px;
-          opacity: 0.85;
-          animation: eqBounce 1.2s infinite ease-in-out alternate;
-        }
-        .eq-1 { height: 60%; animation-delay: 0s; }
-        .eq-2 { height: 100%; animation-delay: 0.25s; }
-        .eq-3 { height: 40%; animation-delay: 0.5s; }
-        .eq-4 { height: 80%; animation-delay: 0.15s; }
-
-        @keyframes eqBounce {
-          0% { height: 25%; }
-          100% { height: 100%; }
         }
 
         .core-reactor-stage {
           position: relative;
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 22px 10px;
-          border-radius: 14px;
+          padding: 28px 16px;
+          border-radius: 16px;
           background: rgba(255, 255, 255, 0.015);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease;
           user-select: none;
+          cursor: pointer;
           overflow: hidden;
+          min-height: 220px;
         }
 
         .core-reactor-stage:hover {
-          background: rgba(255, 255, 255, 0.03);
-          border-color: rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.035);
+          border-color: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
         }
 
         .core-aura-glow {
@@ -314,8 +298,8 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 200px;
-          height: 200px;
+          width: 260px;
+          height: 260px;
           border-radius: 50%;
           pointer-events: none;
           z-index: 0;
@@ -327,24 +311,28 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 20px;
-          height: 20px;
           border-radius: 50%;
           border: 2px solid;
           pointer-events: none;
           z-index: 2;
-          animation: shockwaveExpand 0.75s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
 
-        @keyframes shockwaveExpand {
+        .wave-1 {
+          animation: shockwavePulse 0.85s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        .wave-2 {
+          animation: shockwavePulse 0.95s cubic-bezier(0.1, 0.8, 0.3, 1) 0.15s forwards;
+        }
+
+        @keyframes shockwavePulse {
           0% {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             opacity: 1;
           }
           100% {
-            width: 260px;
-            height: 260px;
+            width: 320px;
+            height: 320px;
             opacity: 0;
           }
         }
@@ -352,12 +340,17 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
         .reactor-svg-wrap {
           position: relative;
           z-index: 1;
-          width: 150px;
-          height: 150px;
+          width: 180px;
+          height: 180px;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.3s ease;
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: transform;
+        }
+
+        .core-reactor-stage:hover .reactor-svg-wrap {
+          transform: scale(1.08);
         }
 
         .reactor-svg {
@@ -366,18 +359,19 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
           overflow: visible;
         }
 
-        .core-reactor-stage:hover .reactor-svg-wrap {
-          transform: scale(1.05);
-        }
-
         .spin-slow {
           transform-origin: center;
-          animation: spinClockwise 20s linear infinite;
+          animation: spinClockwise 22s linear infinite;
         }
 
         .spin-reverse {
           transform-origin: center;
-          animation: spinCounterClockwise 15s linear infinite;
+          animation: spinCounterClockwise 16s linear infinite;
+        }
+
+        .spin-fast {
+          transform-origin: center;
+          animation: spinClockwise 10s linear infinite;
         }
 
         @keyframes spinClockwise {
@@ -390,66 +384,48 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
           to { transform: rotate(-360deg); }
         }
 
-        .pulse-slow {
-          animation: corePulse 2.4s infinite ease-in-out alternate;
+        .pulse-fast {
+          animation: corePulseFx 1.8s infinite ease-in-out alternate;
         }
 
-        @keyframes corePulse {
-          0% { opacity: 0.7; transform: scale(0.98); transform-origin: center; }
-          100% { opacity: 1; transform: scale(1.02); transform-origin: center; }
+        @keyframes corePulseFx {
+          0% { opacity: 0.75; transform: scale(0.97); transform-origin: center; }
+          100% { opacity: 1; transform: scale(1.03); transform-origin: center; }
         }
 
-        .lightning-flicker-1 {
-          animation: lightningFlicker 1.5s infinite steps(2);
+        .lightning-bolt {
+          animation: lightningCycle 2s infinite ease-in-out;
         }
-        .lightning-flicker-2 {
-          animation: lightningFlicker 1.8s infinite steps(3) 0.3s;
-        }
+        .bolt-1 { animation-delay: 0s; }
+        .bolt-2 { animation-delay: 0.4s; }
+        .bolt-3 { animation-delay: 0.8s; }
 
-        @keyframes lightningFlicker {
-          0%, 100% { opacity: 0.9; }
-          50% { opacity: 0.3; }
-        }
-
-        .core-click-hint {
-          position: relative;
-          z-index: 1;
-          margin-top: 14px;
-          font-family: var(--font-mono, monospace);
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: #8a8a98;
-          transition: color 0.2s ease;
-        }
-
-        .core-reactor-stage:hover .core-click-hint {
-          color: #ffffff;
+        @keyframes lightningCycle {
+          0%, 100% { opacity: 0.95; stroke-width: 2.8; }
+          20% { opacity: 0.3; stroke-width: 1.5; }
+          40% { opacity: 1; stroke-width: 3.2; }
+          60% { opacity: 0.4; stroke-width: 1.8; }
+          80% { opacity: 0.9; stroke-width: 2.5; }
         }
 
         .core-action-footer {
           display: flex;
           flex-direction: column;
-          gap: 8px;
         }
 
         .core-access-btn {
           border: 1px solid rgba(255, 255, 255, 0.2) !important;
           font-weight: 800;
-          letter-spacing: 0.03em;
-          height: 48px;
+          letter-spacing: 0.05em;
+          height: 50px;
+          border-radius: 12px;
+          font-size: 0.92rem;
           transition: all 0.25s ease;
         }
 
         .core-access-btn:hover {
           transform: translateY(-2px);
-          filter: brightness(1.12);
-        }
-
-        .core-footer-caption {
-          font-size: 0.74rem;
-          color: #71717a;
-          text-align: center;
+          filter: brightness(1.15);
         }
       `}</style>
     </div>
