@@ -8,8 +8,6 @@ import LinksPage from './pages/LinksPage';
 import FloatingContact from './components/FloatingContact';
 import CookieBanner from './components/CookieBanner';
 import ScrollTopButton from './components/ScrollTopButton';
-import LaunchOverlay from './components/LaunchOverlay';
-import MacOsTimerWindow from './components/MacOsTimerWindow';
 import PitchIdeaModal from './components/PitchIdeaModal';
 import TerminalDrawer from './components/TerminalDrawer';
 import SquadThemeCanvas from './components/SquadThemeCanvas';
@@ -53,26 +51,7 @@ export default function App() {
   const [isPitchModalOpen, setIsPitchModalOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
-  // Launch Experience States: Prevent entry to the website until 6:00 PM today.
-  // Access is granted via the ` (backtick) key on the overlay, or automatically after 6:00 PM today.
-  const [showLaunchOverlay, setShowLaunchOverlay] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const now = Date.now();
-      const targetTime = new Date();
-      targetTime.setHours(18, 0, 0, 0); // 6:00 PM today
-      if (now >= targetTime.getTime()) {
-        return false; // Automatically unlock when past 6:00 PM today
-      }
 
-      // Explicit bypass query param only: e.g. ?unlock=1 or ?bypass=1
-      const search = window.location.search.toLowerCase();
-      if (search.includes('unlock=1') || search.includes('bypass=1')) {
-        return false;
-      }
-    }
-    return true;
-  });
-  const [showMacOsWindow, setShowMacOsWindow] = useState(false);
 
   useEffect(() => {
     captureUtmParams();
@@ -123,10 +102,7 @@ export default function App() {
     localStorage.setItem('letscook_squad', activeSquad);
   }, [activeSquad]);
 
-  const handleRevealLaunch = () => {
-    setShowLaunchOverlay(false);
-    setShowMacOsWindow(true);
-  };
+
 
   const sparkColor = activeSquad === 'thor' 
     ? '#f59e0b' 
@@ -155,18 +131,8 @@ export default function App() {
         />
 
 
-        {/* 4. Full-Screen Launch Overlay */}
-        {showLaunchOverlay && (
-          <LaunchOverlay onReveal={handleRevealLaunch} />
-        )}
-
-        {/* Main Site Container: Access strictly blocked until launch countdown finishes */}
-        <div 
-          className="site-main-wrapper" 
-          style={showLaunchOverlay ? { pointerEvents: 'none', userSelect: 'none' } : undefined}
-          aria-hidden={showLaunchOverlay ? "true" : undefined}
-          inert={showLaunchOverlay ? "" : undefined}
-        >
+        {/* Main Site Container */}
+        <div className="site-main-wrapper">
           {/* 5. Sticky Navigation Header */}
           <Navbar
             onOpenSearch={() => setIsSearchOpen(true)}
@@ -191,12 +157,6 @@ export default function App() {
             {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
             {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
           </main>
-
-          {/* 7. Floating Movable macOS Countdown Timer Window */}
-          <MacOsTimerWindow
-            isVisible={showMacOsWindow}
-            onClose={() => setShowMacOsWindow(false)}
-          />
 
           {/* 8. Global Interactive Overlays & Modals */}
           <SearchModal
