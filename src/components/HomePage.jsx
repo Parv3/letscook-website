@@ -736,22 +736,24 @@ export default function HomePage({
           </div>
 
           {/* Interactive Squad Selector Tabs with Vibrant High-Contrast Focus */}
-          <div className="squad-tabs-nav">
+          <div className="squad-tabs-nav" role="tablist" aria-label="Marvel Squad Divisions">
             {Object.values(SQUADS_DATA).map(sq => {
               const isActive = currentSquad === sq.key;
               return (
                 <button
                   key={sq.key}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
                   onClick={() => handleSquadClick(sq.key)}
                   className={`squad-tab-btn ${isActive ? 'active-squad-tab' : ''}`}
                 >
-                  <div className="tab-top-row">
+                  <div className="tab-indicator-pip" style={{ background: sq.color }} />
+                  <div className="tab-content-wrap">
                     <span className="tab-team-name">{sq.team}</span>
-                    {isActive && <span className="tab-active-pill">● ACTIVE</span>}
+                    <span className="tab-hero-tag" style={{ color: isActive ? sq.color : undefined }}>{sq.hero}</span>
                   </div>
-                  <span className="tab-hero-tag">{sq.hero}</span>
-                  {isActive && <div className="tab-active-indicator" />}
+                  {isActive && <span className="tab-active-dot" style={{ background: sq.color, boxShadow: `0 0 10px ${sq.color}` }} />}
                 </button>
               );
             })}
@@ -759,25 +761,41 @@ export default function HomePage({
 
           {/* Spotlight Active Squad Showcase Card */}
           <div className="active-squad-spotlight">
+            <div 
+              className="spotlight-ambient-glow" 
+              style={{
+                background: `radial-gradient(circle at 75% 25%, ${activeSquad.color}1f 0%, transparent 65%)`
+              }} 
+            />
+
             <div className="spotlight-top-bar">
-              <div className="spotlight-badge">{activeSquad.badge}</div>
+              <div className="spotlight-badge" style={{ borderColor: `${activeSquad.color}44`, color: activeSquad.color }}>
+                <span className="badge-shield-icon">◈</span>
+                {activeSquad.badge}
+              </div>
               <div className="spotlight-status">
-                <span className="live-status-dot" />
-                {activeSquad.status}
+                <span className="live-status-dot" style={{ background: activeSquad.color, boxShadow: `0 0 8px ${activeSquad.color}` }} />
+                <span>{activeSquad.status}</span>
               </div>
             </div>
 
             <div className="spotlight-main-grid">
               <div className="spotlight-info">
                 <h3 className="spotlight-title">{activeSquad.title}</h3>
-                <p className="spotlight-quote">{activeSquad.quote}</p>
+                <div className="spotlight-quote-box">
+                  <span className="quote-accent-bar" style={{ background: activeSquad.color }} />
+                  <p className="spotlight-quote">{activeSquad.quote}</p>
+                </div>
                 <p className="spotlight-desc">{activeSquad.desc}</p>
 
                 {/* Key Initiatives */}
                 <div className="initiatives-subgrid">
                   {activeSquad.initiatives.map((init, i) => (
                     <div key={i} className="initiative-mini-card">
-                      <h5>{init.title}</h5>
+                      <div className="initiative-card-header">
+                        <span className="init-dot" style={{ background: activeSquad.color }} />
+                        <h5>{init.title}</h5>
+                      </div>
                       <p>{init.desc}</p>
                     </div>
                   ))}
@@ -785,7 +803,7 @@ export default function HomePage({
 
                 {/* Technical Arsenal Badges */}
                 <div className="arsenal-row">
-                  <span className="arsenal-label">CORE ARSENAL:</span>
+                  <span className="arsenal-label">CORE ARSENAL</span>
                   <div className="arsenal-tags">
                     {activeSquad.arsenal.map((item, i) => (
                       <span key={i} className="arsenal-tag">{item}</span>
@@ -803,7 +821,11 @@ export default function HomePage({
                       setCurrentPage('links');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="btn-primary glow-btn"
+                    className="btn-primary glow-btn squad-enlist-btn"
+                    style={{
+                      background: `linear-gradient(135deg, ${activeSquad.color} 0%, #8b002e 100%)`,
+                      boxShadow: `0 4px 20px ${activeSquad.color}35`
+                    }}
                   >
                     ENLIST IN {activeSquad.team} <ArrowUpRight size={16} />
                   </button>
@@ -972,6 +994,7 @@ export default function HomePage({
                   style={activeSquad.key === 'ironman' ? { cursor: 'pointer' } : undefined}
                   title={activeSquad.key === 'ironman' ? "Click to deploy J.A.R.V.I.S. HUD & Nanotech Swarm" : undefined}
                 >
+                  <div className="insignia-hologram-aura" style={{ background: `radial-gradient(circle, ${activeSquad.color}25 0%, transparent 70%)` }} />
                   <div className={`insignia-glow-ring ${
                     activeSquad.key === 'ironman' && isArcFlickering ? 'arc-reactor-flickering' : ''
                   } ${
@@ -983,44 +1006,21 @@ export default function HomePage({
                       activeSquad.insigniaSvg
                     )}
                   </div>
-                  <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
-                  <div className="insignia-sublabel">
-                    {activeSquad.key === 'thor'
-                      ? 'STORMBREAKER // BIFROST READY'
-                      : activeSquad.key === 'captain'
-                        ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
-                        : activeSquad.key === 'ironman'
-                          ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY HUD')
-                          : 'SYSTEM NOMINAL'}
+                  <div className="insignia-meta">
+                    <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
+                    <div className="insignia-sublabel" style={{ color: activeSquad.color }}>
+                      {activeSquad.key === 'thor'
+                        ? 'STORMBREAKER // BIFROST READY'
+                        : activeSquad.key === 'captain'
+                          ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
+                          : activeSquad.key === 'ironman'
+                            ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY HUD')
+                            : 'SYSTEM NOMINAL'}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* 4 Squad Cards Grid for Direct Theme Selection */}
-          <div className="squads-cards-grid">
-            {Object.values(SQUADS_DATA).map(sq => {
-              const isSelected = currentSquad === sq.key;
-              return (
-                <div
-                  key={sq.key}
-                  className={`squad-card ${isSelected ? 'selected-squad-card' : ''}`}
-                  onClick={() => handleSquadClick(sq.key)}
-                >
-                  <div className="squad-card-header">
-                    <span className="card-team-label">{sq.team}</span>
-                    <span className="card-hero-badge">{sq.hero}</span>
-                  </div>
-                  <h4>{sq.title}</h4>
-                  <p>{sq.desc}</p>
-                  <div className="card-footer-action">
-                    <span>{isSelected ? '● ACTIVE THEME' : 'ACTIVATE THEME'}</span>
-                    <ArrowUpRight size={14} />
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
@@ -1370,211 +1370,284 @@ export default function HomePage({
           line-height: 1.6;
         }
 
-        /* Squad Tabs with Active Indicator Bar & Accent Lighting */
+        /* 2. SQUADS UNIVERSE SECTION - ULTRA SLEEK REDESIGN */
         .squad-tabs-nav {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
+          gap: 10px;
+          background: rgba(14, 14, 18, 0.7);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 16px;
+          padding: 8px;
           margin-bottom: 28px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
         }
 
         .squad-tab-btn {
           position: relative;
           display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 16px 18px;
-          background-color: var(--bg-main);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
+          align-items: center;
+          gap: 12px;
+          padding: 14px 18px;
+          background: transparent;
+          border: 1px solid transparent;
+          border-radius: 12px;
           cursor: pointer;
-          transition: all var(--transition-fast);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           text-align: left;
-          overflow: hidden;
         }
 
         .squad-tab-btn:hover {
-          border-color: var(--border-focus);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+          background: rgba(255, 255, 255, 0.03);
+          border-color: rgba(255, 255, 255, 0.08);
+          transform: translateY(-1px);
         }
 
         .squad-tab-btn.active-squad-tab {
-          border-color: var(--accent-burgundy);
-          background: linear-gradient(135deg, var(--bg-surface-hover) 0%, var(--bg-main) 100%);
-          box-shadow: 0 0 25px var(--accent-glow);
-          transform: translateY(-3px);
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.16);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
 
-        .tab-top-row {
-          width: 100%;
+        .tab-indicator-pip {
+          width: 8px;
+          height: 28px;
+          border-radius: 4px;
+          opacity: 0.6;
+          transition: all 0.25s ease;
+          flex-shrink: 0;
+        }
+
+        .squad-tab-btn.active-squad-tab .tab-indicator-pip {
+          opacity: 1;
+          box-shadow: 0 0 12px currentColor;
+          transform: scaleY(1.1);
+        }
+
+        .tab-content-wrap {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
+          flex-direction: column;
+          gap: 2px;
+          flex: 1;
+          min-width: 0;
         }
 
         .tab-team-name {
           font-family: var(--font-display);
-          font-size: 0.86rem;
+          font-size: 0.85rem;
           font-weight: 800;
-          color: var(--text-main);
-          letter-spacing: 0.02em;
-        }
-
-        .tab-active-pill {
-          font-family: monospace;
-          font-size: 0.65rem;
-          font-weight: 800;
-          color: var(--accent-burgundy);
-          letter-spacing: 0.05em;
+          color: #f4f4f6;
+          letter-spacing: 0.03em;
         }
 
         .tab-hero-tag {
           font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--badge-text);
-          margin-top: 4px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          color: #8a8a98;
+          transition: color 0.2s ease;
         }
 
-        .tab-active-indicator {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background-color: var(--accent-burgundy);
-          box-shadow: 0 0 10px var(--accent-burgundy);
+        .tab-active-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          animation: statusDotPulse 2s infinite ease-in-out;
         }
 
         /* Active Spotlight Card */
         .active-squad-spotlight {
-          background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-main) 100%);
-          border: 1.5px solid var(--accent-burgundy);
-          border-radius: var(--radius-card);
-          padding: 32px;
-          margin-bottom: 32px;
-          box-shadow: 0 0 40px var(--accent-burgundy-light), 0 16px 36px rgba(0, 0, 0, 0.6);
+          position: relative;
+          background: linear-gradient(165deg, rgba(20, 20, 26, 0.85) 0%, rgba(10, 10, 14, 0.95) 100%);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.09);
+          border-radius: 20px;
+          padding: 38px 42px;
+          margin-bottom: 24px;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px var(--accent-glow);
+          overflow: hidden;
+        }
+
+        .spotlight-ambient-glow {
+          position: absolute;
+          top: -80px;
+          right: -40px;
+          width: 500px;
+          height: 500px;
+          pointer-events: none;
+          z-index: 0;
+          transition: background 0.5s ease;
         }
 
         .spotlight-top-bar {
+          position: relative;
+          z-index: 1;
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 24px;
           flex-wrap: wrap;
           gap: 12px;
-          border-bottom: 1px solid var(--border-color);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
           padding-bottom: 16px;
         }
 
         .spotlight-badge {
-          font-family: monospace;
-          font-size: 0.74rem;
-          font-weight: 800;
-          padding: 5px 12px;
-          border-radius: var(--radius-badge);
-          background-color: var(--badge-bg);
-          color: var(--badge-text);
-          border: 1px solid var(--badge-border);
-          letter-spacing: 0.06em;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          padding: 5px 14px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid;
+          backdrop-filter: blur(8px);
+        }
+
+        .badge-shield-icon {
+          font-size: 0.8rem;
         }
 
         .spotlight-status {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: monospace;
-          font-size: 0.76rem;
-          font-weight: 700;
-          color: var(--text-muted);
+          font-family: var(--font-mono, monospace);
+          font-size: 0.72rem;
+          font-weight: 600;
+          color: #8a8a98;
+          letter-spacing: 0.06em;
         }
 
         .live-status-dot {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
-          background-color: var(--accent-burgundy);
-          box-shadow: 0 0 10px var(--accent-burgundy);
           animation: statusDotPulse 1.8s infinite ease-in-out;
         }
 
         .spotlight-main-grid {
+          position: relative;
+          z-index: 1;
           display: grid;
-          grid-template-columns: 1fr 260px;
-          gap: 36px;
+          grid-template-columns: 1fr 280px;
+          gap: 40px;
           align-items: center;
         }
 
         .spotlight-title {
           font-family: var(--font-display);
-          font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+          font-size: clamp(1.8rem, 3.4vw, 2.6rem);
           font-weight: 900;
+          letter-spacing: -0.02em;
           color: #ffffff;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
+          line-height: 1.15;
+        }
+
+        .spotlight-quote-box {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+
+        .quote-accent-bar {
+          width: 3px;
+          height: 18px;
+          border-radius: 2px;
+          flex-shrink: 0;
         }
 
         .spotlight-quote {
           font-style: italic;
-          color: var(--badge-text);
+          color: #d1d1db;
           font-size: 0.94rem;
-          margin-bottom: 14px;
-          font-weight: 600;
+          font-weight: 500;
+          letter-spacing: 0.01em;
+          margin: 0;
         }
 
         .spotlight-desc {
-          color: var(--text-muted);
-          font-size: 0.96rem;
-          line-height: 1.6;
-          margin-bottom: 22px;
+          color: #9ca3af;
+          font-size: 0.95rem;
+          line-height: 1.65;
+          margin-bottom: 24px;
+          max-width: 680px;
         }
 
         .initiatives-subgrid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-          margin-bottom: 22px;
+          gap: 14px;
+          margin-bottom: 24px;
         }
 
         .initiative-mini-card {
-          background-color: var(--bg-surface-hover);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
-          padding: 14px;
-          transition: border-color var(--transition-fast), transform var(--transition-fast);
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 12px;
+          padding: 16px;
+          transition: all 0.25s ease;
         }
 
         .initiative-mini-card:hover {
-          border-color: var(--accent-burgundy-border);
+          background: rgba(255, 255, 255, 0.04);
+          border-color: rgba(255, 255, 255, 0.14);
           transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .initiative-card-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 6px;
+        }
+
+        .init-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          flex-shrink: 0;
         }
 
         .initiative-mini-card h5 {
-          font-size: 0.84rem;
+          font-size: 0.85rem;
           font-weight: 700;
-          color: #ffffff;
-          margin-bottom: 4px;
+          color: #f4f4f6;
+          margin: 0;
+          letter-spacing: 0.01em;
         }
 
         .initiative-mini-card p {
-          font-size: 0.76rem;
-          color: var(--text-muted);
-          line-height: 1.4;
+          font-size: 0.77rem;
+          color: #8a8a98;
+          line-height: 1.45;
+          margin: 0;
         }
 
         .arsenal-row {
           display: flex;
           align-items: center;
-          gap: 10px;
-          margin-bottom: 24px;
+          gap: 12px;
+          margin-bottom: 28px;
           flex-wrap: wrap;
         }
 
         .arsenal-label {
-          font-family: monospace;
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: var(--text-dim);
+          font-family: var(--font-mono, monospace);
+          font-size: 0.68rem;
+          font-weight: 800;
+          color: #71717a;
+          letter-spacing: 0.08em;
         }
 
         .arsenal-tags {
@@ -1584,14 +1657,21 @@ export default function HomePage({
         }
 
         .arsenal-tag {
-          font-family: monospace;
+          font-family: var(--font-mono, monospace);
           font-size: 0.72rem;
-          font-weight: 600;
-          padding: 3px 8px;
-          background-color: var(--bg-main);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-badge);
-          color: var(--text-main);
+          font-weight: 500;
+          padding: 3px 10px;
+          background: rgba(255, 255, 255, 0.035);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          border-radius: 6px;
+          color: #d1d1db;
+          transition: all 0.2s ease;
+        }
+
+        .arsenal-tag:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
         }
 
         .spotlight-cta-row {
@@ -1601,9 +1681,21 @@ export default function HomePage({
           flex-wrap: wrap;
         }
 
+        .squad-enlist-btn {
+          border: 1px solid rgba(255, 255, 255, 0.2) !important;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          transition: all 0.25s ease;
+        }
+
+        .squad-enlist-btn:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.1);
+        }
+
         .spotlight-cta-subtext {
           font-size: 0.8rem;
-          color: var(--text-dim);
+          color: #71717a;
         }
 
         .spotlight-insignia-panel {
@@ -1613,119 +1705,75 @@ export default function HomePage({
         }
 
         .insignia-wrapper {
+          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 14px;
-          padding: 28px 20px;
-          background-color: var(--bg-main);
-          border: 1px solid var(--accent-burgundy-border);
-          border-radius: var(--radius-card);
+          justify-content: center;
+          gap: 18px;
+          padding: 36px 24px;
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          border-radius: 20px;
           width: 100%;
           text-align: center;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+          transition: all 0.3s ease;
+          overflow: hidden;
+        }
+
+        .insignia-wrapper:hover {
+          border-color: rgba(255, 255, 255, 0.15);
+          background: rgba(255, 255, 255, 0.035);
+          transform: translateY(-2px);
+        }
+
+        .insignia-hologram-aura {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 160px;
+          height: 160px;
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 0;
         }
 
         .insignia-glow-ring {
-          padding: 12px;
-          border-radius: 50%;
-          background: radial-gradient(circle, var(--accent-burgundy-light) 0%, transparent 70%);
+          position: relative;
+          z-index: 1;
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .insignia-wrapper:hover .insignia-glow-ring {
+          transform: scale(1.08);
+        }
+
+        .insignia-meta {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
         }
 
         .insignia-label {
-          font-family: monospace;
-          font-size: 0.72rem;
+          font-family: var(--font-mono, monospace);
+          font-size: 0.74rem;
           font-weight: 800;
           letter-spacing: 0.1em;
-          color: var(--text-main);
+          color: #f4f4f6;
         }
 
         .insignia-sublabel {
-          font-family: monospace;
-          font-size: 0.65rem;
-          color: var(--accent-burgundy);
-          letter-spacing: 0.08em;
-        }
-
-        /* 4 Squad Cards Grid */
-        .squads-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-        }
-
-        .squad-card {
-          background-color: var(--bg-main);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
-          padding: 20px;
-          cursor: pointer;
-          transition: all var(--transition-fast);
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-
-        .squad-card:hover {
-          border-color: var(--border-focus);
-          transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        .squad-card.selected-squad-card {
-          border-color: var(--accent-burgundy);
-          box-shadow: 0 0 20px var(--accent-burgundy-light);
-        }
-
-        .squad-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-        }
-
-        .card-team-label {
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: var(--text-muted);
-          letter-spacing: 0.05em;
-        }
-
-        .card-hero-badge {
-          font-family: monospace;
+          font-family: var(--font-mono, monospace);
           font-size: 0.68rem;
-          font-weight: 800;
-          color: var(--accent-burgundy);
-        }
-
-        .squad-card h4 {
-          font-family: var(--font-display);
-          font-size: 1.05rem;
-          font-weight: 700;
-          margin-bottom: 8px;
-          color: var(--text-main);
-        }
-
-        .squad-card p {
-          font-size: 0.8rem;
-          color: var(--text-muted);
-          line-height: 1.45;
-          margin-bottom: 16px;
-        }
-
-        .card-footer-action {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-family: monospace;
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: var(--accent-burgundy);
-          border-top: 1px solid var(--border-color);
-          padding-top: 10px;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          opacity: 0.9;
         }
 
         /* 3. ACCESS SECTION */
@@ -2079,12 +2127,17 @@ export default function HomePage({
           }
           .squad-tabs-nav {
             grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-bottom: 16px;
+            gap: 8px;
+            padding: 6px;
+            margin-bottom: 18px;
           }
           .squad-tab-btn {
-            padding: 10px 8px;
-            gap: 2px;
+            padding: 10px 12px;
+            gap: 8px;
+          }
+          .tab-indicator-pip {
+            width: 6px;
+            height: 22px;
           }
           .tab-team-name {
             font-size: 0.78rem;
@@ -2092,15 +2145,9 @@ export default function HomePage({
           .tab-hero-tag {
             font-size: 0.68rem;
           }
-          .tab-active-pill {
-            font-size: 0.6rem;
-          }
-          .squads-cards-grid {
-            grid-template-columns: 1fr;
-          }
           .active-squad-spotlight {
-            padding: 16px 12px;
-            border-radius: 8px;
+            padding: 22px 16px;
+            border-radius: 14px;
           }
           .spotlight-header h3 {
             font-size: 1.18rem;
