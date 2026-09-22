@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowUpRight, Shield, Rocket, Sparkles, CheckCircle2, Lightbulb } from 'lucide-react';
 import FaqSection from './FaqSection';
-import PasswordInput from './PasswordInput';
+import ThemeInteractiveCore from './ThemeInteractiveCore';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
@@ -449,7 +449,6 @@ export default function HomePage({
   onSelectSquad,
   onTriggerEasterEgg 
 }) {
-  const [accessCode, setAccessCode] = useState('');
   const activeSquad = SQUADS_DATA[currentSquad] || SQUADS_DATA.ironman;
 
   // Stark Arc Flux & 3D Holographic State
@@ -1041,30 +1040,18 @@ export default function HomePage({
               </ul>
             </div>
 
-            <div className="access-form-box">
-              <label htmlFor="member-pw" className="form-label">COMMUNITY ACCESS CODE (DEMO)</label>
-              <PasswordInput 
-                id="member-pw"
-                placeholder="Enter password code..."
-                value={accessCode}
-                onChange={e => setAccessCode(e.target.value)}
-              />
-              <p className="form-hint">Feature demonstration of instant password visibility toggle.</p>
-
-              <button 
-                onClick={() => {
-                  playTechClick();
-                  if (window.history && window.history.pushState) {
-                    window.history.pushState(null, '', '/links');
-                  }
-                  setCurrentPage('links');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="btn-primary w-full mt-4 glow-btn"
-              >
-                OPEN COMMUNITY LINKS <ArrowUpRight size={16} />
-              </button>
-            </div>
+            <ThemeInteractiveCore 
+              squad={activeSquad}
+              onOpenLinks={() => {
+                playTechClick();
+                if (window.history && window.history.pushState) {
+                  window.history.pushState(null, '', '/links');
+                }
+                setCurrentPage('links');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onPlaySound={activeSquad?.sound}
+            />
           </div>
         </div>
       </section>
@@ -1792,69 +1779,53 @@ export default function HomePage({
 
         .access-box {
           display: grid;
-          grid-template-columns: 1.2fr 1fr;
-          gap: 40px;
-          padding: 40px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
+          grid-template-columns: 1.1fr 1fr;
+          gap: 44px;
+          padding: 44px;
+          background: linear-gradient(165deg, rgba(20, 20, 26, 0.75) 0%, rgba(10, 10, 14, 0.9) 100%);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
           align-items: center;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .access-info h3 {
           font-family: var(--font-display);
-          font-size: 1.8rem;
+          font-size: 1.85rem;
           font-weight: 800;
+          letter-spacing: -0.01em;
           margin-bottom: 14px;
-          color: var(--text-main);
+          color: #ffffff;
         }
 
         .access-info p {
-          color: var(--text-muted);
+          color: #9ca3af;
           margin-bottom: 24px;
           font-size: 0.95rem;
-          line-height: 1.5;
+          line-height: 1.6;
         }
 
         .checklist {
           list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 14px;
         }
 
         .checklist li {
           display: flex;
           align-items: center;
-          gap: 10px;
-          font-size: 0.9rem;
-          color: var(--text-main);
+          gap: 12px;
+          font-size: 0.92rem;
+          font-weight: 500;
+          color: #f4f4f6;
         }
 
         .check-icon {
           color: var(--accent-burgundy);
-        }
-
-        .access-form-box {
-          background-color: var(--bg-main);
-          border: 1px solid var(--border-color);
-          border-radius: var(--radius-card);
-          padding: 24px;
-        }
-
-        .form-label {
-          display: block;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--text-muted);
-          margin-bottom: 8px;
-        }
-
-        .form-hint {
-          font-size: 0.78rem;
-          color: var(--text-dim);
-          margin-top: 8px;
+          flex-shrink: 0;
         }
 
         /* 4. FOOTER */
