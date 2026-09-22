@@ -4,7 +4,7 @@ import { getTrackedUrl } from '../utils/utmTracker';
 
 const SEARCH_ITEMS = [
   { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder Let\'s Cook community.' },
-  { title: 'Let\'s Cook Initiatives', category: 'Program', page: 'home', section: 'pillars', snippet: 'Hackathons, open-source build tracks, and peer mentorship.' },
+  { title: 'The Squads & Teams', category: 'Community', page: 'home', section: 'squads', snippet: 'Tech, PR, Events, and Core Command builder teams.' },
   { title: 'Community Links & Socials', category: 'Page', page: 'links', snippet: 'Official community links, WhatsApp groups, socials, and GitHub.' },
   { title: 'Frequently Asked Questions', category: 'Help', page: 'home', section: 'faq', snippet: 'How to join, membership cost, tech stacks, and team projects.' },
   { title: 'Privacy Policy', category: 'Legal', page: 'privacy', snippet: 'Data protection and user rights policy at letscook.co.in.' },
