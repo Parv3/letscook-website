@@ -660,7 +660,7 @@ export default function HomePage({
                   {isCreateInverted ? 'LETS COOK' : 'CREATE'}
                 </span>
               </span>{' '}
-              <span className="hero-line-2">AND SHIP PRODUCTS</span>
+              <span className="hero-line-2">AND CONTRIBUTE</span>
             </h1>
 
             <p className="hero-subtitle">
