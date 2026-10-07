@@ -664,7 +664,7 @@ export default function HomePage({
             </h1>
 
             <p className="hero-subtitle">
-              Let's Cook is a student-run technology community for engineers, builders, and designers at <strong>letscook.co.in</strong>. We collaborate on open-source code, hackathons, and real-world software.
+              Student-run builder community shipping open-source software, hackathon projects, and production web systems together.
             </p>
 
             <div className="hero-cta-group">
@@ -679,39 +679,35 @@ export default function HomePage({
                 }}
                 className="btn-primary btn-lg glow-btn"
               >
-                JOIN THE SQUAD <ArrowUpRight size={18} />
+                JOIN US <ArrowUpRight size={18} />
               </button>
               <button 
                 onClick={() => { playTechClick(); onOpenPitchModal(); }}
                 className="btn-secondary btn-lg"
               >
-                <Lightbulb size={18} /> PITCH A PROJECT
+                <Lightbulb size={18} /> PITCH IDEA
               </button>
             </div>
           </div>
 
-          {/* Feature Highlights Grid (Completely Visible Above The Fold) */}
-          <div className="hero-stats-row">
-            <div className="stat-card hover-glow">
-              <Sparkles size={22} className="stat-icon pulse-icon" />
-              <div>
-                <h4>STUDENT RUN</h4>
-                <p>100% peer led and community governed</p>
-              </div>
+          {/* Integrated Builder Telemetry Strip */}
+          <div className="hero-telemetry-strip">
+            <div className="telemetry-item">
+              <Sparkles size={16} className="telemetry-icon" />
+              <span className="telemetry-label">STUDENT RUN</span>
+              <span className="telemetry-detail">Peer led & governed</span>
             </div>
-            <div className="stat-card hover-glow">
-              <Rocket size={22} className="stat-icon pulse-icon" />
-              <div>
-                <h4>PRODUCTION FIRST</h4>
-                <p>Focusing on deployed, working applications</p>
-              </div>
+            <div className="telemetry-divider" />
+            <div className="telemetry-item">
+              <Rocket size={16} className="telemetry-icon" />
+              <span className="telemetry-label">PRODUCTION FIRST</span>
+              <span className="telemetry-detail">Deployed applications</span>
             </div>
-            <div className="stat-card hover-glow">
-              <Shield size={22} className="stat-icon pulse-icon" />
-              <div>
-                <h4>ZERO COST</h4>
-                <p>Free open access for all student builders</p>
-              </div>
+            <div className="telemetry-divider" />
+            <div className="telemetry-item">
+              <Shield size={16} className="telemetry-icon" />
+              <span className="telemetry-label">ZERO COST</span>
+              <span className="telemetry-detail">Open access to all</span>
             </div>
           </div>
         </div>
@@ -1261,52 +1257,62 @@ export default function HomePage({
           justify-content: center;
         }
 
-        .hero-stats-row {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 18px;
-          width: 100%;
-          max-width: 1000px;
-        }
-
-        .stat-card {
+        .hero-telemetry-strip {
           display: flex;
           align-items: center;
-          gap: 16px;
-          padding: 18px 20px;
+          justify-content: center;
+          gap: 24px;
+          padding: 12px 24px;
           background-color: var(--bg-surface);
-          border: 1px solid var(--accent-burgundy-border);
+          border: 1px solid var(--border-color);
           border-radius: var(--radius-card);
-          text-align: left;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
           backdrop-filter: blur(8px);
-          transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+          max-width: 900px;
+          width: 100%;
         }
 
-        .stat-card:hover {
-          border-color: var(--accent-burgundy);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px var(--accent-burgundy-light);
+        .telemetry-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          text-align: left;
         }
 
-        .stat-icon {
+        .telemetry-icon {
           color: var(--accent-burgundy);
           flex-shrink: 0;
         }
 
-        .stat-card h4 {
+        .telemetry-label {
           font-family: var(--font-display);
-          font-size: 0.92rem;
+          font-size: 0.82rem;
           font-weight: 700;
-          margin-bottom: 3px;
           color: var(--text-main);
-          letter-spacing: 0.02em;
+          letter-spacing: 0.04em;
         }
 
-        .stat-card p {
-          font-size: 0.78rem;
-          color: var(--text-muted);
-          line-height: 1.35;
+        .telemetry-detail {
+          font-size: 0.76rem;
+          color: var(--text-dim);
+        }
+
+        .telemetry-divider {
+          width: 1px;
+          height: 24px;
+          background-color: var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+          .hero-telemetry-strip {
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 14px 16px;
+          }
+          .telemetry-divider {
+            display: none;
+          }
         }
 
         /* 2. SQUADS SECTION */

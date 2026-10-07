@@ -289,7 +289,7 @@ export default function TerminalDrawer({
       newHistory.push({
         type: 'sys',
         text: 'LET\'S COOK PHILOSOPHY:\n' +
-          '  "Codere, Aedificare, Vincere" — Code, Build, Conquer.\n' +
+          '  "Codere, Aedificare, Vincere" - Code, Build, Conquer.\n' +
           '  We are a student-run technology collective rejecting bloated\n' +
           '  corporate frameworks in favor of lean, high-velocity engineering.'
       });
