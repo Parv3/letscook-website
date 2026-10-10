@@ -26,11 +26,11 @@ export default function CertificateViewer({ certificate, event }) {
       const ctx = canvas.getContext('2d');
 
       const templateSrc = event.template || '/certificates/templates/origin-2026.jpg';
-      const baseWidth = event.dimensions?.width || 2000;
-      const baseHeight = event.dimensions?.height || 1414;
+      const baseWidth = event.dimensions?.width || 956;
+      const baseHeight = event.dimensions?.height || 681;
 
-      // Ultra-crisp high-DPI scaling
-      const scale = baseWidth >= 2000 ? 1 : 2;
+      // 2x Retina scale for ultra-crisp downloads & display (1912x1362)
+      const scale = 2;
       canvas.width = baseWidth * scale;
       canvas.height = baseHeight * scale;
       ctx.scale(scale, scale);
@@ -68,50 +68,35 @@ export default function CertificateViewer({ certificate, event }) {
 
       const cfg = event.renderConfig || {};
 
-      // 2. Inscribe Recipient Name - Centered and Italic with proportional font size
-      const namePos = cfg.namePosition || { x: 1000, y: 955, color: '#ffffff' };
+      // 2. Inscribe Recipient Name precisely in the blank space where 'Participant Name' was
+      const namePos = cfg.namePosition || { x: 478, y: 396, color: '#ffffff' };
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = namePos.color || '#ffffff';
       
-      let fontSize = 84;
-      if (recipientName.length > 20) fontSize = 72;
-      if (recipientName.length > 26) fontSize = 60;
-      if (recipientName.length > 32) fontSize = 50;
+      let fontSize = 38;
+      if (recipientName.length > 18) fontSize = 32;
+      if (recipientName.length > 25) fontSize = 26;
+      if (recipientName.length > 32) fontSize = 22;
 
-      // Elegant, refined italic serif / calligraphy typography
+      // Refined italic serif / calligraphy font
       ctx.font = `italic 600 ${fontSize}px "Playfair Display", "Alex Brush", "Great Vibes", Georgia, serif`;
       ctx.fillText(recipientName, namePos.x, namePos.y);
 
-      // 3. Proportional Underline centered under the name
-      const textMetrics = ctx.measureText(recipientName);
-      const textWidth = textMetrics.width;
-      const underlineY = cfg.underline?.y || (namePos.y + fontSize * 0.65);
-      const padding = 50;
-      const uStartX = Math.max(namePos.x - (textWidth / 2) - padding, 400);
-      const uEndX = Math.min(namePos.x + (textWidth / 2) + padding, 1600);
-
-      ctx.beginPath();
-      ctx.moveTo(uStartX, underlineY);
-      ctx.lineTo(uEndX, underlineY);
-      ctx.strokeStyle = cfg.underline?.color || 'rgba(255, 255, 255, 0.28)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // 4. Inscribe Credential Verification ID & Integrity Hash
-      const certIdPos = cfg.certIdPosition || { x: 1000, y: 1390, color: '#64748b' };
-      ctx.font = '600 15px "Space Grotesk", monospace';
-      ctx.fillStyle = certIdPos.color || '#64748b';
+      // 3. Inscribe Credential Verification ID & Integrity Hash at the bottom
+      const certIdPos = cfg.certIdPosition || { x: 478, y: 662, color: '#71717a' };
+      ctx.font = '600 11px "Space Grotesk", monospace';
+      ctx.fillStyle = certIdPos.color || '#71717a';
       ctx.textAlign = 'center';
-      ctx.letterSpacing = '1.8px';
+      ctx.letterSpacing = '1.5px';
       ctx.fillText(
         `CREDENTIAL ID: ${certId}  •  LET'S COOK × BACKSTAGE  •  HASH: ${certificate.verifyHash || 'VERIFIED'}`,
         certIdPos.x,
         certIdPos.y
       );
 
-      // 5. Draw dynamic Verification QR Code
-      const qrPos = cfg.qrPosition || { x: 1810, y: 1210, size: 120 };
+      // 4. Draw dynamic Verification QR Code in the bottom right corner
+      const qrPos = cfg.qrPosition || { x: 845, y: 575, size: 72 };
       try {
         const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
           margin: 1,
@@ -130,14 +115,14 @@ export default function CertificateViewer({ certificate, event }) {
 
         // Crisp white backing frame
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(qrPos.x - 4, qrPos.y - 4, qrPos.size + 8, qrPos.size + 8);
+        ctx.fillRect(qrPos.x - 3, qrPos.y - 3, qrPos.size + 6, qrPos.size + 6);
         ctx.drawImage(qrImg, qrPos.x, qrPos.y, qrPos.size, qrPos.size);
 
         // QR label
-        ctx.font = '700 9px "Space Grotesk", sans-serif';
-        ctx.fillStyle = '#64748b';
+        ctx.font = '700 7px "Space Grotesk", sans-serif';
+        ctx.fillStyle = '#71717a';
         ctx.textAlign = 'center';
-        ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 14);
+        ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 10);
       } catch (err) {
         console.error('QR code generation error:', err);
       }
@@ -267,7 +252,7 @@ export default function CertificateViewer({ certificate, event }) {
           background: #060608;
           border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(0, 240, 255, 0.08);
-          aspect-ratio: 2000 / 1414;
+          aspect-ratio: 956 / 681;
           display: flex;
           align-items: center;
           justify-content: center;
