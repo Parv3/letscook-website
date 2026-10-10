@@ -123,7 +123,7 @@ export default async function handler(req, res) {
     let sendResult;
     try {
       sendResult = await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: "Let's Cook <certificates@letscook.co.in>",
         to: [normalizedEmail],
         subject: `Your Let's Cook Verification Code: ${otp}`,
         text: emailText,
