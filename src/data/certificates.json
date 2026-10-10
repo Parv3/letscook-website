@@ -590,5 +590,21 @@
     "credentialType": "Certificate of Participation",
     "issueDate": "October 10, 2026",
     "status": "active"
+  },
+  {
+    "id": "LC-ORIG-038",
+    "eventId": "origin-2026",
+    "verificationCode": "808466",
+    "verifyHash": "08F51F9B82AC",
+    "recipient": {
+      "name": "Abhigyan Sharma",
+      "email": "abhi26gyansharma@gmail.com",
+      "phone": "9569487492",
+      "year": "1st Year",
+      "branch": "B.Tech CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
   }
 ]
