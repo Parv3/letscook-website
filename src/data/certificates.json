@@ -542,5 +542,37 @@
     "credentialType": "Certificate of Participation",
     "issueDate": "October 10, 2026",
     "status": "active"
+  },
+  {
+    "id": "LC-ORIG-035",
+    "eventId": "origin-2026",
+    "verificationCode": "101010",
+    "verifyHash": "ABHI01ORIG26",
+    "recipient": {
+      "name": "Abhi Barsana",
+      "email": "abhibarsana1@gmail.com",
+      "phone": "9876543210",
+      "year": "1st Year",
+      "branch": "B.Tech CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-036",
+    "eventId": "origin-2026",
+    "verificationCode": "202020",
+    "verifyHash": "PARV02ORIG26",
+    "recipient": {
+      "name": "Parv Mishra",
+      "email": "parvmishra44@gmail.com",
+      "phone": "9876543211",
+      "year": "1st Year",
+      "branch": "B.Tech CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
   }
 ]
