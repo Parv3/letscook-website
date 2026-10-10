@@ -1,51 +1,51 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ShieldCheck, 
-  Search, 
+  Lock, 
+  Unlock, 
+  KeyRound, 
+  Mail, 
   Award, 
   Calendar, 
-  ExternalLink, 
-  CheckCircle2, 
   ArrowLeft, 
-  Filter, 
-  Users, 
-  Layers, 
+  CheckCircle2, 
+  AlertCircle, 
   Sparkles,
-  ChevronRight,
-  AlertCircle
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
 import { 
-  getAllEvents, 
-  getEventById, 
-  getCertificateById, 
-  searchCertificates, 
-  getPortalStats 
+  verifyAndGetCertificate, 
+  getPortalStats, 
+  getAllEvents 
 } from '../services/certificateService';
 import CertificateViewer from '../components/CertificateViewer';
 import { playTechClick } from '../utils/soundEngine';
 
 export default function CertificateVerifyPage({ setCurrentPage }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEventId, setSelectedEventId] = useState('all');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [showEmailField, setShowEmailField] = useState(false);
   const [selectedCert, setSelectedCert] = useState(null);
-  const [urlCertId, setUrlCertId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const events = useMemo(() => getAllEvents(), []);
   const stats = useMemo(() => getPortalStats(), []);
+  const events = useMemo(() => getAllEvents(), []);
 
-  // Sync URL query params (e.g. /verify?id=LC-ORIG-001)
+  // Check URL query parameters on mount (e.g. /verify?code=547162)
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = "Let's Cook | Credential Verification Portal";
 
     const params = new URLSearchParams(window.location.search);
-    const idParam = params.get('id') || params.get('cert');
-    if (idParam) {
-      setUrlCertId(idParam);
-      const found = getCertificateById(idParam);
-      if (found) {
-        setSelectedCert(found);
-      }
+    const codeParam = params.get('code') || params.get('pin') || params.get('key');
+    const emailParam = params.get('email');
+    const idParam = params.get('id');
+
+    if (codeParam) {
+      setVerificationCode(codeParam);
+      attemptVerification(codeParam, emailParam || '', idParam || '');
     }
 
     return () => {
@@ -53,30 +53,57 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
     };
   }, []);
 
-  const handleSelectCert = (cert) => {
-    playTechClick();
-    setSelectedCert(cert);
-    if (window.history && window.history.pushState) {
-      window.history.pushState(null, '', `/verify?id=${encodeURIComponent(cert.id)}`);
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const attemptVerification = (codeToVerify, emailToVerify = '', idToVerify = '') => {
+    setIsLoading(true);
+    setErrorMessage('');
+
+    setTimeout(() => {
+      const result = verifyAndGetCertificate({
+        code: codeToVerify,
+        email: emailToVerify,
+        certId: idToVerify
+      });
+
+      if (result.success && result.certificate) {
+        setSelectedCert(result.certificate);
+        setErrorMessage('');
+        if (window.history && window.history.pushState) {
+          window.history.pushState(
+            null, 
+            '', 
+            `/verify?code=${encodeURIComponent(result.certificate.verificationCode)}`
+          );
+        }
+      } else {
+        setSelectedCert(null);
+        setErrorMessage(
+          result.error || 'Invalid verification code. Please check the code sent to your registered email.'
+        );
+      }
+      setIsLoading(false);
+    }, 250);
   };
 
-  const handleClearSelection = () => {
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    playTechClick();
+    if (!verificationCode.trim()) {
+      setErrorMessage('Please enter your 6-digit verification code.');
+      return;
+    }
+    attemptVerification(verificationCode, emailInput);
+  };
+
+  const handleLockReset = () => {
     playTechClick();
     setSelectedCert(null);
+    setVerificationCode('');
+    setEmailInput('');
+    setErrorMessage('');
     if (window.history && window.history.pushState) {
       window.history.pushState(null, '', '/verify');
     }
   };
-
-  const searchResults = useMemo(() => {
-    return searchCertificates({
-      query: searchQuery,
-      eventId: selectedEventId,
-      limit: 24
-    });
-  }, [searchQuery, selectedEventId]);
 
   const handleReturnHome = () => {
     playTechClick();
@@ -105,7 +132,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           
           <div className="verify-status-indicator">
             <span className="status-ping" />
-            <span className="status-label">REGISTRY LIVE • SHA-256 SECURED</span>
+            <span className="status-label">ENCRYPTED REGISTRY • ACTIVE</span>
           </div>
         </div>
 
@@ -113,58 +140,45 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         <header className="verify-hero">
           <div className="verify-badge-pill">
             <ShieldCheck size={16} className="text-cyan-400" />
-            <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
+            <span>CONFIDENTIAL CREDENTIAL VERIFICATION</span>
           </div>
 
           <h1 className="verify-title">
-            Certificate <span className="text-gradient-cyan">Verification</span>
+            Verify Your <span className="text-gradient-cyan">Certificate</span>
           </h1>
           <p className="verify-subtitle">
-            Instant cryptographic proof of achievement, participation, and excellence issued across all Let's Cook workshops, hackathons, and community programs.
+            Enter the personal 6-digit verification code sent to your registered email address to unlock and download your official certificate.
           </p>
-
-          {/* Key Registry Telemetry Counters */}
-          <div className="verify-stats-grid">
-            <div className="stat-card">
-              <span className="stat-num">{stats.totalIssued}</span>
-              <span className="stat-desc"><Users size={14} /> Total Verified Recipients</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-num">{stats.totalEvents}</span>
-              <span className="stat-desc"><Layers size={14} /> Active Events</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-num">100%</span>
-              <span className="stat-desc"><CheckCircle2 size={14} /> Cryptographic Validity</span>
-            </div>
-          </div>
         </header>
 
-        {/* ACTIVE CREDENTIAL VIEW (When an ID is selected or opened via link) */}
+        {/* 1. UNLOCKED VIEW: DISPLAY ONLY THIS PARTICIPANT'S CERTIFICATE */}
         {selectedCert ? (
           <section className="verified-view-section animate-fade-in">
-            {/* Verification Status Card */}
+            {/* Authenticated Verification Card */}
             <div className="verified-credential-card">
               <div className="cred-card-header">
                 <div className="cred-badge">
-                  <ShieldCheck size={20} className="text-emerald-400" />
+                  <div className="cred-icon-wrap">
+                    <ShieldCheck size={24} className="text-emerald-400" />
+                  </div>
                   <div>
-                    <span className="cred-badge-status">OFFICIAL RECORD VERIFIED</span>
-                    <span className="cred-badge-id">ID: {selectedCert.id}</span>
+                    <span className="cred-badge-status">AUTHENTICATED CREDENTIAL RECORD</span>
+                    <span className="cred-badge-id">Credential ID: {selectedCert.id}</span>
                   </div>
                 </div>
 
                 <button 
-                  onClick={handleClearSelection}
+                  onClick={handleLockReset}
                   className="cred-reset-btn"
+                  title="Lock and verify another code"
                 >
-                  <Search size={14} /> Search Another
+                  <Lock size={14} /> Lock / Verify Another
                 </button>
               </div>
 
               <div className="cred-details-grid">
                 <div className="cred-field">
-                  <label>RECIPIENT NAME</label>
+                  <label>ISSUED TO</label>
                   <p className="cred-highlight-name">{selectedCert.recipient.name}</p>
                 </div>
                 <div className="cred-field">
@@ -176,7 +190,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   <p>{selectedCert.event?.name || 'ORIGIN 2026'}</p>
                 </div>
                 <div className="cred-field">
-                  <label>ORGANIZATION & PARTNER</label>
+                  <label>COLLABORATION</label>
                   <p>Let's Cook {selectedCert.event?.partner ? `× ${selectedCert.event.partner}` : ''}</p>
                 </div>
                 <div className="cred-field">
@@ -184,7 +198,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   <p>{selectedCert.issueDate}</p>
                 </div>
                 <div className="cred-field">
-                  <label>INTEGRITY HASH</label>
+                  <label>VERIFICATION HASH</label>
                   <p className="font-mono text-xs text-zinc-400">{selectedCert.verifyHash}</p>
                 </div>
               </div>
@@ -199,124 +213,127 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
             </div>
           </section>
         ) : (
-          /* SEARCH & DIRECTORY VIEW */
-          <section className="verify-search-section">
-            <div className="search-filter-bar">
-              <div className="search-input-wrap">
-                <Search size={18} className="search-icon" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by Certificate ID (e.g. LC-ORIG-001), your name, or email..."
-                  className="search-input-field"
-                  autoFocus
-                />
-                {searchQuery && (
-                  <button 
-                    onClick={() => setSearchQuery('')}
-                    className="clear-search-btn"
-                  >
-                    ✕
-                  </button>
-                )}
+          /* 2. LOCKED ACCESS GATE: ENTER CONFIDENTIAL VERIFICATION CODE */
+          <section className="verify-gate-section">
+            <div className="gate-card">
+              <div className="gate-card-header">
+                <div className="gate-lock-icon">
+                  <KeyRound size={28} className="text-cyan-400" />
+                </div>
+                <h3>Access Your Credential</h3>
+                <p>
+                  Each certificate is private and protected. Only you can view and download your certificate using the code sent to your email.
+                </p>
               </div>
 
-              {/* Event Filter Select */}
-              <div className="event-filter-wrap">
-                <Filter size={16} className="filter-icon" />
-                <select
-                  value={selectedEventId}
-                  onChange={(e) => setSelectedEventId(e.target.value)}
-                  className="event-filter-select"
-                >
-                  <option value="all">All Events ({stats.totalEvents})</option>
-                  {events.map(ev => (
-                    <option key={ev.id} value={ev.id}>
-                      {ev.shortName || ev.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+              <form onSubmit={handleFormSubmit} className="gate-form">
+                {/* Verification Code Input */}
+                <div className="input-group">
+                  <label htmlFor="verify-code-input">
+                    PERSONAL VERIFICATION CODE
+                  </label>
+                  <div className="input-field-wrap">
+                    <KeyRound size={18} className="input-icon" />
+                    <input
+                      id="verify-code-input"
+                      type="text"
+                      maxLength={12}
+                      value={verificationCode}
+                      onChange={(e) => {
+                        setVerificationCode(e.target.value.trim());
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      placeholder="e.g. 547162"
+                      className="gate-input code-input"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                  <span className="input-hint">
+                    Check your email inbox or spam folder for your 6-digit access code.
+                  </span>
+                </div>
 
-            {/* Quick Suggestions / Sample Pills */}
-            <div className="search-quick-tags">
-              <span className="tags-label">Try searching:</span>
-              {['LC-ORIG-001', 'Khushal Aggarwal', 'Ishaan Saxena', 'Harmanjit Kaur', 'Saksham Pathak'].map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => setSearchQuery(tag)}
-                  className="quick-tag-pill"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-
-            {/* Search Results Display */}
-            <div className="results-container">
-              <div className="results-header">
-                <h3>
-                  {searchQuery 
-                    ? `Matching Records (${searchResults.length})` 
-                    : `Verified Recipients (${searchResults.length})`}
-                </h3>
-                <span className="results-caption">Click any certificate to view, verify, and download</span>
-              </div>
-
-              {searchResults.length > 0 ? (
-                <div className="certs-grid">
-                  {searchResults.map(cert => (
-                    <div
-                      key={cert.id}
-                      onClick={() => handleSelectCert(cert)}
-                      className="cert-result-card"
-                    >
-                      <div className="cert-card-top">
-                        <span className="cert-id-tag">{cert.id}</span>
-                        <span className="cert-event-pill">{cert.event?.shortName || 'ORIGIN'}</span>
-                      </div>
-
-                      <h4 className="cert-recipient-name">{cert.recipient.name}</h4>
-                      
-                      <div className="cert-meta-info">
-                        <span className="cert-meta-item">
-                          <Award size={13} /> {cert.credentialType}
-                        </span>
-                        {cert.recipient.branch && (
-                          <span className="cert-meta-item">
-                            🎓 {cert.recipient.branch}
-                          </span>
-                        )}
-                        <span className="cert-meta-item">
-                          <Calendar size={13} /> {cert.issueDate}
-                        </span>
-                      </div>
-
-                      <div className="cert-view-action">
-                        <span>View Verified Certificate</span>
-                        <ChevronRight size={16} />
-                      </div>
+                {/* Optional Email Input Toggle */}
+                {showEmailField && (
+                  <div className="input-group animate-fade-in">
+                    <label htmlFor="verify-email-input">
+                      REGISTERED EMAIL ADDRESS (OPTIONAL)
+                    </label>
+                    <div className="input-field-wrap">
+                      <Mail size={18} className="input-icon" />
+                      <input
+                        id="verify-email-input"
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value.trim())}
+                        placeholder="your.email@example.com"
+                        className="gate-input"
+                      />
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                {/* Error Banner */}
+                {errorMessage && (
+                  <div className="gate-error-banner animate-fade-in">
+                    <AlertCircle size={18} className="flex-shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="gate-submit-btn"
+                >
+                  {isLoading ? (
+                    <span className="btn-loading-state">
+                      <span className="btn-spinner" /> VERIFYING ACCESS...
+                    </span>
+                  ) : (
+                    <>
+                      <Unlock size={18} /> ACCESS MY CERTIFICATE
+                    </>
+                  )}
+                </button>
+
+                <div className="gate-footer-links">
+                  {!showEmailField ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailField(true)}
+                      className="link-btn"
+                    >
+                      Verify with Email + Code
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailField(false)}
+                      className="link-btn"
+                    >
+                      Verify with Code Only
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <div className="no-results-box">
-                  <AlertCircle size={36} className="text-zinc-500 mb-3" />
-                  <h4>No Matching Certificate Found</h4>
-                  <p>
-                    Please verify that your Certificate ID (e.g. <code>LC-ORIG-001</code>), full name, or registered email is entered correctly.
-                  </p>
-                </div>
-              )}
+              </form>
+
+              {/* Assistance Notice */}
+              <div className="gate-help-box">
+                <HelpCircle size={16} className="text-zinc-500 flex-shrink-0" />
+                <p>
+                  Haven't received your code? Contact the organizing team via WhatsApp or reach out to Let's Cook to request your credential passkey.
+                </p>
+              </div>
             </div>
 
-            {/* Available Events Showcase */}
+            {/* Official Event Registry Details */}
             <div className="events-directory-showcase">
               <div className="directory-header">
-                <Sparkles size={20} className="text-cyan-400" />
-                <h3>Events in Official Registry</h3>
+                <Sparkles size={18} className="text-cyan-400" />
+                <h3>Event Verification Details</h3>
               </div>
 
               <div className="events-directory-grid">
@@ -329,7 +346,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                     <h4>{ev.name}</h4>
                     <p>{ev.description}</p>
                     <div className="event-dir-footer">
-                      <span className="org-label">Organized by {ev.organization} {ev.partner ? `× ${ev.partner}` : ''}</span>
+                      <span>Organized by {ev.organization} {ev.partner ? `× ${ev.partner}` : ''}</span>
                     </div>
                   </div>
                 ))}
@@ -367,7 +384,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           transform: translateX(-50%);
           width: 800px;
           height: 450px;
-          background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(255, 0, 85, 0.03) 50%, transparent 80%);
+          background: radial-gradient(circle, rgba(0, 240, 255, 0.09) 0%, rgba(255, 0, 85, 0.03) 50%, transparent 80%);
           pointer-events: none;
           z-index: 0;
         }
@@ -375,7 +392,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         .verify-main-container {
           position: relative;
           z-index: 1;
-          max-width: 1080px;
+          max-width: 980px;
           margin: 0 auto;
         }
 
@@ -429,8 +446,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .verify-hero {
           text-align: center;
-          max-width: 760px;
-          margin: 0 auto 40px auto;
+          max-width: 700px;
+          margin: 0 auto 36px auto;
         }
 
         .verify-badge-pill {
@@ -468,41 +485,210 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           font-size: 1.05rem;
           color: #94a3b8;
           line-height: 1.6;
-          margin-bottom: 32px;
         }
 
-        .verify-stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-          margin-top: 24px;
-        }
-
-        .stat-card {
-          padding: 16px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 14px;
+        /* Access Gate Card */
+        .verify-gate-section {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 40px;
+          max-width: 620px;
+          margin: 0 auto;
         }
 
-        .stat-num {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.6rem;
-          font-weight: 800;
-          color: #ffffff;
+        .gate-card {
+          background: linear-gradient(165deg, rgba(20, 24, 34, 0.88) 0%, rgba(10, 12, 18, 0.98) 100%);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 24px;
+          padding: 36px;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.05);
         }
 
-        .stat-desc {
-          display: inline-flex;
+        .gate-card-header {
+          text-align: center;
+          margin-bottom: 28px;
+        }
+
+        .gate-lock-icon {
+          width: 56px;
+          height: 56px;
+          margin: 0 auto 16px auto;
+          background: rgba(0, 240, 255, 0.08);
+          border: 1px solid rgba(0, 240, 255, 0.25);
+          border-radius: 16px;
+          display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          font-size: 0.75rem;
+        }
+
+        .gate-card-header h3 {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 8px;
+        }
+
+        .gate-card-header p {
+          font-size: 0.88rem;
+          color: #94a3b8;
+          line-height: 1.5;
+        }
+
+        .gate-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .input-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .input-group label {
+          font-family: var(--font-mono, monospace);
+          font-size: 0.72rem;
+          font-weight: 800;
           color: #64748b;
-          font-weight: 600;
+          letter-spacing: 0.06em;
+        }
+
+        .input-field-wrap {
+          position: relative;
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #64748b;
+        }
+
+        .gate-input {
+          width: 100%;
+          height: 54px;
+          padding: 0 20px 0 48px;
+          background: rgba(14, 16, 24, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 14px;
+          color: #ffffff;
+          font-size: 1rem;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .gate-input:focus {
+          border-color: #00f0ff;
+          box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+          background: rgba(18, 22, 32, 0.95);
+        }
+
+        .code-input {
+          font-family: var(--font-mono, monospace);
+          font-size: 1.25rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+        }
+
+        .input-hint {
+          font-size: 0.76rem;
+          color: #64748b;
+        }
+
+        .gate-error-banner {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 12px;
+          color: #f87171;
+          font-size: 0.86rem;
+        }
+
+        .gate-submit-btn {
+          height: 52px;
+          background: linear-gradient(135deg, #00f0ff 0%, #0077ff 100%);
+          border: none;
+          border-radius: 14px;
+          color: #060608;
+          font-size: 0.96rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 6px 25px rgba(0, 240, 255, 0.3);
+        }
+
+        .gate-submit-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          filter: brightness(1.12);
+          box-shadow: 0 10px 30px rgba(0, 240, 255, 0.45);
+        }
+
+        .gate-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-loading-state {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .btn-spinner {
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(6, 6, 8, 0.3);
+          border-top-color: #060608;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .gate-footer-links {
+          text-align: center;
+        }
+
+        .link-btn {
+          background: transparent;
+          border: none;
+          color: #64748b;
+          font-size: 0.82rem;
+          cursor: pointer;
+          text-decoration: underline;
+          transition: color 0.2s ease;
+        }
+
+        .link-btn:hover {
+          color: #00f0ff;
+        }
+
+        .gate-help-box {
+          margin-top: 24px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .gate-help-box p {
+          font-size: 0.8rem;
+          color: #64748b;
+          line-height: 1.5;
+          margin: 0;
         }
 
         /* Verified View Specifics */
@@ -607,256 +793,23 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           padding: 24px;
         }
 
-        /* Search & Filter Bar */
-        .search-filter-bar {
-          display: flex;
-          gap: 12px;
-          margin-bottom: 14px;
-        }
-
-        .search-input-wrap {
-          position: relative;
-          flex: 1;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 18px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #64748b;
-        }
-
-        .search-input-field {
-          width: 100%;
-          height: 52px;
-          padding: 0 46px 0 48px;
-          background: rgba(20, 24, 34, 0.85);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 14px;
-          color: #ffffff;
-          font-size: 0.95rem;
-          font-weight: 500;
-          outline: none;
-          transition: all 0.2s ease;
-        }
-
-        .search-input-field:focus {
-          border-color: #00f0ff;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-          background: rgba(24, 30, 44, 0.95);
-        }
-
-        .clear-search-btn {
-          position: absolute;
-          right: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-          background: transparent;
-          border: none;
-          color: #64748b;
-          font-size: 1.1rem;
-          cursor: pointer;
-        }
-
-        .event-filter-wrap {
-          position: relative;
-          display: flex;
-          align-items: center;
-        }
-
-        .filter-icon {
-          position: absolute;
-          left: 14px;
-          color: #64748b;
-          pointer-events: none;
-        }
-
-        .event-filter-select {
-          height: 52px;
-          padding: 0 24px 0 40px;
-          background: rgba(20, 24, 34, 0.85);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 14px;
-          color: #cbd5e1;
-          font-size: 0.9rem;
-          font-weight: 600;
-          outline: none;
-          cursor: pointer;
-        }
-
-        .search-quick-tags {
-          display: flex;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 36px;
-        }
-
-        .tags-label {
-          font-size: 0.78rem;
-          color: #64748b;
-          font-family: var(--font-mono, monospace);
-        }
-
-        .quick-tag-pill {
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #94a3b8;
-          font-size: 0.78rem;
-          padding: 4px 10px;
-          border-radius: 999px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .quick-tag-pill:hover {
-          color: #00f0ff;
-          border-color: rgba(0, 240, 255, 0.3);
-          background: rgba(0, 240, 255, 0.06);
-        }
-
-        /* Results Display */
-        .results-container {
-          margin-bottom: 60px;
-        }
-
-        .results-header {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        }
-
-        .results-header h3 {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #ffffff;
-        }
-
-        .results-caption {
-          font-size: 0.82rem;
-          color: #64748b;
-        }
-
-        .certs-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-          gap: 16px;
-        }
-
-        .cert-result-card {
-          background: rgba(18, 22, 32, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          cursor: pointer;
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .cert-result-card:hover {
-          transform: translateY(-3px);
-          border-color: rgba(0, 240, 255, 0.35);
-          background: rgba(22, 28, 42, 0.9);
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 240, 255, 0.1);
-        }
-
-        .cert-card-top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .cert-id-tag {
-          font-family: var(--font-mono, monospace);
-          font-size: 0.75rem;
-          font-weight: 800;
-          color: #00f0ff;
-          padding: 3px 8px;
-          border-radius: 6px;
-          background: rgba(0, 240, 255, 0.08);
-          border: 1px solid rgba(0, 240, 255, 0.2);
-        }
-
-        .cert-event-pill {
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: #94a3b8;
-          text-transform: uppercase;
-        }
-
-        .cert-recipient-name {
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0;
-        }
-
-        .cert-meta-info {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .cert-meta-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.78rem;
-          color: #64748b;
-        }
-
-        .cert-view-action {
-          margin-top: 6px;
-          padding-top: 12px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 0.84rem;
-          font-weight: 700;
-          color: #00f0ff;
-        }
-
-        .no-results-box {
-          text-align: center;
-          padding: 50px 20px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px dashed rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-        }
-
-        .no-results-box h4 {
-          font-size: 1.1rem;
-          color: #e2e8f0;
-          margin-bottom: 6px;
-        }
-
-        .no-results-box p {
-          color: #64748b;
-          font-size: 0.88rem;
-        }
-
-        /* Events Directory */
+        /* Event Showcase */
         .events-directory-showcase {
           background: rgba(255, 255, 255, 0.015);
           border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 20px;
-          padding: 28px;
+          padding: 24px;
         }
 
         .directory-header {
           display: flex;
           align-items: center;
           gap: 10px;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
 
         .directory-header h3 {
-          font-size: 1.2rem;
+          font-size: 1.05rem;
           font-weight: 700;
           color: #ffffff;
           margin: 0;
@@ -864,15 +817,15 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .events-directory-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 16px;
+          grid-template-columns: 1fr;
+          gap: 12px;
         }
 
         .event-directory-card {
           background: rgba(18, 22, 32, 0.6);
           border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 14px;
-          padding: 20px;
+          padding: 18px;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -882,7 +835,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 4px;
         }
 
         .event-category-badge {
@@ -901,37 +853,29 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .event-directory-card h4 {
-          font-size: 1rem;
+          font-size: 0.95rem;
           font-weight: 700;
           color: #ffffff;
           margin: 0;
         }
 
         .event-directory-card p {
-          font-size: 0.84rem;
+          font-size: 0.82rem;
           color: #94a3b8;
-          line-height: 1.5;
+          line-height: 1.45;
           margin: 0;
         }
 
         .event-dir-footer {
-          margin-top: 8px;
-          padding-top: 10px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-          font-size: 0.75rem;
+          margin-top: 6px;
+          font-size: 0.74rem;
           color: #64748b;
           font-family: var(--font-mono, monospace);
         }
 
         @media (max-width: 640px) {
-          .verify-stats-grid {
-            grid-template-columns: 1fr;
-          }
-          .search-filter-bar {
-            flex-direction: column;
-          }
-          .certs-grid {
-            grid-template-columns: 1fr;
+          .gate-card {
+            padding: 24px;
           }
         }
       `}</style>

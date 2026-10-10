@@ -154,19 +154,29 @@ export function importParticipants({ eventId = 'origin-2026', csvContent = null,
 
   const eventPrefix = eventId.includes('origin') ? 'LC-ORIG' : 'LC-' + eventId.toUpperCase().slice(0, 4);
   const newCerts = [];
+  const dispatchRows = [
+    ["Full Name", "Email", "Phone", "Branch", "Certificate ID", "Verification Code", "Direct Verification Link"]
+  ];
   let index = 1;
 
   for (const [email, p] of participantMap.entries()) {
     const certId = `${eventPrefix}-${String(index).padStart(3, '0')}`;
     const cleanName = toTitleCase(p.rawName);
 
+    // Cryptographic 6-digit verification code
+    const rawHash = crypto.createHash('sha256').update(`${email}|${certId}|LETSCOOK_VERIFY_KEY_2026`).digest('hex');
+    const verificationCode = String((parseInt(rawHash.slice(0, 8), 16) % 900000) + 100000);
+
     // Cryptographic verification hash
     const hashPayload = `${certId}|${eventId}|${email}|${cleanName}|Let's Cook`;
     const verifyHash = crypto.createHash('sha256').update(hashPayload).digest('hex').slice(0, 12).toUpperCase();
 
+    const directLink = `https://letscook.co.in/verify?code=${verificationCode}`;
+
     newCerts.push({
       id: certId,
       eventId: eventId,
+      verificationCode: verificationCode,
       verifyHash: verifyHash,
       recipient: {
         name: cleanName,
@@ -179,6 +189,17 @@ export function importParticipants({ eventId = 'origin-2026', csvContent = null,
       issueDate: 'October 10, 2026',
       status: 'active'
     });
+
+    dispatchRows.push([
+      `"${cleanName}"`,
+      `"${email}"`,
+      `"${p.phone}"`,
+      `"${p.branch}"`,
+      `"${certId}"`,
+      `"${verificationCode}"`,
+      `"${directLink}"`
+    ]);
+
     index++;
   }
 
@@ -189,7 +210,14 @@ export function importParticipants({ eventId = 'origin-2026', csvContent = null,
   }
 
   fs.writeFileSync(CERTS_FILE, JSON.stringify(merged, null, 2), 'utf8');
+
+  // Also write the email dispatch CSV for organizers
+  const dispatchCsvPath = path.resolve(__dirname, '../participants-email-dispatch.csv');
+  const csvContentOutput = dispatchRows.map(r => r.join(',')).join('\n');
+  fs.writeFileSync(dispatchCsvPath, csvContentOutput, 'utf8');
+
   console.log(`Successfully imported ${newCerts.length} certificates for event [${eventId}].`);
+  console.log(`Saved email dispatch list to: participants-email-dispatch.csv`);
   console.log(`Total database count: ${merged.length} certificates.`);
   return merged;
 }

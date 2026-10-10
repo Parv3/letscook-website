@@ -10,8 +10,9 @@ export default function CertificateViewer({ certificate, event }) {
   const [copied, setCopied] = useState(false);
 
   const certId = certificate?.id || '';
+  const verificationCode = certificate?.verificationCode || '';
   const recipientName = certificate?.recipient?.name || 'Participant';
-  const verifyUrl = `${window.location.origin}/verify?id=${encodeURIComponent(certId)}`;
+  const verifyUrl = `${window.location.origin}/verify?code=${encodeURIComponent(verificationCode || certId)}`;
 
   useEffect(() => {
     let isCancelled = false;

@@ -8,13 +8,28 @@ eventsData.forEach(event => {
   if (event.slug) eventMap.set(event.slug, event);
 });
 
+// Map of verification code -> certificate (Privacy-preserving access control)
+const certByCodeMap = new Map();
+// Map of email -> certificate
+const certByEmailMap = new Map();
+// Map of certId -> certificate
 const certByIdMap = new Map();
+
 certificatesData.forEach(cert => {
-  certByIdMap.set(cert.id.toUpperCase(), cert);
+  if (cert.verificationCode) {
+    const cleanCode = cert.verificationCode.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    certByCodeMap.set(cleanCode, cert);
+  }
+  if (cert.recipient?.email) {
+    certByEmailMap.set(cert.recipient.email.toLowerCase().trim(), cert);
+  }
+  if (cert.id) {
+    certByIdMap.set(cert.id.toUpperCase().trim(), cert);
+  }
 });
 
 /**
- * Get all available events
+ * Get all available events metadata
  */
 export function getAllEvents() {
   return eventsData;
@@ -29,49 +44,61 @@ export function getEventById(eventId) {
 }
 
 /**
- * Lookup single certificate by ID
+ * Verify and unlock a participant's certificate using their confidential verification code
+ * Supports entering just the code (e.g. "547162") or email + code
  */
-export function getCertificateById(id) {
-  if (!id) return null;
-  const normalized = id.trim().toUpperCase();
-  const cert = certByIdMap.get(normalized);
-  if (!cert) return null;
-  const event = getEventById(cert.eventId);
-  return { ...cert, event };
+export function verifyAndGetCertificate({ code = '', email = '', certId = '' } = {}) {
+  const cleanCode = code ? code.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().trim() : '';
+  const cleanEmail = email ? email.toLowerCase().trim() : '';
+  const cleanId = certId ? certId.toUpperCase().trim() : '';
+
+  // 1. Direct code match (Primary confidential method sent in email)
+  if (cleanCode && certByCodeMap.has(cleanCode)) {
+    const cert = certByCodeMap.get(cleanCode);
+    // If email was also provided, double check it matches
+    if (cleanEmail && cert.recipient.email.toLowerCase() !== cleanEmail) {
+      return { success: false, error: 'Verification code does not match this email address.' };
+    }
+    return { 
+      success: true, 
+      certificate: { ...cert, event: getEventById(cert.eventId) } 
+    };
+  }
+
+  // 2. Email + Code match
+  if (cleanEmail && certByEmailMap.has(cleanEmail)) {
+    const cert = certByEmailMap.get(cleanEmail);
+    if (cleanCode && cert.verificationCode.toUpperCase() === cleanCode) {
+      return { 
+        success: true, 
+        certificate: { ...cert, event: getEventById(cert.eventId) } 
+      };
+    } else if (cleanCode) {
+      return { success: false, error: 'Invalid verification code for this email address.' };
+    }
+  }
+
+  // 3. ID + Code match
+  if (cleanId && certByIdMap.has(cleanId)) {
+    const cert = certByIdMap.get(cleanId);
+    if (cleanCode && cert.verificationCode.toUpperCase() === cleanCode) {
+      return { 
+        success: true, 
+        certificate: { ...cert, event: getEventById(cert.eventId) } 
+      };
+    } else {
+      return { success: false, error: 'Confidential verification code required to unlock this certificate.' };
+    }
+  }
+
+  return { 
+    success: false, 
+    error: 'No matching certificate found. Please check your verification code sent via email.' 
+  };
 }
 
 /**
- * Multi-field instant search across ID, Recipient Name, and Email
- * Optimized with early exit for maximum traffic throughput
- */
-export function searchCertificates({ query = '', eventId = 'all', limit = 20 } = {}) {
-  const cleanQuery = query.trim().toLowerCase();
-  
-  return certificatesData
-    .filter(cert => {
-      // Event filter
-      if (eventId && eventId !== 'all' && cert.eventId !== eventId) {
-        return false;
-      }
-      
-      // If query is empty, match all (subject to limit)
-      if (!cleanQuery) return true;
-
-      const idMatch = cert.id.toLowerCase().includes(cleanQuery);
-      const nameMatch = cert.recipient.name.toLowerCase().includes(cleanQuery);
-      const emailMatch = cert.recipient.email.toLowerCase().includes(cleanQuery);
-      
-      return idMatch || nameMatch || emailMatch;
-    })
-    .slice(0, limit)
-    .map(cert => ({
-      ...cert,
-      event: getEventById(cert.eventId)
-    }));
-}
-
-/**
- * Get quick statistics for the portal header
+ * Get quick statistics for the portal header without exposing participant identities
  */
 export function getPortalStats() {
   return {
