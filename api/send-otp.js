@@ -306,6 +306,6 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Error in send-otp handler:', error);
-    return res.status(500).json({ success: false, error: 'Internal server error while sending email.' });
+    return res.status(500).json({ success: false, error: error.message || 'Internal server error while sending email.' });
   }
 }
