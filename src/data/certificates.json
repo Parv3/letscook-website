@@ -1,0 +1,512 @@
+[
+  {
+    "id": "LC-ORIG-001",
+    "eventId": "origin-2026",
+    "verifyHash": "FE43A6BBC5A0",
+    "recipient": {
+      "name": "Khushal Aggarwal",
+      "email": "khushal2009aggarwal@gmail.com",
+      "phone": "9650071118",
+      "year": "1st Year",
+      "branch": "AIML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-002",
+    "eventId": "origin-2026",
+    "verifyHash": "B2B0665B1F04",
+    "recipient": {
+      "name": "Ishaan Saxena",
+      "email": "ishaansaxena0807@gmail.com",
+      "phone": "9634646697",
+      "year": "1st Year",
+      "branch": "B.Tech CSE AIML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-003",
+    "eventId": "origin-2026",
+    "verifyHash": "CFB4E73113D2",
+    "recipient": {
+      "name": "Samarth Yadav",
+      "email": "saaaaam.5906@gmail.com",
+      "phone": "8953554956",
+      "year": "1st Year",
+      "branch": "Btech cs"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-004",
+    "eventId": "origin-2026",
+    "verifyHash": "10D975230019",
+    "recipient": {
+      "name": "Saksham Pathak",
+      "email": "saksham.pathak_cs.aiml26@gla.ac.in",
+      "phone": "7906717608",
+      "year": "1st Year",
+      "branch": "B.tech cse aiml"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-005",
+    "eventId": "origin-2026",
+    "verifyHash": "662539A659C4",
+    "recipient": {
+      "name": "Vishal Pandey",
+      "email": "pandeyvishal2918@gmail.com",
+      "phone": "6307784013",
+      "year": "1st Year",
+      "branch": "B.tech cse AIML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-006",
+    "eventId": "origin-2026",
+    "verifyHash": "C7853E6D6DFF",
+    "recipient": {
+      "name": "Dhara Agrawal",
+      "email": "dhara.agrawal_cs26@gla.ac.in",
+      "phone": "7579950715",
+      "year": "1st Year",
+      "branch": "B. Tech Cs"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-007",
+    "eventId": "origin-2026",
+    "verifyHash": "B135AB6DF87A",
+    "recipient": {
+      "name": "Dushyant",
+      "email": "singhsisodiadushyant@gmail.com",
+      "phone": "6282083496",
+      "year": "1st Year",
+      "branch": "Btech Cse"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-008",
+    "eventId": "origin-2026",
+    "verifyHash": "C21783262051",
+    "recipient": {
+      "name": "Harmanjit Kaur",
+      "email": "jitharman234@gmail.com",
+      "phone": "9464070907",
+      "year": "3rd Year",
+      "branch": "BTech: CSE with specialization AI&ML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-009",
+    "eventId": "origin-2026",
+    "verifyHash": "6F845AEF676C",
+    "recipient": {
+      "name": "Sanjeevan M",
+      "email": "sanjeevans408@gmail.com",
+      "phone": "9047332065",
+      "year": "4th Year",
+      "branch": "BE.CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-010",
+    "eventId": "origin-2026",
+    "verifyHash": "5A18CA56D50B",
+    "recipient": {
+      "name": "Hina Talan",
+      "email": "hinatalan113@gmail.com",
+      "phone": "8266051925",
+      "year": "1st Year",
+      "branch": "B.Tech CS(AI/ML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-011",
+    "eventId": "origin-2026",
+    "verifyHash": "2160EFCCB925",
+    "recipient": {
+      "name": "Ansh Shukla",
+      "email": "anshhshuklaa123@gmail.com",
+      "phone": "7267827615",
+      "year": "3rd Year",
+      "branch": "CSE CORE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-012",
+    "eventId": "origin-2026",
+    "verifyHash": "BC58F432EE12",
+    "recipient": {
+      "name": "Anant Jain",
+      "email": "anantjain2145@gmail.com",
+      "phone": "8003204363",
+      "year": "1st Year",
+      "branch": "B.tech CSE- (aiml)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-013",
+    "eventId": "origin-2026",
+    "verifyHash": "AD620DE40628",
+    "recipient": {
+      "name": "Abhishek Chuadhary",
+      "email": "abhishek.chaudhary_cs.aiml25@gla.ac.in",
+      "phone": "7417994129",
+      "year": "2nd Year",
+      "branch": "B.Tech CS(AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-014",
+    "eventId": "origin-2026",
+    "verifyHash": "EE71EA2129B8",
+    "recipient": {
+      "name": "Ananya Agrawal",
+      "email": "ananya.agrawal_cs26@gla.ac.in",
+      "phone": "6307768077",
+      "year": "1st Year",
+      "branch": "Btech CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-015",
+    "eventId": "origin-2026",
+    "verifyHash": "52156C23273D",
+    "recipient": {
+      "name": "Himank Mehariya",
+      "email": "himankmehariya78@gmail.com",
+      "phone": "7505852542",
+      "year": "1st Year",
+      "branch": "B.tech cse hons"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-016",
+    "eventId": "origin-2026",
+    "verifyHash": "9E79F2B6EF34",
+    "recipient": {
+      "name": "Satyam Bhagat",
+      "email": "satyambhagat078@gmail.com",
+      "phone": "7549133870",
+      "year": "1st Year",
+      "branch": "BTECH CSE(AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-017",
+    "eventId": "origin-2026",
+    "verifyHash": "565836E62EE3",
+    "recipient": {
+      "name": "Bhavya Jain",
+      "email": "bjain7829@gmail.com",
+      "phone": "7725917365",
+      "year": "1st Year",
+      "branch": "B.Tech CSE (AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-018",
+    "eventId": "origin-2026",
+    "verifyHash": "AD83BB90E365",
+    "recipient": {
+      "name": "Aditya Pachauri",
+      "email": "aditya.pachauri2023@gmail.com",
+      "phone": "7895954309",
+      "year": "1st Year",
+      "branch": "BTECH CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-019",
+    "eventId": "origin-2026",
+    "verifyHash": "A68FDF4941C7",
+    "recipient": {
+      "name": "Avnish Kumar Maurya",
+      "email": "avanishmaurya2009@gmail.com",
+      "phone": "9125959718",
+      "year": "1st Year",
+      "branch": "B TECH CSE(AL&ML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-020",
+    "eventId": "origin-2026",
+    "verifyHash": "07ECFC502602",
+    "recipient": {
+      "name": "Divyansh Shukla",
+      "email": "shukladivyansh929@gmail.com",
+      "phone": "7983529709",
+      "year": "2nd Year",
+      "branch": "Bca core"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-021",
+    "eventId": "origin-2026",
+    "verifyHash": "2BEDB02797B0",
+    "recipient": {
+      "name": "Harsh Tiwari",
+      "email": "2728a8s@gmail.com",
+      "phone": "8127273700",
+      "year": "1st Year",
+      "branch": "B.TECH CSE(AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-022",
+    "eventId": "origin-2026",
+    "verifyHash": "C2A6CF77D1AC",
+    "recipient": {
+      "name": "Suriyaprasanth S",
+      "email": "suriyaprasanth495@gmail.com",
+      "phone": "9688183041",
+      "year": "1st Year",
+      "branch": "BSC (information technology)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-023",
+    "eventId": "origin-2026",
+    "verifyHash": "36063F9BE9C0",
+    "recipient": {
+      "name": "Abhinav Dixit",
+      "email": "abhidixit780@gmail.com",
+      "phone": "8218563238",
+      "year": "2nd Year",
+      "branch": "CS(AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-024",
+    "eventId": "origin-2026",
+    "verifyHash": "F8E195A65967",
+    "recipient": {
+      "name": "Arjit Solanki",
+      "email": "jitjaat09@gmail.com",
+      "phone": "8865881111",
+      "year": "1st Year",
+      "branch": "Btech CSE AIML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-025",
+    "eventId": "origin-2026",
+    "verifyHash": "1B3D48819386",
+    "recipient": {
+      "name": "Arya Rastogi",
+      "email": "arya.rastogi_cs26@gla.ac.in",
+      "phone": "7454040453",
+      "year": "1st Year",
+      "branch": "B.tech CS"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-026",
+    "eventId": "origin-2026",
+    "verifyHash": "F37A67CAA4FA",
+    "recipient": {
+      "name": "Payal Shukla",
+      "email": "kmpayalshukla@gmail.com",
+      "phone": "8577818912",
+      "year": "1st Year",
+      "branch": "B.tech CSE (AIML)"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-027",
+    "eventId": "origin-2026",
+    "verifyHash": "D1DA8CF88029",
+    "recipient": {
+      "name": "Riddhi Kesarwani",
+      "email": "riddhi.kesarwani_cs26@gla.ac.in",
+      "phone": "7522080005",
+      "year": "1st Year",
+      "branch": "Btech cs"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-028",
+    "eventId": "origin-2026",
+    "verifyHash": "E5C5ADA825ED",
+    "recipient": {
+      "name": "Kamalesh Ramu S V",
+      "email": "kamaleshramu1009@gmail.com",
+      "phone": "9345389816",
+      "year": "1st Year",
+      "branch": "B.Sc. AI & ML"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-029",
+    "eventId": "origin-2026",
+    "verifyHash": "16EB011DE2EE",
+    "recipient": {
+      "name": "Radhika Kaushik",
+      "email": "kaushikradhika185@gmail.com",
+      "phone": "7817803517",
+      "year": "1st Year",
+      "branch": "Btech cse"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-030",
+    "eventId": "origin-2026",
+    "verifyHash": "69B659EB7735",
+    "recipient": {
+      "name": "Yash Sharma",
+      "email": "soothebites7807@gmail.com",
+      "phone": "9990074666",
+      "year": "1st Year",
+      "branch": "B.Sc. CS"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-031",
+    "eventId": "origin-2026",
+    "verifyHash": "1DE489DA734A",
+    "recipient": {
+      "name": "Kishan",
+      "email": "kishan.gla_cs.aiml26@gla.ac.in",
+      "phone": "9027537047",
+      "year": "1st Year",
+      "branch": "Btech computer science"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-032",
+    "eventId": "origin-2026",
+    "verifyHash": "5A6351E59CCC",
+    "recipient": {
+      "name": "Parameshwaran H",
+      "email": "parameshwaran1372005@gmail.com",
+      "phone": "9025197736",
+      "year": "4th Year",
+      "branch": "B.E CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-033",
+    "eventId": "origin-2026",
+    "verifyHash": "FCEA247DA338",
+    "recipient": {
+      "name": "Aastha Singh",
+      "email": "aastha.singh_cs.aiml26@gla.ac.in",
+      "phone": "6398232006",
+      "year": "1st Year",
+      "branch": "B.tech"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  },
+  {
+    "id": "LC-ORIG-034",
+    "eventId": "origin-2026",
+    "verifyHash": "3E8C73F1B5BF",
+    "recipient": {
+      "name": "Mahi Porwal",
+      "email": "mahi.porwal_cs26@gla.ac.in",
+      "phone": "7817055300",
+      "year": "1st Year",
+      "branch": "Cse core"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
+  }
+]

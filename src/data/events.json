@@ -1,0 +1,30 @@
+[
+  {
+    "id": "origin-2026",
+    "slug": "origin",
+    "name": "ORIGIN – Hackathon Guidance Workshop + Ideathon",
+    "shortName": "ORIGIN 2026",
+    "category": "Workshop + Ideathon",
+    "date": "October 10, 2026",
+    "organization": "Let's Cook",
+    "partner": "Backstage",
+    "description": "Intensive hands-on guidance workshop covering problem statement validation, MVP scoping, 5-Whys root cause analysis, and product pitching for rapid hackathon execution.",
+    "template": "/certificates/templates/origin-2026.jpg",
+    "dimensions": {
+      "width": 956,
+      "height": 681
+    },
+    "renderConfig": {
+      "maskArea": { "x": 180, "y": 420, "width": 596, "height": 64, "fillColor": "#050608" },
+      "namePosition": { "x": 478, "y": 465, "font": "46px 'Great Vibes', 'Caveat', cursive", "color": "#ffffff" },
+      "underline": { "startX": 260, "endX": 696, "y": 483, "color": "rgba(255, 255, 255, 0.25)" },
+      "certIdPosition": { "x": 478, "y": 662, "font": "600 11px 'Space Grotesk', monospace", "color": "#71717a" },
+      "qrPosition": { "x": 845, "y": 575, "size": 72 }
+    },
+    "signatories": [
+      { "role": "Founder", "entity": "Let's Cook" },
+      { "role": "President", "entity": "Let's Cook" }
+    ],
+    "status": "published"
+  }
+]

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
 import SearchModal from './components/SearchModal';
 import HomePage from './components/HomePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsPage from './pages/TermsPage';
 import LinksPage from './pages/LinksPage';
+
+// Lazy loaded for high-traffic performance optimization
+const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage'));
 import FloatingContact from './components/FloatingContact';
 import CookieBanner from './components/CookieBanner';
 import ScrollTopButton from './components/ScrollTopButton';
@@ -35,6 +38,9 @@ export default function App() {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
       const search = window.location.search.toLowerCase();
+      if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
+        return 'verify';
+      }
       if (path.includes('links') || hash.includes('links') || search.includes('links')) {
         return 'links';
       }
@@ -52,7 +58,6 @@ export default function App() {
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
 
-
   useEffect(() => {
     captureUtmParams();
 
@@ -60,7 +65,9 @@ export default function App() {
     const handlePopState = () => {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
-      if (path.includes('links') || hash.includes('links')) {
+      if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
+        setCurrentPage('verify');
+      } else if (path.includes('links') || hash.includes('links')) {
         setCurrentPage('links');
       } else if (path.includes('privacy') || hash.includes('privacy')) {
         setCurrentPage('privacy');
@@ -156,6 +163,15 @@ export default function App() {
             {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
             {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
             {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
+            {currentPage === 'verify' && (
+              <Suspense fallback={
+                <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00f0ff', fontFamily: 'monospace' }}>
+                  INITIALIZING VERIFICATION REGISTRY...
+                </div>
+              }>
+                <CertificateVerifyPage setCurrentPage={setCurrentPage} />
+              </Suspense>
+            )}
           </main>
 
           {/* 8. Global Interactive Overlays & Modals */}

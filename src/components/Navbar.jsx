@@ -38,6 +38,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
 
   const navItems = [
     { label: 'HOME', page: 'home' },
+    { label: 'VERIFY', page: 'verify' },
     { label: 'FAQ', page: 'home', section: 'faq' },
     { label: 'LINKS', page: 'links' },
     { label: 'PRIVACY', page: 'privacy' },
