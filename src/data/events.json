@@ -11,25 +11,20 @@
     "description": "Intensive hands-on guidance workshop covering problem statement validation, MVP scoping, 5-Whys root cause analysis, and product pitching for rapid hackathon execution.",
     "template": "/certificates/templates/origin-2026.jpg",
     "dimensions": {
-      "width": 956,
-      "height": 681
+      "width": 2000,
+      "height": 1414
     },
     "renderConfig": {
       "namePosition": {
-        "x": 478,
-        "y": 396,
+        "x": 1000,
+        "y": 815,
         "color": "#ffffff"
       },
       "certIdPosition": {
-        "x": 478,
-        "y": 662,
-        "font": "600 11px 'Space Grotesk', monospace",
+        "x": 1000,
+        "y": 1390,
+        "font": "600 13px 'Space Grotesk', monospace",
         "color": "#71717a"
-      },
-      "qrPosition": {
-        "x": 845,
-        "y": 575,
-        "size": 72
       }
     },
     "signatories": [

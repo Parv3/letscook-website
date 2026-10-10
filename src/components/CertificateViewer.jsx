@@ -26,14 +26,14 @@ export default function CertificateViewer({ certificate, event }) {
       const ctx = canvas.getContext('2d');
 
       const templateSrc = event.template || '/certificates/templates/origin-2026.jpg';
-      const baseWidth = event.dimensions?.width || 956;
-      const baseHeight = event.dimensions?.height || 681;
+      const baseWidth = event.dimensions?.width || 2000;
+      const baseHeight = event.dimensions?.height || 1414;
 
-      // 2x Retina scale for ultra-crisp downloads & display (1912x1362)
-      const scale = 2;
-      canvas.width = baseWidth * scale;
-      canvas.height = baseHeight * scale;
-      ctx.scale(scale, scale);
+      // Native ultra-high-resolution 2000x1414 canvas
+      canvas.width = baseWidth;
+      canvas.height = baseHeight;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
       // Load template image
       const img = new Image();
@@ -50,7 +50,7 @@ export default function CertificateViewer({ certificate, event }) {
 
       if (isCancelled) return;
 
-      // 1. Draw base certificate image
+      // 1. Draw base high-resolution certificate image (lossless Canva export)
       if (img.complete && img.naturalWidth > 0) {
         ctx.drawImage(img, 0, 0, baseWidth, baseHeight);
       } else {
@@ -69,62 +69,66 @@ export default function CertificateViewer({ certificate, event }) {
       const cfg = event.renderConfig || {};
 
       // 2. Inscribe Recipient Name precisely in the blank space where 'Participant Name' was
-      const namePos = cfg.namePosition || { x: 478, y: 396, color: '#ffffff' };
+      const namePos = cfg.namePosition || { x: 1000, y: 815, color: '#ffffff' };
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = namePos.color || '#ffffff';
       
-      let fontSize = 38;
-      if (recipientName.length > 18) fontSize = 32;
-      if (recipientName.length > 25) fontSize = 26;
-      if (recipientName.length > 32) fontSize = 22;
+      let fontSize = 74;
+      if (recipientName.length > 18) fontSize = 64;
+      if (recipientName.length > 24) fontSize = 54;
+      if (recipientName.length > 32) fontSize = 44;
 
-      // Refined italic serif / calligraphy font
-      ctx.font = `italic 600 ${fontSize}px "Playfair Display", "Alex Brush", "Great Vibes", Georgia, serif`;
+      // Refined italic serif typography (Playfair Display / Georgia)
+      ctx.font = `italic 600 ${fontSize}px "Playfair Display", Georgia, serif`;
       ctx.fillText(recipientName, namePos.x, namePos.y);
 
-      // 3. Inscribe Credential Verification ID & Integrity Hash at the bottom
-      const certIdPos = cfg.certIdPosition || { x: 478, y: 662, color: '#71717a' };
-      ctx.font = '600 11px "Space Grotesk", monospace';
-      ctx.fillStyle = certIdPos.color || '#71717a';
-      ctx.textAlign = 'center';
-      ctx.letterSpacing = '1.5px';
-      ctx.fillText(
-        `CREDENTIAL ID: ${certId}  •  LET'S COOK × BACKSTAGE  •  HASH: ${certificate.verifyHash || 'VERIFIED'}`,
-        certIdPos.x,
-        certIdPos.y
-      );
-
-      // 4. Draw dynamic Verification QR Code in the bottom right corner
-      const qrPos = cfg.qrPosition || { x: 845, y: 575, size: 72 };
-      try {
-        const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-          margin: 1,
-          width: qrPos.size * 2,
-          color: {
-            dark: '#000000',
-            light: '#ffffff'
-          }
-        });
-
-        const qrImg = new Image();
-        await new Promise((resolve) => {
-          qrImg.onload = resolve;
-          qrImg.src = qrDataUrl;
-        });
-
-        // Crisp white backing frame
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(qrPos.x - 3, qrPos.y - 3, qrPos.size + 6, qrPos.size + 6);
-        ctx.drawImage(qrImg, qrPos.x, qrPos.y, qrPos.size, qrPos.size);
-
-        // QR label
-        ctx.font = '700 7px "Space Grotesk", sans-serif';
-        ctx.fillStyle = '#71717a';
+      // 3. Inscribe Credential Verification ID & Integrity Hash at the bottom edge
+      if (cfg.certIdPosition) {
+        const certIdPos = cfg.certIdPosition;
+        ctx.font = certIdPos.font || '600 13px "Space Grotesk", monospace';
+        ctx.fillStyle = certIdPos.color || '#71717a';
         ctx.textAlign = 'center';
-        ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 10);
-      } catch (err) {
-        console.error('QR code generation error:', err);
+        ctx.letterSpacing = '2px';
+        ctx.fillText(
+          `CREDENTIAL ID: ${certId}  •  LET'S COOK × BACKSTAGE  •  HASH: ${certificate.verifyHash || 'VERIFIED'}`,
+          certIdPos.x,
+          certIdPos.y
+        );
+      }
+
+      // 4. Draw dynamic Verification QR Code if configured
+      if (cfg.qrPosition) {
+        const qrPos = cfg.qrPosition;
+        try {
+          const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+            margin: 1,
+            width: qrPos.size * 2,
+            color: {
+              dark: '#000000',
+              light: '#ffffff'
+            }
+          });
+
+          const qrImg = new Image();
+          await new Promise((resolve) => {
+            qrImg.onload = resolve;
+            qrImg.src = qrDataUrl;
+          });
+
+          // Crisp white backing frame
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(qrPos.x - 3, qrPos.y - 3, qrPos.size + 6, qrPos.size + 6);
+          ctx.drawImage(qrImg, qrPos.x, qrPos.y, qrPos.size, qrPos.size);
+
+          // QR label
+          ctx.font = '700 8px "Space Grotesk", sans-serif';
+          ctx.fillStyle = '#71717a';
+          ctx.textAlign = 'center';
+          ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 12);
+        } catch (err) {
+          console.error('QR code generation error:', err);
+        }
       }
 
       if (!isCancelled) {
@@ -252,7 +256,7 @@ export default function CertificateViewer({ certificate, event }) {
           background: #060608;
           border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(0, 240, 255, 0.08);
-          aspect-ratio: 956 / 681;
+          aspect-ratio: 2000 / 1414;
           display: flex;
           align-items: center;
           justify-content: center;
