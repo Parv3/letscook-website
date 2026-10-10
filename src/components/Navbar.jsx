@@ -318,19 +318,22 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
         .desktop-nav {
           display: flex;
           align-items: center;
-          gap: 24px;
+          gap: 44px;
         }
 
         .nav-link {
-          font-size: 0.85rem;
+          font-size: 0.9rem;
           font-weight: 600;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.1em;
           color: var(--text-muted);
-          transition: color var(--transition-fast);
+          padding: 6px 14px;
+          border-radius: 8px;
+          transition: all var(--transition-fast);
         }
 
         .nav-link:hover, .nav-link.active {
           color: var(--text-main);
+          background-color: rgba(255, 255, 255, 0.06);
         }
 
         .nav-actions {
