@@ -3,6 +3,13 @@ import { Search, X, ArrowRight } from 'lucide-react';
 import { getTrackedUrl } from '../utils/utmTracker';
 
 const SEARCH_ITEMS = [
+  { 
+    title: 'Certificate Verification', 
+    category: 'Portal', 
+    page: 'verify', 
+    keywords: ['verify', 'verification', 'certificate', 'certificates', 'cert', 'certs', 'origin', 'workshop', 'credential', 'credentials', 'otp'],
+    snippet: 'Verify and access your certificates' 
+  },
   { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder Let\'s Cook community.' },
   { title: 'The Squads & Teams', category: 'Community', page: 'home', section: 'squads', snippet: 'Tech, PR, Events, and Core Command builder teams.' },
   { title: 'Community Links & Socials', category: 'Page', page: 'links', snippet: 'Official community links, WhatsApp groups, socials, and GitHub.' },
@@ -41,11 +48,17 @@ export default function SearchModal({ isOpen, onClose, setCurrentPage }) {
 
   const filtered = [
     ...(isParvQuery ? [PARV_EASTER_EGG] : []),
-    ...SEARCH_ITEMS.filter(item => 
-      item.title.toLowerCase().includes(query.toLowerCase()) ||
-      item.snippet.toLowerCase().includes(query.toLowerCase()) ||
-      item.category.toLowerCase().includes(query.toLowerCase())
-    )
+    ...SEARCH_ITEMS.filter(item => {
+      const q = query.toLowerCase().trim();
+      if (!q) return true;
+      const matchKeyword = item.keywords && item.keywords.some(k => k.includes(q) || q.includes(k));
+      return (
+        matchKeyword ||
+        item.title.toLowerCase().includes(q) ||
+        item.snippet.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q)
+      );
+    })
   ];
 
   const handleSelect = (item) => {

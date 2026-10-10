@@ -11,14 +11,8 @@ import {
   AlertCircle, 
   Sparkles,
   RefreshCw,
-  HelpCircle,
   Copy,
-  Check,
-  Terminal as TerminalIcon,
-  ChevronDown,
-  ChevronUp,
-  Cpu,
-  Radio
+  Check
 } from 'lucide-react';
 import CertificateViewer from '../components/CertificateViewer';
 import VerifyCyberBackground from '../components/VerifyCyberBackground';
@@ -43,10 +37,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopiedHash, setIsCopiedHash] = useState(false);
-  const [isLogOpen, setIsLogOpen] = useState(false);
-
-  // Live telemetry ping jitter
-  const [latency, setLatency] = useState(21);
 
   // Refs for 6 discrete OTP digit inputs
   const otpInputRefs = useRef([]);
@@ -54,7 +44,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   // Sync URL query params on mount (e.g. /verify?code=547162&email=...)
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Let's Cook | Credential Verification Portal";
+    document.title = "Let's Cook | Certificate Verification Portal";
 
     const params = new URLSearchParams(window.location.search);
     const codeParam = params.get('code') || params.get('pin');
@@ -69,14 +59,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
       handleStaticCodeVerify(codeParam, emailParam || '');
     }
 
-    // Dynamic latency jitter (18ms - 25ms)
-    const latencyInterval = setInterval(() => {
-      setLatency(18 + Math.floor(Math.random() * 8));
-    }, 3500);
-
     return () => {
       document.title = "Let's Cook | Student-Run Tech & Builder Community";
-      clearInterval(latencyInterval);
     };
   }, []);
 
@@ -272,49 +256,43 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
   return (
     <div className="verify-page-wrapper">
-      {/* 60 FPS Procedural Cyber Background */}
+      {/* 60 FPS Procedural Cyber Moving Background */}
       <VerifyCyberBackground />
 
-      {/* Cyber Ambient Atmosphere */}
+      {/* Subtle Ambient Radial Glow */}
       <div className="verify-scanline-ambient" />
 
       <main className="verify-main-container">
-        {/* Top Telemetry & Status HUD Bar */}
+        {/* Sleek Minimal Top Navigation Bar */}
         <div className="verify-top-bar">
           <button 
             onClick={handleReturnHome}
             className="verify-back-btn"
             aria-label="Return to main website"
           >
-            <ArrowLeft size={14} /> 
-            <span>[ RETURN TO MAIN SITE ]</span>
+            <ArrowLeft size={16} /> 
+            <span>Home</span>
           </button>
           
-          <div className="verify-telemetry-hud">
-            <div className="hud-status-badge">
-              <span className="hud-led-active" />
-              <div className="hud-badge-capsule">
-                <span className="badge-highlight-blue">AUTO</span>
-                <span className="badge-rest">MATED OTP DISPATCH • ACTIVE</span>
-              </div>
-            </div>
-
-            <div className="hud-telemetry-metrics">
-              <span className="hud-metric-pill">
-                <Cpu size={12} className="text-cyan-400" />
-                <span>BOM-01</span>
-              </span>
-              <span className="hud-metric-pill">
-                <Radio size={12} className="text-emerald-400" />
-                <span>{latency}ms</span>
-              </span>
-              <span className="hud-metric-pill hidden sm:inline-flex">
-                <span>TLS 1.3</span>
-              </span>
-              <span className="hud-metric-pill hidden md:inline-flex">
-                <span>HMAC-SHA256</span>
-              </span>
-            </div>
+          <div className="verify-top-nav-links">
+            <button onClick={handleReturnHome} className="top-nav-pill">
+              Home
+            </button>
+            <button className="top-nav-pill active">
+              Verify
+            </button>
+            <button 
+              onClick={() => {
+                playTechClick();
+                if (window.history && window.history.pushState) {
+                  window.history.pushState(null, '', '/links');
+                }
+                setCurrentPage('links');
+              }} 
+              className="top-nav-pill"
+            >
+              Links
+            </button>
           </div>
         </div>
 
@@ -322,15 +300,14 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         <header className="verify-hero">
           <div className="verify-badge-pill">
             <ShieldCheck size={14} className="text-cyan-400" />
-            <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY // ORIGIN 2026</span>
-            <span className="badge-pulse-glow" />
+            <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
           </div>
 
           <h1 className="verify-title">
-            CERTIFICATE <span className="text-gradient-cyan">VERIFICATION</span>
+            Certificate <span className="text-gradient-cyan">Verification</span>
           </h1>
           <p className="verify-subtitle">
-            ZERO-KNOWLEDGE AUTHENTICATION GATE • 256-BIT CRYPTOGRAPHIC VERIFICATION
+            Enter your registered email address to receive an automated verification code and access your official certificate.
           </p>
         </header>
 
@@ -341,12 +318,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           <section className="verified-view-section animate-fade-in">
             {/* Authenticated Verification Card */}
             <div className="verified-credential-card">
-              {/* Corner tech crosshairs */}
-              <div className="cyber-corner tl">+</div>
-              <div className="cyber-corner tr">+</div>
-              <div className="cyber-corner bl">+</div>
-              <div className="cyber-corner br">+</div>
-
               <div className="cred-card-header">
                 <div className="cred-badge">
                   <div className="cred-icon-wrap">
@@ -354,7 +325,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   </div>
                   <div>
                     <span className="cred-badge-status">AUTHENTICATED CREDENTIAL RECORD</span>
-                    <span className="cred-badge-id">CREDENTIAL ID: {selectedCert.id}</span>
+                    <span className="cred-badge-id">Credential ID: {selectedCert.id}</span>
                   </div>
                 </div>
 
@@ -414,21 +385,13 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         {step === 'email' && (
           <section className="verify-gate-section animate-fade-in">
             <div className="gate-card">
-              {/* Corner tech crosshairs */}
-              <div className="cyber-corner tl">+</div>
-              <div className="cyber-corner tr">+</div>
-              <div className="cyber-corner bl">+</div>
-              <div className="cyber-corner br">+</div>
-
-              <div className="gate-card-scanline" />
-
               <div className="gate-card-header">
                 <div className="gate-lock-icon">
                   <Mail size={26} className="text-cyan-400" />
                 </div>
-                <h3>VERIFY VIA REGISTERED EMAIL</h3>
+                <h3>Verify With Your Email</h3>
                 <p>
-                  Enter your email address from event registration. Our automated delivery engine will dispatch a confidential 6-digit one-time code to unlock your credential.
+                  Enter the email address you used during event registration. We'll send an automated 6-digit code to unlock your certificate.
                 </p>
               </div>
 
@@ -454,7 +417,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                     />
                   </div>
                   <span className="input-hint">
-                    🔒 Zero-Knowledge Access • Single-Use Code Dispatched From certificates@letscook.co.in
+                    A 6-digit verification code will be sent to this email.
                   </span>
                 </div>
 
@@ -472,11 +435,11 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                 >
                   {isLoading ? (
                     <span className="btn-loading-state">
-                      <span className="btn-spinner" /> DISPATCHING CODE...
+                      <span className="btn-spinner" /> Sending verification code...
                     </span>
                   ) : (
                     <>
-                      <span>DISPATCH VERIFICATION CODE</span> <ArrowRight size={18} />
+                      <span>Send Verification Code</span> <ArrowRight size={18} />
                     </>
                   )}
                 </button>
@@ -505,31 +468,23 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         {step === 'otp' && (
           <section className="verify-gate-section animate-fade-in">
             <div className="gate-card">
-              {/* Corner tech crosshairs */}
-              <div className="cyber-corner tl">+</div>
-              <div className="cyber-corner tr">+</div>
-              <div className="cyber-corner bl">+</div>
-              <div className="cyber-corner br">+</div>
-
-              <div className="gate-card-scanline" />
-
               <div className="gate-card-header">
                 <div className="gate-lock-icon">
                   <KeyRound size={26} className="text-cyan-400" />
                 </div>
-                <h3>ENTER 6-DIGIT SECURITY CODE</h3>
+                <h3>Enter Verification Code</h3>
                 <p>
-                  We dispatched a 6-digit one-time code to <strong className="text-cyan-400 font-mono">{otpSession?.email}</strong>. Check your inbox and spam folder.
+                  We sent a 6-digit code to <strong className="text-cyan-400 font-mono">{otpSession?.email}</strong>. Check your inbox and spam folder.
                 </p>
               </div>
 
               <form onSubmit={handleManualOtpSubmit} className="gate-form">
                 <div className="input-group">
                   <label>
-                    ONE-TIME VERIFICATION CODE
+                    6-DIGIT VERIFICATION CODE
                   </label>
                   
-                  {/* Discrete 6-Digit Cyber Matrix Cells */}
+                  {/* Discrete 6-Digit Matrix Cells */}
                   <div className="otp-matrix-row">
                     {otpDigits.map((digit, index) => (
                       <input
@@ -548,7 +503,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   </div>
 
                   <span className="input-hint text-center">
-                    ⏱️ Code expires in 15 minutes • Single-use nonce
+                    Code expires in 15 minutes.
                   </span>
                 </div>
 
@@ -566,11 +521,11 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                 >
                   {isLoading ? (
                     <span className="btn-loading-state">
-                      <span className="btn-spinner" /> VERIFYING HMAC SIGNATURE...
+                      <span className="btn-spinner" /> Verifying code...
                     </span>
                   ) : (
                     <>
-                      <Unlock size={18} /> UNLOCK & VIEW CERTIFICATE
+                      <Unlock size={18} /> Unlock & View Certificate
                     </>
                   )}
                 </button>
@@ -587,7 +542,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                       className="resend-action-btn"
                       disabled={isLoading}
                     >
-                      <RefreshCw size={14} /> Resend verification code
+                      <RefreshCw size={14} /> Resend code
                     </button>
                   )}
 
@@ -614,21 +569,13 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         {step === 'static-code' && (
           <section className="verify-gate-section animate-fade-in">
             <div className="gate-card">
-              {/* Corner tech crosshairs */}
-              <div className="cyber-corner tl">+</div>
-              <div className="cyber-corner tr">+</div>
-              <div className="cyber-corner bl">+</div>
-              <div className="cyber-corner br">+</div>
-
-              <div className="gate-card-scanline" />
-
               <div className="gate-card-header">
                 <div className="gate-lock-icon">
                   <Lock size={26} className="text-cyan-400" />
                 </div>
-                <h3>ENTER DIRECT PASSKEY</h3>
+                <h3>Enter Direct Passkey</h3>
                 <p>
-                  If you received a direct 6-digit confidential passkey, enter it below to unlock your certificate immediately.
+                  If you received a 6-digit passkey, enter it below to unlock your certificate immediately.
                 </p>
               </div>
 
@@ -675,7 +622,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   disabled={isLoading || !staticCodeInput}
                   className="gate-submit-btn"
                 >
-                  <Unlock size={18} /> UNLOCK CERTIFICATE
+                  <Unlock size={18} /> Unlock Certificate
                 </button>
 
                 <div className="gate-footer-links">
@@ -695,35 +642,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
             </div>
           </section>
         )}
-
-        {/* ========================================================================= */}
-        {/* COLLAPSIBLE CRYPTOGRAPHIC TELEMETRY DRAWER                                 */}
-        {/* ========================================================================= */}
-        <section className="verify-telemetry-drawer">
-          <button 
-            onClick={() => {
-              playTechClick();
-              setIsLogOpen(!isLogOpen);
-            }}
-            className="telemetry-drawer-toggle"
-          >
-            <div className="drawer-title-row">
-              <TerminalIcon size={14} className="text-cyan-400" />
-              <span>REGISTRY AUDIT LOG // CRYPTO-TELEMETRY</span>
-            </div>
-            {isLogOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-          </button>
-
-          {isLogOpen && (
-            <div className="telemetry-log-console animate-fade-in">
-              <div className="log-line text-zinc-500">[02:00:01] REGISTRY DAEMON INITIALIZED // NODE BOM-01</div>
-              <div className="log-line text-zinc-400">[02:00:02] LOADED DATASET: 34 VERIFIED ORIGIN 2026 PARTICIPANTS</div>
-              <div className="log-line text-cyan-400">[02:00:03] PROTOCOL: HMAC-SHA256 • NONCE EXPIRE: 900s</div>
-              <div className="log-line text-emerald-400">[02:00:04] RESEND SENDER DOMAIN: certificates@letscook.co.in [DKIM/SPF VERIFIED]</div>
-              <div className="log-line text-zinc-300">[02:00:05] CLIENT HANDSHAKE READY // STATUS: 200 OK</div>
-            </div>
-          )}
-        </section>
       </main>
 
       <style>{`
@@ -740,7 +658,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         .verify-scanline-ambient {
           position: fixed;
           inset: 0;
-          background: radial-gradient(circle at 50% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 65%);
+          background: radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.05) 0%, transparent 60%);
           pointer-events: none;
           z-index: 1;
         }
@@ -752,20 +670,18 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           margin: 0 auto;
         }
 
-        /* Top HUD Navigation Bar */
+        /* Top Bar */
         .verify-top-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 12px 18px;
+          padding: 10px 16px;
           background: rgba(10, 12, 18, 0.75);
           backdrop-filter: blur(14px);
-          border: 1px solid rgba(0, 240, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 12px;
           margin-bottom: 40px;
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-          flex-wrap: wrap;
-          gap: 12px;
         }
 
         .verify-back-btn {
@@ -775,11 +691,9 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           background: transparent;
           border: 1px solid rgba(255, 255, 255, 0.1);
           color: #94a3b8;
-          font-family: 'Space Grotesk', monospace;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          padding: 8px 14px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          padding: 7px 14px;
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -792,116 +706,65 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           transform: translateX(-2px);
         }
 
-        .verify-telemetry-hud {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
-
-        .hud-status-badge {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .hud-led-active {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #10b981;
-          box-shadow: 0 0 10px #10b981;
-          animation: statusPulse 2s infinite;
-        }
-
-        @keyframes statusPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        .hud-badge-capsule {
-          display: inline-flex;
-          align-items: center;
-          background: rgba(0, 0, 0, 0.4);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 6px;
-          overflow: hidden;
-          font-family: 'SF Mono', Consolas, monospace;
-          font-size: 0.7rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-        }
-
-        .badge-highlight-blue {
-          background: #0052ff;
-          color: #ffffff;
-          padding: 3px 6px;
-          font-weight: 800;
-        }
-
-        .badge-rest {
-          color: #94a3b8;
-          padding: 3px 8px;
-        }
-
-        .hud-telemetry-metrics {
+        .verify-top-nav-links {
           display: flex;
           align-items: center;
           gap: 6px;
         }
 
-        .hud-metric-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 6px;
-          padding: 3px 8px;
-          font-family: monospace;
-          font-size: 0.65rem;
+        .top-nav-pill {
+          background: transparent;
+          border: none;
           color: #94a3b8;
+          font-size: 0.82rem;
+          font-weight: 600;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .top-nav-pill:hover {
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .top-nav-pill.active {
+          color: #00f0ff;
+          background: rgba(0, 240, 255, 0.1);
+          border: 1px solid rgba(0, 240, 255, 0.25);
         }
 
         /* Hero Header */
         .verify-hero {
           text-align: center;
-          margin-bottom: 44px;
+          margin-bottom: 40px;
         }
 
         .verify-badge-pill {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: rgba(0, 240, 255, 0.07);
+          background: rgba(0, 240, 255, 0.08);
           border: 1px solid rgba(0, 240, 255, 0.3);
-          padding: 7px 18px;
+          padding: 6px 16px;
           border-radius: 9999px;
           font-family: 'Space Grotesk', monospace;
           font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.08em;
           color: #00f0ff;
-          margin-bottom: 20px;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.12);
-          position: relative;
-        }
-
-        .badge-pulse-glow {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #00f0ff;
-          box-shadow: 0 0 8px #00f0ff;
+          margin-bottom: 16px;
+          box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
         }
 
         .verify-title {
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 2.6rem;
+          font-size: 2.5rem;
           font-weight: 800;
           letter-spacing: -0.02em;
           color: #ffffff;
           margin-bottom: 12px;
-          text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
 
         .text-gradient-cyan {
@@ -911,119 +774,79 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .verify-subtitle {
-          font-family: 'SF Mono', Consolas, monospace;
-          font-size: 0.8rem;
+          font-size: 0.95rem;
           color: #94a3b8;
-          letter-spacing: 0.1em;
-          max-width: 620px;
+          max-width: 560px;
           margin: 0 auto;
+          line-height: 1.6;
         }
 
-        /* Cybernetic Gate Card */
+        /* Gate Card */
         .verify-gate-section {
           display: flex;
           justify-content: center;
         }
 
         .gate-card {
-          position: relative;
           width: 100%;
-          max-width: 520px;
-          background: rgba(11, 14, 22, 0.82);
-          backdrop-filter: blur(24px);
-          border: 1px solid rgba(0, 240, 255, 0.22);
+          max-width: 480px;
+          background: rgba(11, 14, 22, 0.85);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 18px;
-          padding: 38px 32px;
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 240, 255, 0.08);
-          overflow: hidden;
+          padding: 36px 30px;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 240, 255, 0.06);
         }
-
-        .gate-card-scanline {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #00f0ff, transparent);
-          animation: cardScan 4s ease-in-out infinite;
-          opacity: 0.6;
-        }
-
-        @keyframes cardScan {
-          0% { transform: translateY(0); opacity: 0; }
-          20% { opacity: 0.8; }
-          80% { opacity: 0.8; }
-          100% { transform: translateY(480px); opacity: 0; }
-        }
-
-        /* Tech Corner Brackets */
-        .cyber-corner {
-          position: absolute;
-          font-family: monospace;
-          font-size: 14px;
-          font-weight: 700;
-          color: #00f0ff;
-          line-height: 1;
-          user-select: none;
-          pointer-events: none;
-          opacity: 0.7;
-        }
-        .cyber-corner.tl { top: 8px; left: 10px; }
-        .cyber-corner.tr { top: 8px; right: 10px; }
-        .cyber-corner.bl { bottom: 8px; left: 10px; }
-        .cyber-corner.br { bottom: 8px; right: 10px; }
 
         .gate-card-header {
           text-align: center;
-          margin-bottom: 28px;
+          margin-bottom: 26px;
         }
 
         .gate-lock-icon {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 56px;
-          height: 56px;
+          width: 54px;
+          height: 54px;
           border-radius: 14px;
           background: rgba(0, 240, 255, 0.08);
-          border: 1px solid rgba(0, 240, 255, 0.3);
-          margin-bottom: 18px;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+          border: 1px solid rgba(0, 240, 255, 0.25);
+          margin-bottom: 16px;
         }
 
         .gate-card-header h3 {
           font-family: 'Space Grotesk', sans-serif;
           font-size: 1.25rem;
-          font-weight: 800;
-          letter-spacing: 0.04em;
+          font-weight: 700;
           color: #ffffff;
-          margin-bottom: 10px;
+          margin-bottom: 8px;
         }
 
         .gate-card-header p {
           font-size: 0.88rem;
           color: #94a3b8;
-          line-height: 1.55;
+          line-height: 1.5;
         }
 
         .gate-form {
           display: flex;
           flex-direction: column;
-          gap: 22px;
+          gap: 20px;
         }
 
         .input-group {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 8px;
         }
 
         .input-group label {
           font-family: 'Space Grotesk', monospace;
           font-size: 0.72rem;
           font-weight: 700;
-          letter-spacing: 0.12em;
-          color: #00f0ff;
+          letter-spacing: 0.08em;
+          color: #94a3b8;
         }
 
         .input-field-wrap {
@@ -1044,7 +867,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           background: rgba(6, 8, 12, 0.85);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 10px;
-          padding: 14px 14px 14px 44px;
+          padding: 13px 14px 13px 44px;
           font-size: 0.95rem;
           color: #ffffff;
           transition: all 0.2s ease;
@@ -1057,7 +880,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           background: rgba(6, 8, 12, 0.95);
         }
 
-        /* Discrete 6-Digit OTP Matrix Row */
+        /* 6-Digit Matrix Cells */
         .otp-matrix-row {
           display: flex;
           justify-content: center;
@@ -1066,24 +889,23 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .otp-digit-box {
-          width: 52px;
-          height: 60px;
+          width: 50px;
+          height: 58px;
           text-align: center;
           background: rgba(6, 8, 12, 0.9);
-          border: 1px solid rgba(0, 240, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 10px;
           color: #00f0ff;
           font-family: 'Space Grotesk', 'SF Mono', monospace;
-          font-size: 1.8rem;
+          font-size: 1.7rem;
           font-weight: 800;
           outline: none;
           transition: all 0.2s ease;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
         }
 
         .otp-digit-box:focus {
           border-color: #00f0ff;
-          box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+          box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
           transform: translateY(-2px);
           background: rgba(14, 20, 32, 0.95);
         }
@@ -1094,10 +916,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .input-hint {
-          font-size: 0.72rem;
+          font-size: 0.75rem;
           color: #64748b;
-          font-family: monospace;
-          letter-spacing: 0.03em;
         }
 
         .gate-error-banner {
@@ -1122,26 +942,24 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           color: #050608;
           font-family: 'Space Grotesk', sans-serif;
           font-size: 0.92rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          padding: 15px 24px;
+          font-weight: 700;
+          padding: 14px 24px;
           border-radius: 10px;
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+          box-shadow: 0 4px 18px rgba(0, 240, 255, 0.25);
         }
 
         .gate-submit-btn:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 6px 25px rgba(0, 240, 255, 0.5);
-          filter: brightness(1.08);
+          box-shadow: 0 6px 22px rgba(0, 240, 255, 0.4);
+          filter: brightness(1.06);
         }
 
         .gate-submit-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
-          filter: grayscale(0.5);
         }
 
         .btn-loading-state {
@@ -1198,17 +1016,16 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         .verified-view-section {
           display: flex;
           flex-direction: column;
-          gap: 32px;
+          gap: 28px;
         }
 
         .verified-credential-card {
-          position: relative;
-          background: rgba(11, 14, 22, 0.82);
-          backdrop-filter: blur(24px);
-          border: 1px solid rgba(0, 240, 255, 0.25);
+          background: rgba(11, 14, 22, 0.85);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 16px;
-          padding: 28px 24px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+          padding: 26px 24px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
 
         .cred-card-header {
@@ -1216,7 +1033,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           align-items: center;
           justify-content: space-between;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          padding-bottom: 18px;
+          padding-bottom: 16px;
           margin-bottom: 20px;
           flex-wrap: wrap;
           gap: 14px;
@@ -1245,7 +1062,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           font-size: 0.75rem;
           font-weight: 800;
           color: #10b981;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.06em;
         }
 
         .cred-badge-id {
@@ -1286,7 +1103,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           font-size: 0.68rem;
           color: #64748b;
           font-weight: 700;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.06em;
           display: block;
           margin-bottom: 4px;
         }
@@ -1317,55 +1134,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .hash-copy-wrap:hover {
           border-color: rgba(0, 240, 255, 0.3);
-        }
-
-        /* Collapsible Cryptographic Telemetry Drawer */
-        .verify-telemetry-drawer {
-          margin-top: 48px;
-          background: rgba(10, 12, 18, 0.6);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 12px;
-          overflow: hidden;
-        }
-
-        .telemetry-drawer-toggle {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 18px;
-          background: transparent;
-          border: none;
-          color: #94a3b8;
-          font-family: 'SF Mono', Consolas, monospace;
-          font-size: 0.72rem;
-          letter-spacing: 0.06em;
-          cursor: pointer;
-          transition: background 0.2s, color 0.2s;
-        }
-
-        .telemetry-drawer-toggle:hover {
-          background: rgba(0, 240, 255, 0.04);
-          color: #00f0ff;
-        }
-
-        .drawer-title-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .telemetry-log-console {
-          padding: 14px 18px;
-          background: #040508;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          font-family: 'SF Mono', Consolas, monospace;
-          font-size: 0.72rem;
-          line-height: 1.7;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
         }
 
         @media (max-width: 640px) {
