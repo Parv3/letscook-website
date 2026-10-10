@@ -1,51 +1,52 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
   Lock, 
   Unlock, 
-  KeyRound, 
   Mail, 
-  Award, 
-  Calendar, 
+  KeyRound, 
   ArrowLeft, 
+  ArrowRight, 
   CheckCircle2, 
   AlertCircle, 
   Sparkles,
-  HelpCircle,
-  ExternalLink
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
-import { 
-  verifyAndGetCertificate, 
-  getPortalStats, 
-  getAllEvents 
-} from '../services/certificateService';
 import CertificateViewer from '../components/CertificateViewer';
+import { verifyAndGetCertificate } from '../services/certificateService';
 import { playTechClick } from '../utils/soundEngine';
 
 export default function CertificateVerifyPage({ setCurrentPage }) {
-  const [verificationCode, setVerificationCode] = useState('');
+  // Wizard steps: 'email' | 'otp' | 'static-code' | 'verified'
+  const [step, setStep] = useState('email');
+  
+  // Inputs & State
   const [emailInput, setEmailInput] = useState('');
-  const [showEmailField, setShowEmailField] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [staticCodeInput, setStaticCodeInput] = useState('');
+  
+  // OTP Session Token
+  const [otpSession, setOtpSession] = useState(null); // { email, expiresAt, token }
+  const [resendCountdown, setResendCountdown] = useState(0);
+  
+  // Result
   const [selectedCert, setSelectedCert] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const stats = useMemo(() => getPortalStats(), []);
-  const events = useMemo(() => getAllEvents(), []);
-
-  // Check URL query parameters on mount (e.g. /verify?code=547162)
+  // Sync URL query params on mount (e.g. /verify?code=547162)
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = "Let's Cook | Credential Verification Portal";
 
     const params = new URLSearchParams(window.location.search);
-    const codeParam = params.get('code') || params.get('pin') || params.get('key');
+    const codeParam = params.get('code') || params.get('pin');
     const emailParam = params.get('email');
-    const idParam = params.get('id');
 
     if (codeParam) {
-      setVerificationCode(codeParam);
-      attemptVerification(codeParam, emailParam || '', idParam || '');
+      setStaticCodeInput(codeParam);
+      handleStaticCodeVerify(codeParam, emailParam || '');
     }
 
     return () => {
@@ -53,52 +54,121 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
     };
   }, []);
 
-  const attemptVerification = (codeToVerify, emailToVerify = '', idToVerify = '') => {
+  // Countdown timer for OTP resend
+  useEffect(() => {
+    if (resendCountdown <= 0) return;
+    const timer = setInterval(() => {
+      setResendCountdown(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCountdown]);
+
+  // Handle direct static code verification (fallback / legacy)
+  const handleStaticCodeVerify = (codeToVerify, email = '') => {
+    setIsLoading(true);
+    setErrorMessage('');
+    const result = verifyAndGetCertificate({ code: codeToVerify, email });
+    if (result.success && result.certificate) {
+      setSelectedCert(result.certificate);
+      setStep('verified');
+    } else {
+      setErrorMessage(result.error || 'Invalid verification code.');
+    }
+    setIsLoading(false);
+  };
+
+  // STEP 1: Request 6-digit OTP to be sent via email
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
+    playTechClick();
+
+    const cleanEmail = emailInput.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage('');
 
-    setTimeout(() => {
-      const result = verifyAndGetCertificate({
-        code: codeToVerify,
-        email: emailToVerify,
-        certId: idToVerify
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail })
       });
 
-      if (result.success && result.certificate) {
-        setSelectedCert(result.certificate);
-        setErrorMessage('');
-        if (window.history && window.history.pushState) {
-          window.history.pushState(
-            null, 
-            '', 
-            `/verify?code=${encodeURIComponent(result.certificate.verificationCode)}`
-          );
-        }
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setOtpSession({
+          email: cleanEmail,
+          expiresAt: data.expiresAt,
+          token: data.token
+        });
+        setStep('otp');
+        setOtpInput('');
+        setResendCountdown(60); // 60s cooldown
       } else {
-        setSelectedCert(null);
-        setErrorMessage(
-          result.error || 'Invalid verification code. Please check the code sent to your registered email.'
-        );
+        setErrorMessage(data.error || 'Could not send verification code. Please check your email.');
       }
+    } catch (err) {
+      console.error('Send OTP error:', err);
+      setErrorMessage('Network error while requesting code. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 250);
+    }
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+  // STEP 2: Verify submitted OTP
+  const handleVerifyOtp = async (e) => {
+    if (e) e.preventDefault();
     playTechClick();
-    if (!verificationCode.trim()) {
-      setErrorMessage('Please enter your 6-digit verification code.');
+
+    const cleanOtp = otpInput.trim();
+    if (!cleanOtp || cleanOtp.length < 6) {
+      setErrorMessage('Please enter the full 6-digit verification code.');
       return;
     }
-    attemptVerification(verificationCode, emailInput);
+
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: otpSession.email,
+          otp: cleanOtp,
+          expiresAt: otpSession.expiresAt,
+          token: otpSession.token
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.certificate) {
+        setSelectedCert(data.certificate);
+        setStep('verified');
+      } else {
+        setErrorMessage(data.error || 'Invalid or expired verification code.');
+      }
+    } catch (err) {
+      console.error('Verify OTP error:', err);
+      setErrorMessage('Network error during verification. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleLockReset = () => {
+  const handleResetLock = () => {
     playTechClick();
     setSelectedCert(null);
-    setVerificationCode('');
+    setStep('email');
     setEmailInput('');
+    setOtpInput('');
+    setOtpSession(null);
     setErrorMessage('');
     if (window.history && window.history.pushState) {
       window.history.pushState(null, '', '/verify');
@@ -132,7 +202,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           
           <div className="verify-status-indicator">
             <span className="status-ping" />
-            <span className="status-label">ENCRYPTED REGISTRY • ACTIVE</span>
+            <span className="status-label">AUTOMATED OTP DISPATCH • ACTIVE</span>
           </div>
         </div>
 
@@ -140,19 +210,21 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         <header className="verify-hero">
           <div className="verify-badge-pill">
             <ShieldCheck size={16} className="text-cyan-400" />
-            <span>CONFIDENTIAL CREDENTIAL VERIFICATION</span>
+            <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
           </div>
 
           <h1 className="verify-title">
-            Verify Your <span className="text-gradient-cyan">Certificate</span>
+            Certificate <span className="text-gradient-cyan">Verification</span>
           </h1>
           <p className="verify-subtitle">
-            Enter the personal 6-digit verification code sent to your registered email address to unlock and download your official certificate.
+            Enter your registered email address to receive an automated one-time code and unlock your official certificate.
           </p>
         </header>
 
-        {/* 1. UNLOCKED VIEW: DISPLAY ONLY THIS PARTICIPANT'S CERTIFICATE */}
-        {selectedCert ? (
+        {/* ========================================================================= */}
+        {/* VIEW A: UNLOCKED & VERIFIED CERTIFICATE DISPLAY                           */}
+        {/* ========================================================================= */}
+        {step === 'verified' && selectedCert && (
           <section className="verified-view-section animate-fade-in">
             {/* Authenticated Verification Card */}
             <div className="verified-credential-card">
@@ -168,11 +240,11 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                 </div>
 
                 <button 
-                  onClick={handleLockReset}
+                  onClick={handleResetLock}
                   className="cred-reset-btn"
-                  title="Lock and verify another code"
+                  title="Lock and verify another certificate"
                 >
-                  <Lock size={14} /> Lock / Verify Another
+                  <Lock size={14} /> Lock & Exit
                 </button>
               </div>
 
@@ -198,7 +270,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   <p>{selectedCert.issueDate}</p>
                 </div>
                 <div className="cred-field">
-                  <label>VERIFICATION HASH</label>
+                  <label>INTEGRITY HASH</label>
                   <p className="font-mono text-xs text-zinc-400">{selectedCert.verifyHash}</p>
                 </div>
               </div>
@@ -208,39 +280,236 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
             <div className="cert-renderer-box">
               <CertificateViewer 
                 certificate={selectedCert} 
-                event={selectedCert.event || events[0]} 
+                event={selectedCert.event} 
               />
             </div>
           </section>
-        ) : (
-          /* 2. LOCKED ACCESS GATE: ENTER CONFIDENTIAL VERIFICATION CODE */
-          <section className="verify-gate-section">
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW B: STEP 1 - ENTER REGISTERED EMAIL                                   */}
+        {/* ========================================================================= */}
+        {step === 'email' && (
+          <section className="verify-gate-section animate-fade-in">
+            <div className="gate-card">
+              <div className="gate-card-header">
+                <div className="gate-lock-icon">
+                  <Mail size={28} className="text-cyan-400" />
+                </div>
+                <h3>Verify With Your Email</h3>
+                <p>
+                  Enter the email address you used during event registration. We'll send an automated 6-digit one-time code to unlock your certificate.
+                </p>
+              </div>
+
+              <form onSubmit={handleSendOtp} className="gate-form">
+                <div className="input-group">
+                  <label htmlFor="verify-email-input">
+                    REGISTERED EMAIL ADDRESS
+                  </label>
+                  <div className="input-field-wrap">
+                    <Mail size={18} className="input-icon" />
+                    <input
+                      id="verify-email-input"
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => {
+                        setEmailInput(e.target.value);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      placeholder="e.g. khushal2009aggarwal@gmail.com"
+                      className="gate-input"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                  <span className="input-hint">
+                    Only participants registered in the official event database can receive a code.
+                  </span>
+                </div>
+
+                {errorMessage && (
+                  <div className="gate-error-banner animate-fade-in">
+                    <AlertCircle size={18} className="flex-shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="gate-submit-btn"
+                >
+                  {isLoading ? (
+                    <span className="btn-loading-state">
+                      <span className="btn-spinner" /> SENDING CODE...
+                    </span>
+                  ) : (
+                    <>
+                      <span>SEND VERIFICATION CODE</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+
+                <div className="gate-footer-links">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('static-code');
+                      setErrorMessage('');
+                    }}
+                    className="link-btn"
+                  >
+                    Have a direct passkey? Enter code manually
+                  </button>
+                </div>
+              </form>
+
+              <div className="gate-help-box">
+                <HelpCircle size={16} className="text-zinc-500 flex-shrink-0" />
+                <p>
+                  Your email is strictly used for authentication. Emails are dispatched automatically via <code>certificates@letscook.co.in</code>.
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW C: STEP 2 - ENTER 6-DIGIT OTP                                        */}
+        {/* ========================================================================= */}
+        {step === 'otp' && (
+          <section className="verify-gate-section animate-fade-in">
             <div className="gate-card">
               <div className="gate-card-header">
                 <div className="gate-lock-icon">
                   <KeyRound size={28} className="text-cyan-400" />
                 </div>
-                <h3>Access Your Credential</h3>
+                <h3>Enter Verification Code</h3>
                 <p>
-                  Each certificate is private and protected. Only you can view and download your certificate using the code sent to your email.
+                  We sent a 6-digit code to <strong className="text-cyan-400">{otpSession?.email}</strong>. Check your inbox and spam folder.
                 </p>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="gate-form">
-                {/* Verification Code Input */}
+              <form onSubmit={handleVerifyOtp} className="gate-form">
                 <div className="input-group">
-                  <label htmlFor="verify-code-input">
-                    PERSONAL VERIFICATION CODE
+                  <label htmlFor="otp-input-field">
+                    6-DIGIT ONE-TIME CODE
                   </label>
                   <div className="input-field-wrap">
                     <KeyRound size={18} className="input-icon" />
                     <input
-                      id="verify-code-input"
+                      id="otp-input-field"
+                      type="text"
+                      maxLength={6}
+                      value={otpInput}
+                      onChange={(e) => {
+                        setOtpInput(e.target.value.replace(/[^0-9]/g, ''));
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      placeholder="000000"
+                      className="gate-input code-input"
+                      autoFocus
+                      required
+                    />
+                  </div>
+                  <span className="input-hint">
+                    Code expires in 15 minutes.
+                  </span>
+                </div>
+
+                {errorMessage && (
+                  <div className="gate-error-banner animate-fade-in">
+                    <AlertCircle size={18} className="flex-shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading || otpInput.length < 6}
+                  className="gate-submit-btn"
+                >
+                  {isLoading ? (
+                    <span className="btn-loading-state">
+                      <span className="btn-spinner" /> VERIFYING CODE...
+                    </span>
+                  ) : (
+                    <>
+                      <Unlock size={18} /> UNLOCK & VIEW CERTIFICATE
+                    </>
+                  )}
+                </button>
+
+                <div className="gate-resend-row">
+                  {resendCountdown > 0 ? (
+                    <span className="resend-timer-text">
+                      Resend code in <strong className="text-zinc-300">{resendCountdown}s</strong>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleSendOtp()}
+                      className="resend-action-btn"
+                      disabled={isLoading}
+                    >
+                      <RefreshCw size={14} /> Resend verification code
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('email');
+                      setErrorMessage('');
+                    }}
+                    className="link-btn"
+                  >
+                    Change email
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW D: MANUAL PASSKEY / DIRECT CODE ENTRY                                */}
+        {/* ========================================================================= */}
+        {step === 'static-code' && (
+          <section className="verify-gate-section animate-fade-in">
+            <div className="gate-card">
+              <div className="gate-card-header">
+                <div className="gate-lock-icon">
+                  <Lock size={28} className="text-cyan-400" />
+                </div>
+                <h3>Enter Direct Passkey</h3>
+                <p>
+                  If you were provided a direct 6-digit access code, enter it below to unlock your certificate.
+                </p>
+              </div>
+
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleStaticCodeVerify(staticCodeInput);
+                }} 
+                className="gate-form"
+              >
+                <div className="input-group">
+                  <label htmlFor="static-code-field">
+                    ACCESS CODE
+                  </label>
+                  <div className="input-field-wrap">
+                    <KeyRound size={18} className="input-icon" />
+                    <input
+                      id="static-code-field"
                       type="text"
                       maxLength={12}
-                      value={verificationCode}
+                      value={staticCodeInput}
                       onChange={(e) => {
-                        setVerificationCode(e.target.value.trim());
+                        setStaticCodeInput(e.target.value.trim());
                         if (errorMessage) setErrorMessage('');
                       }}
                       placeholder="e.g. 547162"
@@ -249,32 +518,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                       required
                     />
                   </div>
-                  <span className="input-hint">
-                    Check your email inbox or spam folder for your 6-digit access code.
-                  </span>
                 </div>
 
-                {/* Optional Email Input Toggle */}
-                {showEmailField && (
-                  <div className="input-group animate-fade-in">
-                    <label htmlFor="verify-email-input">
-                      REGISTERED EMAIL ADDRESS (OPTIONAL)
-                    </label>
-                    <div className="input-field-wrap">
-                      <Mail size={18} className="input-icon" />
-                      <input
-                        id="verify-email-input"
-                        type="email"
-                        value={emailInput}
-                        onChange={(e) => setEmailInput(e.target.value.trim())}
-                        placeholder="your.email@example.com"
-                        className="gate-input"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Error Banner */}
                 {errorMessage && (
                   <div className="gate-error-banner animate-fade-in">
                     <AlertCircle size={18} className="flex-shrink-0" />
@@ -282,75 +527,27 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                   </div>
                 )}
 
-                {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || !staticCodeInput}
                   className="gate-submit-btn"
                 >
-                  {isLoading ? (
-                    <span className="btn-loading-state">
-                      <span className="btn-spinner" /> VERIFYING ACCESS...
-                    </span>
-                  ) : (
-                    <>
-                      <Unlock size={18} /> ACCESS MY CERTIFICATE
-                    </>
-                  )}
+                  <Unlock size={18} /> UNLOCK CERTIFICATE
                 </button>
 
                 <div className="gate-footer-links">
-                  {!showEmailField ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowEmailField(true)}
-                      className="link-btn"
-                    >
-                      Verify with Email + Code
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setShowEmailField(false)}
-                      className="link-btn"
-                    >
-                      Verify with Code Only
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('email');
+                      setErrorMessage('');
+                    }}
+                    className="link-btn"
+                  >
+                    Back to email verification
+                  </button>
                 </div>
               </form>
-
-              {/* Assistance Notice */}
-              <div className="gate-help-box">
-                <HelpCircle size={16} className="text-zinc-500 flex-shrink-0" />
-                <p>
-                  Haven't received your code? Contact the organizing team via WhatsApp or reach out to Let's Cook to request your credential passkey.
-                </p>
-              </div>
-            </div>
-
-            {/* Official Event Registry Details */}
-            <div className="events-directory-showcase">
-              <div className="directory-header">
-                <Sparkles size={18} className="text-cyan-400" />
-                <h3>Event Verification Details</h3>
-              </div>
-
-              <div className="events-directory-grid">
-                {events.map(ev => (
-                  <div key={ev.id} className="event-directory-card">
-                    <div className="event-dir-header">
-                      <span className="event-category-badge">{ev.category}</span>
-                      <span className="event-date-tag">{ev.date}</span>
-                    </div>
-                    <h4>{ev.name}</h4>
-                    <p>{ev.description}</p>
-                    <div className="event-dir-footer">
-                      <span>Organized by {ev.organization} {ev.partner ? `× ${ev.partner}` : ''}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </section>
         )}
@@ -492,7 +689,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           display: flex;
           flex-direction: column;
           gap: 40px;
-          max-width: 620px;
+          max-width: 580px;
           margin: 0 auto;
         }
 
@@ -587,9 +784,10 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .code-input {
           font-family: var(--font-mono, monospace);
-          font-size: 1.25rem;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
+          font-size: 1.4rem;
+          letter-spacing: 0.25em;
+          text-align: center;
+          padding-left: 20px !important;
         }
 
         .input-hint {
@@ -655,6 +853,35 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+
+        .gate-resend-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 8px;
+        }
+
+        .resend-timer-text {
+          font-size: 0.82rem;
+          color: #64748b;
+          font-family: var(--font-mono, monospace);
+        }
+
+        .resend-action-btn {
+          background: transparent;
+          border: none;
+          color: #00f0ff;
+          font-size: 0.82rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .resend-action-btn:hover {
+          text-decoration: underline;
         }
 
         .gate-footer-links {
@@ -791,86 +1018,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 20px;
           padding: 24px;
-        }
-
-        /* Event Showcase */
-        .events-directory-showcase {
-          background: rgba(255, 255, 255, 0.015);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 20px;
-          padding: 24px;
-        }
-
-        .directory-header {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 16px;
-        }
-
-        .directory-header h3 {
-          font-size: 1.05rem;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0;
-        }
-
-        .events-directory-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-
-        .event-directory-card {
-          background: rgba(18, 22, 32, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 14px;
-          padding: 18px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .event-dir-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .event-category-badge {
-          font-family: var(--font-mono, monospace);
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: #ff0055;
-          padding: 2px 8px;
-          background: rgba(255, 0, 85, 0.1);
-          border-radius: 6px;
-        }
-
-        .event-date-tag {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-
-        .event-directory-card h4 {
-          font-size: 0.95rem;
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0;
-        }
-
-        .event-directory-card p {
-          font-size: 0.82rem;
-          color: #94a3b8;
-          line-height: 1.45;
-          margin: 0;
-        }
-
-        .event-dir-footer {
-          margin-top: 6px;
-          font-size: 0.74rem;
-          color: #64748b;
-          font-family: var(--font-mono, monospace);
         }
 
         @media (max-width: 640px) {
