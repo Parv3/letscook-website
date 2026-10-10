@@ -117,41 +117,26 @@ export default async function handler(req, res) {
       </html>
     `;
 
-    // Try sending from certificates@letscook.co.in first, with fallback to onboarding@resend.dev if domain is still pending
+    // Try sending from onboarding@resend.dev during testing or certificates@letscook.co.in
+    const emailText = `Hi ${participantName},\n\nYour Let's Cook verification code is: ${otp}\n\nThis code is valid for 15 minutes.\n\nLet's Cook Community • letscook.co.in`;
+
     let sendResult;
     try {
       sendResult = await resend.emails.send({
-        from: "Let's Cook <certificates@letscook.co.in>",
+        from: 'onboarding@resend.dev',
         to: [normalizedEmail],
-        subject: `${otp} is your Let's Cook certificate verification code`,
+        subject: `Your Let's Cook Verification Code: ${otp}`,
+        text: emailText,
         html: emailHtml
       });
     } catch (sendErr) {
-      console.warn("Could not send from certificates@letscook.co.in, falling back to onboarding@resend.dev:", sendErr);
-      sendResult = await resend.emails.send({
-        from: "Let's Cook <onboarding@resend.dev>",
-        to: [normalizedEmail],
-        subject: `${otp} is your Let's Cook certificate verification code`,
-        html: emailHtml
-      });
+      console.error('Error calling resend.emails.send:', sendErr);
+      return res.status(500).json({ success: false, error: sendErr.message });
     }
 
     if (sendResult.error) {
-      console.error('Resend returned error:', sendResult.error);
-      // If custom domain verification is pending, attempt fallback
-      if (sendResult.error.message && sendResult.error.message.includes('domain')) {
-        const fallbackResult = await resend.emails.send({
-          from: "Let's Cook <onboarding@resend.dev>",
-          to: [normalizedEmail],
-          subject: `${otp} is your Let's Cook certificate verification code`,
-          html: emailHtml
-        });
-        if (fallbackResult.error) {
-          return res.status(500).json({ success: false, error: fallbackResult.error.message });
-        }
-      } else {
-        return res.status(500).json({ success: false, error: sendResult.error.message });
-      }
+      console.error('Resend error:', sendResult.error);
+      return res.status(500).json({ success: false, error: sendResult.error.message });
     }
 
     return res.status(200).json({
@@ -159,6 +144,7 @@ export default async function handler(req, res) {
       email: normalizedEmail,
       expiresAt: expiresAt,
       token: token,
+      resendId: sendResult.data?.id,
       message: `Verification code sent to ${normalizedEmail}`
     });
   } catch (error) {
