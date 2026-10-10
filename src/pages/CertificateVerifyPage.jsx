@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import CertificateViewer from '../components/CertificateViewer';
 import VerifyCyberBackground from '../components/VerifyCyberBackground';
+import SiteExplosionEasterEgg from '../components/SiteExplosionEasterEgg';
 import { verifyAndGetCertificate } from '../services/certificateService';
 import { playTechClick } from '../utils/soundEngine';
 
@@ -37,6 +38,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopiedHash, setIsCopiedHash] = useState(false);
+  const [isExploding, setIsExploding] = useState(false);
 
   // Refs for 6 discrete OTP digit inputs
   const otpInputRefs = useRef([]);
@@ -75,9 +77,14 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
   // Handle direct static code verification
   const handleStaticCodeVerify = (codeToVerify, email = '') => {
+    const clean = (codeToVerify || '').trim();
+    if (clean === '300406') {
+      setIsExploding(true);
+      return;
+    }
     setIsLoading(true);
     setErrorMessage('');
-    const result = verifyAndGetCertificate({ code: codeToVerify, email });
+    const result = verifyAndGetCertificate({ code: clean, email });
     if (result.success && result.certificate) {
       setSelectedCert(result.certificate);
       setStep('verified');
@@ -85,6 +92,13 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
       setErrorMessage(result.error || 'Invalid verification code.');
     }
     setIsLoading(false);
+  };
+
+  const handleExplosionComplete = () => {
+    setIsExploding(false);
+    setStaticCodeInput('');
+    setOtpDigits(['', '', '', '', '', '']);
+    setErrorMessage('💥 System restored! Easter egg unlocked. Enter your actual certificate code.');
   };
 
   // STEP 1: Request 6-digit OTP to be sent via email
@@ -180,6 +194,11 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
   // STEP 2: Verify submitted OTP
   const triggerOtpVerification = async (fullOtp) => {
+    const clean = (fullOtp || '').trim();
+    if (clean === '300406') {
+      setIsExploding(true);
+      return;
+    }
     if (!otpSession) return;
     playTechClick();
 
@@ -192,7 +211,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: otpSession.email,
-          otp: fullOtp,
+          otp: clean,
           expiresAt: otpSession.expiresAt,
           token: otpSession.token
         })
@@ -256,6 +275,9 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
   return (
     <div className="verify-page-wrapper">
+      {/* 5-Second Site Explosion Easter Egg */}
+      <SiteExplosionEasterEgg isActive={isExploding} onComplete={handleExplosionComplete} />
+
       {/* 60 FPS Procedural Cyber Moving Background */}
       <VerifyCyberBackground />
 
@@ -602,7 +624,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                         setStaticCodeInput(e.target.value.trim());
                         if (errorMessage) setErrorMessage('');
                       }}
-                      placeholder="e.g. 547162"
+                      placeholder="e.g. 300406"
                       className="gate-input code-input font-mono"
                       autoFocus
                       required
