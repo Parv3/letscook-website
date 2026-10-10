@@ -614,12 +614,6 @@ export default function HomePage({
 
   return (
     <div className="home-page animate-fade-in">
-      {/* Iron Man Protocol Live WebGL Hologram */}
-      <IronManHologram 
-        isActive={isIronManActive} 
-        onClose={() => setIsIronManActive(false)} 
-      />
-
       {/* Dynamic Scroll Circuit Rail */}
       <ScrollCircuitRail />
 
@@ -759,7 +753,8 @@ export default function HomePage({
           </div>
 
           {/* Spotlight Active Squad Showcase Card */}
-          <div className="active-squad-spotlight">
+          <div className="spotlight-outer-wrap" style={{ position: 'relative' }}>
+            <div className="active-squad-spotlight">
             <div 
               className="spotlight-ambient-glow" 
               style={{
@@ -1021,7 +1016,16 @@ export default function HomePage({
               </div>
             </div>
           </div>
+
+          {/* Iron Man Hologram unclipped in the designated right-side area */}
+          {activeSquad.key === 'ironman' && (
+            <IronManHologram 
+              isActive={isIronManActive} 
+              onClose={() => setIsIronManActive(false)} 
+            />
+          )}
         </div>
+      </div>
       </section>
 
       {/* ========================================================= */}
@@ -1696,6 +1700,7 @@ export default function HomePage({
         }
 
         .spotlight-insignia-panel {
+          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;

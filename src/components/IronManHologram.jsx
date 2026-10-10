@@ -4,21 +4,17 @@ import { playRepulsorSound } from '../utils/soundEngine';
 /**
  * IronManHologram
  * Triggered by the "IRON MAN // PROTOCOL" button in Tech Labs.
- * Features:
- * - Real-time WebGL green screen chroma-key removal
- * - Loops smoothly and stays on in the designated right-side area
- * - Responsive sizing and subtle holographic repulsor glow
- * - Can be toggled on/off or closed via dismiss button
+ * Renders the green-screen-removed Iron Man video (oug7G_OlDFI) in real-time
+ * via WebGL chroma keying, positioned right next to the protocol card.
  */
 export default function IronManHologram({ isActive, onClose }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
 
   useEffect(() => {
     if (!isActive) return;
 
-    // Play repulsor sound effect
+    // Play initial repulsor blast SFX
     try {
       playRepulsorSound();
     } catch (e) {
@@ -29,18 +25,21 @@ export default function IronManHologram({ isActive, onClose }) {
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
+    // Video playback
+    video.muted = true; // Guaranteed autoplay without browser rejection
     video.currentTime = 0;
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // If unmuted autoplay is blocked by browser policy, fallback to muted loop
-        video.muted = true;
-        setIsAudioMuted(true);
-        video.play().catch(() => {});
-      });
+    const startPlay = () => {
+      video.play().catch(e => console.warn('Iron Man video play:', e));
+    };
+
+    if (video.readyState >= 2) {
+      startPlay();
+    } else {
+      video.addEventListener('canplay', startPlay, { once: true });
+      video.load();
     }
 
-    // Hardware-accelerated WebGL Chroma Key Renderer
+    // Hardware-accelerated WebGL Chroma Key
     let animId = null;
     let gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
     if (!gl) {
@@ -68,12 +67,12 @@ export default function IronManHologram({ isActive, onClose }) {
           float maxRB = max(color.r, color.b);
           float diff = color.g - maxRB;
 
-          // Key out green background
+          // Key out green background (threshold diff: > 0.15 is green screen)
           float thresholdLow = 0.12;
           float thresholdHigh = 0.28;
           float alpha = 1.0 - smoothstep(thresholdLow, thresholdHigh, diff);
 
-          // Edge despill
+          // Edge despill: prevent green light bleeding onto edges of armor
           vec3 cleanColor = color.rgb;
           if (cleanColor.g > maxRB) {
             cleanColor.g = maxRB;
@@ -104,8 +103,9 @@ export default function IronManHologram({ isActive, onClose }) {
       if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
         gl.useProgram(program);
 
-        // Standard quad
+        // Quad geometry matching HTML video coordinates
         const vertices = new Float32Array([
+          // x, y, u, v
           -1, -1,  0, 1,
            1, -1,  1, 1,
           -1,  1,  0, 0,
@@ -134,12 +134,10 @@ export default function IronManHologram({ isActive, onClose }) {
 
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.viewport(0, 0, 540, 960);
 
         const renderFrame = () => {
-          if (!video.paused && !video.ended && video.readyState >= 2) {
-            canvas.width = 540;
-            canvas.height = 960;
-            gl.viewport(0, 0, 540, 960);
+          if (!video.paused && video.readyState >= 2) {
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -153,13 +151,25 @@ export default function IronManHologram({ isActive, onClose }) {
         animId = requestAnimationFrame(renderFrame);
       }
     } else {
-      // 2D Canvas Fallback
+      // Canvas 2D Fallback
       const ctx = canvas.getContext('2d');
       const render2d = () => {
-        if (!video.paused && !video.ended && video.readyState >= 2) {
-          canvas.width = 540;
-          canvas.height = 960;
+        if (!video.paused && video.readyState >= 2) {
           ctx.drawImage(video, 0, 0, 540, 960);
+          const imgData = ctx.getImageData(0, 0, 540, 960);
+          const d = imgData.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const r = d[i], g = d[i + 1], b = d[i + 2];
+            const maxRB = Math.max(r, b);
+            const diff = g - maxRB;
+            if (diff > 35) {
+              d[i + 3] = 0;
+            } else if (diff > 15) {
+              d[i + 3] = Math.max(0, 255 - (diff - 15) * 12);
+              if (g > maxRB) d[i + 1] = maxRB;
+            }
+          }
+          ctx.putImageData(imgData, 0, 0);
         }
         animId = requestAnimationFrame(render2d);
       };
@@ -177,65 +187,70 @@ export default function IronManHologram({ isActive, onClose }) {
   if (!isActive) return null;
 
   return (
-    <div className="ironman-hologram-root animate-fade-in">
-      {/* Hidden source video looping offscreen */}
+    <div className="ironman-hologram-anchor animate-fade-in">
+      {/* Hidden source video element looping */}
       <video
         ref={videoRef}
         src="/easter-egg/ironman.mp4"
         playsInline
         loop
+        muted
+        autoPlay
         preload="auto"
-        className="ironman-hidden-video"
+        className="ironman-source-video"
       />
 
       {/* Floating Holographic Container */}
-      <div className="ironman-floating-body">
-        {/* Top Controls Badge */}
-        <div className="ironman-header-pill">
-          <div className="ironman-status-dot" />
-          <span className="ironman-status-text">STARK MARK LXXXV // ONLINE</span>
-          <button 
-            onClick={onClose} 
-            className="ironman-close-btn"
-            title="Deactivate Iron Man Protocol"
-            aria-label="Deactivate Iron Man Protocol"
-          >
-            ✕
-          </button>
-        </div>
+      <div className="ironman-hologram-card">
+        {/* Top Dismiss Button */}
+        <button 
+          onClick={onClose} 
+          className="ironman-hologram-close-btn"
+          title="Deactivate Iron Man Protocol"
+          aria-label="Deactivate Iron Man Protocol"
+        >
+          ✕
+        </button>
 
         {/* Real-time Green-Screen Removed Canvas */}
-        <div className="ironman-canvas-wrap">
-          <canvas ref={canvasRef} className="ironman-chromakey-canvas" />
-          <div className="ironman-ground-repulsor-glow" />
+        <div className="ironman-canvas-container">
+          <canvas 
+            ref={canvasRef} 
+            width={540} 
+            height={960} 
+            className="ironman-gl-canvas" 
+          />
+          <div className="ironman-repulsor-beam-glow" />
         </div>
       </div>
 
       <style>{`
-        .ironman-hologram-root {
-          position: fixed;
-          right: clamp(10px, 2.5vw, 40px);
-          bottom: clamp(10px, 2vh, 40px);
-          z-index: 99999;
+        /* Anchored directly next to the IRON MAN PROTOCOL card in Tech Labs */
+        .ironman-hologram-anchor {
+          position: absolute;
+          left: calc(100% + 20px);
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 100;
           pointer-events: none;
           display: flex;
           flex-direction: column;
-          align-items: flex-end;
-          animation: ironmanSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          align-items: center;
+          animation: ironmanFadeScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes ironmanSlideIn {
+        @keyframes ironmanFadeScale {
           0% {
             opacity: 0;
-            transform: translateX(50px) scale(0.9);
+            transform: translateY(-50%) translateX(25px) scale(0.92);
           }
           100% {
             opacity: 1;
-            transform: translateX(0) scale(1);
+            transform: translateY(-50%) translateX(0) scale(1);
           }
         }
 
-        .ironman-hidden-video {
+        .ironman-source-video {
           position: fixed;
           top: -9999px;
           left: -9999px;
@@ -245,114 +260,99 @@ export default function IronManHologram({ isActive, onClose }) {
           pointer-events: none;
         }
 
-        .ironman-floating-body {
+        .ironman-hologram-card {
           position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
-          filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.35)) drop-shadow(0 0 40px rgba(255, 46, 86, 0.2));
+          filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.45)) drop-shadow(0 0 40px rgba(255, 46, 86, 0.3));
         }
 
-        .ironman-header-pill {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(12, 16, 26, 0.9);
-          border: 1px solid rgba(0, 240, 255, 0.4);
-          box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
-          backdrop-filter: blur(12px);
-          padding: 5px 12px;
-          border-radius: 20px;
-          margin-bottom: -15px;
+        .ironman-hologram-close-btn {
+          position: absolute;
+          top: -10px;
+          right: 10px;
           z-index: 10;
-          pointer-events: auto;
-        }
-
-        .ironman-status-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #00f0ff;
-          box-shadow: 0 0 8px #00f0ff;
-          animation: pulseDot 1.2s infinite alternate;
-        }
-
-        @keyframes pulseDot {
-          0% { opacity: 0.5; transform: scale(0.9); }
-          100% { opacity: 1; transform: scale(1.2); }
-        }
-
-        .ironman-status-text {
-          font-family: 'Space Grotesk', monospace;
-          font-size: 0.68rem;
-          font-weight: 800;
-          letter-spacing: 0.08em;
+          background: rgba(10, 14, 22, 0.85);
+          border: 1px solid rgba(0, 240, 255, 0.5);
           color: #00f0ff;
-        }
-
-        .ironman-close-btn {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #94a3b8;
-          width: 18px;
-          height: 18px;
+          width: 24px;
+          height: 24px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 0.65rem;
+          font-size: 0.75rem;
           cursor: pointer;
-          margin-left: 4px;
+          pointer-events: auto;
           transition: all 0.2s ease;
+          box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
         }
 
-        .ironman-close-btn:hover {
-          background: rgba(255, 46, 86, 0.3);
+        .ironman-hologram-close-btn:hover {
+          background: rgba(255, 46, 86, 0.8);
           border-color: #ff2e56;
           color: #ffffff;
-          transform: scale(1.1);
+          transform: scale(1.15);
         }
 
-        .ironman-canvas-wrap {
+        .ironman-canvas-container {
           position: relative;
-          width: clamp(260px, 20vw, 380px);
+          width: clamp(260px, 22vw, 360px);
           aspect-ratio: 9 / 16;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .ironman-chromakey-canvas {
+        .ironman-gl-canvas {
           width: 100%;
           height: 100%;
           pointer-events: none;
           background: transparent;
         }
 
-        .ironman-ground-repulsor-glow {
+        .ironman-repulsor-beam-glow {
           position: absolute;
-          bottom: 15px;
-          width: 70%;
-          height: 25px;
-          background: radial-gradient(ellipse, rgba(0, 240, 255, 0.5) 0%, rgba(255, 46, 86, 0.25) 45%, transparent 75%);
-          filter: blur(10px);
+          bottom: 25px;
+          width: 65%;
+          height: 22px;
+          background: radial-gradient(ellipse, rgba(0, 240, 255, 0.6) 0%, rgba(255, 46, 86, 0.3) 50%, transparent 80%);
+          filter: blur(8px);
           border-radius: 50%;
           pointer-events: none;
-          animation: repulsorPulse 2s ease-in-out infinite alternate;
+          animation: repulsorFlicker 1.8s ease-in-out infinite alternate;
         }
 
-        @keyframes repulsorPulse {
-          0% { opacity: 0.6; transform: scale(0.95); }
+        @keyframes repulsorFlicker {
+          0% { opacity: 0.5; transform: scale(0.95); }
           100% { opacity: 1; transform: scale(1.1); }
         }
 
-        @media (max-width: 768px) {
-          .ironman-hologram-root {
-            right: 5px;
-            bottom: 5px;
+        /* On screens narrower than 1340px: float on the bottom right so he never collides or overflows */
+        @media (max-width: 1340px) {
+          .ironman-hologram-anchor {
+            position: fixed;
+            left: auto;
+            right: 15px;
+            bottom: 20px;
+            top: auto;
+            transform: none;
           }
-          .ironman-canvas-wrap {
-            width: clamp(200px, 55vw, 280px);
+
+          @keyframes ironmanFadeScale {
+            0% {
+              opacity: 0;
+              transform: translateY(20px) scale(0.92);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+
+          .ironman-canvas-container {
+            width: clamp(200px, 45vw, 290px);
           }
         }
       `}</style>
