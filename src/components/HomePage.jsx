@@ -5,6 +5,7 @@ import ThemeInteractiveCore from './ThemeInteractiveCore';
 import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
+import IronManHologram from './IronManHologram';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { 
   playTechClick, 
@@ -451,34 +452,31 @@ export default function HomePage({
 }) {
   const activeSquad = SQUADS_DATA[currentSquad] || SQUADS_DATA.ironman;
 
-  // Stark Arc Flux & 3D Holographic State
+  // Stark Arc Flux & Iron Man Protocol State
   const [isTestingFlux, setIsTestingFlux] = useState(false);
   const [fluxTested, setFluxTested] = useState(false);
   const [isArcFlickering, setIsArcFlickering] = useState(false);
   const [isArc3D, setIsArc3D] = useState(false);
+  const [isIronManActive, setIsIronManActive] = useState(false);
 
   const handleTestArcFlux = () => {
     playRepulsorSound();
     setIsTestingFlux(true);
     setFluxTested(false);
     setIsArcFlickering(true);
-    setIsArc3D(false);
 
-    if (onTriggerEasterEgg) {
-      onTriggerEasterEgg('jarvis');
-    }
+    // Toggle Iron Man hologram in the designated area
+    setIsIronManActive(prev => !prev);
 
-    // Violent electrical plasma flicker for 500ms
+    // Electrical plasma flicker for 400ms
     setTimeout(() => {
       setIsArcFlickering(false);
       setIsArc3D(true);
       setIsTestingFlux(false);
       setFluxTested(true);
 
-      setTimeout(() => setFluxTested(false), 7000);
-      // 3D holographic mode remains active for 9s
-      setTimeout(() => setIsArc3D(false), 9000);
-    }, 500);
+      setTimeout(() => setFluxTested(false), 5000);
+    }, 400);
   };
 
   // Captain America Vibranium Shield State
@@ -616,6 +614,12 @@ export default function HomePage({
 
   return (
     <div className="home-page animate-fade-in">
+      {/* Iron Man Protocol Live WebGL Hologram */}
+      <IronManHologram 
+        isActive={isIronManActive} 
+        onClose={() => setIsIronManActive(false)} 
+      />
+
       {/* Dynamic Scroll Circuit Rail */}
       <ScrollCircuitRail />
 
@@ -839,9 +843,9 @@ export default function HomePage({
                         color: '#ffffff',
                         background: 'rgba(0, 240, 255, 0.12)'
                       }}
-                      title="Initialize Stark J.A.R.V.I.S. HUD & Nanotech Swarm Assembly"
+                      title="Deploy Stark Mark LXXXV Iron Man Protocol"
                     >
-                      {isTestingFlux ? 'INITIALIZING HUD...' : isArc3D ? 'J.A.R.V.I.S. & NANOTECH ACTIVE' : 'INITIALIZE J.A.R.V.I.S. & NANOTECH'}
+                      {isTestingFlux ? 'DEPLOYING PROTOCOL...' : isIronManActive ? 'IRON MAN PROTOCOL ONLINE' : 'INITIALIZE IRON MAN PROTOCOL'}
                     </button>
                   )}
 
@@ -854,7 +858,7 @@ export default function HomePage({
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      STARK J.A.R.V.I.S. & NANOTECH MATRIX ONLINE // ARC FLUX 3.2 GW
+                      {isIronManActive ? 'STARK MARK LXXXV PROTOCOL ACTIVE // DEPLOYED' : 'ARC FLUX NOMINAL // PROTOCOL READY'}
                     </span>
                   )}
 
@@ -1009,7 +1013,7 @@ export default function HomePage({
                         : activeSquad.key === 'captain'
                           ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
                           : activeSquad.key === 'ironman'
-                            ? (isArc3D ? 'HOLOGRAPHIC 3D ARC MATRIX ONLINE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY HUD')
+                            ? (isIronManActive ? 'IRON MAN PROTOCOL ACTIVE · CLICK TO DEACTIVATE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY PROTOCOL')
                             : 'SYSTEM NOMINAL'}
                     </div>
                   </div>
