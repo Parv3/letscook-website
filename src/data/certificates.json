@@ -574,5 +574,21 @@
     "credentialType": "Certificate of Participation",
     "issueDate": "October 10, 2026",
     "status": "active"
+  },
+  {
+    "id": "LC-ORIG-037",
+    "eventId": "origin-2026",
+    "verificationCode": "303030",
+    "verifyHash": "ABHISHEK27ORIG26",
+    "recipient": {
+      "name": "Abhishek Goswami",
+      "email": "abhishekgoswamibarsana27@gmail.com",
+      "phone": "9876543212",
+      "year": "1st Year",
+      "branch": "B.Tech CSE"
+    },
+    "credentialType": "Certificate of Participation",
+    "issueDate": "October 10, 2026",
+    "status": "active"
   }
 ]
