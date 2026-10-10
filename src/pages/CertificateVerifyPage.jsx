@@ -98,7 +98,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
     setIsExploding(false);
     setStaticCodeInput('');
     setOtpDigits(['', '', '', '', '', '']);
-    setErrorMessage('💥 System restored! Easter egg unlocked. Enter your actual certificate code.');
+    setErrorMessage('');
   };
 
   // STEP 1: Request 6-digit OTP to be sent via email
