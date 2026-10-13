@@ -62,8 +62,17 @@ export default function CertificateViewer({ certificate, event }) {
       }
 
       // Ensure fonts are loaded before painting text
-      if (document.fonts && document.fonts.ready) {
-        await document.fonts.ready;
+      if (document.fonts) {
+        try {
+          if (document.fonts.ready) await document.fonts.ready;
+          await Promise.allSettled([
+            document.fonts.load('86px "Adventures Unlimited"'),
+            document.fonts.load('86px "Allura"'),
+            document.fonts.load('86px "Alex Brush"')
+          ]);
+        } catch (e) {
+          // continue to render
+        }
       }
 
       const cfg = event.renderConfig || {};
@@ -74,13 +83,13 @@ export default function CertificateViewer({ certificate, event }) {
       ctx.textBaseline = 'middle';
       ctx.fillStyle = namePos.color || '#ffffff';
       
-      let fontSize = 74;
-      if (recipientName.length > 18) fontSize = 64;
-      if (recipientName.length > 24) fontSize = 54;
-      if (recipientName.length > 32) fontSize = 44;
+      let fontSize = 86;
+      if (recipientName.length > 18) fontSize = 74;
+      if (recipientName.length > 24) fontSize = 62;
+      if (recipientName.length > 32) fontSize = 50;
 
-      // Refined italic serif typography (Playfair Display / Georgia)
-      ctx.font = `italic 600 ${fontSize}px "Playfair Display", Georgia, serif`;
+      // Inscribe recipient name in Adventures Unlimited cursive script
+      ctx.font = `400 ${fontSize}px "Adventures Unlimited", "Adventures Unlimited Script", "Allura", "Alex Brush", cursive`;
       ctx.fillText(recipientName, namePos.x, namePos.y);
 
       // 3. Inscribe Credential Verification ID & Integrity Hash at the bottom edge

@@ -1,5 +1,14 @@
 /* Let's Cook - Design System & Custom CSS */
 
+@font-face {
+  font-family: 'Adventures Unlimited';
+  src: local('Adventures Unlimited'), 
+       local('Adventures Unlimited Script'), 
+       local('AdventuresUnlimited-Script'), 
+       local('AdventuresUnlimited');
+  font-display: swap;
+}
+
 :root {
   /* Fonts */
   --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;

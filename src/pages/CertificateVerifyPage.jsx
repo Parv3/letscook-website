@@ -10,9 +10,7 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Sparkles,
-  RefreshCw,
-  Copy,
-  Check
+  RefreshCw
 } from 'lucide-react';
 import CertificateViewer from '../components/CertificateViewer';
 import VerifyCyberBackground from '../components/VerifyCyberBackground';
@@ -37,7 +35,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   const [selectedCert, setSelectedCert] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isCopiedHash, setIsCopiedHash] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
 
   // Refs for 6 discrete OTP digit inputs
@@ -264,15 +261,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
     setCurrentPage('home');
   };
 
-  const copyVerifyHash = () => {
-    if (!selectedCert?.verifyHash) return;
-    playTechClick();
-    navigator.clipboard.writeText(selectedCert.verifyHash).then(() => {
-      setIsCopiedHash(true);
-      setTimeout(() => setIsCopiedHash(false), 2000);
-    });
-  };
-
   return (
     <div className="verify-page-wrapper">
       {/* 5-Second Site Explosion Easter Egg */}
@@ -338,57 +326,14 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         {/* ========================================================================= */}
         {step === 'verified' && selectedCert && (
           <section className="verified-view-section animate-fade-in">
-            {/* Authenticated Verification Card */}
-            <div className="verified-credential-card">
-              <div className="cred-card-header">
-                <div className="cred-badge">
-                  <div className="cred-icon-wrap">
-                    <ShieldCheck size={24} className="text-emerald-400" />
-                  </div>
-                  <div>
-                    <span className="cred-badge-status">AUTHENTICATED CREDENTIAL RECORD</span>
-                    <span className="cred-badge-id">Credential ID: {selectedCert.id}</span>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={handleResetLock}
-                  className="cred-reset-btn"
-                  title="Lock and verify another certificate"
-                >
-                  <Lock size={14} /> Lock & Exit
-                </button>
-              </div>
-
-              <div className="cred-details-grid">
-                <div className="cred-field">
-                  <label>ISSUED TO</label>
-                  <p className="cred-highlight-name">{selectedCert.recipient.name}</p>
-                </div>
-                <div className="cred-field">
-                  <label>CREDENTIAL TYPE</label>
-                  <p>{selectedCert.credentialType}</p>
-                </div>
-                <div className="cred-field">
-                  <label>EVENT</label>
-                  <p>{selectedCert.event?.name || 'ORIGIN 2026'}</p>
-                </div>
-                <div className="cred-field">
-                  <label>COLLABORATION</label>
-                  <p>Let's Cook {selectedCert.event?.partner ? `× ${selectedCert.event.partner}` : ''}</p>
-                </div>
-                <div className="cred-field">
-                  <label>ISSUE DATE</label>
-                  <p>{selectedCert.issueDate}</p>
-                </div>
-                <div className="cred-field">
-                  <label>INTEGRITY HASH</label>
-                  <div className="hash-copy-wrap" onClick={copyVerifyHash} title="Click to copy hash">
-                    <p className="font-mono text-xs text-zinc-300">{selectedCert.verifyHash}</p>
-                    {isCopiedHash ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} className="text-zinc-500" />}
-                  </div>
-                </div>
-              </div>
+            <div className="verified-top-action-bar">
+              <button 
+                onClick={handleResetLock}
+                className="cred-reset-btn"
+                title="Verify another certificate"
+              >
+                <Lock size={14} /> Verify Another Certificate
+              </button>
             </div>
 
             {/* Dynamic Interactive Certificate Viewer & Downloader */}
@@ -1038,60 +983,13 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         .verified-view-section {
           display: flex;
           flex-direction: column;
-          gap: 28px;
+          gap: 16px;
         }
 
-        .verified-credential-card {
-          background: rgba(11, 14, 22, 0.85);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 16px;
-          padding: 26px 24px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-        }
-
-        .cred-card-header {
+        .verified-top-action-bar {
           display: flex;
+          justify-content: flex-end;
           align-items: center;
-          justify-content: space-between;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          padding-bottom: 16px;
-          margin-bottom: 20px;
-          flex-wrap: wrap;
-          gap: 14px;
-        }
-
-        .cred-badge {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-        }
-
-        .cred-icon-wrap {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: rgba(16, 185, 129, 0.12);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .cred-badge-status {
-          display: block;
-          font-family: 'Space Grotesk', monospace;
-          font-size: 0.75rem;
-          font-weight: 800;
-          color: #10b981;
-          letter-spacing: 0.06em;
-        }
-
-        .cred-badge-id {
-          display: block;
-          font-family: monospace;
-          font-size: 0.85rem;
-          color: #94a3b8;
         }
 
         .cred-reset-btn {
@@ -1112,50 +1010,6 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           color: #ffffff;
           border-color: rgba(255, 255, 255, 0.3);
           background: rgba(255, 255, 255, 0.08);
-        }
-
-        .cred-details-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-          gap: 16px;
-        }
-
-        .cred-field label {
-          font-family: 'Space Grotesk', monospace;
-          font-size: 0.68rem;
-          color: #64748b;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          display: block;
-          margin-bottom: 4px;
-        }
-
-        .cred-field p {
-          font-size: 0.92rem;
-          color: #e2e8f0;
-          font-weight: 600;
-        }
-
-        .cred-highlight-name {
-          color: #00f0ff !important;
-          font-size: 1.15rem !important;
-          font-weight: 800 !important;
-        }
-
-        .hash-copy-wrap {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          cursor: pointer;
-          background: rgba(255, 255, 255, 0.03);
-          padding: 4px 8px;
-          border-radius: 6px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          width: fit-content;
-        }
-
-        .hash-copy-wrap:hover {
-          border-color: rgba(0, 240, 255, 0.3);
         }
 
         @media (max-width: 640px) {
