@@ -13,13 +13,70 @@ import {
   RefreshCw,
   Trophy,
   Medal,
-  Award
+  Award,
+  ShieldAlert,
+  Clock
 } from 'lucide-react';
 import CertificateViewer from '../components/CertificateViewer';
 import VerifyCyberBackground from '../components/VerifyCyberBackground';
 import SiteExplosionEasterEgg from '../components/SiteExplosionEasterEgg';
 import { verifyAndGetCertificate } from '../services/certificateService';
 import { playTechClick } from '../utils/soundEngine';
+
+// Rate Limiter configuration for passkey verification: max 4 tries per 1 hour
+const RATE_LIMIT_MAX_ATTEMPTS = 4;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RATE_LIMIT_STORAGE_KEY = 'lc_passkey_rate_limit_attempts';
+
+function getPasskeyAttempts() {
+  try {
+    const raw = localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const now = Date.now();
+    return parsed.filter(ts => typeof ts === 'number' && now - ts < RATE_LIMIT_WINDOW_MS);
+  } catch {
+    return [];
+  }
+}
+
+function recordFailedPasskeyAttempt() {
+  try {
+    const attempts = getPasskeyAttempts();
+    attempts.push(Date.now());
+    localStorage.setItem(RATE_LIMIT_STORAGE_KEY, JSON.stringify(attempts));
+    return attempts;
+  } catch {
+    return [];
+  }
+}
+
+function clearPasskeyAttempts() {
+  try {
+    localStorage.removeItem(RATE_LIMIT_STORAGE_KEY);
+  } catch {}
+}
+
+function getLockoutTimeRemaining() {
+  const attempts = getPasskeyAttempts();
+  if (attempts.length < RATE_LIMIT_MAX_ATTEMPTS) return 0;
+  const earliest = attempts[0];
+  const now = Date.now();
+  const remaining = earliest + RATE_LIMIT_WINDOW_MS - now;
+  return remaining > 0 ? remaining : 0;
+}
+
+function formatLockoutTime(ms) {
+  if (ms <= 0) return '0s';
+  const totalSec = Math.ceil(ms / 1000);
+  const minutes = Math.floor(totalSec / 60);
+  const seconds = totalSec % 60;
+  if (minutes > 0) {
+    return `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+  }
+  return `${seconds}s`;
+}
 
 export default function CertificateVerifyPage({ setCurrentPage }) {
   // Wizard steps: 'email' | 'otp' | 'static-code' | 'verified'
@@ -40,8 +97,26 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
 
+  // Rate Limiting State for Passkey
+  const [passkeyLockoutRemaining, setPasskeyLockoutRemaining] = useState(() => getLockoutTimeRemaining());
+  const [passkeyAttemptsCount, setPasskeyAttemptsCount] = useState(() => getPasskeyAttempts().length);
+
   // Refs for 6 discrete OTP digit inputs
   const otpInputRefs = useRef([]);
+
+  // Live ticker for passkey lockout countdown & attempts sync
+  useEffect(() => {
+    const updateRateLimit = () => {
+      const remaining = getLockoutTimeRemaining();
+      const currentAttempts = getPasskeyAttempts();
+      setPasskeyLockoutRemaining(remaining);
+      setPasskeyAttemptsCount(currentAttempts.length);
+    };
+
+    updateRateLimit();
+    const interval = setInterval(updateRateLimit, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Sync URL query params on mount (e.g. /verify?code=547162&email=...)
   useEffect(() => {
@@ -75,21 +150,51 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
     return () => clearInterval(timer);
   }, [resendCountdown]);
 
-  // Handle direct static code verification
+  // Handle direct static code verification with strict 4 tries / 1 hour rate limiting
   const handleStaticCodeVerify = (codeToVerify, email = '') => {
+    // Check if user is currently locked out
+    const currentLockout = getLockoutTimeRemaining();
+    if (currentLockout > 0) {
+      setPasskeyLockoutRemaining(currentLockout);
+      setErrorMessage(`Rate limit reached: Max 4 attempts per hour. Locked for ${formatLockoutTime(currentLockout)}. Please verify via your registered email.`);
+      return;
+    }
+
     const clean = (codeToVerify || '').trim();
+    if (!clean) return;
+
     if (clean === '300406') {
       setIsExploding(true);
       return;
     }
+
     setIsLoading(true);
     setErrorMessage('');
     const result = verifyAndGetCertificate({ code: clean, email });
+
     if (result.success && result.certificate) {
+      clearPasskeyAttempts();
+      setPasskeyAttemptsCount(0);
+      setPasskeyLockoutRemaining(0);
       setSelectedCert(result.certificate);
       setStep('verified');
     } else {
-      setErrorMessage(result.error || 'Invalid verification code.');
+      const updatedAttempts = recordFailedPasskeyAttempt();
+      const newCount = updatedAttempts.length;
+      setPasskeyAttemptsCount(newCount);
+
+      if (newCount >= RATE_LIMIT_MAX_ATTEMPTS) {
+        const lockout = getLockoutTimeRemaining();
+        setPasskeyLockoutRemaining(lockout);
+        setErrorMessage(
+          `Security lockout active: 4 failed attempts reached. Passkey entry is locked for ${formatLockoutTime(lockout)}. You can still verify anytime via your registered email.`
+        );
+      } else {
+        const triesLeft = RATE_LIMIT_MAX_ATTEMPTS - newCount;
+        setErrorMessage(
+          `${result.error || 'Invalid verification passkey.'} (${triesLeft} of ${RATE_LIMIT_MAX_ATTEMPTS} ${triesLeft === 1 ? 'try' : 'tries'} remaining this hour)`
+        );
+      }
     }
     setIsLoading(false);
   };
@@ -571,62 +676,30 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           <section className="verify-gate-section animate-fade-in">
             <div className="gate-card">
               <div className="gate-card-header">
-                <div className="gate-lock-icon">
-                  <Lock size={26} className="text-cyan-400" />
+                <div className={`gate-lock-icon ${passkeyLockoutRemaining > 0 ? 'lockout' : ''}`}>
+                  {passkeyLockoutRemaining > 0 ? (
+                    <ShieldAlert size={26} className="text-amber-400" />
+                  ) : (
+                    <KeyRound size={26} className="text-cyan-400" />
+                  )}
                 </div>
-                <h3>Enter Direct Passkey</h3>
+                <h3>{passkeyLockoutRemaining > 0 ? 'Security Lockout' : 'Enter Direct Passkey'}</h3>
                 <p>
-                  If you received a 6-digit passkey, enter it below to unlock your certificate immediately.
+                  {passkeyLockoutRemaining > 0
+                    ? 'Too many failed attempts (4/4). Passkey verification is temporarily restricted.'
+                    : 'If you received a 6-digit confidential passkey, enter it below to unlock your certificate immediately.'}
                 </p>
               </div>
 
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  playTechClick();
-                  handleStaticCodeVerify(staticCodeInput);
-                }} 
-                className="gate-form"
-              >
-                <div className="input-group">
-                  <label htmlFor="static-code-field">
-                    6-DIGIT PASSKEY
-                  </label>
-                  <div className="input-field-wrap">
-                    <KeyRound size={18} className="input-icon" />
-                    <input
-                      id="static-code-field"
-                      type="text"
-                      maxLength={12}
-                      value={staticCodeInput}
-                      onChange={(e) => {
-                        setStaticCodeInput(e.target.value.trim());
-                        if (errorMessage) setErrorMessage('');
-                      }}
-                      placeholder="e.g. 300406"
-                      className="gate-input code-input font-mono"
-                      autoFocus
-                      required
-                    />
+              {passkeyLockoutRemaining > 0 ? (
+                <div className="rate-limit-lockout-box animate-fade-in">
+                  <div className="lockout-time-display">
+                    <Clock size={18} className="text-amber-400" />
+                    <span>LOCKED FOR <strong className="font-mono text-amber-300">{formatLockoutTime(passkeyLockoutRemaining)}</strong></span>
                   </div>
-                </div>
-
-                {errorMessage && (
-                  <div className="gate-error-banner animate-fade-in">
-                    <AlertCircle size={18} className="flex-shrink-0" />
-                    <span>{errorMessage}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isLoading || !staticCodeInput}
-                  className="gate-submit-btn"
-                >
-                  <Unlock size={18} /> Unlock Certificate
-                </button>
-
-                <div className="gate-footer-links">
+                  <p className="lockout-desc">
+                    Maximum rate limit reached (4 tries / 1 hour). To prevent unauthorized passkey testing, direct entry is locked until the security cooldown expires.
+                  </p>
                   <button
                     type="button"
                     onClick={() => {
@@ -634,12 +707,89 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
                       setStep('email');
                       setErrorMessage('');
                     }}
-                    className="link-btn"
+                    className="gate-submit-btn lockout-fallback-btn"
                   >
-                    ← Back to email verification
+                    <Mail size={18} /> Verify With Email Instead
                   </button>
+                  <div className="gate-footer-links">
+                    <span className="text-xs text-zinc-500">Email OTP verification remains open at all times.</span>
+                  </div>
                 </div>
-              </form>
+              ) : (
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    playTechClick();
+                    handleStaticCodeVerify(staticCodeInput);
+                  }} 
+                  className="gate-form"
+                >
+                  <div className="input-group">
+                    <div className="input-label-row">
+                      <label htmlFor="static-code-field">6-DIGIT PASSKEY</label>
+                      <div className="rate-limit-pills-wrap" title="Max 4 attempts per hour">
+                        <span className="rate-limit-badge">
+                          {RATE_LIMIT_MAX_ATTEMPTS - passkeyAttemptsCount} of {RATE_LIMIT_MAX_ATTEMPTS} tries left
+                        </span>
+                        <div className="rate-limit-dots">
+                          {[...Array(RATE_LIMIT_MAX_ATTEMPTS)].map((_, idx) => (
+                            <span 
+                              key={idx} 
+                              className={`attempt-dot ${idx < passkeyAttemptsCount ? 'used' : 'available'}`} 
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="input-field-wrap">
+                      <KeyRound size={18} className="input-icon" />
+                      <input
+                        id="static-code-field"
+                        type="text"
+                        maxLength={12}
+                        value={staticCodeInput}
+                        onChange={(e) => {
+                          setStaticCodeInput(e.target.value.trim());
+                          if (errorMessage) setErrorMessage('');
+                        }}
+                        placeholder="e.g. 300406"
+                        className="gate-input code-input font-mono"
+                        autoFocus
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {errorMessage && (
+                    <div className="gate-error-banner animate-fade-in">
+                      <AlertCircle size={18} className="flex-shrink-0" />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading || !staticCodeInput}
+                    className="gate-submit-btn"
+                  >
+                    <Unlock size={18} /> Unlock Certificate
+                  </button>
+
+                  <div className="gate-footer-links">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playTechClick();
+                        setStep('email');
+                        setErrorMessage('');
+                      }}
+                      className="link-btn"
+                    >
+                      ← Back to email verification
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </section>
         )}
@@ -1132,6 +1282,98 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           color: #ffffff;
           border-color: rgba(255, 255, 255, 0.3);
           background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Rate Limit & Security Lockout Styles */
+        .gate-lock-icon.lockout {
+          background: rgba(245, 158, 11, 0.12);
+          border-color: rgba(245, 158, 11, 0.4);
+          box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+        }
+
+        .rate-limit-lockout-box {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          text-align: center;
+          padding: 6px 0;
+        }
+
+        .lockout-time-display {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.35);
+          border-radius: 12px;
+          padding: 12px 18px;
+          font-family: 'Space Grotesk', monospace;
+          font-size: 0.95rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          color: #fbbf24;
+          box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+        }
+
+        .lockout-desc {
+          font-size: 0.85rem;
+          color: #94a3b8;
+          line-height: 1.5;
+        }
+
+        .lockout-fallback-btn {
+          background: linear-gradient(135deg, #00f0ff 0%, #0066ff 100%) !important;
+          color: #050608 !important;
+          box-shadow: 0 4px 18px rgba(0, 240, 255, 0.25) !important;
+        }
+
+        .input-label-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 6px;
+        }
+
+        .input-label-row label {
+          margin-bottom: 0 !important;
+        }
+
+        .rate-limit-pills-wrap {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .rate-limit-badge {
+          font-family: 'Space Grotesk', monospace;
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.02em;
+        }
+
+        .rate-limit-dots {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .attempt-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          transition: all 0.25s ease;
+        }
+
+        .attempt-dot.available {
+          background: #00f0ff;
+          box-shadow: 0 0 6px rgba(0, 240, 255, 0.6);
+        }
+
+        .attempt-dot.used {
+          background: #ef4444;
+          box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
         }
 
         @media (max-width: 640px) {
