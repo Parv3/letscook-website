@@ -4,11 +4,11 @@ import { getTrackedUrl } from '../utils/utmTracker';
 
 const SEARCH_ITEMS = [
   { 
-    title: 'Certificate Verification', 
+    title: 'Certifications', 
     category: 'Portal', 
     page: 'verify', 
-    keywords: ['verify', 'verification', 'certificate', 'certificates', 'cert', 'certs', 'origin', 'workshop', 'credential', 'credentials', 'otp'],
-    snippet: 'Verify and access your certificates' 
+    keywords: ['certifications', 'verify certificates', 'verify', 'verification', 'certificate', 'certificates', 'cert', 'certs', 'origin', 'workshop', 'credential', 'credentials', 'otp'],
+    snippet: 'Verify and access your official certificates' 
   },
   { title: 'Community Overview', category: 'General', page: 'home', section: 'top', snippet: 'Student-run technology & builder Let\'s Cook community.' },
   { title: 'The Squads & Teams', category: 'Community', page: 'home', section: 'squads', snippet: 'Tech, PR, Events, and Core Command builder teams.' },

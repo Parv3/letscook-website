@@ -10,7 +10,10 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Sparkles,
-  RefreshCw
+  RefreshCw,
+  Trophy,
+  Medal,
+  Award
 } from 'lucide-react';
 import CertificateViewer from '../components/CertificateViewer';
 import VerifyCyberBackground from '../components/VerifyCyberBackground';
@@ -43,7 +46,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   // Sync URL query params on mount (e.g. /verify?code=547162&email=...)
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Let's Cook | Certificate Verification Portal";
+    document.title = "Let's Cook | Official Certifications Portal";
 
     const params = new URLSearchParams(window.location.search);
     const codeParam = params.get('code') || params.get('pin');
@@ -269,8 +272,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
       {/* 60 FPS Procedural Cyber Moving Background */}
       <VerifyCyberBackground />
 
-      {/* Subtle Ambient Radial Glow */}
-      <div className="verify-scanline-ambient" />
+      {/* Subtle Ambient Radial Glow (Adapts to Winner Gold/Silver/Bronze) */}
+      <div className={`verify-scanline-ambient ${selectedCert?.awardTier ? `ambient-${selectedCert.awardTier}` : ''}`} />
 
       <main className="verify-main-container">
         {/* Sleek Minimal Top Navigation Bar */}
@@ -289,7 +292,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
               Home
             </button>
             <button className="top-nav-pill active">
-              Verify
+              Certifications
             </button>
             <button 
               onClick={() => {
@@ -308,16 +311,39 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         {/* Portal Hero Header */}
         <header className="verify-hero">
-          <div className="verify-badge-pill">
-            <ShieldCheck size={14} className="text-cyan-400" />
-            <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
-          </div>
+          {step === 'verified' && selectedCert?.awardTier ? (
+            <div className={`verify-badge-pill winner-badge-pill tier-${selectedCert.awardTier}`}>
+              {selectedCert.awardTier === 'gold' && <Trophy size={14} className="text-yellow-400" />}
+              {selectedCert.awardTier === 'silver' && <Medal size={14} className="text-slate-200" />}
+              {selectedCert.awardTier === 'bronze' && <Award size={14} className="text-amber-500" />}
+              <span>{selectedCert.award?.toUpperCase()} • OFFICIAL CREDENTIAL</span>
+            </div>
+          ) : (
+            <div className="verify-badge-pill">
+              <ShieldCheck size={14} className="text-cyan-400" />
+              <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
+            </div>
+          )}
 
           <h1 className="verify-title">
-            Certificate <span className="text-gradient-cyan">Verification</span>
+            {step === 'verified' && selectedCert?.awardTier ? (
+              <>
+                Certificate of <span className={`text-gradient-${selectedCert.awardTier}`}>Achievement</span>
+              </>
+            ) : (
+              <>
+                Official <span className="text-gradient-cyan">Certifications</span>
+              </>
+            )}
           </h1>
           <p className="verify-subtitle">
-            Enter your registered email address to receive an automated verification code and access your official certificate.
+            {step === 'verified' && selectedCert?.awardTier ? (
+              <>
+                Official Ideathon Podium Award credential awarded to <strong className="text-white">{selectedCert.recipient.name}</strong> for outstanding performance in ORIGIN 2026.
+              </>
+            ) : (
+              'Enter your registered email address to receive an automated verification code and access your official certificate.'
+            )}
           </p>
         </header>
 
@@ -327,6 +353,14 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         {step === 'verified' && selectedCert && (
           <section className="verified-view-section animate-fade-in">
             <div className="verified-top-action-bar">
+              {selectedCert.awardTier && (
+                <div className={`winner-pill-chip tier-${selectedCert.awardTier}`}>
+                  {selectedCert.awardTier === 'gold' && <Trophy size={14} className="text-yellow-400" />}
+                  {selectedCert.awardTier === 'silver' && <Medal size={14} className="text-slate-200" />}
+                  {selectedCert.awardTier === 'bronze' && <Award size={14} className="text-amber-500" />}
+                  <span>{selectedCert.award}</span>
+                </div>
+              )}
               <button 
                 onClick={handleResetLock}
                 className="cred-reset-btn"
@@ -628,6 +662,19 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           background: radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.05) 0%, transparent 60%);
           pointer-events: none;
           z-index: 1;
+          transition: background 0.5s ease;
+        }
+
+        .verify-scanline-ambient.ambient-gold {
+          background: radial-gradient(circle at 50% 15%, rgba(251, 191, 36, 0.12) 0%, transparent 65%);
+        }
+
+        .verify-scanline-ambient.ambient-silver {
+          background: radial-gradient(circle at 50% 15%, rgba(226, 232, 240, 0.12) 0%, transparent 65%);
+        }
+
+        .verify-scanline-ambient.ambient-bronze {
+          background: radial-gradient(circle at 50% 15%, rgba(234, 88, 12, 0.12) 0%, transparent 65%);
         }
 
         .verify-main-container {
@@ -723,6 +770,28 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           color: #00f0ff;
           margin-bottom: 16px;
           box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .winner-badge-pill.tier-gold {
+          border-color: rgba(251, 191, 36, 0.5);
+          background: rgba(251, 191, 36, 0.12);
+          color: #fbbf24;
+          box-shadow: 0 0 20px rgba(251, 191, 36, 0.25);
+        }
+
+        .winner-badge-pill.tier-silver {
+          border-color: rgba(226, 232, 240, 0.5);
+          background: rgba(226, 232, 240, 0.12);
+          color: #f8fafc;
+          box-shadow: 0 0 20px rgba(226, 232, 240, 0.25);
+        }
+
+        .winner-badge-pill.tier-bronze {
+          border-color: rgba(234, 88, 12, 0.5);
+          background: rgba(234, 88, 12, 0.12);
+          color: #fb923c;
+          box-shadow: 0 0 20px rgba(234, 88, 12, 0.25);
         }
 
         .verify-title {
@@ -736,6 +805,24 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .text-gradient-cyan {
           background: linear-gradient(135deg, #00f0ff 0%, #0099ff 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-gold {
+          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-silver {
+          background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-bronze {
+          background: linear-gradient(135deg, #fb923c 0%, #ea580c 50%, #b45309 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -988,8 +1075,43 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
         .verified-top-action-bar {
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
           align-items: center;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .winner-pill-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 7px 16px;
+          border-radius: 8px;
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+        }
+
+        .winner-pill-chip.tier-gold {
+          background: rgba(251, 191, 36, 0.12);
+          border: 1px solid rgba(251, 191, 36, 0.4);
+          color: #fbbf24;
+          box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+        }
+
+        .winner-pill-chip.tier-silver {
+          background: rgba(226, 232, 240, 0.12);
+          border: 1px solid rgba(226, 232, 240, 0.4);
+          color: #f8fafc;
+          box-shadow: 0 0 15px rgba(226, 232, 240, 0.15);
+        }
+
+        .winner-pill-chip.tier-bronze {
+          background: rgba(234, 88, 12, 0.12);
+          border: 1px solid rgba(234, 88, 12, 0.4);
+          color: #fb923c;
+          box-shadow: 0 0 15px rgba(234, 88, 12, 0.15);
         }
 
         .cred-reset-btn {

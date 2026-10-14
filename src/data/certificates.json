@@ -379,7 +379,16 @@
       "year": "1st Year",
       "branch": "Btech CSE AIML"
     },
-    "credentialType": "Certificate of Participation",
+    "credentialType": "Certificate of Achievement",
+    "award": "2nd Rank Runner Up",
+    "awardRank": 2,
+    "awardTier": "silver",
+    "customTemplate": "/certificates/winners/origin-winner-2nd-arjit.png",
+    "dimensions": {
+      "width": 3000,
+      "height": 2121
+    },
+    "isPreRendered": true,
     "issueDate": "October 10, 2026",
     "status": "active"
   },
@@ -411,7 +420,16 @@
       "year": "1st Year",
       "branch": "B.tech CSE (AIML)"
     },
-    "credentialType": "Certificate of Participation",
+    "credentialType": "Certificate of Achievement",
+    "award": "1st Rank Winner",
+    "awardRank": 1,
+    "awardTier": "gold",
+    "customTemplate": "/certificates/winners/origin-winner-1st-payal.png",
+    "dimensions": {
+      "width": 3000,
+      "height": 2121
+    },
+    "isPreRendered": true,
     "issueDate": "October 10, 2026",
     "status": "active"
   },
@@ -523,7 +541,16 @@
       "year": "1st Year",
       "branch": "B.tech"
     },
-    "credentialType": "Certificate of Participation",
+    "credentialType": "Certificate of Achievement",
+    "award": "3rd Rank Second Runner Up",
+    "awardRank": 3,
+    "awardTier": "bronze",
+    "customTemplate": "/certificates/winners/origin-winner-3rd-aastha.png",
+    "dimensions": {
+      "width": 3000,
+      "height": 2121
+    },
+    "isPreRendered": true,
     "issueDate": "October 10, 2026",
     "status": "active"
   },
