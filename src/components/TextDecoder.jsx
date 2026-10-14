@@ -37,8 +37,8 @@ export default function TextDecoder({ text, className = '' }) {
             .join('')
         );
 
-        // Play audio micro-tick only once every 6 frames to prevent Web Audio overload
-        if (frame % 6 === 0) {
+        // Play audio micro-tick every 4 frames for crisp tactile cadence
+        if (frame % 4 === 0) {
           playDecodeTick();
         }
       }

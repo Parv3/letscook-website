@@ -85,7 +85,8 @@ export const playTechClick = () => {
 
 /**
  * 2. Subtle Mechanical Data Decode Tick
- * Replaced piercing 2000Hz chirp with an authentic muted mechanical key tap (280Hz -> 110Hz).
+ * Authentic tactile mechanical keyboard / typewriter click (420Hz -> 160Hz)
+ * Clearly audible on laptop and mobile speakers while remaining warm, mature, and non-childish.
  */
 export const playDecodeTick = () => {
   if (soundMuted) return;
@@ -98,30 +99,34 @@ export const playDecodeTick = () => {
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
+    // Damped warm acoustic filter
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(650, now);
+    filter.frequency.setValueAtTime(1100, now);
+    filter.Q.setValueAtTime(1.8, now);
 
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(280 + Math.random() * 60, now);
-    osc.frequency.exponentialRampToValueAtTime(110, now + 0.02);
+    osc.frequency.setValueAtTime(420 + Math.random() * 80, now);
+    osc.frequency.exponentialRampToValueAtTime(160, now + 0.032);
 
-    gain.gain.setValueAtTime(0.035, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+    gain.gain.setValueAtTime(0.14, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
 
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.02);
+    osc.stop(now + 0.032);
   } catch (err) {
     // Audio fallback
   }
 };
 
 /**
- * 3. Haptic Sub-Rumble Tick
- * Warm low-frequency pulse (65Hz -> 35Hz), feels like physical phone haptics.
+ * 3. Haptic Mechanical Hover Rumble
+ * Progressive mechanical engine rev / haptic vibration.
+ * Uses low-mid audible harmonics (140Hz-240Hz) so it translates clearly
+ * through laptop speakers and earbuds while keeping a deep sub-bass foundation.
  */
 export const playHoverRumbleTick = (intensity = 'light') => {
   if (soundMuted) return;
@@ -130,29 +135,49 @@ export const playHoverRumbleTick = (intensity = 'light') => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    const freqMap = { light: 65, medium: 85, heavy: 110 };
-    const gainMap = { light: 0.06, medium: 0.09, heavy: 0.13 };
+    const freqMap = { light: 140, medium: 180, heavy: 240 };
+    const gainMap = { light: 0.18, medium: 0.26, heavy: 0.36 };
 
+    // 1. Audible engine rumble body (punchy low-mid)
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(180, now);
+    filter.frequency.setValueAtTime(450, now);
+    filter.frequency.exponentialRampToValueAtTime(180, now + 0.065);
+    filter.Q.setValueAtTime(2.2, now);
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freqMap[intensity] || 70, now);
-    osc.frequency.exponentialRampToValueAtTime(35, now + 0.045);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freqMap[intensity] || 150, now);
+    osc.frequency.exponentialRampToValueAtTime(65, now + 0.065);
 
-    gain.gain.setValueAtTime(gainMap[intensity] || 0.07, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+    gain.gain.setValueAtTime(gainMap[intensity] || 0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
 
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.045);
+    osc.stop(now + 0.065);
+
+    // 2. Sub-bass acoustic weight
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(80, now);
+    subOsc.frequency.exponentialRampToValueAtTime(38, now + 0.07);
+
+    subGain.gain.setValueAtTime((gainMap[intensity] || 0.2) * 0.8, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+
+    subOsc.start(now);
+    subOsc.stop(now + 0.07);
   } catch (err) {
     // Audio fallback
   }
