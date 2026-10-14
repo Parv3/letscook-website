@@ -1,24 +1,24 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Navbar from './components/Navbar';
-import SearchModal from './components/SearchModal';
 import HomePage from './components/HomePage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsPage from './pages/TermsPage';
-import LinksPage from './pages/LinksPage';
-
-// Lazy loaded for high-traffic performance optimization
-const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage'));
 import FloatingContact from './components/FloatingContact';
 import CookieBanner from './components/CookieBanner';
 import ScrollTopButton from './components/ScrollTopButton';
-import PitchIdeaModal from './components/PitchIdeaModal';
-import TerminalDrawer from './components/TerminalDrawer';
 import SquadThemeCanvas from './components/SquadThemeCanvas';
-import CinematicEasterEggOverlay from './components/CinematicEasterEggOverlay';
 import ClickSpark from './components/ClickSpark';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { captureUtmParams } from './utils/utmTracker';
+
+// Lazy-loaded routes & heavy overlays for optimal initial load time
+const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const LinksPage = lazy(() => import('./pages/LinksPage'));
+const SearchModal = lazy(() => import('./components/SearchModal'));
+const PitchIdeaModal = lazy(() => import('./components/PitchIdeaModal'));
+const TerminalDrawer = lazy(() => import('./components/TerminalDrawer'));
+const CinematicEasterEggOverlay = lazy(() => import('./components/CinematicEasterEggOverlay'));
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -132,11 +132,14 @@ export default function App() {
         <SquadThemeCanvas squad={activeSquad} />
 
         {/* 2. Full-Screen Cinematic Marvel Easter Egg FX Overlay */}
-        <CinematicEasterEggOverlay 
-          effect={activeEasterEgg} 
-          onComplete={() => setActiveEasterEgg(null)} 
-        />
-
+        {activeEasterEgg && (
+          <Suspense fallback={null}>
+            <CinematicEasterEggOverlay 
+              effect={activeEasterEgg} 
+              onComplete={() => setActiveEasterEgg(null)} 
+            />
+          </Suspense>
+        )}
 
         {/* Main Site Container */}
         <div className="site-main-wrapper">
@@ -160,37 +163,39 @@ export default function App() {
                 onTriggerEasterEgg={setActiveEasterEgg}
               />
             )}
-            {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
-            {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
-            {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
-            {currentPage === 'verify' && (
-              <Suspense fallback={
-                <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00f0ff', fontFamily: 'monospace' }}>
-                  INITIALIZING VERIFICATION REGISTRY...
-                </div>
-              }>
-                <CertificateVerifyPage setCurrentPage={setCurrentPage} />
-              </Suspense>
-            )}
+            <Suspense fallback={null}>
+              {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
+              {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
+              {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
+              {currentPage === 'verify' && <CertificateVerifyPage setCurrentPage={setCurrentPage} />}
+            </Suspense>
           </main>
 
           {/* 8. Global Interactive Overlays & Modals */}
-          <SearchModal
-            isOpen={isSearchOpen}
-            onClose={() => setIsSearchOpen(false)}
-            setCurrentPage={setCurrentPage}
-          />
-          <PitchIdeaModal
-            isOpen={isPitchModalOpen}
-            onClose={() => setIsPitchModalOpen(false)}
-          />
-          <TerminalDrawer
-            isOpen={isTerminalOpen}
-            onClose={() => setIsTerminalOpen(false)}
-            onOpenPitchModal={() => setIsPitchModalOpen(true)}
-            onTriggerEasterEgg={setActiveEasterEgg}
-            onSelectSquad={setActiveSquad}
-          />
+          <Suspense fallback={null}>
+            {isSearchOpen && (
+              <SearchModal
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                setCurrentPage={setCurrentPage}
+              />
+            )}
+            {isPitchModalOpen && (
+              <PitchIdeaModal
+                isOpen={isPitchModalOpen}
+                onClose={() => setIsPitchModalOpen(false)}
+              />
+            )}
+            {isTerminalOpen && (
+              <TerminalDrawer
+                isOpen={isTerminalOpen}
+                onClose={() => setIsTerminalOpen(false)}
+                onOpenPitchModal={() => setIsPitchModalOpen(true)}
+                onTriggerEasterEgg={setActiveEasterEgg}
+                onSelectSquad={setActiveSquad}
+              />
+            )}
+          </Suspense>
           <FloatingContact />
           <CookieBanner />
           <ScrollTopButton />
