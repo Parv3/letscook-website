@@ -126,20 +126,20 @@ html.theme-ironman {
   --border-focus: #ff0055;
   --accent-burgundy: #ff0055;
   --accent-burgundy-hover: #ff2a75;
-  --accent-burgundy-light: rgba(255, 0, 85, 0.18);
-  --accent-burgundy-border: rgba(255, 0, 85, 0.55);
+  --accent-burgundy-light: rgba(255, 0, 85, 0.12);
+  --accent-burgundy-border: rgba(255, 0, 85, 0.35);
   --secondary-accent: #00f0ff;
-  --accent-glow: rgba(255, 0, 85, 0.5);
+  --accent-glow: rgba(255, 0, 85, 0.2);
   --hero-highlight-bg: #ff0055;
   --hero-highlight-text: #ffffff;
-  --badge-bg: rgba(0, 240, 255, 0.12);
+  --badge-bg: rgba(0, 240, 255, 0.08);
   --badge-text: #00f0ff;
-  --badge-border: rgba(0, 240, 255, 0.4);
+  --badge-border: rgba(0, 240, 255, 0.25);
   --laser-color: #00f0ff;
   --navbar-bg: rgba(6, 4, 8, 0.95);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #ff0055;
-  --logo-filter: drop-shadow(0 0 8px rgba(255, 0, 85, 0.6));
+  --logo-filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.4));
 }
 
 /* 2. PR & MEDIA: CAPTAIN AMERICA (Vibranium Alliance) */
@@ -152,20 +152,20 @@ html.theme-captain {
   --border-focus: #3b82f6;
   --accent-burgundy: #2563eb;
   --accent-burgundy-hover: #3b82f6;
-  --accent-burgundy-light: rgba(37, 99, 235, 0.18);
-  --accent-burgundy-border: rgba(59, 130, 246, 0.55);
+  --accent-burgundy-light: rgba(37, 99, 235, 0.12);
+  --accent-burgundy-border: rgba(59, 130, 246, 0.35);
   --secondary-accent: #ef4444;
-  --accent-glow: rgba(37, 99, 235, 0.5);
+  --accent-glow: rgba(37, 99, 235, 0.2);
   --hero-highlight-bg: #2563eb;
   --hero-highlight-text: #ffffff;
-  --badge-bg: rgba(59, 130, 246, 0.12);
+  --badge-bg: rgba(59, 130, 246, 0.08);
   --badge-text: #60a5fa;
-  --badge-border: rgba(59, 130, 246, 0.4);
+  --badge-border: rgba(59, 130, 246, 0.25);
   --laser-color: #60a5fa;
   --navbar-bg: rgba(3, 8, 20, 0.95);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #3b82f6;
-  --logo-filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+  --logo-filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
 }
 
 /* 3. EVENTS TEAM: THOR (Mjolnir Ops) */
@@ -178,20 +178,20 @@ html.theme-thor {
   --border-focus: #eab308;
   --accent-burgundy: #d97706;
   --accent-burgundy-hover: #f59e0b;
-  --accent-burgundy-light: rgba(217, 119, 6, 0.18);
-  --accent-burgundy-border: rgba(245, 158, 11, 0.55);
+  --accent-burgundy-light: rgba(217, 119, 6, 0.12);
+  --accent-burgundy-border: rgba(245, 158, 11, 0.35);
   --secondary-accent: #38bdf8;
-  --accent-glow: rgba(234, 179, 8, 0.5);
+  --accent-glow: rgba(234, 179, 8, 0.2);
   --hero-highlight-bg: #d97706;
   --hero-highlight-text: #050505;
-  --badge-bg: rgba(234, 179, 8, 0.12);
+  --badge-bg: rgba(234, 179, 8, 0.08);
   --badge-text: #facc15;
-  --badge-border: rgba(234, 179, 8, 0.4);
+  --badge-border: rgba(234, 179, 8, 0.25);
   --laser-color: #facc15;
   --navbar-bg: rgba(10, 6, 1, 0.95);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #f59e0b;
-  --logo-filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+  --logo-filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
 }
 
 /* 4. CORE TEAM: FOUNDRY COMMAND (Avengers Level 7) */
@@ -204,20 +204,20 @@ html.theme-core {
   --border-focus: #8b002e;
   --accent-burgundy: #8b002e;
   --accent-burgundy-hover: #a3083b;
-  --accent-burgundy-light: rgba(139, 0, 46, 0.2);
-  --accent-burgundy-border: rgba(163, 8, 59, 0.5);
+  --accent-burgundy-light: rgba(139, 0, 46, 0.14);
+  --accent-burgundy-border: rgba(163, 8, 59, 0.35);
   --secondary-accent: #f59e0b;
-  --accent-glow: rgba(139, 0, 46, 0.55);
+  --accent-glow: rgba(139, 0, 46, 0.2);
   --hero-highlight-bg: #8b002e;
   --hero-highlight-text: #ffffff;
-  --badge-bg: rgba(245, 158, 11, 0.12);
+  --badge-bg: rgba(245, 158, 11, 0.08);
   --badge-text: #f59e0b;
-  --badge-border: rgba(245, 158, 11, 0.4);
+  --badge-border: rgba(245, 158, 11, 0.25);
   --laser-color: #f59e0b;
   --navbar-bg: rgba(5, 5, 8, 0.95);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #ff2a6d;
-  --logo-filter: drop-shadow(0 0 8px rgba(255, 42, 109, 0.5));
+  --logo-filter: drop-shadow(0 0 6px rgba(255, 42, 109, 0.4));
 }
 
 /* Reset & High-Resolution Vector Rendering */

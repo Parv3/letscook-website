@@ -298,19 +298,19 @@ export const SQUADS_DATA = {
     team: 'TECH TEAM',
     hero: 'IRON MAN',
     title: 'STARK TECH LABS',
-    badge: 'CLEARANCE: STARK LEVEL 9',
-    status: 'ONLINE // ARC REACTOR 100%',
+    badge: 'ENGINEERING & SYSTEMS',
+    status: 'ACTIVE DIVISION',
     quote: '"Sometimes you gotta run before you can walk."',
-    desc: 'Systems architecture, high-performance web tooling, distributed compilers, and autonomous AI agents. We build production tools and developer infrastructure.',
+    desc: 'Production web applications, developer infrastructure, open-source toolchains, and applied AI workflows. Built and deployed by student builders.',
     color: '#ff0055',
     secondaryColor: '#00f0ff',
     linksUrl: '/links?utm_source=squad_tech_ironman',
     initiatives: [
-      { title: 'AI & Local Inference Runtimes', desc: 'On-device LLM quantization and low-latency agentic pipelines.' },
-      { title: 'Systems & Micro-Compilers', desc: 'Rust, WASM, and high-throughput network engines.' },
-      { title: 'Open-Source Developer Stack', desc: 'Real tools built and deployed by student engineers.' }
+      { title: 'Full-Stack & Systems Engineering', desc: 'Modern TypeScript, Rust microservices, and robust cloud deployments.' },
+      { title: 'Applied AI & Developer Tooling', desc: 'Local models, agentic workflows, and productivity utilities.' },
+      { title: 'Open-Source Projects', desc: 'Real-world software maintained and shipped with public repositories.' }
     ],
-    arsenal: ['Rust', 'Python', 'WASM', 'FastAPI', 'Docker', 'PyTorch'],
+    arsenal: ['TypeScript', 'Rust', 'Python', 'React', 'Docker', 'FastAPI'],
     sound: playRepulsorSound,
     insigniaSvg: (
       <svg viewBox="0 0 100 100" className="w-20 h-20" width="80" height="80">
@@ -336,19 +336,19 @@ export const SQUADS_DATA = {
     team: 'PR TEAM',
     hero: 'CAPTAIN AMERICA',
     title: 'VIBRANIUM ALLIANCE',
-    badge: 'CLEARANCE: STRATEGIC SHIELD',
-    status: 'DEPLOYED // STAMINA 100%',
+    badge: 'OUTREACH & ECOSYSTEM',
+    status: 'ACTIVE DIVISION',
     quote: '"I can do this all day."',
-    desc: 'Public relations, community diplomacy, university outreach, brand partnerships, and social storytelling across national developer ecosystems.',
+    desc: 'Developer advocacy, campus relations, brand storytelling, and strategic partnerships across national engineering hubs.',
     color: '#0055ff',
     secondaryColor: '#ffffff',
     linksUrl: '/links?utm_source=squad_pr_captain',
     initiatives: [
-      { title: 'Global Campus Outreach', desc: 'Active student ambassador hubs across 40+ engineering colleges.' },
-      { title: 'Storytelling & Public Relations', desc: 'Showcasing student-shipped software to thousands of founders & devs.' },
-      { title: 'Ecosystem Alliances', desc: 'Partnering with top developer tooling platforms, hackathons, and VCs.' }
+      { title: 'Campus Builder Network', desc: 'Connecting active student builders across 40+ engineering colleges.' },
+      { title: 'Developer Advocacy & Media', desc: 'Highlighting community-built products to founders and tech leaders.' },
+      { title: 'Ecosystem Partnerships', desc: 'Collaborating with developer tool companies, hackathons, and accelerators.' }
     ],
-    arsenal: ['Community', 'Keynotes', 'Alliances', 'Outreach', 'Branding', 'Diplomacy'],
+    arsenal: ['Community', 'Advocacy', 'Partnerships', 'Keynotes', 'Outreach', 'Branding'],
     sound: playVibraniumPing,
     insigniaSvg: (
       <svg viewBox="0 0 100 100" className="w-20 h-20 cap-shield-insignia" width="80" height="80">
@@ -365,19 +365,19 @@ export const SQUADS_DATA = {
     team: 'EVENTS TEAM',
     hero: 'THOR',
     title: 'STORMBREAKER OPS',
-    badge: 'REALM: NIDAVELLIR FORGE',
-    status: 'HIGH VOLTAGE // BIFROST SURGE',
+    badge: 'HACKATHONS & SPRINTS',
+    status: 'ACTIVE DIVISION',
     quote: '"Bring me Thanos!"',
-    desc: 'High-octane 48-hour national hackathons, live code tournaments, campus speaker arenas, and lightning sprint demo stages powered by Asgardian energy.',
+    desc: 'High-impact 48-hour build sprints, live campus demo days, competitive code arenas, and hands-on developer workshops.',
     color: '#d97706',
     secondaryColor: '#38bdf8',
     linksUrl: '/links?utm_source=squad_events_thor',
     initiatives: [
-      { title: '48-Hour Hackathon Sprints', desc: 'High-voltage hackathons where builders ship real products in 2 days.' },
-      { title: 'Live Stage & Keynote Arenas', desc: 'Campus tech conferences, live demos, and builder speaker sessions.' },
-      { title: 'Lightning Code Tournaments', desc: 'Speed coding battles, algorithmic duels, and prize bounties.' }
+      { title: '48-Hour Build Sprints', desc: 'Fast-paced weekend sprints where teams build and ship complete MVPs.' },
+      { title: 'Demo Days & Speaker Sessions', desc: 'Campus stages for builders to showcase shipped software to peers.' },
+      { title: 'Hands-On Tech Workshops', desc: 'Deep-dive interactive cohorts spanning system architecture to design.' }
     ],
-    arsenal: ['Hackathons', 'Keynotes', 'Live Arenas', 'Workshops', 'Tournaments', 'Demo Days'],
+    arsenal: ['Hackathons', 'Sprints', 'Demo Days', 'Workshops', 'Keynotes', 'Tournaments'],
     sound: playThunderStrike,
     insigniaSvg: (
       <StormbreakerSVG idPrefix="sb_insignia" className="w-20 h-20" width={80} height={80} withLightning={true} />
@@ -388,17 +388,17 @@ export const SQUADS_DATA = {
     team: 'CORE TEAM',
     hero: 'FOUNDRY COMMAND',
     title: 'THE AVENGERS INITIATIVE',
-    badge: 'CLEARANCE: S.H.I.E.L.D. LEVEL 7',
-    status: 'GOVERNANCE // LEVEL 7 ACTIVE',
+    badge: 'OPERATIONS & GRANTS',
+    status: 'ACTIVE DIVISION',
     quote: '"There was an idea, to bring together a group of remarkable people."',
-    desc: 'Executive council coordinating cross-squad logistics, treasury micro-grants, national expansion, and overarching community governance.',
+    desc: 'Community operations, prototype micro-grants, hackathon sponsorship logistics, and builder mentorship initiatives.',
     color: '#8b002e',
     secondaryColor: '#f59e0b',
     linksUrl: '/links?utm_source=squad_core_command',
     initiatives: [
-      { title: 'Community Governance', desc: 'Meritocratic council elections, operational bylaws, and quality standards.' },
-      { title: 'Treasury & Micro-Grants', desc: 'Funding student prototypes, server hosting, and event hardware.' },
-      { title: 'Cross-Squad Operations', desc: 'Direct coordination between Tech, PR, and Events leadership.' }
+      { title: 'Community Governance', desc: 'Transparent leadership council, operational guides, and quality standards.' },
+      { title: 'Prototype Micro-Grants', desc: 'Sponsoring server hosting, API credits, and project hardware for students.' },
+      { title: 'Cross-Squad Operations', desc: 'Synchronizing engineering, outreach, and event operations.' }
     ],
     arsenal: ['Governance', 'Micro-Grants', 'Operations', 'Leadership', 'Strategy', 'Auditing'],
     sound: playAssembleFanfare,
@@ -688,43 +688,55 @@ export default function HomePage({
             </div>
           </div>
 
-          {/* Integrated Builder Telemetry Strip */}
+          {/* Integrated Student Builder Proof Strip */}
           <div className="hero-telemetry-strip">
             <div className="telemetry-item">
-              <Sparkles size={16} className="telemetry-icon" />
-              <span className="telemetry-label">STUDENT RUN</span>
-              <span className="telemetry-detail">Peer led & governed</span>
+              <span className="telemetry-value">150+</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">ACTIVE BUILDERS</span>
+                <span className="telemetry-detail">Across engineering colleges</span>
+              </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <Rocket size={16} className="telemetry-icon" />
-              <span className="telemetry-label">PRODUCTION FIRST</span>
-              <span className="telemetry-detail">Deployed applications</span>
+              <span className="telemetry-value">12+</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">PROJECTS SHIPPED</span>
+                <span className="telemetry-detail">Deployed production software</span>
+              </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <Shield size={16} className="telemetry-icon" />
-              <span className="telemetry-label">ZERO COST</span>
-              <span className="telemetry-detail">Open access to all</span>
+              <span className="telemetry-value">100%</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">STUDENT LED</span>
+                <span className="telemetry-detail">Peer mentored & governed</span>
+              </div>
+            </div>
+            <div className="telemetry-divider" />
+            <div className="telemetry-item">
+              <span className="telemetry-value">3</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">HACKATHON PODIUMS</span>
+                <span className="telemetry-detail">Top-tier national finishes</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 2. MARVEL TRI-SQUAD UNIVERSE & CORE COMMAND TRACK         */}
+      {/* 2. SQUAD DIVISIONS & ENGINEERING VERTICALS                */}
       {/* ========================================================= */}
       <section id="squads" className="squads-section">
         <div className="squads-container">
           
           {/* Section Header */}
           <div className="section-header-box">
-            <div className="section-label-badge">// MARVEL SQUAD UNIVERSE</div>
-            <h2>
-              <TextDecoder text="CHOOSE YOUR SQUAD DIVISION" />
-            </h2>
+            <div className="section-label-badge">SQUAD DIVISIONS</div>
+            <h2>CHOOSE YOUR SQUAD DIVISION</h2>
             <p className="section-desc">
-              Each squad commands a specialized engineering vertical. Switching squads dynamically transforms the entire website's operational telemetry, live canvas background, and synthesized audio.
+              Each squad commands a specialized engineering vertical. Switching squads dynamically updates the website's operational palette, live procedural background, and sound design.
             </p>
           </div>
 
@@ -834,13 +846,13 @@ export default function HomePage({
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        border: '1px solid rgba(0, 240, 255, 0.6)',
+                        border: '1px solid rgba(0, 240, 255, 0.45)',
                         color: '#ffffff',
-                        background: 'rgba(0, 240, 255, 0.12)'
+                        background: 'rgba(0, 240, 255, 0.08)'
                       }}
                       title="Deploy Stark Mark LXXXV Iron Man Protocol"
                     >
-                      {isTestingFlux ? 'DEPLOYING PROTOCOL...' : isIronManActive ? 'IRON MAN PROTOCOL ONLINE' : 'INITIALIZE IRON MAN PROTOCOL'}
+                      {isTestingFlux ? 'CONNECTING PROTOCOL...' : isIronManActive ? 'DISENGAGE IRON MAN' : 'DEPLOY IRON MAN PROTOCOL'}
                     </button>
                   )}
 
@@ -853,7 +865,7 @@ export default function HomePage({
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      {isIronManActive ? 'STARK MARK LXXXV PROTOCOL ACTIVE // DEPLOYED' : 'ARC FLUX NOMINAL // PROTOCOL READY'}
+                      {isIronManActive ? 'MARK LXXXV ONLINE · DEPLOYED' : 'ARC REACTOR READY · NOMINAL'}
                     </span>
                   )}
 
@@ -867,13 +879,13 @@ export default function HomePage({
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        border: '1px solid rgba(59, 130, 246, 0.6)',
+                        border: '1px solid rgba(59, 130, 246, 0.45)',
                         color: '#ffffff',
-                        background: 'rgba(59, 130, 246, 0.15)'
+                        background: 'rgba(59, 130, 246, 0.1)'
                       }}
                       title="Deploy Vibranium Shield Ricochet Protocol"
                     >
-                      {isDeployingShield ? 'RICOCHETING SHIELD...' : 'DEPLOY VIBRANIUM SHIELD'}
+                      {isDeployingShield ? 'DEPLOYING SHIELD...' : 'DEPLOY VIBRANIUM SHIELD'}
                     </button>
                   )}
 
@@ -886,7 +898,7 @@ export default function HomePage({
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      VIBRANIUM SHIELD DEPLOYED // KINETIC ABSORPTION 100%
+                      VIBRANIUM SHIELD ACTIVE · KINETIC ABSORPTION 100%
                     </span>
                   )}
 
@@ -903,9 +915,9 @@ export default function HomePage({
                           fontFamily: 'monospace',
                           fontSize: '0.8rem',
                           fontWeight: 700,
-                          border: '1px solid rgba(255, 170, 0, 0.6)',
+                          border: '1px solid rgba(255, 170, 0, 0.45)',
                           color: '#ffffff',
-                          background: 'rgba(255, 170, 0, 0.15)'
+                          background: 'rgba(255, 170, 0, 0.1)'
                         }}
                         title="Summon Stormbreaker with Asgardian Lightning"
                       >
@@ -921,7 +933,7 @@ export default function HomePage({
                         {isSummoningStorm ? (
                           'CHANNELING BIFROST...'
                         ) : stormbreakerJammed ? (
-                          'STORMBREAKER EMBEDDED // BIFROST ACTIVE'
+                          'STORMBREAKER EMBEDDED · BIFROST ACTIVE'
                         ) : (
                           'SUMMON STORMBREAKER'
                         )}
@@ -972,7 +984,7 @@ export default function HomePage({
                       letterSpacing: '0.06em',
                       animation: 'fadeIn 0.2s ease'
                     }}>
-                      STORMBREAKER READY // BIFROST CHANNEL ACTIVE
+                      STORMBREAKER READY · BIFROST CHANNEL ACTIVE
                     </span>
                   )}
 
@@ -1001,14 +1013,14 @@ export default function HomePage({
                     )}
                   </div>
                   <div className="insignia-meta">
-                    <div className="insignia-label">{activeSquad.hero} // PROTOCOL</div>
+                    <div className="insignia-label">{activeSquad.hero} PROTOCOL</div>
                     <div className="insignia-sublabel" style={{ color: activeSquad.color }}>
                       {activeSquad.key === 'thor'
-                        ? 'STORMBREAKER // BIFROST READY'
+                        ? 'STORMBREAKER · BIFROST READY'
                         : activeSquad.key === 'captain'
-                          ? 'VIBRANIUM ALLIANCE // SHIELD ACTIVE'
+                          ? 'VIBRANIUM ALLIANCE · SHIELD ACTIVE'
                           : activeSquad.key === 'ironman'
-                            ? (isIronManActive ? 'IRON MAN PROTOCOL ACTIVE · CLICK TO DEACTIVATE' : 'ARC FLUX: 3.2 GW · CLICK TO DEPLOY PROTOCOL')
+                            ? (isIronManActive ? 'IRON MAN ONLINE · CLICK TO TOGGLE' : 'ARC REACTOR READY · CLICK TO DEPLOY')
                             : 'SYSTEM NOMINAL'}
                     </div>
                   </div>
@@ -1269,57 +1281,76 @@ export default function HomePage({
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 24px;
-          padding: 12px 24px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--border-color);
+          gap: 28px;
+          padding: 14px 28px;
+          background: rgba(14, 14, 18, 0.75);
+          border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: var(--radius-card);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(8px);
-          max-width: 900px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          max-width: 960px;
           width: 100%;
         }
 
         .telemetry-item {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           text-align: left;
         }
 
-        .telemetry-icon {
-          color: var(--accent-burgundy);
-          flex-shrink: 0;
+        .telemetry-value {
+          font-family: var(--font-display);
+          font-size: 1.45rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1;
+          letter-spacing: -0.02em;
+        }
+
+        .telemetry-text-group {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
         }
 
         .telemetry-label {
           font-family: var(--font-display);
-          font-size: 0.82rem;
-          font-weight: 700;
+          font-size: 0.76rem;
+          font-weight: 800;
           color: var(--text-main);
-          letter-spacing: 0.04em;
+          letter-spacing: 0.05em;
         }
 
         .telemetry-detail {
-          font-size: 0.76rem;
+          font-size: 0.72rem;
           color: var(--text-dim);
+          line-height: 1.2;
         }
 
         .telemetry-divider {
           width: 1px;
-          height: 24px;
-          background-color: var(--border-color);
+          height: 28px;
+          background-color: rgba(255, 255, 255, 0.1);
         }
 
         @media (max-width: 768px) {
           .hero-telemetry-strip {
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-start;
-            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 16px;
           }
           .telemetry-divider {
             display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero-telemetry-strip {
+            grid-template-columns: 1fr;
+            gap: 14px;
           }
         }
 
@@ -1469,7 +1500,7 @@ export default function HomePage({
           border-radius: 20px;
           padding: 38px 42px;
           margin-bottom: 24px;
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 40px var(--accent-glow);
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
           overflow: hidden;
         }
 

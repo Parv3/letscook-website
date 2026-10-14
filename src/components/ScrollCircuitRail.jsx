@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { playTechClick } from '../utils/soundEngine';
 
 const SECTIONS = [
-  { id: 'hero-top', label: '01 // HERO', targetId: 'hero-top' },
-  { id: 'squads', label: '02 // SQUADS', targetId: 'squads' },
-  { id: 'access', label: '03 // ACCESS', targetId: 'access' },
-  { id: 'faq', label: '04 // FAQ', targetId: 'faq' },
+  { id: 'hero-top', label: '01 Hero', targetId: 'hero-top' },
+  { id: 'squads', label: '02 Squads', targetId: 'squads' },
+  { id: 'access', label: '03 Community', targetId: 'access' },
+  { id: 'faq', label: '04 FAQs', targetId: 'faq' },
 ];
 
 export default function ScrollCircuitRail() {
