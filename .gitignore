@@ -27,3 +27,8 @@ dist-ssr
 
 *.pdf
 *.zip
+*.csv
+participants-email-dispatch.csv
+*dispatch*.csv
+*participants*.csv
+

@@ -151,7 +151,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
   }, [resendCountdown]);
 
   // Handle direct static code verification with strict 4 tries / 1 hour rate limiting
-  const handleStaticCodeVerify = (codeToVerify, email = '') => {
+  const handleStaticCodeVerify = async (codeToVerify, email = '') => {
     // Check if user is currently locked out
     const currentLockout = getLockoutTimeRemaining();
     if (currentLockout > 0) {
@@ -170,33 +170,40 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
 
     setIsLoading(true);
     setErrorMessage('');
-    const result = verifyAndGetCertificate({ code: clean, email });
+    try {
+      const result = await verifyAndGetCertificate({ code: clean, email });
 
-    if (result.success && result.certificate) {
-      clearPasskeyAttempts();
-      setPasskeyAttemptsCount(0);
-      setPasskeyLockoutRemaining(0);
-      setSelectedCert(result.certificate);
-      setStep('verified');
-    } else {
-      const updatedAttempts = recordFailedPasskeyAttempt();
-      const newCount = updatedAttempts.length;
-      setPasskeyAttemptsCount(newCount);
-
-      if (newCount >= RATE_LIMIT_MAX_ATTEMPTS) {
-        const lockout = getLockoutTimeRemaining();
-        setPasskeyLockoutRemaining(lockout);
-        setErrorMessage(
-          `Security lockout active: 4 failed attempts reached. Passkey entry is locked for ${formatLockoutTime(lockout)}. You can still verify anytime via your registered email.`
-        );
+      if (result.success && result.certificate) {
+        clearPasskeyAttempts();
+        setPasskeyAttemptsCount(0);
+        setPasskeyLockoutRemaining(0);
+        setSelectedCert(result.certificate);
+        setStep('verified');
       } else {
-        const triesLeft = RATE_LIMIT_MAX_ATTEMPTS - newCount;
-        setErrorMessage(
-          `${result.error || 'Invalid verification passkey.'} (${triesLeft} of ${RATE_LIMIT_MAX_ATTEMPTS} ${triesLeft === 1 ? 'try' : 'tries'} remaining this hour)`
-        );
+        const updatedAttempts = recordFailedPasskeyAttempt();
+        const newCount = updatedAttempts.length;
+        setPasskeyAttemptsCount(newCount);
+
+        const serverLockout = result.lockoutRemainingMs || getLockoutTimeRemaining();
+
+        if (result.locked || newCount >= RATE_LIMIT_MAX_ATTEMPTS || serverLockout > 0) {
+          setPasskeyLockoutRemaining(serverLockout);
+          setErrorMessage(
+            result.error || `Security lockout active: 4 failed attempts reached. Passkey entry is locked for ${formatLockoutTime(serverLockout)}. You can still verify anytime via your registered email.`
+          );
+        } else {
+          const triesLeft = typeof result.remainingAttempts === 'number' ? result.remainingAttempts : (RATE_LIMIT_MAX_ATTEMPTS - newCount);
+          setErrorMessage(
+            `${result.error || 'Invalid verification passkey.'} (${triesLeft} of ${RATE_LIMIT_MAX_ATTEMPTS} ${triesLeft === 1 ? 'try' : 'tries'} remaining this hour)`
+          );
+        }
       }
+    } catch (err) {
+      console.error('Error verifying passkey:', err);
+      setErrorMessage('Verification gateway unreachable. Please try again or verify via email.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleExplosionComplete = () => {

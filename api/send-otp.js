@@ -3,6 +3,24 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
+// Rate limiter: Max 3 OTP requests per 10 minutes per IP/Email
+const OTP_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const OTP_RATE_LIMIT_MAX = 3;
+const otpRequestsTracker = new Map();
+
+function isRateLimited(key) {
+  const now = Date.now();
+  const history = (otpRequestsTracker.get(key) || []).filter(ts => now - ts < OTP_RATE_LIMIT_WINDOW_MS);
+  if (history.length >= OTP_RATE_LIMIT_MAX) {
+    const oldest = history[0];
+    const waitSec = Math.ceil((oldest + OTP_RATE_LIMIT_WINDOW_MS - now) / 1000);
+    return { limited: true, waitSec };
+  }
+  history.push(now);
+  otpRequestsTracker.set(key, history);
+  return { limited: false };
+}
+
 // Load participant registry
 function getCertificates() {
   try {
@@ -35,7 +53,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Valid email address is required.' });
     }
 
+    const clientIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || '127.0.0.1';
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Check rate limit per IP and per Email
+    const ipCheck = isRateLimited(`ip:${clientIp}`);
+    if (ipCheck.limited) {
+      return res.status(429).json({
+        success: false,
+        error: `Too many verification requests. Please wait ${ipCheck.waitSec}s before requesting another code.`
+      });
+    }
+
+    const emailCheck = isRateLimited(`email:${normalizedEmail}`);
+    if (emailCheck.limited) {
+      return res.status(429).json({
+        success: false,
+        error: `Too many verification requests for this email. Please wait ${emailCheck.waitSec}s before trying again.`
+      });
+    }
+
     const certs = getCertificates();
     const participantCert = certs.find(
       c => c.recipient && c.recipient.email && c.recipient.email.toLowerCase().trim() === normalizedEmail
@@ -55,7 +92,7 @@ export default async function handler(req, res) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes validity
 
-    const secret = process.env.RESEND_API_KEY || 'letscook-default-secret-salt-2026';
+    const secret = process.env.OTP_SECRET || process.env.RESEND_API_KEY || 'letscook-prod-salt-secret-hash';
     const token = crypto
       .createHmac('sha256', secret)
       .update(`${normalizedEmail}|${otp}|${expiresAt}`)
