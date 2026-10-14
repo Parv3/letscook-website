@@ -15,6 +15,8 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
   const [techStack, setTechStack] = useState('');
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   // Drag State for macOS window
@@ -94,21 +96,23 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
     playTechClick();
     if (!projectTitle || !description || !email) return;
 
+    setSubmitError('');
     try {
-      await submitPitchData({ projectTitle, techStack, description, email });
+      await submitPitchData({ projectTitle, techStack, description, email, honeypot });
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setProjectTitle('');
+        setTechStack('');
+        setDescription('');
+        setEmail('');
+        setHoneypot('');
+        onClose();
+      }, 4000);
     } catch (err) {
       console.error('Submission failed:', err);
+      setSubmitError(err.message || 'Submission error. Please try again.');
     }
-
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setProjectTitle('');
-      setTechStack('');
-      setDescription('');
-      setEmail('');
-      onClose();
-    }, 4000);
   };
 
   // Minimized Bottom Badge State
@@ -283,6 +287,24 @@ export default function PitchIdeaModal({ isOpen, onClose }) {
                   className="pitch-input"
                 />
               </div>
+
+              {/* Bot Honeypot field - invisible to genuine users */}
+              <div style={{ display: 'none' }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="user_website_url"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={e => setHoneypot(e.target.value)}
+                />
+              </div>
+
+              {submitError && (
+                <div className="terminal-error-banner animate-fade-in" style={{ color: '#ef4444', fontSize: '0.8rem', padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '6px', margin: '8px 0' }}>
+                  {submitError}
+                </div>
+              )}
 
               <div className="form-action-row">
                 <button type="submit" className="btn-primary w-full mt-2 glow-btn">

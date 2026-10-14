@@ -26,19 +26,35 @@ export const GOOGLE_FORM_CONFIG = {
   }
 };
 
+let lastPitchSubmissionTimestamp = 0;
+const PITCH_SUBMIT_COOLDOWN_MS = 20 * 1000; // 20s cooldown between submissions
+
 /**
  * Submit pitch to Google Forms and mirror in local storage
  */
-export async function submitPitchData({ projectTitle, techStack, description, email }) {
+export async function submitPitchData({ projectTitle, techStack, description, email, honeypot = '' }) {
+  // 0. Bot protection: If honeypot is filled, silently discard
+  if (honeypot && honeypot.trim().length > 0) {
+    return { success: true, method: 'bot-filtered' };
+  }
+
+  // 1. Throttling protection
+  const now = Date.now();
+  if (now - lastPitchSubmissionTimestamp < PITCH_SUBMIT_COOLDOWN_MS) {
+    const waitSec = Math.ceil((PITCH_SUBMIT_COOLDOWN_MS - (now - lastPitchSubmissionTimestamp)) / 1000);
+    throw new Error(`Please wait ${waitSec} seconds before submitting another pitch.`);
+  }
+  lastPitchSubmissionTimestamp = now;
+
   const payload = {
-    projectTitle,
-    techStack,
-    description,
-    email,
+    projectTitle: (projectTitle || '').trim().slice(0, 100),
+    techStack: (techStack || '').trim().slice(0, 150),
+    description: (description || '').trim().slice(0, 1000),
+    email: (email || '').trim().slice(0, 100),
     submittedAt: new Date().toISOString(),
   };
 
-  // 1. Always backup locally in localStorage so nothing is ever lost
+  // 2. Always backup locally in localStorage so nothing is ever lost
   try {
     const existingPitches = JSON.parse(localStorage.getItem('letscook_submitted_pitches') || '[]');
     existingPitches.push(payload);
@@ -47,71 +63,67 @@ export async function submitPitchData({ projectTitle, techStack, description, em
     console.warn('Could not save to localStorage:', err);
   }
 
-  // 2. Submit to Google Form if Form ID is configured
+  // 3. Submit to Google Form if Form ID is configured (Single reliable dispatch)
   if (GOOGLE_FORM_CONFIG.formId) {
     const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_CONFIG.formId}/formResponse`;
-    
-    // Method A: Hidden Iframe Form Submit (Immune to Brave Shields, uBlock Origin, and Adblockers)
-    try {
-      let iframe = document.getElementById('gform_hidden_iframe');
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.id = 'gform_hidden_iframe';
-        iframe.name = 'gform_hidden_iframe';
-        iframe.style.display = 'none';
-        iframe.style.width = '0';
-        iframe.style.height = '0';
-        iframe.style.border = 'none';
-        document.body.appendChild(iframe);
-      }
 
-      const form = document.createElement('form');
-      form.action = formUrl;
-      form.method = 'POST';
-      form.target = 'gform_hidden_iframe';
-      form.style.display = 'none';
-
-      const fields = [
-        { name: GOOGLE_FORM_CONFIG.fields.projectTitle, value: projectTitle },
-        { name: GOOGLE_FORM_CONFIG.fields.techStack, value: techStack },
-        { name: GOOGLE_FORM_CONFIG.fields.description, value: description },
-        { name: GOOGLE_FORM_CONFIG.fields.email, value: email },
-      ];
-
-      fields.forEach(({ name, value }) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => {
-        if (form.parentNode) form.parentNode.removeChild(form);
-      }, 2000);
-    } catch (iframeErr) {
-      console.warn('Iframe submission warning:', iframeErr);
-    }
-
-    // Method B: Parallel direct fetch (no-cors) for browsers supporting background POST
     try {
       const formData = new URLSearchParams();
-      formData.append(GOOGLE_FORM_CONFIG.fields.projectTitle, projectTitle);
-      formData.append(GOOGLE_FORM_CONFIG.fields.techStack, techStack);
-      formData.append(GOOGLE_FORM_CONFIG.fields.description, description);
-      formData.append(GOOGLE_FORM_CONFIG.fields.email, email);
+      formData.append(GOOGLE_FORM_CONFIG.fields.projectTitle, payload.projectTitle);
+      formData.append(GOOGLE_FORM_CONFIG.fields.techStack, payload.techStack);
+      formData.append(GOOGLE_FORM_CONFIG.fields.description, payload.description);
+      formData.append(GOOGLE_FORM_CONFIG.fields.email, payload.email);
 
-      fetch(formUrl, {
+      await fetch(formUrl, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData.toString(),
-      }).catch(() => {});
-    } catch (e) {}
+      });
+    } catch (e) {
+      // Fallback to hidden iframe if fetch is blocked by browser policies
+      try {
+        let iframe = document.getElementById('gform_hidden_iframe');
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'gform_hidden_iframe';
+          iframe.name = 'gform_hidden_iframe';
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+        }
+
+        const form = document.createElement('form');
+        form.action = formUrl;
+        form.method = 'POST';
+        form.target = 'gform_hidden_iframe';
+        form.style.display = 'none';
+
+        const fields = [
+          { name: GOOGLE_FORM_CONFIG.fields.projectTitle, value: payload.projectTitle },
+          { name: GOOGLE_FORM_CONFIG.fields.techStack, value: payload.techStack },
+          { name: GOOGLE_FORM_CONFIG.fields.description, value: payload.description },
+          { name: GOOGLE_FORM_CONFIG.fields.email, value: payload.email },
+        ];
+
+        fields.forEach(({ name, value }) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => {
+          if (form.parentNode) form.parentNode.removeChild(form);
+        }, 2000);
+      } catch (iframeErr) {
+        console.warn('Iframe fallback warning:', iframeErr);
+      }
+    }
 
     return { success: true, method: 'google-form' };
   } else {

@@ -50,11 +50,28 @@ function clearIpFailures(ip) {
   failedAttemptsTracker.delete(ip);
 }
 
+function setCors(req, res) {
+  const origin = req.headers.origin;
+  const isAllowed = !origin || 
+    origin.endsWith('letscook.co.in') || 
+    origin.includes('localhost') || 
+    origin.endsWith('.vercel.app');
+
+  if (isAllowed && origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  return isAllowed;
+}
+
 export default async function handler(req, res) {
+  const isAllowedOrigin = setCors(req, res);
+  if (!isAllowedOrigin) {
+    return res.status(403).json({ success: false, error: 'Forbidden: Origin not allowed.' });
+  }
+
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
   }
 
