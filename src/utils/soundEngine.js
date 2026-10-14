@@ -1,6 +1,8 @@
 /**
- * Web Audio API Sound Engine
- * Provides synthesized tech sound effects without external audio assets.
+ * Web Audio API Sound Engine (V2 - Cinema-Grade Acoustic & Tactile Soundscape)
+ * Redesigned to eliminate high-pitched, childish, or arcade-like tones.
+ * Features warm low-mid fundamentals, physical mechanical clicks,
+ * low-pass acoustic filtering, and subtle tactile haptics.
  */
 
 let audioCtx = null;
@@ -26,143 +28,196 @@ export const setSoundMuted = (muted) => {
 
 export const isSoundMuted = () => soundMuted;
 
-// Tech Button Click Tone (Louder & Punchier)
+/**
+ * 1. Premium Tactile Button Click
+ * Warm, damped mechanical switch (Apple trackpad / Linear keyboard style).
+ * No harsh high frequencies: 220Hz -> 65Hz body + 550Hz micro-snap.
+ */
 export const playTechClick = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
 
-    const osc = ctx.createOscillator();
-    const subOsc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    // Body: Warm low-end acoustic thump (220Hz -> 65Hz)
+    const bodyOsc = ctx.createOscillator();
+    const bodyGain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1100, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(500, ctx.currentTime + 0.09);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, now);
 
-    subOsc.type = 'triangle';
-    subOsc.frequency.setValueAtTime(300, ctx.currentTime);
-    subOsc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.09);
+    bodyOsc.type = 'sine';
+    bodyOsc.frequency.setValueAtTime(220, now);
+    bodyOsc.frequency.exponentialRampToValueAtTime(65, now + 0.04);
 
-    gain.gain.setValueAtTime(0.45, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+    bodyGain.gain.setValueAtTime(0.14, now);
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
-    osc.connect(gain);
-    subOsc.connect(gain);
-    gain.connect(ctx.destination);
+    bodyOsc.connect(filter);
+    filter.connect(bodyGain);
+    bodyGain.connect(ctx.destination);
 
-    osc.start();
-    subOsc.start();
-    osc.stop(ctx.currentTime + 0.09);
-    subOsc.stop(ctx.currentTime + 0.09);
+    bodyOsc.start(now);
+    bodyOsc.stop(now + 0.04);
+
+    // Transient: Subtle tactile switch snap
+    const snapOsc = ctx.createOscillator();
+    const snapGain = ctx.createGain();
+    snapOsc.type = 'triangle';
+    snapOsc.frequency.setValueAtTime(450, now);
+    snapOsc.frequency.exponentialRampToValueAtTime(140, now + 0.018);
+
+    snapGain.gain.setValueAtTime(0.08, now);
+    snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+
+    snapOsc.connect(filter);
+    filter.connect(snapGain);
+    snapGain.connect(ctx.destination);
+
+    snapOsc.start(now);
+    snapOsc.stop(now + 0.018);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Text Scramble Micro-Beep (Louder & Crisp)
+/**
+ * 2. Subtle Mechanical Data Decode Tick
+ * Replaced piercing 2000Hz chirp with an authentic muted mechanical key tap (280Hz -> 110Hz).
+ */
 export const playDecodeTick = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(650, now);
 
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1600 + Math.random() * 600, ctx.currentTime);
+    osc.frequency.setValueAtTime(280 + Math.random() * 60, now);
+    osc.frequency.exponentialRampToValueAtTime(110, now + 0.02);
 
-    gain.gain.setValueAtTime(0.18, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    gain.gain.setValueAtTime(0.035, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
 
-    osc.connect(gain);
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start();
-    osc.stop(ctx.currentTime + 0.04);
+    osc.start(now);
+    osc.stop(now + 0.02);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Micro Rumble Tick for Progressive Hover Shaking
+/**
+ * 3. Haptic Sub-Rumble Tick
+ * Warm low-frequency pulse (65Hz -> 35Hz), feels like physical phone haptics.
+ */
 export const playHoverRumbleTick = (intensity = 'light') => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const freqMap = { light: 65, medium: 85, heavy: 110 };
+    const gainMap = { light: 0.06, medium: 0.09, heavy: 0.13 };
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
 
-    const freqMap = { light: 140, medium: 220, heavy: 380 };
-    const gainMap = { light: 0.12, medium: 0.22, heavy: 0.38 };
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(180, now);
 
-    osc.type = intensity === 'heavy' ? 'sawtooth' : 'square';
-    osc.frequency.setValueAtTime(freqMap[intensity] || 150, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.05);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freqMap[intensity] || 70, now);
+    osc.frequency.exponentialRampToValueAtTime(35, now + 0.045);
 
-    gain.gain.setValueAtTime(gainMap[intensity] || 0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(gainMap[intensity] || 0.07, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
 
-    osc.connect(gain);
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
+    osc.start(now);
+    osc.stop(now + 0.045);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// CREATE / LETS COOK Inversion Energy Shatter & Reverse Sound (Louder & Epic)
+/**
+ * 4. Inversion / Mode Shift Energy Surge
+ * Deep cinematic riser into low-end implosion (no shrill sweeps).
+ */
 export const playInversionSound = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
 
-    // 1. Pitch sweep up + metallic resonant blast
+    // 1. Warm low-mid energy build (110Hz -> 380Hz)
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(250, now);
+    filter.frequency.exponentialRampToValueAtTime(800, now + 0.28);
+    filter.frequency.exponentialRampToValueAtTime(180, now + 0.4);
 
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(250, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(2200, ctx.currentTime + 0.35);
+    osc.frequency.setValueAtTime(110, now);
+    osc.frequency.exponentialRampToValueAtTime(380, now + 0.32);
 
-    gain.gain.setValueAtTime(0.65, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.22);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
 
-    osc.connect(gain);
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
 
-    osc.start();
-    osc.stop(ctx.currentTime + 0.4);
+    osc.start(now);
+    osc.stop(now + 0.4);
 
-    // 2. Heavy Sub Bass Drop Impact
+    // 2. Heavy Sub Bass Drop Impact (140Hz -> 32Hz)
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
 
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(200, ctx.currentTime);
-    subOsc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.45);
+    subOsc.frequency.setValueAtTime(140, now);
+    subOsc.frequency.exponentialRampToValueAtTime(32, now + 0.45);
 
-    subGain.gain.setValueAtTime(0.85, ctx.currentTime);
-    subGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+    subGain.gain.setValueAtTime(0.35, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
 
     subOsc.connect(subGain);
     subGain.connect(ctx.destination);
 
-    subOsc.start();
-    subOsc.stop(ctx.currentTime + 0.45);
+    subOsc.start(now);
+    subOsc.stop(now + 0.45);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Dramatic Cinematic Kinetic Strike & Armor Fracture Sound (Intense, Seismic & Heavy)
+/**
+ * 5. Dramatic Cinematic Kinetic Strike & Armor Fracture Sound
+ */
 export const playCinematicShatterSound = () => {
   if (soundMuted) return;
   try {
@@ -170,50 +225,52 @@ export const playCinematicShatterSound = () => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    // 1. Massive Sub-bass Concussion (Deep seismic implosion)
+    // Sub-bass Concussion (Deep seismic implosion)
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(180, now);
-    subOsc.frequency.exponentialRampToValueAtTime(16, now + 1.8);
-    subGain.gain.setValueAtTime(1.0, now);
-    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+    subOsc.frequency.setValueAtTime(140, now);
+    subOsc.frequency.exponentialRampToValueAtTime(18, now + 1.6);
+    subGain.gain.setValueAtTime(0.65, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.6);
 
     subOsc.connect(subGain);
     subGain.connect(ctx.destination);
     subOsc.start(now);
-    subOsc.stop(now + 1.8);
+    subOsc.stop(now + 1.6);
 
-    // 2. Heavy Kinetic Impact Crunch & White-Noise Shockwave
-    const bufferSize = ctx.sampleRate * 0.9;
+    // Damped Kinetic Impact
+    const bufferSize = ctx.sampleRate * 0.7;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.22));
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.18));
     }
     const noise = ctx.createBufferSource();
     noise.buffer = buffer;
 
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(750, now);
-    filter.frequency.exponentialRampToValueAtTime(110, now + 0.9);
-    filter.Q.setValueAtTime(2.5, now);
+    filter.frequency.setValueAtTime(450, now);
+    filter.frequency.exponentialRampToValueAtTime(80, now + 0.7);
+    filter.Q.setValueAtTime(2.0, now);
 
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.9, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+    noiseGain.gain.setValueAtTime(0.45, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
 
     noise.connect(filter);
     filter.connect(noiseGain);
     noiseGain.connect(ctx.destination);
     noise.start(now);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Ominous Thanos Manifest Threat Drone & Sub Rumble (Dark, Foreboding & Dramatic)
+/**
+ * 6. Dark Thanos Manifest Threat Drone & Sub Rumble
+ */
 export const playThanosThreatSound = () => {
   if (soundMuted) return;
   try {
@@ -221,7 +278,6 @@ export const playThanosThreatSound = () => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    // Dark dissonant tritone drone (F1: 43.65Hz + B1: 61.74Hz)
     const tritoneFreqs = [43.65, 61.74, 87.3];
     tritoneFreqs.forEach((f, idx) => {
       const osc = ctx.createOscillator();
@@ -233,11 +289,11 @@ export const playThanosThreatSound = () => {
       osc.frequency.linearRampToValueAtTime(f * 0.94, now + 1.6);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(180, now);
-      filter.frequency.exponentialRampToValueAtTime(50, now + 1.6);
+      filter.frequency.setValueAtTime(140, now);
+      filter.frequency.exponentialRampToValueAtTime(45, now + 1.6);
 
       gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.35 / (idx + 1), now + 0.15);
+      gain.gain.linearRampToValueAtTime(0.22 / (idx + 1), now + 0.15);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 1.6);
 
       osc.connect(filter);
@@ -248,84 +304,126 @@ export const playThanosThreatSound = () => {
       osc.stop(now + 1.6);
     });
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Neon Electric Ignition / Cathode Strike Sound
+/**
+ * 7. Neon Ignition / Cathode Strike
+ * Warm analog transformer buzz and electrical surge (no 80s arcade beeps).
+ */
 export const playNeonIgniteSound = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
+    const now = ctx.currentTime;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(320, now);
+
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(120, ctx.currentTime);
-    osc.frequency.setValueAtTime(440, ctx.currentTime + 0.05);
-    osc.frequency.setValueAtTime(180, ctx.currentTime + 0.12);
-    osc.frequency.setValueAtTime(520, ctx.currentTime + 0.2);
+    osc.frequency.setValueAtTime(75, now);
+    osc.frequency.setValueAtTime(140, now + 0.05);
+    osc.frequency.setValueAtTime(95, now + 0.12);
+    osc.frequency.setValueAtTime(120, now + 0.2);
 
-    gain.gain.setValueAtTime(0.35, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 
-    osc.connect(gain);
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.55);
+
+    osc.start(now);
+    osc.stop(now + 0.35);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Iron Man Repulsor Beam Power Surge & High-Frequency Discharge
+/**
+ * 8. Iron Man Repulsor Power Surge
+ * Deep resonant turbine buildup (95Hz -> 420Hz) with sub-bass punch.
+ */
 export const playRepulsorSound = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
+
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(350, now);
+    filter.frequency.exponentialRampToValueAtTime(750, now + 0.25);
+
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(240, now);
-    osc.frequency.exponentialRampToValueAtTime(1600, now + 0.22);
-    gain.gain.setValueAtTime(0.35, now);
+    osc.frequency.setValueAtTime(95, now);
+    osc.frequency.exponentialRampToValueAtTime(420, now + 0.25);
+
+    gain.gain.setValueAtTime(0.2, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
     osc.start(now);
     osc.stop(now + 0.35);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Captain America Vibranium Shield Kinetic Resonant Chime
+/**
+ * 9. Captain America Vibranium Shield Kinetic Resonant Chime
+ * Rich acoustic bell chime (fundamental A3: 220Hz + overtone E4: 330Hz).
+ */
 export const playVibraniumPing = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1100, now);
-    osc.frequency.exponentialRampToValueAtTime(280, now + 0.38);
-    gain.gain.setValueAtTime(0.32, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
-    osc.start(now);
-    osc.stop(now + 0.38);
+
+    [220, 330, 587.33].forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(900, now);
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now);
+      osc.frequency.exponentialRampToValueAtTime(f * 0.98, now + 0.45);
+
+      gain.gain.setValueAtTime(0.12 / (idx + 1), now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.45);
+    });
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Thor Stormbreaker Atmospheric Lightning Crack, Anvil Clink & Rolling Thunder
+/**
+ * 10. Thor Stormbreaker Rolling Thunder & Anvil Resonance
+ */
 export const playThunderStrike = () => {
   if (soundMuted) return;
   try {
@@ -333,34 +431,14 @@ export const playThunderStrike = () => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    // 1. Sharp Supersonic Lightning Arc Crack (High-voltage electrical snap)
-    const crackLen = ctx.sampleRate * 0.12;
-    const crackBuffer = ctx.createBuffer(1, crackLen, ctx.sampleRate);
-    const crackData = crackBuffer.getChannelData(0);
-    for (let i = 0; i < crackLen; i++) {
-      crackData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.025));
-    }
-    const crackSource = ctx.createBufferSource();
-    crackSource.buffer = crackBuffer;
-    const crackFilter = ctx.createBiquadFilter();
-    crackFilter.type = 'highpass';
-    crackFilter.frequency.setValueAtTime(1400, now);
-    const crackGain = ctx.createGain();
-    crackGain.gain.setValueAtTime(0.7, now);
-    crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-    crackSource.connect(crackFilter);
-    crackFilter.connect(crackGain);
-    crackGain.connect(ctx.destination);
-    crackSource.start(now);
-
-    // 2. Nidavellir Uru Forged Anvil Clink (Resonant Asgardian steel impact overtone)
-    [880, 1320, 1760].forEach((freq, idx) => {
+    // Resonant Uru Steel Chime (330Hz, 440Hz, 660Hz)
+    [330, 440, 660].forEach((freq, idx) => {
       const metalOsc = ctx.createOscillator();
       const metalGain = ctx.createGain();
       metalOsc.type = 'sine';
       metalOsc.frequency.setValueAtTime(freq, now);
-      metalOsc.frequency.exponentialRampToValueAtTime(freq * 0.96, now + 0.3);
-      metalGain.gain.setValueAtTime(0.25 / (idx + 1), now);
+      metalOsc.frequency.exponentialRampToValueAtTime(freq * 0.97, now + 0.35);
+      metalGain.gain.setValueAtTime(0.12 / (idx + 1), now);
       metalGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
       metalOsc.connect(metalGain);
       metalGain.connect(ctx.destination);
@@ -368,32 +446,35 @@ export const playThunderStrike = () => {
       metalOsc.stop(now + 0.35);
     });
 
-    // 3. Rolling Concussive Thunder Rumble & Deep Sub-bass Drop
+    // Rolling Concussive Thunder Rumble
     const thunderOsc = ctx.createOscillator();
     const thunderGain = ctx.createGain();
     const thunderFilter = ctx.createBiquadFilter();
+
     thunderOsc.type = 'sawtooth';
-    thunderOsc.frequency.setValueAtTime(140, now);
-    thunderOsc.frequency.exponentialRampToValueAtTime(24, now + 1.4);
+    thunderOsc.frequency.setValueAtTime(90, now);
+    thunderOsc.frequency.exponentialRampToValueAtTime(24, now + 1.2);
 
     thunderFilter.type = 'lowpass';
-    thunderFilter.frequency.setValueAtTime(320, now);
-    thunderFilter.frequency.exponentialRampToValueAtTime(60, now + 1.4);
+    thunderFilter.frequency.setValueAtTime(220, now);
+    thunderFilter.frequency.exponentialRampToValueAtTime(50, now + 1.2);
 
-    thunderGain.gain.setValueAtTime(0.8, now);
-    thunderGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+    thunderGain.gain.setValueAtTime(0.45, now);
+    thunderGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
 
     thunderOsc.connect(thunderFilter);
     thunderFilter.connect(thunderGain);
     thunderGain.connect(ctx.destination);
     thunderOsc.start(now);
-    thunderOsc.stop(now + 1.4);
+    thunderOsc.stop(now + 1.2);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Avengers Assemble Dramatic Cinematic War Horn / Braam (Dark, Monumental & Epic)
+/**
+ * 11. Avengers Assemble Cinematic War Horn / Braam
+ */
 export const playAssembleFanfare = () => {
   if (soundMuted) return;
   try {
@@ -401,7 +482,7 @@ export const playAssembleFanfare = () => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    // 1. Heavy cinematic low brass power fifths (A1: 55Hz, E2: 82.41Hz, A2: 110Hz, E3: 164.8Hz)
+    // Low brass power fifths (A1: 55Hz, E2: 82.41Hz, A2: 110Hz, E3: 164.8Hz)
     const freqs = [55, 82.41, 110, 164.8];
     freqs.forEach((f, idx) => {
       const osc = ctx.createOscillator();
@@ -413,13 +494,13 @@ export const playAssembleFanfare = () => {
       osc.frequency.exponentialRampToValueAtTime(f * 0.98, now + 2.0);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(200, now);
-      filter.frequency.exponentialRampToValueAtTime(1200, now + 0.22);
-      filter.frequency.exponentialRampToValueAtTime(100, now + 2.0);
-      filter.Q.setValueAtTime(3.5, now);
+      filter.frequency.setValueAtTime(180, now);
+      filter.frequency.exponentialRampToValueAtTime(900, now + 0.22);
+      filter.frequency.exponentialRampToValueAtTime(90, now + 2.0);
+      filter.Q.setValueAtTime(2.5, now);
 
       gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.28, now + 0.16);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.16);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
 
       osc.connect(filter);
@@ -430,53 +511,56 @@ export const playAssembleFanfare = () => {
       osc.stop(now + 2.0);
     });
 
-    // 2. Sub-bass Ground Impact (Dark Sub-drop Rumble)
+    // Sub-drop
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(95, now);
-    subOsc.frequency.exponentialRampToValueAtTime(26, now + 1.8);
-
-    subGain.gain.setValueAtTime(0.65, now);
+    subOsc.frequency.setValueAtTime(80, now);
+    subOsc.frequency.exponentialRampToValueAtTime(25, now + 1.8);
+    subGain.gain.setValueAtTime(0.45, now);
     subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
-
     subOsc.connect(subGain);
     subGain.connect(ctx.destination);
     subOsc.start(now);
     subOsc.stop(now + 1.8);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
-// Doctor Strange Time Stone Entropy Reversal Chime
+/**
+ * 12. Doctor Strange Time Stone Reversal
+ */
 export const playTimeStoneReversal = () => {
   if (soundMuted) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
-    [600, 800, 1000, 1200, 900].forEach((freq, i) => {
+    [261.63, 329.63, 392.00, 523.25, 392.00].forEach((freq, i) => {
       const tOsc = ctx.createOscillator();
       const tGain = ctx.createGain();
-      tOsc.connect(tGain);
-      tGain.connect(ctx.destination);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(700, now);
       tOsc.type = 'sine';
-      tOsc.frequency.setValueAtTime(freq, now + i * 0.12);
-      tGain.gain.setValueAtTime(0.18, now + i * 0.12);
-      tGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
-      tOsc.start(now + i * 0.12);
-      tOsc.stop(now + i * 0.12 + 0.35);
+      tOsc.frequency.setValueAtTime(freq, now + i * 0.1);
+      tGain.gain.setValueAtTime(0.09, now + i * 0.1);
+      tGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+      tOsc.connect(filter);
+      filter.connect(tGain);
+      tGain.connect(ctx.destination);
+      tOsc.start(now + i * 0.1);
+      tOsc.stop(now + i * 0.1 + 0.3);
     });
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
 /**
- * J.A.R.V.I.S. HUD Boot Sequence Sound Engine
- * Synthesizes reactor ignition sub-bass, electronic frequency sweep,
- * lock chirps arpeggio, target lock chime, and systems online confirmation fanfare.
+ * 13. J.A.R.V.I.S. HUD Boot Sequence
+ * Warm low-mid telemetry intervals (D4: 293.66Hz, F#4: 369.99Hz, A4: 440Hz, D5: 587.33Hz).
  */
 export const playJarvisBootSequence = () => {
   if (soundMuted) return;
@@ -485,114 +569,48 @@ export const playJarvisBootSequence = () => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    // 1. Sub-bass Reactor Ignite (Deep sine sweep)
+    // Sub-bass Reactor Ignite
     const subOsc = ctx.createOscillator();
     const subGain = ctx.createGain();
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(65, now);
-    subOsc.frequency.exponentialRampToValueAtTime(220, now + 1.8);
-    subGain.gain.setValueAtTime(0.35, now);
-    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+    subOsc.frequency.setValueAtTime(55, now);
+    subOsc.frequency.exponentialRampToValueAtTime(140, now + 1.5);
+    subGain.gain.setValueAtTime(0.25, now);
+    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
     subOsc.connect(subGain);
     subGain.connect(ctx.destination);
     subOsc.start(now);
-    subOsc.stop(now + 1.8);
+    subOsc.stop(now + 1.5);
 
-    // 2. High-Tech Electronic Sweep (Sawtooth frequency ramp)
-    setTimeout(() => {
-      if (soundMuted) return;
-      const tNow = ctx.currentTime;
-      const sweepOsc = ctx.createOscillator();
-      const sweepGain = ctx.createGain();
-      sweepOsc.type = 'sawtooth';
-      sweepOsc.frequency.setValueAtTime(280, tNow);
-      sweepOsc.frequency.exponentialRampToValueAtTime(1400, tNow + 0.8);
-      sweepGain.gain.setValueAtTime(0.1, tNow);
-      sweepGain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.8);
-      sweepOsc.connect(sweepGain);
-      sweepGain.connect(ctx.destination);
-      sweepOsc.start(tNow);
-      sweepOsc.stop(tNow + 0.8);
-    }, 200);
-
-    // 3. Computer Lock Chirps Arpeggio
-    const chirps = [880, 1174, 1318, 1760, 2093];
+    // Warm Telemetry Chimes
+    const chirps = [293.66, 369.99, 440, 587.33];
     chirps.forEach((freq, idx) => {
       setTimeout(() => {
         if (soundMuted) return;
         const tNow = ctx.currentTime;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(850, tNow);
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, tNow);
-        gain.gain.setValueAtTime(0.09, tNow);
-        gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.12);
-        osc.connect(gain);
+        gain.gain.setValueAtTime(0.06, tNow);
+        gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.14);
+        osc.connect(filter);
+        filter.connect(gain);
         gain.connect(ctx.destination);
         osc.start(tNow);
-        osc.stop(tNow + 0.12);
-      }, 550 + idx * 100);
+        osc.stop(tNow + 0.14);
+      }, 450 + idx * 110);
     });
-
-    // 4. Target Lock Double Chime at 2.2s
-    setTimeout(() => {
-      if (soundMuted) return;
-      const tNow = ctx.currentTime;
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = 'triangle';
-      osc1.frequency.setValueAtTime(1567, tNow);
-      gain1.gain.setValueAtTime(0.15, tNow);
-      gain1.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.2);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(tNow);
-      osc1.stop(tNow + 0.2);
-
-      setTimeout(() => {
-        if (soundMuted) return;
-        const tNow2 = ctx.currentTime;
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(2093, tNow2);
-        gain2.gain.setValueAtTime(0.18, tNow2);
-        gain2.gain.exponentialRampToValueAtTime(0.0001, tNow2 + 0.35);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start(tNow2);
-        osc2.stop(tNow2 + 0.35);
-      }, 100);
-    }, 2200);
-
-    // 5. Systems Online Confirmation Chime Fanfare at 3.0s (C-major triad ascension)
-    setTimeout(() => {
-      if (soundMuted) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, i) => {
-        setTimeout(() => {
-          if (soundMuted) return;
-          const tNow = ctx.currentTime;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, tNow);
-          gain.gain.setValueAtTime(0.16, tNow);
-          gain.gain.exponentialRampToValueAtTime(0.0001, tNow + 0.5);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(tNow);
-          osc.stop(tNow + 0.5);
-        }, i * 110);
-      });
-    }, 3000);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
 /**
- * Nanotech Micro Snap sound (crisp snap click when particle locks into place)
+ * 14. Nanotech Micro Snap (Mechanical tactile latch)
  */
 export const playNaniteSnap = () => {
   if (soundMuted) return;
@@ -602,22 +620,31 @@ export const playNaniteSnap = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1400 + Math.random() * 400, now);
-    osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
-    gain.gain.setValueAtTime(0.09, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-    osc.connect(gain);
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(700, now);
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(340, now);
+    osc.frequency.exponentialRampToValueAtTime(110, now + 0.025);
+
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
+
     osc.start(now);
-    osc.stop(now + 0.045);
+    osc.stop(now + 0.025);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
 /**
- * Nanotech Swarm Launch sound (futuristic swoop)
+ * 15. Nanotech Swarm Launch
  */
 export const playNanotechLaunch = () => {
   if (soundMuted) return;
@@ -627,22 +654,31 @@ export const playNanotechLaunch = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(120, now);
-    osc.frequency.exponentialRampToValueAtTime(850, now + 0.4);
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-    osc.connect(gain);
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(600, now);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(90, now);
+    osc.frequency.exponentialRampToValueAtTime(380, now + 0.35);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
+
     osc.start(now);
-    osc.stop(now + 0.5);
+    osc.stop(now + 0.4);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
 /**
- * Nanotech Assembly Complete Fanfare
+ * 16. Nanotech Assembly Complete
  */
 export const playNanotechAssemblyComplete = () => {
   if (soundMuted) return;
@@ -652,23 +688,33 @@ export const playNanotechAssemblyComplete = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(750, now);
+
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(440, now);
-    osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
-    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.5);
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-    osc.connect(gain);
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(330, now + 0.2);
+    osc.frequency.exponentialRampToValueAtTime(440, now + 0.45);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
+
     osc.start(now);
-    osc.stop(now + 0.8);
+    osc.stop(now + 0.65);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
 
 /**
- * J.A.R.V.I.S. Diagnostic Typing Micro Blip
+ * 17. J.A.R.V.I.S. Typing Micro Blip
+ * Soft subdued 340Hz -> 180Hz acoustic pulse.
  */
 export const playJarvisTypeBlip = () => {
   if (soundMuted) return;
@@ -678,16 +724,25 @@ export const playJarvisTypeBlip = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(600, now);
+
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(1200 + Math.random() * 800, now);
+    osc.frequency.setValueAtTime(320 + Math.random() * 50, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.02);
+
     gain.gain.setValueAtTime(0.025, now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
-    osc.connect(gain);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
+
     osc.start(now);
-    osc.stop(now + 0.04);
+    osc.stop(now + 0.02);
   } catch (err) {
-    // Ignore audio errors
+    // Audio fallback
   }
 };
-
