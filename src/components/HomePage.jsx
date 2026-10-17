@@ -807,7 +807,7 @@ export default function HomePage({
                 />
               </div>
               <div className="proof-text-wrap">
-                <span className="proof-count-text">Students from <strong>200+ colleges</strong></span>
+                <span className="proof-count-text">Students from <strong>40+ colleges</strong></span>
                 <span className="proof-sub-text">active and building daily</span>
               </div>
             </div>
@@ -872,15 +872,15 @@ export default function HomePage({
         <div className="hero-telemetry-container">
           <div className="hero-telemetry-strip">
             <div className="telemetry-item">
-              <span className="telemetry-value">200+</span>
+              <span className="telemetry-value">40+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">CAMPUSES REPRESENTED</span>
-                <span className="telemetry-detail">Across engineering institutions</span>
+                <span className="telemetry-detail">Across engineering colleges</span>
               </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <span className="telemetry-value">1,000+</span>
+              <span className="telemetry-value">150+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">ACTIVE BUILDERS</span>
                 <span className="telemetry-detail">Connected across WhatsApp & Discord</span>
@@ -888,10 +888,10 @@ export default function HomePage({
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <span className="telemetry-value">100+</span>
+              <span className="telemetry-value">12+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">PROJECTS SHIPPED</span>
-                <span className="telemetry-detail">MVPs, open-source & production repos</span>
+                <span className="telemetry-detail">Deployed production software</span>
               </div>
             </div>
             <div className="telemetry-divider" />
