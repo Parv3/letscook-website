@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Lock, 
-  ShieldAlert, 
   ArrowUpRight, 
   Search, 
   Filter, 
@@ -111,44 +110,37 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
   if (!currentUser) {
     return (
       <div className="resources-locked-viewport animate-fade-in">
-        {/* Ambient Pulsing Security Grid */}
+        {/* Subtle blurred backdrop glow */}
         <div className="locked-grid-overlay" />
         <div className="locked-radial-glow" />
 
-        <div className="locked-card-container">
-          <div className="locked-shield-icon-wrap">
-            <div className="locked-shield-pulse-ring" />
-            <ShieldAlert size={48} className="locked-shield-icon" />
+        <div 
+          className="locked-simple-card"
+          onClick={handleOpenJoin}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOpenJoin(); }}
+          aria-label="Login to access resources"
+        >
+          <div className="locked-big-icon-wrap">
+            <Lock size={68} strokeWidth={1.8} className="locked-big-icon" />
           </div>
 
-          <div className="locked-badge-pill">
-            <Lock size={12} />
-            <span>RESTRICTED ARCHIVE · LEVEL 4 CLEARANCE</span>
-          </div>
+          <h1 className="locked-minimal-title">
+            Login to acess
+          </h1>
 
-          <h1 className="locked-title">CLASSIFIED BUILDER VAULT</h1>
-          
-          <p className="locked-prompt-text">
-            please login to acess
-          </p>
-
-          <p className="locked-desc">
-            This repository contains internal hackathon boilerplates, WebGL design kits, distributed architecture blueprints, and sprint guides reserved exclusively for authenticated Let's Cook community builders.
-          </p>
-
-          <div className="locked-actions-group">
-            <button onClick={handleOpenJoin} className="btn-primary btn-lg locked-login-btn">
-              LOGIN / JOIN US TO UNLOCK <ArrowUpRight size={18} />
-            </button>
-            <button onClick={handleOpenHome} className="btn-secondary locked-home-btn">
-              Return to Home
-            </button>
-          </div>
-
-          <div className="locked-security-footer">
-            <span className="security-tag">ENCRYPTION: AES-256 HMAC</span>
-            <span className="security-tag">CLEARANCE: VERIFIED MEMBERS ONLY</span>
-          </div>
+          <button 
+            type="button"
+            className="locked-redirect-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenJoin();
+            }}
+          >
+            <span>Login to access</span>
+            <ArrowUpRight size={18} />
+          </button>
         </div>
 
         <style>{`
@@ -167,8 +159,8 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
             position: absolute;
             inset: 0;
             background-image: 
-              linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+              linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 40px 40px;
             pointer-events: none;
           }
@@ -178,146 +170,111 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.06) 45%, transparent 70%);
-            filter: blur(50px);
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(225, 29, 72, 0.15) 0%, rgba(245, 158, 11, 0.05) 50%, transparent 70%);
+            filter: blur(60px);
             pointer-events: none;
           }
 
-          .locked-card-container {
+          .locked-simple-card {
             position: relative;
             z-index: 10;
-            max-width: 580px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 40px;
+            max-width: 440px;
             width: 100%;
-            background: rgba(14, 16, 22, 0.85);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(14, 16, 24, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            padding: 48px 36px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(225, 29, 72, 0.12);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
             text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(239, 68, 68, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
           }
 
-          .locked-shield-icon-wrap {
-            position: relative;
+          .locked-simple-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(225, 29, 72, 0.4);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(225, 29, 72, 0.25);
+          }
+
+          .locked-big-icon-wrap {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 88px;
-            height: 88px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.4);
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px solid rgba(225, 29, 72, 0.35);
             margin-bottom: 24px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
           }
 
-          .locked-shield-pulse-ring {
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 1.5px dashed rgba(239, 68, 68, 0.4);
-            animation: spinSlow 14s linear infinite;
+          .locked-simple-card:hover .locked-big-icon-wrap {
+            transform: scale(1.06);
+            border-color: rgba(225, 29, 72, 0.6);
+            background: rgba(225, 29, 72, 0.16);
           }
 
-          @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+          .locked-big-icon {
+            color: #f43f5e;
+            filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.6));
           }
 
-          .locked-shield-icon {
-            color: #ef4444;
-            filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.6));
-          }
-
-          .locked-badge-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 9999px;
-            font-family: monospace;
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #f87171;
-            letter-spacing: 0.08em;
-            margin-bottom: 18px;
-          }
-
-          .locked-title {
+          .locked-minimal-title {
             font-family: var(--font-display);
-            font-size: clamp(1.6rem, 3.5vw, 2.3rem);
-            font-weight: 900;
+            font-size: clamp(1.6rem, 3vw, 2.1rem);
+            font-weight: 800;
             letter-spacing: -0.02em;
             color: #ffffff;
-            margin: 0 0 12px 0;
+            margin: 0 0 24px 0;
             line-height: 1.2;
           }
 
-          .locked-prompt-text {
-            font-family: var(--font-display);
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #f59e0b;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin: 0 0 16px 0;
-            text-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
-          }
-
-          .locked-desc {
-            font-size: 0.94rem;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin: 0 0 32px 0;
-          }
-
-          .locked-actions-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 28px;
-          }
-
-          .locked-login-btn {
-            width: 100%;
-            height: 50px;
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            box-shadow: 0 0 24px rgba(239, 68, 68, 0.4);
-            border: none;
-            display: flex;
+          .locked-redirect-btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-weight: 800;
-            letter-spacing: 0.04em;
+            padding: 13px 28px;
+            background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(225, 29, 72, 0.4);
+            transition: all 0.2s ease;
           }
 
-          .locked-home-btn {
-            width: 100%;
-            height: 44px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #cbd5e1;
+          .locked-redirect-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px rgba(225, 29, 72, 0.65);
           }
 
-          .locked-security-footer {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            flex-wrap: wrap;
-          }
-
-          .security-tag {
-            font-family: monospace;
-            font-size: 0.68rem;
-            color: #64748b;
-            letter-spacing: 0.06em;
+          @media (max-width: 480px) {
+            .locked-simple-card {
+              padding: 40px 24px;
+            }
+            .locked-big-icon-wrap {
+              width: 90px;
+              height: 90px;
+            }
+            .locked-big-icon {
+              width: 52px;
+              height: 52px;
+            }
+            .locked-redirect-btn {
+              width: 100%;
+            }
           }
         `}</style>
       </div>
