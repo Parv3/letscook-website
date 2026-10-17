@@ -7,6 +7,8 @@ import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
 import IronManHologram from './IronManHologram';
 import HulkHologram from './HulkHologram';
+import ThorHologram from './ThorHologram';
+import StormbreakerVisual from './StormbreakerVisual';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { 
   playTechClick, 
@@ -382,7 +384,13 @@ export const SQUADS_DATA = {
     arsenal: ['Hackathons', 'Sprints', 'Demo Days', 'Workshops', 'Keynotes', 'Tournaments'],
     sound: playThunderStrike,
     insigniaSvg: (
-      <StormbreakerSVG idPrefix="sb_insignia" className="w-20 h-20" width={80} height={80} withLightning={true} />
+      <StormbreakerVisual 
+        width={86} 
+        height={86} 
+        className="w-20 h-20 stormbreaker-insignia" 
+        crop={true} 
+        glow={true} 
+      />
     )
   },
   hulk: {
@@ -521,16 +529,25 @@ export default function HomePage({
     }, 5200);
   };
 
-  // Asgardian Stormbreaker Jammed State
+  // Asgardian Stormbreaker Jammed & Hologram State
   const [isSummoningStorm, setIsSummoningStorm] = useState(false);
   const [stormSummoned, setStormSummoned] = useState(false);
   const [stormbreakerJammed, setStormbreakerJammed] = useState(false);
+  const [isThorActive, setIsThorActive] = useState(false);
+
+  const handleToggleThor = () => {
+    try {
+      playThunderStrike();
+    } catch (_) {}
+    setIsThorActive(prev => !prev);
+  };
 
   const handleSummonStormbreaker = () => {
     playThunderStrike();
     setIsSummoningStorm(true);
     setStormSummoned(false);
     setStormbreakerJammed(false);
+    setIsThorActive(true);
 
     // Hypersonic descent along Bifrost conduit, slams into button at 500ms
     setTimeout(() => {
@@ -975,14 +992,14 @@ export default function HomePage({
                           {/* Concentric Expanding Shockwave Ring */}
                           {stormbreakerJammed && <div className="impact-shockwave-ring" />}
 
-                          {/* Authentic Movie-Accurate Stormbreaker SVG */}
+                          {/* Photorealistic 3D Stormbreaker Axe */}
                           <div className="embedded-stormbreaker-container">
-                            <StormbreakerSVG 
-                              idPrefix="sb_jammed" 
-                              className="embedded-stormbreaker-svg" 
+                            <StormbreakerVisual 
                               width={70} 
                               height={70} 
-                              withLightning={true} 
+                              className="embedded-stormbreaker-canvas" 
+                              crop={true} 
+                              glow={true} 
                             />
                           </div>
 
@@ -1059,15 +1076,23 @@ export default function HomePage({
                       ? handleTestArcFlux 
                       : activeSquad.key === 'hulk' 
                         ? handleToggleHulk 
-                        : undefined
+                        : activeSquad.key === 'thor'
+                          ? handleToggleThor
+                          : undefined
                   }
-                  style={activeSquad.key === 'ironman' || activeSquad.key === 'hulk' ? { cursor: 'pointer' } : undefined}
+                  style={
+                    activeSquad.key === 'ironman' || activeSquad.key === 'hulk' || activeSquad.key === 'thor'
+                      ? { cursor: 'pointer' } 
+                      : undefined
+                  }
                   title={
                     activeSquad.key === 'ironman' 
                       ? "Click to deploy J.A.R.V.I.S. HUD & Nanotech Swarm" 
                       : activeSquad.key === 'hulk'
                         ? "Click to deploy Gamma Hulk Hologram"
-                        : undefined
+                        : activeSquad.key === 'thor'
+                          ? "Click to deploy 3D Stormbreaker Hologram"
+                          : undefined
                   }
                 >
                   <div className="insignia-hologram-aura" style={{ background: `radial-gradient(circle, ${activeSquad.color}25 0%, transparent 70%)` }} />
@@ -1086,7 +1111,7 @@ export default function HomePage({
                     <div className="insignia-label">{activeSquad.hero} PROTOCOL</div>
                     <div className="insignia-sublabel" style={{ color: activeSquad.color }}>
                       {activeSquad.key === 'thor'
-                        ? 'STORMBREAKER · BIFROST READY'
+                        ? (isThorActive ? 'STORMBREAKER ONLINE · CLICK TO TOGGLE' : 'STORMBREAKER · CLICK TO SUMMON')
                         : activeSquad.key === 'captain'
                           ? 'VIBRANIUM ALLIANCE · SHIELD ACTIVE'
                           : activeSquad.key === 'ironman'
@@ -1106,6 +1131,14 @@ export default function HomePage({
             <IronManHologram 
               isActive={isIronManActive} 
               onClose={() => setIsIronManActive(false)} 
+            />
+          )}
+
+          {/* Thor Stormbreaker Hologram with Black Screen removed via GPU WebGL Chroma Key */}
+          {activeSquad.key === 'thor' && (
+            <ThorHologram 
+              isActive={isThorActive} 
+              onClose={() => setIsThorActive(false)} 
             />
           )}
 
@@ -1903,6 +1936,21 @@ export default function HomePage({
           align-items: center;
           justify-content: center;
           transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stormbreaker-insignia {
+          transition: transform 0.3s ease;
+        }
+
+        .insignia-wrapper:hover .stormbreaker-insignia {
+          transform: scale(1.08);
+        }
+
+        .embedded-stormbreaker-container {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .insignia-wrapper:hover .insignia-glow-ring {
