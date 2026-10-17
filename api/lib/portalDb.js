@@ -302,89 +302,21 @@ function getResourcesFilePath() {
 
 const SEED_RESOURCES = [
   {
-    id: 'res-tech-01',
-    title: 'Production Full-Stack Web Architecture Boilerplate',
-    description: 'Battle-tested Next.js 14, TypeScript, Tailwind, and Prisma scaffold with built-in RBAC authentication, rate limiting, and CI/CD pipelines.',
+    id: 'res-inreal-01',
+    title: 'InReal',
+    description: 'Real Internship Finder',
     category: 'tech',
     targetSquad: 'ironman',
     fileType: 'Repository',
-    url: 'https://github.com/letscook-community/fullstack-production-starter',
-    tags: ['Next.js 14', 'TypeScript', 'Prisma', 'Tailwind', 'Docker'],
+    url: 'https://github.com/Parv3/InReal',
+    tags: ['Internships', 'Verification', 'Full-Stack'],
     uploadedBy: {
       name: 'Parv Mishra',
-      roleTitle: 'Founder & Tech Head',
-      email: 'founder@letscook.co.in'
+      roleTitle: 'Tech Team Lead',
+      email: 'parvmishra44@gmail.com'
     },
-    createdAt: new Date('2026-10-01T12:00:00Z').toISOString(),
-    downloadsCount: 142
-  },
-  {
-    id: 'res-design-01',
-    title: 'Marvel WebGL Shader Library & Cinematic UI Tokens',
-    description: 'High-performance GPU shaders, real-time chroma keyers (green/blue/black background keying), bifrost lightning effects, and design system tokens.',
-    category: 'design',
-    targetSquad: 'hulk',
-    fileType: 'Design Kit',
-    url: 'https://figma.com/@letscook/marvel-webgl-design-tokens',
-    tags: ['WebGL', 'GLSL', 'Figma', 'Design Systems', 'Three.js'],
-    uploadedBy: {
-      name: 'Design Core Lead',
-      roleTitle: 'Design Core Head',
-      email: 'designhead@letscook.co.in'
-    },
-    createdAt: new Date('2026-10-05T14:30:00Z').toISOString(),
-    downloadsCount: 98
-  },
-  {
-    id: 'res-events-01',
-    title: '48-Hour Hackathon Winning Pitch Deck & Demo Strategy',
-    description: 'Framework, slide breakdown, time management guidelines, and judge Q&A preparation handbook used by Let\'s Cook teams to win national hackathons.',
-    category: 'events',
-    targetSquad: 'thor',
-    fileType: 'Pitch Deck',
-    url: 'https://pitch.com/letscook/48h-hackathon-winning-deck',
-    tags: ['Pitch Deck', 'Hackathons', 'Demo Day', 'Presentation', 'MVP'],
-    uploadedBy: {
-      name: 'President',
-      roleTitle: 'President',
-      email: 'president@letscook.co.in'
-    },
-    createdAt: new Date('2026-10-08T09:15:00Z').toISOString(),
-    downloadsCount: 187
-  },
-  {
-    id: 'res-tech-02',
-    title: 'Distributed Systems & High-Throughput API Handbook',
-    description: 'Comprehensive study notes on event-driven architecture, Redis caching patterns, Kafka streams, rate limiting algorithms, and database indexing.',
-    category: 'tech',
-    targetSquad: 'ironman',
-    fileType: 'Guide',
-    url: 'https://docs.letscook.co.in/systems/distributed-architecture',
-    tags: ['System Design', 'Redis', 'Kafka', 'Scalability', 'APIs'],
-    uploadedBy: {
-      name: 'Tech Lead',
-      roleTitle: 'Tech Core Head',
-      email: 'techhead@letscook.co.in'
-    },
-    createdAt: new Date('2026-10-12T16:00:00Z').toISOString(),
-    downloadsCount: 215
-  },
-  {
-    id: 'res-pr-01',
-    title: 'Open Source Contribution & Developer Advocacy Playbook',
-    description: 'Standard operating procedures for git workflow, writing outstanding pull requests, developer community outreach, and keynote speaking.',
-    category: 'pr',
-    targetSquad: 'captain',
-    fileType: 'Playbook',
-    url: 'https://docs.letscook.co.in/community/open-source-playbook',
-    tags: ['Open Source', 'Git', 'Advocacy', 'Community', 'PRs'],
-    uploadedBy: {
-      name: 'Vice President',
-      roleTitle: 'Vice President',
-      email: 'vp@letscook.co.in'
-    },
-    createdAt: new Date('2026-10-14T11:20:00Z').toISOString(),
-    downloadsCount: 76
+    createdAt: '2026-10-18T00:55:00.000Z',
+    downloadsCount: 1
   }
 ];
 
@@ -396,12 +328,28 @@ export function loadResources() {
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, 'utf8');
-      inMemoryResources = JSON.parse(data);
-      if (Array.isArray(inMemoryResources) && inMemoryResources.length > 0) {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        inMemoryResources = parsed;
         return inMemoryResources;
       }
     }
   } catch (_) {}
+
+  // Fallback to committed src/data/portal-resources.json if available
+  try {
+    const srcPath = path.resolve(process.cwd(), 'src/data/portal-resources.json');
+    if (fs.existsSync(srcPath)) {
+      const data = fs.readFileSync(srcPath, 'utf8');
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        inMemoryResources = parsed;
+        saveResources(inMemoryResources);
+        return inMemoryResources;
+      }
+    }
+  } catch (_) {}
+
   inMemoryResources = [...SEED_RESOURCES];
   saveResources(inMemoryResources);
   return inMemoryResources;

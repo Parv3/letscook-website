@@ -1,0 +1,19 @@
+[
+  {
+    "id": "res-inreal-01",
+    "title": "InReal",
+    "description": "Real Internship Finder",
+    "category": "tech",
+    "targetSquad": "ironman",
+    "fileType": "Repository",
+    "url": "https://github.com/Parv3/InReal",
+    "tags": ["Internships", "Verification", "Full-Stack"],
+    "uploadedBy": {
+      "name": "Parv Mishra",
+      "roleTitle": "Tech Team Lead",
+      "email": "parvmishra44@gmail.com"
+    },
+    "createdAt": "2026-10-18T00:55:00.000Z",
+    "downloadsCount": 1
+  }
+]
