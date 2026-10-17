@@ -1,27 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  ArrowUpRight, 
-  Shield, 
-  Rocket, 
-  Sparkles, 
-  CheckCircle2, 
-  Lightbulb,
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Code2,
-  Terminal,
-  ExternalLink,
-  Play,
-  Layers,
-  Award,
-  BookOpen,
-  Compass,
-  ArrowRight,
-  ChevronRight,
-  Share2
-} from 'lucide-react';
+import { ArrowUpRight, Shield, Rocket, Sparkles, CheckCircle2, Lightbulb } from 'lucide-react';
 import FaqSection from './FaqSection';
 import ThemeInteractiveCore from './ThemeInteractiveCore';
 import TextDecoder from './TextDecoder';
@@ -324,17 +302,17 @@ export const SQUADS_DATA = {
     team: 'TECH TEAM',
     hero: 'IRON MAN',
     title: 'STARK TECH LABS',
-    badge: 'ENGINEERING & SYSTEMS',
+    badge: 'ENGINEERING',
     status: 'ACTIVE DIVISION',
     quote: '"Sometimes you gotta run before you can walk."',
-    desc: 'Production web applications, developer infrastructure, open-source toolchains, and applied AI workflows. Built and deployed by student builders.',
+    desc: 'Full-stack web apps, APIs, developer tools, and applied AI shipped by student builders.',
     color: '#ff0055',
     secondaryColor: '#00f0ff',
     linksUrl: '/links?utm_source=squad_tech_ironman',
     initiatives: [
-      { title: 'Full-Stack & Systems Engineering', desc: 'Modern TypeScript, Rust microservices, and robust cloud deployments.' },
-      { title: 'Applied AI & Developer Tooling', desc: 'Local models, agentic workflows, and productivity utilities.' },
-      { title: 'Open-Source Projects', desc: 'Real-world software maintained and shipped with public repositories.' }
+      { title: 'Full-Stack & Systems', desc: 'Modern TypeScript, React, Python, and cloud services.' },
+      { title: 'Applied AI Tooling', desc: 'Local models, agentic workflows, and developer utilities.' },
+      { title: 'Open-Source Projects', desc: 'Real-world software built in public repositories.' }
     ],
     arsenal: ['TypeScript', 'Rust', 'Python', 'React', 'Docker', 'FastAPI'],
     sound: playRepulsorSound,
@@ -362,17 +340,17 @@ export const SQUADS_DATA = {
     team: 'PR TEAM',
     hero: 'CAPTAIN AMERICA',
     title: 'VIBRANIUM ALLIANCE',
-    badge: 'OUTREACH & ECOSYSTEM',
+    badge: 'OUTREACH',
     status: 'ACTIVE DIVISION',
     quote: '"I can do this all day."',
-    desc: 'Developer advocacy, campus relations, brand storytelling, and strategic partnerships across national engineering hubs.',
+    desc: 'Campus relations, developer advocacy, and cross-college community growth.',
     color: '#0055ff',
     secondaryColor: '#ffffff',
     linksUrl: '/links?utm_source=squad_pr_captain',
     initiatives: [
-      { title: 'Campus Builder Network', desc: 'Connecting active student builders across 40+ engineering colleges.' },
-      { title: 'Developer Advocacy & Media', desc: 'Highlighting community-built products to founders and tech leaders.' },
-      { title: 'Ecosystem Partnerships', desc: 'Collaborating with developer tool companies, hackathons, and accelerators.' }
+      { title: 'Campus Network', desc: 'Connecting active student builders across 40+ engineering colleges.' },
+      { title: 'Developer Media', desc: 'Highlighting community-built products to founders and tech peers.' },
+      { title: 'Ecosystem Collabs', desc: 'Partnering with hackathons, developer tools, and tech hubs.' }
     ],
     arsenal: ['Community', 'Advocacy', 'Partnerships', 'Keynotes', 'Outreach', 'Branding'],
     sound: playVibraniumPing,
@@ -391,17 +369,17 @@ export const SQUADS_DATA = {
     team: 'EVENTS TEAM',
     hero: 'THOR',
     title: 'STORMBREAKER OPS',
-    badge: 'HACKATHONS & SPRINTS',
+    badge: 'SPRINTS',
     status: 'ACTIVE DIVISION',
     quote: '"Bring me Thanos!"',
-    desc: 'High-impact 48-hour build sprints, live campus demo days, competitive code arenas, and hands-on developer workshops.',
+    desc: '48-hour build sprints, live campus demo days, and hands-on developer workshops.',
     color: '#d97706',
     secondaryColor: '#38bdf8',
     linksUrl: '/links?utm_source=squad_events_thor',
     initiatives: [
-      { title: '48-Hour Build Sprints', desc: 'Fast-paced weekend sprints where teams build and ship complete MVPs.' },
-      { title: 'Demo Days & Speaker Sessions', desc: 'Campus stages for builders to showcase shipped software to peers.' },
-      { title: 'Hands-On Tech Workshops', desc: 'Deep-dive interactive cohorts spanning system architecture to design.' }
+      { title: '48-Hour Build Sprints', desc: 'Fast-paced weekend sprints building and shipping complete MVPs.' },
+      { title: 'Demo Days & Talks', desc: 'Stages for builders to showcase shipped software to peers.' },
+      { title: 'Hands-On Workshops', desc: 'Interactive deep-dives spanning system architecture to design.' }
     ],
     arsenal: ['Hackathons', 'Sprints', 'Demo Days', 'Workshops', 'Keynotes', 'Tournaments'],
     sound: playThunderStrike,
@@ -420,17 +398,17 @@ export const SQUADS_DATA = {
     team: 'DESIGN TEAM',
     hero: 'HULK',
     title: 'GAMMA DESIGN LABS',
-    badge: 'CREATIVE & INTERFACE',
+    badge: 'UI / UX',
     status: 'ACTIVE DIVISION',
     quote: '"Design is intelligence made visible. Smash the templates."',
-    desc: 'UI/UX architecture, design systems, generative canvas graphics, 3D web assets, and motion engineering. We craft memorable interfaces for builder products.',
+    desc: 'UI/UX architecture, design systems, modern web graphics, and responsive interfaces.',
     color: '#22c55e',
     secondaryColor: '#a855f7',
     linksUrl: '/links?utm_source=squad_design_hulk',
     initiatives: [
-      { title: 'Interface & Motion Engineering', desc: 'Crafting responsive 60 FPS interactions, spatial UI, and micro-animations.' },
-      { title: 'Design Systems & Tokens', desc: 'Accessible component libraries, color palettes, and typographic hierarchies.' },
-      { title: 'Generative 3D & Brand Identity', desc: 'WebGL shaders, procedural graphics, and distinctive visual identities.' }
+      { title: 'Interface & Motion', desc: 'Crafting responsive 60 FPS interactions and micro-animations.' },
+      { title: 'Design Systems', desc: 'Accessible component libraries, color palettes, and tokens.' },
+      { title: '3D & Visual Identity', desc: 'Modern web shaders, graphics, and distinctive product design.' }
     ],
     arsenal: ['Figma', 'WebGL', 'Tailwind', 'Three.js', 'Spline', 'Framer'],
     sound: playGammaSmashSound,
@@ -483,51 +461,6 @@ function ArcReactor3D() {
   );
 }
 
-// Editorial Handwritten Callout with Caveat cursive & SVG curved doodle arrows
-export function HandwrittenAnnotation({ 
-  text, 
-  arrow = 'right', 
-  className = '', 
-  color = '#ff2a6d', 
-  style = {} 
-}) {
-  return (
-    <div className={`handwritten-callout-wrap ${className}`} style={{ color, ...style }}>
-      <span className="handwritten-script-text">{text}</span>
-      {arrow === 'right' && (
-        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
-          <path d="M2 14C11 6 24 5 35 10M35 10L27 5M35 10L29 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'down-right' && (
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
-          <path d="M4 6C8 18 16 25 26 26M26 26L17 25M26 26L23 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'down-left' && (
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
-          <path d="M26 6C22 18 14 25 4 26M4 26L13 25M4 26L7 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'up-right' && (
-        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
-          <path d="M4 24C9 14 17 7 26 4M26 4L17 4M26 4L24 13" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'up' && (
-        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="callout-arrow">
-          <path d="M12 28C10 18 14 10 12 4M12 4L6 11M12 4L18 11" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'left' && (
-        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
-          <path d="M36 14C27 6 14 5 3 10M3 10L11 5M3 10L9 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-    </div>
-  );
-}
-
 export default function HomePage({ 
   setCurrentPage, 
   onOpenPitchModal, 
@@ -536,7 +469,6 @@ export default function HomePage({
   onTriggerEasterEgg 
 }) {
   const activeSquad = SQUADS_DATA[currentSquad] || SQUADS_DATA.ironman;
-  const [showStoryVideo, setShowStoryVideo] = useState(false);
 
   // Stark Arc Flux & Iron Man Protocol State
   const [isTestingFlux, setIsTestingFlux] = useState(false);
@@ -735,25 +667,27 @@ export default function HomePage({
       )}
 
       {/* ========================================================= */}
-      {/* 1. HERO SECTION (EDITORIAL ASYMMETRIC COLLAGE)            */}
+      {/* 1. HERO SECTION (TIGHT COMPOSITION & PROMINENT LIGHTING)  */}
       {/* ========================================================= */}
-      <section id="hero-top" className="hero-section editorial-hero">
-        <div className="hero-editorial-grid">
+      <section id="hero-top" className="hero-section">
+        <div className="hero-container">
           
-          {/* Left Column: Expressive Editorial Typography & Actions */}
-          <div className="hero-left-col">
+
+
+          {/* Main Headline */}
+          <div className="hero-content">
             <div className="hero-eyebrow-pill">
               <span className="eyebrow-pulse-dot" />
-              <span>A NATIONWIDE STUDENT-BUILDER COMMUNITY</span>
+              <Sparkles size={13} className="pill-spark" />
+              <span>STUDENT BUILDER COLLECTIVE &middot; BATCH 2026</span>
             </div>
 
-            <h1 className="editorial-hero-title">
-              <span className="hero-title-lead">Big ideas don't build themselves.</span>
-              <span className="hero-title-follow">
-                Find your people.{' '}
+            <h1 className="hero-title">
+              <span className="hero-line-1">
+                CODE, BUILD,{' '}
                 <span 
                   ref={boxRef}
-                  className={`editorial-serif-accent ${isCreateInverted ? 'inverted-mode' : ''}`}
+                  className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
                   onMouseEnter={handleCreateMouseEnter}
                   onMouseLeave={handleCreateMouseLeave}
                   onTouchStart={handleCreateMouseEnter}
@@ -762,18 +696,19 @@ export default function HomePage({
                   onClick={() => {
                     if (isCreateInverted) handleCreateDoubleClick();
                   }}
-                  title={isCreateInverted ? "Double-click to reset!" : "Hover or hold to break into LETS COOK!"}
+                  title={isCreateInverted ? "Tap or double-click to reset back to CREATE!" : "Hold or hover to break into LETS COOK!"}
                 >
-                  {isCreateInverted ? "Let's Cook." : "Build what's next."}
+                  {isCreateInverted ? 'LETS COOK' : 'CREATE'}
                 </span>
-              </span>
+              </span>{' '}
+              <span className="hero-line-2">AND CONTRIBUTE</span>
             </h1>
 
-            <p className="editorial-hero-desc">
-              Let's Cook brings ambitious students together across colleges to master modern engineering, build real software, attend workshops, and collaborate across campuses.
+            <p className="hero-subtitle">
+              Student-run builder community shipping open-source software, hackathon projects, and production web systems together.
             </p>
 
-            <div className="hero-editorial-actions">
+            <div className="hero-cta-group">
               <button 
                 onClick={() => {
                   playTechClick();
@@ -783,702 +718,50 @@ export default function HomePage({
                   setCurrentPage('portal');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="btn-primary btn-lg editorial-main-cta glow-btn"
+                className="btn-primary btn-lg glow-btn"
               >
-                Join the community <ArrowUpRight size={18} />
+                JOIN US <ArrowUpRight size={18} />
               </button>
-
               <button 
-                onClick={() => {
-                  playTechClick();
-                  const el = document.getElementById('ecosystem');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="btn-secondary btn-lg editorial-sub-cta"
+                onClick={() => { playTechClick(); onOpenPitchModal(); }}
+                className="btn-secondary btn-lg"
               >
-                Explore the ecosystem ↓
+                <Lightbulb size={18} /> PITCH IDEA
               </button>
             </div>
-
-            {/* Builder Avatar Stack / Proof Pill */}
-            <div className="hero-proof-badge">
-              <div className="avatar-overlap-stack">
-                <img 
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" 
-                  alt="Student builder" 
-                  className="stack-avatar" 
-                />
-                <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" 
-                  alt="Student builder" 
-                  className="stack-avatar" 
-                />
-                <img 
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" 
-                  alt="Student builder" 
-                  className="stack-avatar" 
-                />
-                <img 
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" 
-                  alt="Student builder" 
-                  className="stack-avatar" 
-                />
-              </div>
-              <div className="proof-text-wrap">
-                <span className="proof-count-text">Students from <strong>200+ colleges</strong></span>
-                <span className="proof-sub-text">active and building daily</span>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Layered Tilted Photographic Collage with Handwritten Doodles */}
-          <div className="hero-right-col">
-            <div className="hero-collage-scene">
-              {/* Top Handwritten Annotation */}
-              <HandwrittenAnnotation 
-                text="Learn. Build. Ship." 
-                arrow="down-right" 
-                color="var(--accent-burgundy, #e11d48)" 
-                className="collage-annotation annotation-top" 
-              />
-
-              {/* Tilted Photo Card 1 (Student Engineers Coding Together) */}
-              <div className="collage-card card-tilt-left">
-                <div className="collage-img-wrap">
-                  <img 
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80" 
-                    alt="Students coding together" 
-                    className="collage-img" 
-                  />
-                  <div className="collage-tag-pill">HACKATHON WAR ROOM</div>
-                </div>
-              </div>
-
-              {/* Tilted Photo Card 2 (Collaborative Brainstorm & Demo) */}
-              <div className="collage-card card-tilt-right">
-                <div className="collage-img-wrap">
-                  <img 
-                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=700&q=80" 
-                    alt="Student project demo" 
-                    className="collage-img" 
-                  />
-                  <div className="collage-tag-pill">PRODUCT SPRINT 2025</div>
-                </div>
-              </div>
-
-              {/* Middle Handwritten Annotation */}
-              <HandwrittenAnnotation 
-                text="Real people. Real projects." 
-                arrow="left" 
-                color="#38bdf8" 
-                className="collage-annotation annotation-mid" 
-              />
-
-              {/* Small Floating Metric Badge Card */}
-              <div className="collage-floating-badge">
-                <Sparkles size={16} className="badge-spark-icon" />
-                <div>
-                  <div className="badge-stat-num">100% Student Governed</div>
-                  <div className="badge-stat-sub">Zero faculty gatekeeping</div>
-                </div>
-              </div>
-
-              {/* Bottom Handwritten Annotation */}
-              <HandwrittenAnnotation 
-                text="Different campuses. Same vision." 
-                arrow="up-right" 
-                color="#facc15" 
-                className="collage-annotation annotation-bottom" 
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Integrated Telemetry Proof Strip */}
-        <div className="hero-telemetry-container">
+          {/* Integrated Student Builder Proof Strip */}
           <div className="hero-telemetry-strip">
             <div className="telemetry-item">
-              <span className="telemetry-value">200+</span>
-              <div className="telemetry-text-group">
-                <span className="telemetry-label">CAMPUSES REPRESENTED</span>
-                <span className="telemetry-detail">Across engineering institutions</span>
-              </div>
-            </div>
-            <div className="telemetry-divider" />
-            <div className="telemetry-item">
-              <span className="telemetry-value">1,000+</span>
+              <span className="telemetry-value">150+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">ACTIVE BUILDERS</span>
-                <span className="telemetry-detail">Connected across WhatsApp & Discord</span>
+                <span className="telemetry-detail">Across engineering colleges</span>
               </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <span className="telemetry-value">100+</span>
+              <span className="telemetry-value">12+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">PROJECTS SHIPPED</span>
-                <span className="telemetry-detail">MVPs, open-source & production repos</span>
+                <span className="telemetry-detail">Deployed production software</span>
               </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <span className="telemetry-value">50+</span>
+              <span className="telemetry-value">100%</span>
               <div className="telemetry-text-group">
-                <span className="telemetry-label">EVENTS & WORKSHOPS</span>
-                <span className="telemetry-detail">Hands-on technical cohorts</span>
+                <span className="telemetry-label">STUDENT LED</span>
+                <span className="telemetry-detail">Peer mentored & governed</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 2. WHAT'S HAPPENING / LIVE IN THE COMMUNITY               */}
-      {/* ========================================================= */}
-      <section id="events" className="editorial-section live-activity-section">
-        <div className="editorial-container">
-          <div className="section-editorial-header">
-            <div className="header-text-block">
-              <div className="editorial-eyebrow">WHAT'S HAPPENING</div>
-              <h2 className="editorial-section-title">Live in the community</h2>
-              <p className="editorial-section-desc">
-                Events, projects and opportunities — all in one place.
-              </p>
-            </div>
-            <div className="header-action-block">
-              <button 
-                onClick={() => {
-                  playTechClick();
-                  if (window.history && window.history.pushState) window.history.pushState(null, '', '/links');
-                  setCurrentPage('links');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }} 
-                className="editorial-link-btn"
-              >
-                View all opportunities <ArrowRight size={16} />
-              </button>
-              <HandwrittenAnnotation 
-                text="New opportunities added daily" 
-                arrow="down-left" 
-                color="var(--accent-burgundy, #e11d48)" 
-                className="header-inline-annotation" 
-              />
-            </div>
-          </div>
-
-          {/* 3 Horizontal Asymmetric Activity Cards */}
-          <div className="activity-cards-grid">
-            {/* Card 1: Workshop */}
-            <div className="activity-card hover-lift">
-              <div className="activity-card-top">
-                <span className="activity-type-pill pill-workshop">
-                  <span className="activity-pulse-dot" /> WORKSHOP
-                </span>
-                <span className="activity-date-tag"><Calendar size={13} /> This Weekend</span>
-              </div>
-              <h3 className="activity-title">LLM Agents 101: Building Autonomous Workflows</h3>
-              <p className="activity-desc">
-                Hands-on session on tool calling, stateful graph memory, LangGraph, and deploying custom student developer tools.
-              </p>
-              <div className="activity-meta-row">
-                <span className="meta-item"><MapPin size={13} /> Online / Google Meet</span>
-                <span className="meta-item"><Clock size={13} /> 2.5 Hours Interactive</span>
-              </div>
-              <div className="activity-card-footer">
-                <div className="activity-attendees">
-                  <div className="attendee-avatar-stack">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                  </div>
-                  <span className="attendees-count">+124 going</span>
-                </div>
-                <button 
-                  onClick={() => {
-                    playTechClick();
-                    if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                    setCurrentPage('portal');
-                  }}
-                  className="activity-action-btn"
-                >
-                  RSVP Free <ArrowUpRight size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 2: Hackathon */}
-            <div className="activity-card hover-lift featured-card">
-              <div className="activity-card-top">
-                <span className="activity-type-pill pill-hackathon">
-                  <Sparkles size={13} /> HACKATHON
-                </span>
-                <span className="activity-date-tag"><Calendar size={13} /> Registration Open</span>
-              </div>
-              <h3 className="activity-title">Campus Hackathon 2025: 48-Hour Sprint</h3>
-              <p className="activity-desc">
-                GLA University on-site + national hybrid build sprint. Direct mentor access, sponsor tracks, and hardware testing benches.
-              </p>
-              <div className="activity-meta-row">
-                <span className="meta-item"><MapPin size={13} /> GLA University & Hybrid</span>
-                <span className="meta-item"><Clock size={13} /> 48-Hour Sprint</span>
-              </div>
-              <div className="activity-card-footer">
-                <div className="activity-attendees">
-                  <div className="attendee-avatar-stack">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                  </div>
-                  <span className="attendees-count">+320 registered</span>
-                </div>
-                <button 
-                  onClick={() => {
-                    playTechClick();
-                    if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                    setCurrentPage('portal');
-                  }}
-                  className="activity-action-btn primary-action"
-                >
-                  Join Squad <ArrowUpRight size={14} />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 3: Opportunity */}
-            <div className="activity-card hover-lift">
-              <div className="activity-card-top">
-                <span className="activity-type-pill pill-opportunity">
-                  <Compass size={13} /> OPPORTUNITY
-                </span>
-                <span className="activity-date-tag"><Clock size={13} /> 3 Spots Left</span>
-              </div>
-              <h3 className="activity-title">ML Research & Systems Core Team</h3>
-              <p className="activity-desc">
-                Recruiting student builders for distributed training pipelines, Siamese change detection, and API inference benchmarks.
-              </p>
-              <div className="activity-meta-row">
-                <span className="meta-item"><MapPin size={13} /> Remote / Campus Flexible</span>
-                <span className="meta-item"><Code2 size={13} /> PyTorch + FastAPI</span>
-              </div>
-              <div className="activity-card-footer">
-                <div className="activity-attendees">
-                  <div className="attendee-avatar-stack">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="Attendee" />
-                  </div>
-                  <span className="attendees-count">+18 applied</span>
-                </div>
-                <button 
-                  onClick={() => {
-                    playTechClick();
-                    if (window.history && window.history.pushState) window.history.pushState(null, '', '/links');
-                    setCurrentPage('links');
-                  }}
-                  className="activity-action-btn"
-                >
-                  Apply Now <ArrowUpRight size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 3. THE ECOSYSTEM (LIGHT EDITORIAL CONTAINER)              */}
-      {/* ========================================================= */}
-      <section id="ecosystem" className="editorial-section ecosystem-light-section">
-        <div className="editorial-container">
-          <div className="section-editorial-header light-header">
-            <div className="header-text-block">
-              <div className="editorial-eyebrow light-eyebrow">THE ECOSYSTEM</div>
-              <h2 className="editorial-section-title light-title">More than a community. It's a launchpad.</h2>
-              <p className="editorial-section-desc light-desc">
-                Four interconnected pillars designed to transform curious students into capable builders, open-source maintainers, and startup founders.
-              </p>
-            </div>
-            <div className="header-action-block">
-              <button 
-                onClick={() => {
-                  playTechClick();
-                  if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                  setCurrentPage('portal');
-                }} 
-                className="editorial-link-btn light-link"
-              >
-                Learn more <ArrowRight size={16} />
-              </button>
-              <HandwrittenAnnotation 
-                text="Same hustle. Different cities." 
-                arrow="down-left" 
-                color="#b91c1c" 
-                className="header-inline-annotation" 
-              />
-            </div>
-          </div>
-
-          {/* 4 Pillars Grid on crisp light surface */}
-          <div className="ecosystem-cards-grid">
-            {/* Pillar 1: LEARN */}
-            <div className="ecosystem-card">
-              <div className="eco-img-wrap">
-                <img 
-                  src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" 
-                  alt="Student learning session" 
-                  className="eco-card-img" 
-                />
-                <div className="eco-badge">
-                  <BookOpen size={14} /> LEARN
-                </div>
-              </div>
-              <div className="eco-card-body">
-                <h3 className="eco-card-title">Master Practical Engineering</h3>
-                <p className="eco-card-text">
-                  Skip outdated academic curricula. Learn production software architectures, system design, and AI workflows through live, peer-guided cohorts.
-                </p>
-                <ul className="eco-checklist">
-                  <li><CheckCircle2 size={14} className="eco-check" /> System architecture breakdowns</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> 1-on-1 peer code reviews</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Zero-to-deployment roadmap</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Pillar 2: BUILD */}
-            <div className="ecosystem-card">
-              <div className="eco-img-wrap">
-                <img 
-                  src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" 
-                  alt="Coding on laptop terminal" 
-                  className="eco-card-img" 
-                />
-                <div className="eco-badge">
-                  <Code2 size={14} /> BUILD
-                </div>
-              </div>
-              <div className="eco-card-body">
-                <h3 className="eco-card-title">Ship Real Production MVPs</h3>
-                <p className="eco-card-text">
-                  Stop writing toy tutorial apps that live only on localhost. Build products with real daily users, automated CI/CD tests, and live databases.
-                </p>
-                <ul className="eco-checklist">
-                  <li><CheckCircle2 size={14} className="eco-check" /> Cross-college engineering squads</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Public open-source repositories</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Weekly sprint accountability</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Pillar 3: COMPETE */}
-            <div className="ecosystem-card">
-              <div className="eco-img-wrap">
-                <img 
-                  src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80" 
-                  alt="Hackathon team celebration" 
-                  className="eco-card-img" 
-                />
-                <div className="eco-badge">
-                  <Award size={14} /> COMPETE
-                </div>
-              </div>
-              <div className="eco-card-body">
-                <h3 className="eco-card-title">Dominate National Hackathons</h3>
-                <p className="eco-card-text">
-                  Form balanced squads with frontend wizards, backend architects, and pitch presenters. Compete in regional and national hackathons with proven playbooks.
-                </p>
-                <ul className="eco-checklist">
-                  <li><CheckCircle2 size={14} className="eco-check" /> 48-Hour rapid prototyping</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Demo day storytelling coaching</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> National podium track record</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Pillar 4: CONNECT */}
-            <div className="ecosystem-card">
-              <div className="eco-img-wrap">
-                <img 
-                  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" 
-                  alt="Students networking together" 
-                  className="eco-card-img" 
-                />
-                <div className="eco-badge">
-                  <Users size={14} /> CONNECT
-                </div>
-              </div>
-              <div className="eco-card-body">
-                <h3 className="eco-card-title">Network Across 200+ Campuses</h3>
-                <p className="eco-card-text">
-                  Your university shouldn't be your only horizon. Connect with ambitious peers, tech leads, and founders across engineering hubs nationwide.
-                </p>
-                <ul className="eco-checklist">
-                  <li><CheckCircle2 size={14} className="eco-check" /> Direct founder & mentor AMAs</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Inter-college project collabs</li>
-                  <li><CheckCircle2 size={14} className="eco-check" /> Active Discord & WhatsApp community</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 4. FEATURED PROJECTS & VIDEO SHOWCASE                     */}
-      {/* ========================================================= */}
-      <section id="projects" className="editorial-section projects-editorial-section">
-        <div className="editorial-container">
-          <div className="section-editorial-header">
-            <div className="header-text-block">
-              <div className="editorial-eyebrow">FEATURED PROJECTS</div>
-              <h2 className="editorial-section-title">Talk is cheap. Show us what you built.</h2>
-              <p className="editorial-section-desc">
-                Real production software engineered, tested, and shipped by Let's Cook student teams.
-              </p>
-            </div>
-            <div className="header-action-block">
-              <button 
-                onClick={() => {
-                  playTechClick();
-                  if (window.history && window.history.pushState) window.history.pushState(null, '', '/links');
-                  setCurrentPage('links');
-                }} 
-                className="editorial-link-btn"
-              >
-                View all projects <ArrowRight size={16} />
-              </button>
-              <HandwrittenAnnotation 
-                text="Real solutions. Built by students." 
-                arrow="down-left" 
-                color="#38bdf8" 
-                className="header-inline-annotation" 
-              />
-            </div>
-          </div>
-
-          {/* 2-Column Asymmetric Projects Grid */}
-          <div className="projects-editorial-layout">
-            {/* Left: 3 Project Cards */}
-            <div className="projects-list-col">
-              {/* Project 1: MandiQ */}
-              <div className="project-editorial-card hover-lift">
-                <div className="project-card-header">
-                  <div>
-                    <span className="project-status-pill status-live">● LIVE PRODUCTION</span>
-                    <h3 className="project-name">MandiQ</h3>
-                  </div>
-                  <span className="project-metric-pill">2,400+ Queries / mo</span>
-                </div>
-                <p className="project-summary">
-                  Real-time agricultural market intelligence and fair-price discovery platform empowering farmers with live APMC mandi rates and forecasting.
-                </p>
-                <div className="project-tags-row">
-                  <span className="tech-tag">Python</span>
-                  <span className="tech-tag">FastAPI</span>
-                  <span className="tech-tag">React</span>
-                  <span className="tech-tag">SQLite</span>
-                  <span className="tech-tag">Tailwind</span>
-                </div>
-              </div>
-
-              {/* Project 2: CampusNow */}
-              <div className="project-editorial-card hover-lift">
-                <div className="project-card-header">
-                  <div>
-                    <span className="project-status-pill status-pilot">● IN PILOT</span>
-                    <h3 className="project-name">CampusNow</h3>
-                  </div>
-                  <span className="project-metric-pill">GLA University</span>
-                </div>
-                <p className="project-summary">
-                  Unified event dispatch and instant push notification system bridging university departmental notices and student hackathon alerts.
-                </p>
-                <div className="project-tags-row">
-                  <span className="tech-tag">React</span>
-                  <span className="tech-tag">Node.js</span>
-                  <span className="tech-tag">WebSockets</span>
-                  <span className="tech-tag">PostgreSQL</span>
-                </div>
-              </div>
-
-              {/* Project 3: Aerial Change Detection */}
-              <div className="project-editorial-card hover-lift">
-                <div className="project-card-header">
-                  <div>
-                    <span className="project-status-pill status-research">● RESEARCH MVP</span>
-                    <h3 className="project-name">Aerial Change Detection</h3>
-                  </div>
-                  <span className="project-metric-pill">Open Source</span>
-                </div>
-                <p className="project-summary">
-                  Computer vision system utilizing Siamese neural networks to identify spatial land changes from drone and satellite feeds automatically.
-                </p>
-                <div className="project-tags-row">
-                  <span className="tech-tag">PyTorch</span>
-                  <span className="tech-tag">OpenCV</span>
-                  <span className="tech-tag">Flask</span>
-                  <span className="tech-tag">CUDA</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Large 16:9 Media Showcase Spotlight */}
-            <div className="project-media-showcase-col">
-              <div className="media-spotlight-card">
-                <div className="media-thumbnail-container" onClick={() => setShowStoryVideo(true)}>
-                  <img 
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=80" 
-                    alt="Let's Cook Builder Story" 
-                    className="media-bg-image" 
-                  />
-                  <div className="media-overlay-gradient" />
-                  
-                  {/* Floating Center Play Button */}
-                  <div className="media-play-center">
-                    <div className="play-pulse-circle">
-                      <Play size={28} className="play-triangle-icon" />
-                    </div>
-                    <span className="play-label-text">Watch our story</span>
-                  </div>
-
-                  {/* Top Floating Badge */}
-                  <div className="media-top-badge">
-                    <span className="media-badge-dot" /> BUILDER SPOTLIGHT 2025
-                  </div>
-
-                  {/* Bottom Captions */}
-                  <div className="media-bottom-info">
-                    <div className="media-title">48 Hours Inside a Student Hackathon Sprint</div>
-                    <div className="media-subtitle">See how 12 student teams built and deployed software from scratch.</div>
-                  </div>
-                </div>
-
-                <div className="media-card-caption">
-                  <p className="builder-quote">
-                    "Building with Let's Cook taught me more in 2 intense weekends than 2 semesters of theory. You find people who actually want to ship."
-                  </p>
-                  <div className="builder-quote-author">
-                    — Student Builder, GLA University Chapter
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================= */}
-      {/* 5. FIND YOUR PEOPLE (COMMUNITY & COLLABORATION)           */}
-      {/* ========================================================= */}
-      <section id="community" className="editorial-section community-spotlight-section">
-        <div className="editorial-container">
-          <div className="section-editorial-header">
-            <div className="header-text-block">
-              <div className="editorial-eyebrow">FIND YOUR PEOPLE</div>
-              <h2 className="editorial-section-title">Your next teammate could be at another college.</h2>
-              <p className="editorial-section-desc">
-                Geographic borders shouldn't limit who you build with. Let's Cook connects developers, designers, and organizers from campuses nationwide.
-              </p>
-            </div>
-            <div className="header-action-block">
-              <HandwrittenAnnotation 
-                text="Different skills. Same goal." 
-                arrow="down-right" 
-                color="#facc15" 
-                className="header-inline-annotation" 
-              />
-            </div>
-          </div>
-
-          <div className="community-showcase-grid">
-            {/* Left: Real Student Team Photo */}
-            <div className="community-photo-col">
-              <div className="community-img-frame">
-                <img 
-                  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" 
-                  alt="Student builders collaborating" 
-                  className="community-feature-img" 
-                />
-                <div className="community-photo-caption">
-                  <span>GLA University & Regional Campus Chapters</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Center: Story & Pitch */}
-            <div className="community-narrative-col">
-              <div className="narrative-card">
-                <h3 className="narrative-heading">Colleges teach tech in silos. We break down the walls.</h3>
-                <p className="narrative-p">
-                  Finding ambitious builders on your own campus can be tough. In Let's Cook, you get paired with motivated developers who match your work ethic and stack interests.
-                </p>
-                <div className="narrative-points">
-                  <div className="narrative-point">
-                    <span className="point-bullet">◈</span>
-                    <div>
-                      <strong>Squad Matching:</strong> Find frontend, backend, ML, and UI designers ready to team up for your next hackathon.
-                    </div>
-                  </div>
-                  <div className="narrative-point">
-                    <span className="point-bullet">◈</span>
-                    <div>
-                      <strong>Peer Code Mentorship:</strong> Senior students review your pull requests and share battle-tested patterns.
-                    </div>
-                  </div>
-                  <div className="narrative-point">
-                    <span className="point-bullet">◈</span>
-                    <div>
-                      <strong>Cross-Campus Chapters:</strong> Join or initiate a chapter at your college with official Let's Cook support.
-                    </div>
-                  </div>
-                </div>
-
-                <div className="narrative-cta-row">
-                  <button 
-                    onClick={() => {
-                      playTechClick();
-                      if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                      setCurrentPage('portal');
-                    }}
-                    className="btn-primary"
-                  >
-                    Explore community <ArrowUpRight size={16} />
-                  </button>
-                  <button 
-                    onClick={() => { playTechClick(); onOpenPitchModal(); }}
-                    className="btn-secondary"
-                  >
-                    <Lightbulb size={16} /> Pitch an idea
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: 2x2 Telemetry Metric Grid */}
-            <div className="community-telemetry-col">
-              <div className="telemetry-2x2-grid">
-                <div className="telemetry-cell">
-                  <div className="telemetry-big-number">200+</div>
-                  <div className="telemetry-cell-label">Colleges</div>
-                  <div className="telemetry-cell-sub">Active student representation across India</div>
-                </div>
-
-                <div className="telemetry-cell">
-                  <div className="telemetry-big-number">50+</div>
-                  <div className="telemetry-cell-label">Events & Sprints</div>
-                  <div className="telemetry-cell-sub">Workshops, demo days and cohorts held</div>
-                </div>
-
-                <div className="telemetry-cell">
-                  <div className="telemetry-big-number">100+</div>
-                  <div className="telemetry-cell-label">Projects Shipped</div>
-                  <div className="telemetry-cell-sub">Open-source tools, apps and production MVPs</div>
-                </div>
-
-                <div className="telemetry-cell">
-                  <div className="telemetry-big-number">1,000+</div>
-                  <div className="telemetry-cell-label">Builders</div>
-                  <div className="telemetry-cell-sub">Coders, designers, organizers and mentors</div>
-                </div>
+            <div className="telemetry-divider" />
+            <div className="telemetry-item">
+              <span className="telemetry-value">3</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">HACKATHON PODIUMS</span>
+                <span className="telemetry-detail">Top-tier national finishes</span>
               </div>
             </div>
           </div>
@@ -1493,10 +776,10 @@ export default function HomePage({
           
           {/* Section Header */}
           <div className="section-header-box">
-            <div className="section-label-badge">SQUAD DIVISIONS</div>
-            <h2>CHOOSE YOUR SQUAD DIVISION</h2>
+            <div className="section-label-badge">SQUADS</div>
+            <h2>CHOOSE YOUR SQUAD</h2>
             <p className="section-desc">
-              Each squad commands a specialized engineering vertical. Switching squads dynamically updates the website's operational palette, live procedural background, and sound design.
+              Select a team to switch the website theme, sound effects, and explore their stack.
             </p>
           </div>
 
@@ -1871,97 +1154,53 @@ export default function HomePage({
       </section>
 
       {/* ========================================================= */}
-      {/* 7. HIGH-IMPACT CLOSING BANNER                             */}
+      {/* 3. ACCESS / FORM SHOWCASE SECTION                         */}
       {/* ========================================================= */}
-      <section id="access" className="editorial-closing-banner-section">
-        <div className="editorial-container">
-          <div className="editorial-banner-card">
-            <div className="banner-mesh-glow" />
-            <div className="banner-content-inner">
-              <div className="banner-logo-wrap">
-                <LogoMark size={48} className="banner-flame-logo pulse-logo" />
-                <span className="banner-wordmark">LET'S COOK.</span>
-              </div>
-
-              <h2 className="banner-headline">Stop building alone.</h2>
-              <p className="banner-subheadline">
-                Join the movement. Find your next build. Collaborate with students who share your ambition.
-              </p>
-
-              <div className="banner-cta-group">
-                <button 
-                  onClick={() => {
-                    playTechClick();
-                    if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                    setCurrentPage('portal');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="btn-primary btn-lg banner-main-btn glow-btn"
-                >
-                  Join the community <ArrowUpRight size={18} />
-                </button>
-                <button 
-                  onClick={() => {
-                    playTechClick();
-                    if (window.history && window.history.pushState) window.history.pushState(null, '', '/links');
-                    setCurrentPage('links');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="btn-secondary btn-lg banner-sub-btn"
-                >
-                  Explore community links
-                </button>
-              </div>
-
-              <HandwrittenAnnotation 
-                text="Build Together" 
-                arrow="up" 
-                color="var(--accent-burgundy, #e11d48)" 
-                className="banner-annotation" 
-              />
+      <section id="access" className="access-section">
+        <div className="access-container">
+          <div className="access-box hover-glow">
+            <div className="access-info">
+              <h3>JOIN THE LET'S COOK NETWORK</h3>
+              <p>Ready to build? Access our WhatsApp community, Discord server, and upcoming sprint schedules via our community links.</p>
+              <ul className="checklist">
+                <li><CheckCircle2 size={16} className="check-icon" /> Active peer code reviews</li>
+                <li><CheckCircle2 size={16} className="check-icon" /> Weekly hackathon team forming</li>
+                <li><CheckCircle2 size={16} className="check-icon" /> Workshop series & project demos</li>
+              </ul>
             </div>
 
-            {/* Interactive Theme Core */}
-            <div className="banner-theme-access-row">
-              <ThemeInteractiveCore 
-                squad={activeSquad}
-                onOpenLinks={() => {
-                  playTechClick();
-                  if (window.history && window.history.pushState) {
-                    window.history.pushState(null, '', '/links');
-                  }
-                  setCurrentPage('links');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                onPlaySound={activeSquad?.sound}
-              />
-            </div>
+            <ThemeInteractiveCore 
+              squad={activeSquad}
+              onOpenLinks={() => {
+                playTechClick();
+                if (window.history && window.history.pushState) {
+                  window.history.pushState(null, '', '/links');
+                }
+                setCurrentPage('links');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onPlaySound={activeSquad?.sound}
+            />
           </div>
         </div>
       </section>
 
       {/* ========================================================= */}
-      {/* 8. EXPANDABLE FAQS SECTION                                */}
+      {/* 4. EXPANDABLE FAQS SECTION                                */}
       {/* ========================================================= */}
       <FaqSection />
 
       {/* ========================================================= */}
-      {/* 9. EDITORIAL FOOTER                                       */}
+      {/* 5. FOOTER                                                 */}
       {/* ========================================================= */}
-      <footer className="site-footer editorial-site-footer">
+      <footer className="site-footer">
         <div className="footer-container">
           <div className="footer-brand">
             <div className="footer-logo-row">
-              <LogoMark size={34} className="footer-logo pulse-logo" />
+              <LogoMark size={32} className="footer-logo pulse-logo" />
               <span className="footer-title">LET'S COOK</span>
             </div>
-            <p className="footer-desc">
-              A nationwide student-builder community operating at letscook.co.in. Bringing students together to learn, build projects, attend workshops, and collaborate across colleges.
-            </p>
-            <div className="footer-stats-tag">
-              <span>● 200+ Campuses</span>
-              <span>● 1,000+ Builders</span>
-            </div>
+            <p className="footer-desc">Student-run software & technology community operating at letscook.co.in.</p>
           </div>
 
           <div className="footer-links-group">
@@ -1969,49 +1208,23 @@ export default function HomePage({
               <h5>NAVIGATION</h5>
               <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Home</button>
               <button onClick={() => {
-                const el = document.getElementById('events');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>Events & Live</button>
-              <button onClick={() => {
-                const el = document.getElementById('ecosystem');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>The Ecosystem</button>
-              <button onClick={() => {
-                const el = document.getElementById('projects');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>Projects</button>
-              <button onClick={() => {
-                const el = document.getElementById('community');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}>Community</button>
-              <button onClick={() => {
                 const el = document.getElementById('squads');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
               }}>Squads</button>
+              <button onClick={() => {
+                const el = document.getElementById('access');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}>Access</button>
+              <button onClick={() => {
+                const el = document.getElementById('faq');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}>FAQs</button>
             </div>
 
             <div className="footer-col">
-              <h5>RESOURCES & PORTAL</h5>
-              <button onClick={() => {
-                playTechClick();
-                if (window.history && window.history.pushState) window.history.pushState(null, '', '/resources');
-                setCurrentPage('resources');
-                window.scrollTo(0, 0);
-              }}>Resources Vault</button>
-              <button onClick={() => {
-                playTechClick();
-                if (window.history && window.history.pushState) window.history.pushState(null, '', '/verify');
-                setCurrentPage('verify');
-                window.scrollTo(0, 0);
-              }}>Certifications</button>
-              <button onClick={() => {
-                playTechClick();
-                if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
-                setCurrentPage('portal');
-                window.scrollTo(0, 0);
-              }}>Member Portal</button>
+              <h5>LEGAL</h5>
               <button onClick={() => { setCurrentPage('privacy'); window.scrollTo(0, 0); }}>Privacy Policy</button>
-              <button onClick={() => { setCurrentPage('terms'); window.scrollTo(0, 0); }}>Terms of Service</button>
+              <button onClick={() => { setCurrentPage('terms'); window.scrollTo(0, 0); }}>Terms & Conditions</button>
             </div>
 
             <div className="footer-col">
@@ -2027,46 +1240,17 @@ export default function HomePage({
                 }}
                 className="footer-link-btn"
               >
-                Official Community Links <ArrowUpRight size={13} />
+                Official Community Links <ArrowUpRight size={12} />
               </button>
-              <span className="footer-domain">Verified Domain: letscook.co.in</span>
-              <p className="footer-support-text">Student builders and chapters across India.</p>
+              <span className="footer-domain">Domain: letscook.co.in</span>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Let's Cook Community. All rights reserved.</p>
-          <span className="footer-bottom-tagline">Built collaboratively by student engineers.</span>
         </div>
       </footer>
-
-      {/* Story Video Modal */}
-      {showStoryVideo && (
-        <div className="editorial-video-modal-backdrop" onClick={() => setShowStoryVideo(false)}>
-          <div className="editorial-video-modal-container" onClick={e => e.stopPropagation()}>
-            <div className="video-modal-top-bar">
-              <span className="video-modal-title">Let's Cook — 48-Hour Sprint Documentary</span>
-              <button 
-                className="video-modal-close-btn" 
-                onClick={() => setShowStoryVideo(false)}
-                aria-label="Close video"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="video-modal-aspect">
-              <iframe
-                src="https://www.youtube.com/embed/YSiLHP0l9VI?autoplay=1"
-                title="Let's Cook Builder Story"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========================================================= */}
       {/* COMPONENT STYLES WITH TIGHT VERTICAL HIERARCHY            */}
@@ -2081,56 +1265,81 @@ export default function HomePage({
           z-index: 10;
         }
 
-        /* ========================================================= */
-        /* EDITORIAL DESIGN SYSTEM & HANDWRITTEN ANNOTATIONS         */
-        /* ========================================================= */
-        .handwritten-callout-wrap {
+        /* 1. HERO SECTION */
+        .hero-section {
+          position: relative;
+          padding: 36px 20px 56px 20px;
+          border-bottom: 1px solid var(--border-color);
+          overflow: hidden;
+          width: 100%;
+          max-width: 100vw;
+          box-sizing: border-box;
+          background: radial-gradient(circle at 50% 32%, var(--accent-burgundy-light) 0%, transparent 65%);
+        }
+
+        .hero-container {
+          position: relative;
+          z-index: 10;
+          max-width: 1000px;
+          margin: 0 auto;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          box-sizing: border-box;
+        }
+
+        /* Hero Top Badge */
+        .hero-top-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          user-select: none;
-          pointer-events: none;
-        }
-
-        .handwritten-script-text {
-          font-family: 'Caveat', cursive, sans-serif;
-          font-size: 1.35rem;
+          padding: 6px 14px;
+          background-color: var(--bg-surface);
+          border: 1px solid var(--accent-burgundy-border);
+          border-radius: var(--radius-badge);
+          font-family: monospace;
+          font-size: 0.76rem;
           font-weight: 700;
-          line-height: 1;
-          letter-spacing: 0.02em;
-          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+          letter-spacing: 0.08em;
+          color: var(--text-main);
+          box-shadow: 0 4px 18px var(--accent-burgundy-light);
+          margin-bottom: 18px;
+          backdrop-filter: blur(8px);
         }
 
-        .callout-arrow {
-          flex-shrink: 0;
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background-color: var(--accent-burgundy);
+          box-shadow: 0 0 10px var(--accent-burgundy);
+          animation: statusDotPulse 1.8s infinite ease-in-out;
         }
 
-        /* 1. EDITORIAL HERO SECTION */
-        .editorial-hero {
-          position: relative;
-          padding: 32px 20px 48px 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          overflow: hidden;
-          background: radial-gradient(circle at 65% 25%, var(--accent-burgundy-light, rgba(225, 29, 72, 0.12)) 0%, transparent 60%),
-                      radial-gradient(circle at 15% 75%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
-                      #06070a;
+        @keyframes statusDotPulse {
+          0%, 100% { opacity: 0.4; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.3); }
         }
 
-        .hero-editorial-grid {
-          max-width: 1240px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1.15fr 0.85fr;
-          gap: 48px;
-          align-items: center;
+        .badge-divider {
+          color: var(--text-dim);
         }
 
-        .hero-left-col {
+        .badge-squad {
+          color: var(--badge-text);
+          font-weight: 800;
+        }
+
+        .hero-content {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-          text-align: left;
+          align-items: center;
+          text-align: center;
+          margin-bottom: 34px;
+          max-width: 900px;
+          position: relative;
           z-index: 10;
         }
 
@@ -2143,7 +1352,7 @@ export default function HomePage({
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 9999px;
-          font-family: monospace;
+          font-family: var(--font-display);
           font-size: 0.72rem;
           font-weight: 700;
           letter-spacing: 0.12em;
@@ -2151,7 +1360,13 @@ export default function HomePage({
           color: #e2e8f0;
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .hero-eyebrow-pill:hover {
+          border-color: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
         }
 
         .eyebrow-pulse-dot {
@@ -2163,298 +1378,76 @@ export default function HomePage({
           animation: eyebrowPulse 2s infinite ease-in-out;
         }
 
-        .editorial-hero-title {
-          font-family: var(--font-display, 'Space Grotesk', sans-serif);
-          font-size: clamp(2.3rem, 4.8vw, 4.1rem);
-          font-weight: 800;
-          line-height: 1.1;
-          letter-spacing: -0.03em;
+        @keyframes eyebrowPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .pill-spark {
+          color: #fbbf24;
+        }
+
+        .hero-title {
+          font-family: var(--font-display);
+          font-size: clamp(1.75rem, 6vw, 4.4rem);
+          font-weight: 900;
+          line-height: 1.14;
+          letter-spacing: -0.02em;
+          margin-bottom: 18px;
           color: #ffffff;
-          margin: 0 0 16px 0;
+          text-shadow: 0 2px 24px rgba(0, 0, 0, 0.85);
         }
 
-        .hero-title-lead {
-          display: block;
-          color: #ffffff;
-          margin-bottom: 4px;
-        }
-
-        .hero-title-follow {
-          display: block;
-          color: #e2e8f0;
-        }
-
-        .editorial-serif-accent {
-          font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
-          font-style: italic;
-          font-weight: 400;
-          background: linear-gradient(135deg, #ff2a6d 0%, #fb7185 50%, #f43f5e 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+        .highlight-box {
           display: inline-block;
-          padding: 0 4px;
+          background-color: var(--accent-burgundy);
+          color: var(--hero-highlight-text);
+          padding: 2px 14px;
+          margin: 0 4px;
+          border-radius: var(--radius-badge);
+          font-weight: 900;
+          box-shadow: 0 0 24px var(--accent-burgundy);
           cursor: pointer;
           user-select: none;
-          transition: all 0.3s ease;
+          transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
         }
 
-        .editorial-serif-accent.inverted-mode {
-          background: #ffffff !important;
-          -webkit-text-fill-color: #060608 !important;
-          padding: 2px 12px;
-          border-radius: 8px;
-          box-shadow: 0 0 25px rgba(255, 255, 255, 0.85);
+        .highlight-box.inverted-mode {
+          background-color: #ffffff !important;
+          color: #060608 !important;
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.9) !important;
         }
 
-        .editorial-hero-desc {
-          font-size: clamp(1rem, 1.5vw, 1.15rem);
-          color: #94a3b8;
-          max-width: 560px;
-          margin: 0 0 28px 0;
+        .hero-subtitle {
+          font-size: clamp(0.95rem, 1.8vw, 1.18rem);
+          color: #cbd5e1;
+          max-width: 680px;
+          margin-bottom: 28px;
           line-height: 1.6;
+          text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
         }
 
-        .hero-editorial-actions {
+        .hero-cta-group {
           display: flex;
-          align-items: center;
           gap: 16px;
           flex-wrap: wrap;
-          margin-bottom: 28px;
-        }
-
-        .editorial-main-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 13px 26px;
-          border-radius: 9999px;
-          font-weight: 700;
-          font-size: 0.95rem;
-        }
-
-        .editorial-sub-cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 13px 22px;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 0.92rem;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: #e2e8f0;
-          transition: all 0.2s ease;
-        }
-
-        .editorial-sub-cta:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-        }
-
-        .hero-proof-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          padding: 6px 14px 6px 6px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 9999px;
-          backdrop-filter: blur(8px);
-        }
-
-        .avatar-overlap-stack {
-          display: flex;
-          align-items: center;
-        }
-
-        .stack-avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          border: 2px solid #06070a;
-          object-fit: cover;
-          margin-left: -8px;
-        }
-
-        .stack-avatar:first-child {
-          margin-left: 0;
-        }
-
-        .proof-text-wrap {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.25;
-        }
-
-        .proof-count-text {
-          font-size: 0.8rem;
-          color: #e2e8f0;
-        }
-
-        .proof-count-text strong {
-          color: #ffffff;
-        }
-
-        .proof-sub-text {
-          font-size: 0.72rem;
-          color: #64748b;
-        }
-
-        /* Right Column Collage */
-        .hero-right-col {
-          position: relative;
-          width: 100%;
-        }
-
-        .hero-collage-scene {
-          position: relative;
-          width: 100%;
-          min-height: 420px;
-          display: flex;
-          align-items: center;
           justify-content: center;
-        }
-
-        .collage-card {
-          position: absolute;
-          border-radius: 14px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.06);
-          background: #0f1118;
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
-        }
-
-        .card-tilt-left {
-          top: 10px;
-          left: 10px;
-          width: 70%;
-          max-width: 350px;
-          transform: rotate(-2.8deg);
-          z-index: 2;
-        }
-
-        .card-tilt-right {
-          bottom: 15px;
-          right: 15px;
-          width: 65%;
-          max-width: 330px;
-          transform: rotate(3.4deg);
-          z-index: 3;
-        }
-
-        .collage-card:hover {
-          transform: scale(1.03) rotate(0deg);
-          z-index: 6;
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(225, 29, 72, 0.35);
-        }
-
-        .collage-img-wrap {
-          position: relative;
-          width: 100%;
-          overflow: hidden;
-        }
-
-        .collage-img {
-          width: 100%;
-          height: 200px;
-          object-fit: cover;
-          display: block;
-        }
-
-        .collage-tag-pill {
-          position: absolute;
-          bottom: 10px;
-          left: 10px;
-          background: rgba(6, 7, 10, 0.88);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          padding: 4px 10px;
-          border-radius: 9999px;
-          font-family: monospace;
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: #e2e8f0;
-        }
-
-        .collage-floating-badge {
-          position: absolute;
-          top: 50%;
-          left: 36%;
-          transform: translate(-50%, -50%);
-          z-index: 5;
-          background: rgba(14, 16, 24, 0.92);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          padding: 10px 14px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-        }
-
-        .badge-spark-icon {
-          color: #facc15;
-          flex-shrink: 0;
-        }
-
-        .badge-stat-num {
-          font-family: var(--font-display);
-          font-size: 0.82rem;
-          font-weight: 700;
-          color: #ffffff;
-        }
-
-        .badge-stat-sub {
-          font-size: 0.68rem;
-          color: #94a3b8;
-        }
-
-        .collage-annotation {
-          position: absolute;
-        }
-
-        .annotation-top {
-          top: -24px;
-          left: 20%;
-          z-index: 7;
-        }
-
-        .annotation-mid {
-          bottom: 22%;
-          right: -10px;
-          z-index: 7;
-        }
-
-        .annotation-bottom {
-          bottom: -24px;
-          left: 10%;
-          z-index: 7;
-        }
-
-        /* Hero Telemetry Strip */
-        .hero-telemetry-container {
-          max-width: 1240px;
-          margin: 36px auto 0 auto;
-          width: 100%;
         }
 
         .hero-telemetry-strip {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 16px 28px;
-          background: rgba(14, 16, 24, 0.75);
+          justify-content: center;
+          gap: 28px;
+          padding: 14px 28px;
+          background: rgba(14, 14, 18, 0.75);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: var(--radius-card);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
+          max-width: 960px;
           width: 100%;
-          box-sizing: border-box;
         }
 
         .telemetry-item {
@@ -2466,7 +1459,7 @@ export default function HomePage({
 
         .telemetry-value {
           font-family: var(--font-display);
-          font-size: 1.55rem;
+          font-size: 1.45rem;
           font-weight: 800;
           color: #ffffff;
           line-height: 1;
@@ -2481,1050 +1474,22 @@ export default function HomePage({
 
         .telemetry-label {
           font-family: var(--font-display);
-          font-size: 0.74rem;
+          font-size: 0.76rem;
           font-weight: 800;
-          color: #e2e8f0;
-          letter-spacing: 0.06em;
+          color: var(--text-main);
+          letter-spacing: 0.05em;
         }
 
         .telemetry-detail {
-          font-size: 0.7rem;
-          color: #94a3b8;
+          font-size: 0.72rem;
+          color: var(--text-dim);
           line-height: 1.2;
         }
 
         .telemetry-divider {
           width: 1px;
-          height: 32px;
+          height: 28px;
           background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* ========================================================= */
-        /* GENERAL EDITORIAL SECTION STYLING                         */
-        /* ========================================================= */
-        .editorial-section {
-          padding: 72px 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          position: relative;
-          width: 100%;
-          box-sizing: border-box;
-        }
-
-        .editorial-container {
-          max-width: 1240px;
-          margin: 0 auto;
-          width: 100%;
-          box-sizing: border-box;
-        }
-
-        .section-editorial-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          margin-bottom: 36px;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .header-text-block {
-          max-width: 680px;
-        }
-
-        .editorial-eyebrow {
-          font-family: monospace;
-          font-size: 0.74rem;
-          font-weight: 800;
-          letter-spacing: 0.14em;
-          color: var(--accent-burgundy, #e11d48);
-          margin-bottom: 8px;
-          text-transform: uppercase;
-        }
-
-        .editorial-section-title {
-          font-family: var(--font-display, 'Space Grotesk', sans-serif);
-          font-size: clamp(1.8rem, 3.4vw, 2.6rem);
-          font-weight: 800;
-          color: #ffffff;
-          letter-spacing: -0.02em;
-          line-height: 1.15;
-          margin: 0 0 8px 0;
-        }
-
-        .editorial-section-desc {
-          font-size: 1.02rem;
-          color: #94a3b8;
-          margin: 0;
-          line-height: 1.5;
-        }
-
-        .header-action-block {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 10px;
-        }
-
-        .editorial-link-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          font-weight: 700;
-          font-size: 0.9rem;
-          color: #e2e8f0;
-          background: none;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          padding: 6px 12px;
-          border-radius: 8px;
-        }
-
-        .editorial-link-btn:hover {
-          color: #ffffff;
-          transform: translateX(3px);
-          background: rgba(255, 255, 255, 0.05);
-        }
-
-        .header-inline-annotation {
-          margin-top: 2px;
-        }
-
-        /* 2. LIVE ACTIVITY CARDS */
-        .activity-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 24px;
-        }
-
-        .activity-card {
-          background: rgba(14, 16, 24, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          min-height: 250px;
-          backdrop-filter: blur(10px);
-          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .activity-card.featured-card {
-          border-color: rgba(225, 29, 72, 0.35);
-          background: radial-gradient(circle at 100% 0%, rgba(225, 29, 72, 0.1) 0%, rgba(14, 16, 24, 0.8) 65%);
-        }
-
-        .hover-lift:hover {
-          transform: translateY(-4px);
-          border-color: rgba(255, 255, 255, 0.2);
-          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
-        }
-
-        .activity-card-top {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 14px;
-        }
-
-        .activity-type-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-family: monospace;
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          padding: 4px 10px;
-          border-radius: 9999px;
-        }
-
-        .pill-workshop {
-          background: rgba(34, 197, 94, 0.12);
-          border: 1px solid rgba(34, 197, 94, 0.3);
-          color: #4ade80;
-        }
-
-        .pill-hackathon {
-          background: rgba(225, 29, 72, 0.12);
-          border: 1px solid rgba(225, 29, 72, 0.35);
-          color: #fb7185;
-        }
-
-        .pill-opportunity {
-          background: rgba(56, 189, 248, 0.12);
-          border: 1px solid rgba(56, 189, 248, 0.3);
-          color: #38bdf8;
-        }
-
-        .activity-pulse-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #4ade80;
-          box-shadow: 0 0 6px #4ade80;
-        }
-
-        .activity-date-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 0.74rem;
-          color: #94a3b8;
-        }
-
-        .activity-title {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: #ffffff;
-          line-height: 1.35;
-          margin: 0 0 8px 0;
-        }
-
-        .activity-desc {
-          font-size: 0.88rem;
-          color: #94a3b8;
-          line-height: 1.5;
-          margin: 0 0 16px 0;
-        }
-
-        .activity-meta-row {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          font-size: 0.78rem;
-          color: #cbd5e1;
-          margin-bottom: 18px;
-        }
-
-        .meta-item {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .activity-card-footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-top: 14px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .activity-attendees {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .attendee-avatar-stack {
-          display: flex;
-          align-items: center;
-        }
-
-        .attendee-avatar-stack img {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          border: 1.5px solid #0f1118;
-          object-fit: cover;
-          margin-left: -6px;
-        }
-
-        .attendee-avatar-stack img:first-child {
-          margin-left: 0;
-        }
-
-        .attendees-count {
-          font-size: 0.75rem;
-          color: #94a3b8;
-          font-weight: 600;
-        }
-
-        .activity-action-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.82rem;
-          font-weight: 700;
-          padding: 7px 14px;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          color: #ffffff;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .activity-action-btn:hover {
-          background: rgba(255, 255, 255, 0.16);
-        }
-
-        .activity-action-btn.primary-action {
-          background: var(--accent-burgundy, #e11d48);
-          border-color: var(--accent-burgundy, #e11d48);
-        }
-
-        .activity-action-btn.primary-action:hover {
-          opacity: 0.92;
-        }
-
-        /* ========================================================= */
-        /* 3. THE ECOSYSTEM (LIGHT SECTION CONTRAST)                 */
-        /* ========================================================= */
-        .ecosystem-light-section {
-          background: #f8fafc;
-          color: #0f172a;
-          border-top: 1px solid rgba(0, 0, 0, 0.06);
-          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .light-header .light-eyebrow {
-          color: #b91c1c;
-        }
-
-        .light-header .light-title {
-          color: #0f172a;
-        }
-
-        .light-header .light-desc {
-          color: #475569;
-        }
-
-        .light-header .light-link {
-          color: #0f172a;
-        }
-
-        .light-header .light-link:hover {
-          color: #000000;
-          background: rgba(0, 0, 0, 0.04);
-        }
-
-        .ecosystem-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 24px;
-        }
-
-        .ecosystem-card {
-          background: #ffffff;
-          border: 1px solid rgba(0, 0, 0, 0.08);
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .ecosystem-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
-        }
-
-        .eco-img-wrap {
-          position: relative;
-          width: 100%;
-          height: 160px;
-          overflow: hidden;
-        }
-
-        .eco-card-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.35s ease;
-        }
-
-        .ecosystem-card:hover .eco-card-img {
-          transform: scale(1.05);
-        }
-
-        .eco-badge {
-          position: absolute;
-          bottom: 10px;
-          left: 10px;
-          background: rgba(15, 23, 42, 0.85);
-          backdrop-filter: blur(6px);
-          color: #ffffff;
-          padding: 4px 10px;
-          border-radius: 9999px;
-          font-family: monospace;
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .eco-card-body {
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-
-        .eco-card-title {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: #0f172a;
-          margin: 0 0 8px 0;
-          line-height: 1.3;
-        }
-
-        .eco-card-text {
-          font-size: 0.88rem;
-          color: #475569;
-          line-height: 1.5;
-          margin: 0 0 14px 0;
-        }
-
-        .eco-checklist {
-          list-style: none;
-          padding: 0;
-          margin: auto 0 0 0;
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-          font-size: 0.82rem;
-          color: #334155;
-        }
-
-        .eco-checklist li {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .eco-check {
-          color: #16a34a;
-          flex-shrink: 0;
-        }
-
-        /* ========================================================= */
-        /* 4. FEATURED PROJECTS & VIDEO SPOTLIGHT                    */
-        /* ========================================================= */
-        .projects-editorial-layout {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 28px;
-          align-items: stretch;
-        }
-
-        .projects-list-col {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-        }
-
-        .project-editorial-card {
-          background: rgba(14, 16, 24, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 22px;
-          backdrop-filter: blur(10px);
-          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .project-card-header {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          margin-bottom: 10px;
-        }
-
-        .project-status-pill {
-          display: inline-block;
-          font-family: monospace;
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          margin-bottom: 4px;
-        }
-
-        .status-live { color: #4ade80; }
-        .status-pilot { color: #38bdf8; }
-        .status-research { color: #facc15; }
-
-        .project-name {
-          font-family: var(--font-display);
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: #ffffff;
-          margin: 0;
-        }
-
-        .project-metric-pill {
-          font-size: 0.72rem;
-          color: #94a3b8;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 4px 10px;
-          border-radius: 9999px;
-        }
-
-        .project-summary {
-          font-size: 0.88rem;
-          color: #cbd5e1;
-          line-height: 1.5;
-          margin: 0 0 14px 0;
-        }
-
-        .project-tags-row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .tech-tag {
-          font-family: monospace;
-          font-size: 0.72rem;
-          color: #94a3b8;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 3px 8px;
-          border-radius: 6px;
-        }
-
-        /* Media Showcase Column */
-        .project-media-showcase-col {
-          display: flex;
-        }
-
-        .media-spotlight-card {
-          width: 100%;
-          background: rgba(14, 16, 24, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 18px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          backdrop-filter: blur(10px);
-        }
-
-        .media-thumbnail-container {
-          position: relative;
-          width: 100%;
-          height: 310px;
-          overflow: hidden;
-          cursor: pointer;
-        }
-
-        .media-bg-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.4s ease;
-        }
-
-        .media-thumbnail-container:hover .media-bg-image {
-          transform: scale(1.04);
-        }
-
-        .media-overlay-gradient {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(6, 7, 10, 0.9) 0%, rgba(6, 7, 10, 0.2) 60%, rgba(6, 7, 10, 0.6) 100%);
-        }
-
-        .media-play-center {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          z-index: 5;
-        }
-
-        .play-pulse-circle {
-          width: 68px;
-          height: 68px;
-          border-radius: 50%;
-          background: #ffffff;
-          color: #06070a;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 0 25px rgba(255, 255, 255, 0.75);
-          transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .play-triangle-icon {
-          margin-left: 4px;
-        }
-
-        .media-thumbnail-container:hover .play-pulse-circle {
-          transform: scale(1.1);
-          box-shadow: 0 0 40px rgba(255, 255, 255, 0.95);
-        }
-
-        .play-label-text {
-          font-family: var(--font-display);
-          font-size: 0.88rem;
-          font-weight: 700;
-          color: #ffffff;
-          letter-spacing: 0.04em;
-          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-        }
-
-        .media-top-badge {
-          position: absolute;
-          top: 14px;
-          left: 14px;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-family: monospace;
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: #ffffff;
-          background: rgba(6, 7, 10, 0.7);
-          backdrop-filter: blur(8px);
-          padding: 5px 12px;
-          border-radius: 9999px;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          z-index: 4;
-        }
-
-        .media-badge-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: var(--accent-burgundy, #e11d48);
-          box-shadow: 0 0 6px var(--accent-burgundy, #e11d48);
-        }
-
-        .media-bottom-info {
-          position: absolute;
-          bottom: 16px;
-          left: 18px;
-          right: 18px;
-          z-index: 4;
-        }
-
-        .media-title {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          font-weight: 800;
-          color: #ffffff;
-          margin-bottom: 4px;
-        }
-
-        .media-subtitle {
-          font-size: 0.82rem;
-          color: #cbd5e1;
-        }
-
-        .media-card-caption {
-          padding: 20px 22px;
-          background: rgba(14, 16, 24, 0.5);
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .builder-quote {
-          font-style: italic;
-          font-size: 0.92rem;
-          color: #e2e8f0;
-          line-height: 1.5;
-          margin: 0;
-        }
-
-        .builder-quote-author {
-          font-size: 0.78rem;
-          color: var(--accent-burgundy, #e11d48);
-          font-weight: 700;
-        }
-
-        /* ========================================================= */
-        /* 5. FIND YOUR PEOPLE (COMMUNITY & COLLABORATION)           */
-        /* ========================================================= */
-        .community-showcase-grid {
-          display: grid;
-          grid-template-columns: 1fr 1.15fr 0.85fr;
-          gap: 24px;
-          align-items: stretch;
-        }
-
-        .community-photo-col {
-          display: flex;
-        }
-
-        .community-img-frame {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          min-height: 340px;
-          border-radius: 16px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .community-feature-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .community-photo-caption {
-          position: absolute;
-          bottom: 12px;
-          left: 12px;
-          right: 12px;
-          background: rgba(6, 7, 10, 0.85);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          padding: 6px 12px;
-          border-radius: 8px;
-          font-size: 0.74rem;
-          color: #cbd5e1;
-          font-weight: 600;
-        }
-
-        .community-narrative-col {
-          display: flex;
-        }
-
-        .narrative-card {
-          width: 100%;
-          background: rgba(14, 16, 24, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
-          padding: 26px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          backdrop-filter: blur(10px);
-        }
-
-        .narrative-heading {
-          font-family: var(--font-display);
-          font-size: 1.25rem;
-          font-weight: 800;
-          color: #ffffff;
-          line-height: 1.35;
-          margin: 0 0 10px 0;
-        }
-
-        .narrative-p {
-          font-size: 0.9rem;
-          color: #94a3b8;
-          line-height: 1.55;
-          margin: 0 0 18px 0;
-        }
-
-        .narrative-points {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-bottom: 22px;
-        }
-
-        .narrative-point {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          font-size: 0.84rem;
-          color: #cbd5e1;
-          line-height: 1.45;
-        }
-
-        .point-bullet {
-          color: var(--accent-burgundy, #e11d48);
-          margin-top: 2px;
-          flex-shrink: 0;
-        }
-
-        .narrative-cta-row {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        /* 2x2 Telemetry Grid */
-        .community-telemetry-col {
-          display: flex;
-        }
-
-        .telemetry-2x2-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-          width: 100%;
-        }
-
-        .telemetry-cell {
-          background: rgba(14, 16, 24, 0.7);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 14px;
-          padding: 18px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          backdrop-filter: blur(8px);
-        }
-
-        .telemetry-big-number {
-          font-family: var(--font-display);
-          font-size: 2.1rem;
-          font-weight: 800;
-          color: #ffffff;
-          line-height: 1;
-          letter-spacing: -0.02em;
-          margin-bottom: 4px;
-        }
-
-        .telemetry-cell-label {
-          font-family: var(--font-display);
-          font-size: 0.82rem;
-          font-weight: 700;
-          color: #e2e8f0;
-          margin-bottom: 4px;
-        }
-
-        .telemetry-cell-sub {
-          font-size: 0.7rem;
-          color: #94a3b8;
-          line-height: 1.3;
-        }
-
-        /* ========================================================= */
-        /* 7. HIGH-IMPACT CLOSING BANNER                             */
-        /* ========================================================= */
-        .editorial-closing-banner-section {
-          padding: 64px 20px 80px 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .editorial-banner-card {
-          position: relative;
-          border-radius: 24px;
-          padding: 56px 28px;
-          text-align: center;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: radial-gradient(circle at 50% 20%, rgba(225, 29, 72, 0.16) 0%, rgba(14, 16, 24, 0.95) 75%), #06070a;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-        }
-
-        .banner-content-inner {
-          position: relative;
-          z-index: 5;
-          max-width: 680px;
-          margin: 0 auto;
-        }
-
-        .banner-logo-wrap {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 14px;
-        }
-
-        .banner-flame-logo {
-          filter: drop-shadow(0 0 16px var(--accent-burgundy, #e11d48));
-        }
-
-        .banner-wordmark {
-          font-family: var(--font-display);
-          font-size: 1.15rem;
-          font-weight: 900;
-          letter-spacing: 0.12em;
-          color: #ffffff;
-        }
-
-        .banner-headline {
-          font-family: var(--font-display);
-          font-size: clamp(2.1rem, 4.8vw, 3.6rem);
-          font-weight: 900;
-          color: #ffffff;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-          margin: 0 0 12px 0;
-        }
-
-        .banner-subheadline {
-          font-size: clamp(0.98rem, 1.6vw, 1.15rem);
-          color: #cbd5e1;
-          line-height: 1.55;
-          margin: 0 0 28px 0;
-        }
-
-        .banner-cta-group {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-bottom: 24px;
-        }
-
-        .banner-main-btn {
-          border-radius: 9999px;
-          padding: 14px 30px;
-          font-size: 0.98rem;
-          font-weight: 700;
-        }
-
-        .banner-sub-btn {
-          border-radius: 9999px;
-          padding: 14px 24px;
-          font-size: 0.92rem;
-          font-weight: 600;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.14);
-          color: #e2e8f0;
-        }
-
-        .banner-sub-btn:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-        }
-
-        .banner-annotation {
-          margin-top: 10px;
-        }
-
-        .banner-theme-access-row {
-          margin-top: 36px;
-          padding-top: 24px;
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          position: relative;
-          z-index: 5;
-        }
-
-        /* 9. EDITORIAL SITE FOOTER */
-        .editorial-site-footer {
-          padding: 56px 20px 32px 20px;
-          background: #040507;
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .footer-stats-tag {
-          display: flex;
-          gap: 14px;
-          margin-top: 12px;
-          font-size: 0.74rem;
-          color: #64748b;
-          font-family: monospace;
-          font-weight: 700;
-        }
-
-        .footer-support-text {
-          font-size: 0.75rem;
-          color: #64748b;
-          margin: 6px 0 0 0;
-        }
-
-        .footer-bottom-tagline {
-          font-size: 0.76rem;
-          color: #64748b;
-        }
-
-        /* Video Modal Backdrop & Container */
-        .editorial-video-modal-backdrop {
-          position: fixed;
-          inset: 0;
-          z-index: 999999;
-          background: rgba(0, 0, 0, 0.88);
-          backdrop-filter: blur(14px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 20px;
-        }
-
-        .editorial-video-modal-container {
-          width: 100%;
-          max-width: 900px;
-          background: #0c0e14;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95);
-          animation: modalScaleIn 0.25s ease;
-        }
-
-        @keyframes modalScaleIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-
-        .video-modal-top-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 18px;
-          background: #141722;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .video-modal-title {
-          font-family: var(--font-display);
-          font-size: 0.86rem;
-          font-weight: 700;
-          color: #ffffff;
-        }
-
-        .video-modal-close-btn {
-          background: none;
-          border: none;
-          color: #94a3b8;
-          font-size: 1.1rem;
-          cursor: pointer;
-          padding: 4px 8px;
-          border-radius: 4px;
-          transition: color 0.2s ease, background 0.2s ease;
-        }
-
-        .video-modal-close-btn:hover {
-          color: #ffffff;
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .video-modal-aspect {
-          position: relative;
-          padding-bottom: 56.25%;
-          height: 0;
-          overflow: hidden;
-        }
-
-        .video-modal-aspect iframe {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 1080px) {
-          .hero-editorial-grid {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .hero-right-col {
-            max-width: 540px;
-            margin: 0 auto;
-          }
-          .community-showcase-grid {
-            grid-template-columns: 1fr;
-          }
-          .community-img-frame {
-            min-height: 280px;
-          }
-          .projects-editorial-layout {
-            grid-template-columns: 1fr;
-          }
         }
 
         @media (max-width: 768px) {
@@ -3537,37 +1502,12 @@ export default function HomePage({
           .telemetry-divider {
             display: none;
           }
-          .collage-card {
-            max-width: 270px;
-          }
-          .collage-img {
-            height: 160px;
-          }
-          .section-editorial-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-          .header-action-block {
-            align-items: flex-start;
-          }
         }
 
         @media (max-width: 480px) {
           .hero-telemetry-strip {
             grid-template-columns: 1fr;
             gap: 14px;
-          }
-          .hero-editorial-actions {
-            flex-direction: column;
-            width: 100%;
-          }
-          .editorial-main-cta,
-          .editorial-sub-cta {
-            width: 100%;
-            justify-content: center;
-          }
-          .telemetry-2x2-grid {
-            grid-template-columns: 1fr;
           }
         }
 

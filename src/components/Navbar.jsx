@@ -65,42 +65,28 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
   };
 
   const navItems = [
-    { label: 'Home', page: 'home' },
-    { label: 'Events', page: 'home', section: 'events' },
-    { label: 'Projects', page: 'home', section: 'projects' },
-    { label: 'Ecosystem', page: 'home', section: 'ecosystem' },
-    { label: 'Community', page: 'home', section: 'community' },
-    { label: 'Resources', page: 'resources', isProtected: true },
-    { label: 'Certifications', page: 'verify' },
-    { label: 'Links', page: 'links' }
+    { label: 'HOME', page: 'home' },
+    { label: 'CERTIFICATIONS', page: 'verify' },
+    { label: 'RESOURCES', page: 'resources', isProtected: true },
+    { label: 'LINKS', page: 'links' }
   ];
 
   const handleNavClick = (item) => {
     playTechClick();
-    setMobileMenuOpen(false);
-
-    if (item.section) {
-      if (currentPage !== 'home') {
-        if (window.history && window.history.pushState) {
-          window.history.pushState(null, '', '/');
-        }
-        setCurrentPage('home');
-        setTimeout(() => {
-          const el = document.getElementById(item.section);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 120);
-      } else {
-        const el = document.getElementById(item.section);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }
-      return;
-    }
-
     if (window.history && window.history.pushState) {
       window.history.pushState(null, '', item.page === 'home' ? '/' : `/${item.page}`);
     }
     setCurrentPage(item.page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMobileMenuOpen(false);
+
+    if (item.section && item.page === 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(item.section);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -272,7 +258,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
               }}
               className="btn-primary desktop-cta"
             >
-              Join the community <ArrowUpRight size={15} />
+              JOIN US <ArrowUpRight size={16} />
             </button>
           )}
 
