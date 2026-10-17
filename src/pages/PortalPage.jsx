@@ -5,46 +5,100 @@ import {
   Clock, 
   XCircle, 
   User, 
-  Users, 
   LogOut, 
   ArrowRight, 
-  Lock, 
-  Key, 
   Sparkles, 
   ExternalLink, 
   FileSpreadsheet, 
   Search, 
-  Filter, 
-  Mail, 
-  Phone, 
-  GraduationCap, 
-  Building, 
   Check, 
   AlertCircle,
-  Copy,
-  RefreshCw,
-  Rocket
+  Edit3,
+  X,
+  Palette,
+  Terminal,
+  Zap
 } from 'lucide-react';
 import { 
   getStoredToken, 
   getStoredUser, 
   sendPortalOtp, 
-  registerPortalUser, 
   loginPortalUser, 
   getPortalMe, 
+  updatePortalProfile,
   getAdminRoster, 
   executeAdminAction, 
   clearSession 
 } from '../services/portalService';
 import { playTechClick, playVibraniumPing, playAssembleFanfare } from '../utils/soundEngine';
 
-export default function PortalPage({ setCurrentPage }) {
+// Calculate Profile Completion Percentage
+function calculateProfileCompletion(user) {
+  if (!user) return 0;
+  let score = 20; // 20% for email verified
+  if (user.fullName && user.fullName.trim().length > 1) score += 20;
+  if (user.college && user.branch) score += 20;
+  if (user.targetSquad) score += 20;
+  if ((user.skills && user.skills.length > 0) || user.githubUrl || user.linkedinUrl) score += 20;
+  return Math.min(100, score);
+}
+
+// 4 Marvel Squads Data & Themes
+const SQUADS_CONFIG = {
+  ironman: {
+    key: 'ironman',
+    name: 'STARK TECH LABS',
+    hero: 'IRON MAN',
+    division: 'ENGINEERING & WASM',
+    color: '#ff0055',
+    secondary: '#00f0ff',
+    desc: 'Rust, WASM, Distributed Systems, Cloud Architecture & Applied AI.'
+  },
+  captain: {
+    key: 'captain',
+    name: 'VIBRANIUM ALLIANCE',
+    hero: 'CAPTAIN AMERICA',
+    division: 'OUTREACH & PR',
+    color: '#38bdf8',
+    secondary: '#ef4444',
+    desc: 'Developer Relations, Hackathon Alliances, Media & Community Diplomacy.'
+  },
+  thor: {
+    key: 'thor',
+    name: 'STORMBREAKER FORGE',
+    hero: 'THOR',
+    division: 'EVENTS & SPRINTS',
+    color: '#f59e0b',
+    secondary: '#60a5fa',
+    desc: 'Rapid Prototyping Sprints, 24h Hackathons & Hardware Workshops.'
+  },
+  hulk: {
+    key: 'hulk',
+    name: 'GAMMA DESIGN LABS',
+    hero: 'HULK',
+    division: 'DESIGN & INTERFACE',
+    color: '#22c55e',
+    secondary: '#a855f7',
+    desc: 'UI/UX Architecture, Design Systems, WebGL Shaders & Motion Engineering.'
+  }
+};
+
+export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', onSelectSquad }) {
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [token, setToken] = useState(() => getStoredToken());
   const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isPopupDismissed, setIsPopupDismissed] = useState(false);
 
-  // Active Tab for Unauthenticated View ('register' | 'login')
-  const [authTab, setAuthTab] = useState('register');
+  // Sync squad theme if user has a target squad
+  useEffect(() => {
+    if (currentUser?.targetSquad && onSelectSquad) {
+      const sq = currentUser.targetSquad === 'core' ? 'hulk' : currentUser.targetSquad;
+      if (SQUADS_CONFIG[sq] && sq !== currentSquad) {
+        onSelectSquad(sq);
+      }
+    }
+  }, [currentUser]);
 
   // Verify Session on mount
   useEffect(() => {
@@ -84,11 +138,27 @@ export default function PortalPage({ setCurrentPage }) {
     setToken(null);
   };
 
+  const handleSquadSelect = (squadKey) => {
+    playTechClick();
+    if (onSelectSquad) {
+      onSelectSquad(squadKey);
+    }
+    localStorage.setItem('letscook_squad', squadKey);
+    // If logged in, update profile asynchronously
+    if (currentUser) {
+      updatePortalProfile({ targetSquad: squadKey }).then(updated => {
+        if (updated) setCurrentUser(updated);
+      }).catch(() => {});
+    }
+  };
+
+  const completionPercent = calculateProfileCompletion(currentUser);
+
   if (isLoadingUser) {
     return (
       <div className="portal-loading-screen">
         <div className="portal-spinner" />
-        <p>Connecting to Let's Cook Security Gateway...</p>
+        <p>Authenticating with Let's Cook Security Gateway...</p>
       </div>
     );
   }
@@ -97,57 +167,97 @@ export default function PortalPage({ setCurrentPage }) {
     <div className="portal-container animate-fade-in">
       {!currentUser ? (
         <PortalAuthView 
-          authTab={authTab} 
-          setAuthTab={setAuthTab} 
-          onAuthenticated={(user, token) => {
+          onAuthenticated={(user, issuedToken) => {
             setCurrentUser(user);
-            setToken(token);
+            setToken(issuedToken);
+            if (user?.targetSquad && onSelectSquad) {
+              const sq = user.targetSquad === 'core' ? 'hulk' : user.targetSquad;
+              if (SQUADS_CONFIG[sq]) onSelectSquad(sq);
+            }
           }} 
         />
-      ) : currentUser.role === 'admin' ? (
-        <AdminDashboardView 
-          currentUser={currentUser} 
-          onSignOut={handleSignOut} 
-        />
       ) : (
-        <MemberDashboardView 
-          currentUser={currentUser} 
-          onSignOut={handleSignOut} 
-          onRefreshUser={async () => {
-            const refreshed = await getPortalMe();
-            if (refreshed) setCurrentUser(refreshed);
-          }}
-        />
+        <>
+          {/* Progressive Profile Completion Floating Notice / Banner */}
+          {completionPercent < 100 && !isPopupDismissed && (
+            <div className="profile-completion-banner animate-fade-in">
+              <div className="banner-left">
+                <div className="completion-ring-box">
+                  <span className="completion-ring-text">{completionPercent}%</span>
+                </div>
+                <div>
+                  <h4 className="banner-title">Your Profile is {completionPercent}% complete</h4>
+                  <p className="banner-desc">Complete your builder specs so squad heads can review your track and induct you.</p>
+                </div>
+              </div>
+              <div className="banner-right">
+                <button 
+                  onClick={() => { playTechClick(); setIsProfileModalOpen(true); }}
+                  className="btn-complete-profile"
+                >
+                  <Edit3 size={15} /> Complete Profile
+                </button>
+                <button 
+                  onClick={() => setIsPopupDismissed(true)} 
+                  className="btn-dismiss-banner" 
+                  aria-label="Dismiss banner"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentUser.role === 'admin' ? (
+            <AdminDashboardView 
+              currentUser={currentUser} 
+              onSignOut={handleSignOut} 
+              onOpenProfileModal={() => setIsProfileModalOpen(true)}
+              onSelectSquad={handleSquadSelect}
+              currentSquad={currentSquad}
+            />
+          ) : (
+            <MemberDashboardView 
+              currentUser={currentUser} 
+              completionPercent={completionPercent}
+              onSignOut={handleSignOut} 
+              onOpenProfileModal={() => setIsProfileModalOpen(true)}
+              onSelectSquad={handleSquadSelect}
+              currentSquad={currentSquad}
+              onRefreshUser={async () => {
+                const refreshed = await getPortalMe();
+                if (refreshed) setCurrentUser(refreshed);
+              }}
+            />
+          )}
+
+          {/* Edit Profile Drawer / Modal */}
+          {isProfileModalOpen && (
+            <ProfileEditModal 
+              currentUser={currentUser}
+              onClose={() => setIsProfileModalOpen(false)}
+              onSaved={(updatedUser) => {
+                setCurrentUser(updatedUser);
+                setIsProfileModalOpen(false);
+                if (updatedUser?.targetSquad && onSelectSquad) {
+                  onSelectSquad(updatedUser.targetSquad);
+                }
+              }}
+              onSelectSquad={handleSquadSelect}
+            />
+          )}
+        </>
       )}
     </div>
   );
 }
 
 // ============================================================================
-// 1. AUTHENTICATION VIEW (Register Member vs Sign In)
+// 1. UNIFIED AUTHENTICATION GATE (Email -> 6-Digit OTP -> Instant Login)
+// Whitelisted emails automatically receive Admin / Core Head status!
 // ============================================================================
-function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
-  // Register Form State
-  const [regForm, setRegForm] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    college: 'GLA University',
-    branch: '',
-    yearOfStudy: '2nd Year',
-    targetSquad: 'ironman',
-    skills: '',
-    githubUrl: '',
-    linkedinUrl: '',
-    portfolioUrl: '',
-    corePasskey: ''
-  });
-
-  // Login Form State
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPasskey, setLoginPasskey] = useState('');
-
-  // OTP State
+function PortalAuthView({ onAuthenticated }) {
+  const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpToken, setOtpToken] = useState(null);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -155,12 +265,9 @@ function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
   const [otpDevHint, setOtpDevHint] = useState(null);
   const [otpCountdown, setOtpCountdown] = useState(0);
 
-  // Status Alerts
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showCorePasskeyInput, setShowCorePasskeyInput] = useState(false);
 
-  // Countdown timer
   useEffect(() => {
     if (otpCountdown <= 0) return;
     const timer = setInterval(() => {
@@ -169,16 +276,17 @@ function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
     return () => clearInterval(timer);
   }, [otpCountdown]);
 
-  const handleSendOtp = async (targetEmail) => {
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
     setErrorMsg('');
-    if (!targetEmail || !targetEmail.includes('@')) {
-      setErrorMsg('Please enter a valid email address first.');
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Please enter a valid email address.');
       return;
     }
     setIsSendingOtp(true);
     try {
       playTechClick();
-      const res = await sendPortalOtp(targetEmail);
+      const res = await sendPortalOtp(email);
       setOtpToken(res.otpToken);
       setOtpSent(true);
       setOtpCountdown(60);
@@ -186,44 +294,18 @@ function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
         setOtpDevHint(res.devOtp);
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to dispatch passkey. Please try again.');
+      setErrorMsg(err.message || 'Failed to dispatch verification code.');
     } finally {
       setIsSendingOtp(false);
     }
   };
 
-  const handleRegisterSubmit = async (e) => {
+  const handleVerifySubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
-    if (!otpSent || !otpCode) {
-      setErrorMsg('Please request and enter your 6-digit verification code.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      playTechClick();
-      const result = await registerPortalUser({
-        ...regForm,
-        otp: otpCode,
-        otpToken
-      });
-      playAssembleFanfare();
-      onAuthenticated(result.user, result.token);
-    } catch (err) {
-      setErrorMsg(err.message || 'Registration failed.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMsg('');
-
-    if (!otpSent || !otpCode) {
-      setErrorMsg('Please request and enter your 6-digit verification code.');
+    if (!otpSent || !otpCode || otpCode.length < 6) {
+      setErrorMsg('Please enter the 6-digit verification code.');
       return;
     }
 
@@ -231,15 +313,14 @@ function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
     try {
       playTechClick();
       const result = await loginPortalUser({
-        email: loginEmail,
+        email,
         otp: otpCode,
-        otpToken,
-        corePasskey: loginPasskey
+        otpToken
       });
-      playVibraniumPing();
+      playAssembleFanfare();
       onAuthenticated(result.user, result.token);
     } catch (err) {
-      setErrorMsg(err.message || 'Authentication failed.');
+      setErrorMsg(err.message || 'Verification failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -248,351 +329,135 @@ function PortalAuthView({ authTab, setAuthTab, onAuthenticated }) {
   return (
     <div className="portal-auth-wrapper">
       <div className="portal-auth-card">
-        {/* Header Badge */}
-        <div className="portal-header-badge">
-          <Shield size={14} className="badge-shield-icon" />
-          <span>LET'S COOK ACCESS GATEWAY</span>
-        </div>
-
-        <h1 className="portal-title">COMMUNITY PORTAL</h1>
-        <p className="portal-subtitle">
-          Secure registration and role-based access for student builders and core council leadership.
-        </p>
-
-        {/* Tab Toggle */}
-        <div className="portal-tabs-selector">
-          <button
-            type="button"
-            className={`portal-tab ${authTab === 'register' ? 'active-tab' : ''}`}
-            onClick={() => {
-              playTechClick();
-              setAuthTab('register');
-              setErrorMsg('');
-              setOtpSent(false);
-              setOtpCode('');
-            }}
-          >
-            JOIN AS MEMBER
-          </button>
-          <button
-            type="button"
-            className={`portal-tab ${authTab === 'login' ? 'active-tab' : ''}`}
-            onClick={() => {
-              playTechClick();
-              setAuthTab('login');
-              setErrorMsg('');
-              setOtpSent(false);
-              setOtpCode('');
-            }}
-          >
-            SIGN IN
-          </button>
+        {/* Security Badge Header */}
+        <div className="auth-card-header">
+          <div className="auth-shield-icon">
+            <Shield size={28} />
+          </div>
+          <h2 className="auth-headline">LET'S COOK ACCESS PORTAL</h2>
+          <p className="auth-subline">
+            Enter your email to receive a 6-digit code. Whitelisted core members automatically receive administrative command access.
+          </p>
         </div>
 
         {errorMsg && (
-          <div className="portal-alert portal-alert-error animate-fade-in">
+          <div className="portal-error-alert animate-fade-in">
             <AlertCircle size={16} />
             <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* REGISTRATION FORM */}
-        {authTab === 'register' && (
-          <form onSubmit={handleRegisterSubmit} className="portal-form">
-            <div className="form-grid-2">
-              <div className="form-field">
-                <label>FULL NAME *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Parv Mishra"
-                  value={regForm.fullName}
-                  onChange={e => setRegForm({ ...regForm, fullName: e.target.value })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label>COLLEGE / UNIVERSITY *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. GLA University"
-                  value={regForm.college}
-                  onChange={e => setRegForm({ ...regForm, college: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="form-grid-2">
-              <div className="form-field">
-                <label>BRANCH / DEPARTMENT *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Computer Science (CSE)"
-                  value={regForm.branch}
-                  onChange={e => setRegForm({ ...regForm, branch: e.target.value })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label>YEAR OF STUDY *</label>
-                <select
-                  value={regForm.yearOfStudy}
-                  onChange={e => setRegForm({ ...regForm, yearOfStudy: e.target.value })}
-                >
-                  <option value="1st Year">1st Year</option>
-                  <option value="2nd Year">2nd Year</option>
-                  <option value="3rd Year">3rd Year</option>
-                  <option value="4th Year">4th Year</option>
-                  <option value="Alumni / Graduated">Alumni / Graduated</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-grid-2">
-              <div className="form-field">
-                <label>STUDENT EMAIL *</label>
-                <div className="input-with-action">
-                  <input
-                    type="email"
-                    required
-                    placeholder="student@gla.ac.in"
-                    value={regForm.email}
-                    onChange={e => setRegForm({ ...regForm, email: e.target.value })}
-                  />
-                  <button
-                    type="button"
-                    disabled={isSendingOtp || otpCountdown > 0}
-                    onClick={() => handleSendOtp(regForm.email)}
-                    className="btn-input-action"
-                  >
-                    {isSendingOtp ? 'SENDING...' : otpCountdown > 0 ? `${otpCountdown}s` : 'SEND CODE'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="form-field">
-                <label>WHATSAPP / PHONE</label>
-                <input
-                  type="tel"
-                  placeholder="+91 9876543210"
-                  value={regForm.phone}
-                  onChange={e => setRegForm({ ...regForm, phone: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Target Squad Selection */}
-            <div className="form-field">
-              <label>SQUAD DIVISION PREFERENCE</label>
-              <div className="squad-selection-grid">
-                {[
-                  { key: 'ironman', name: 'TECH TEAM', hero: 'Iron Man · Systems & AI', color: '#ff0055' },
-                  { key: 'captain', name: 'PR TEAM', hero: 'Captain America · Outreach', color: '#0055ff' },
-                  { key: 'thor', name: 'EVENTS TEAM', hero: 'Thor · Sprints & Hackathons', color: '#d97706' },
-                  { key: 'core', name: 'CORE OPERATIONS', hero: 'Foundry · Governance', color: '#8b002e' }
-                ].map(sq => (
-                  <button
-                    key={sq.key}
-                    type="button"
-                    className={`squad-radio-btn ${regForm.targetSquad === sq.key ? 'selected-squad' : ''}`}
-                    onClick={() => { playTechClick(); setRegForm({ ...regForm, targetSquad: sq.key }); }}
-                  >
-                    <div className="squad-indicator-dot" style={{ background: sq.color }} />
-                    <div className="squad-text-block">
-                      <span className="squad-name">{sq.name}</span>
-                      <span className="squad-hero">{sq.hero}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-field">
-              <label>SKILLS & ARSENAL (COMMA SEPARATED)</label>
+        <form onSubmit={otpSent ? handleVerifySubmit : handleSendOtp} className="portal-form">
+          <div className="form-field">
+            <label>YOUR EMAIL ADDRESS *</label>
+            <div className="input-with-action">
               <input
-                type="text"
-                placeholder="React, TypeScript, Python, Figma, Docker, UI/UX"
-                value={regForm.skills}
-                onChange={e => setRegForm({ ...regForm, skills: e.target.value })}
+                type="email"
+                required
+                disabled={otpSent}
+                placeholder="name@gla.ac.in or personal email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
               />
-            </div>
-
-            <div className="form-grid-2">
-              <div className="form-field">
-                <label>GITHUB PROFILE URL</label>
-                <input
-                  type="url"
-                  placeholder="https://github.com/yourhandle"
-                  value={regForm.githubUrl}
-                  onChange={e => setRegForm({ ...regForm, githubUrl: e.target.value })}
-                />
-              </div>
-
-              <div className="form-field">
-                <label>LINKEDIN OR PORTFOLIO URL</label>
-                <input
-                  type="url"
-                  placeholder="https://linkedin.com/in/yourhandle"
-                  value={regForm.linkedinUrl}
-                  onChange={e => setRegForm({ ...regForm, linkedinUrl: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* Core Leadership Passkey Accordion */}
-            <div className="core-passkey-toggle-box">
-              <button
-                type="button"
-                className="core-toggle-link"
-                onClick={() => setShowCorePasskeyInput(!showCorePasskeyInput)}
-              >
-                <Key size={14} />
-                <span>{showCorePasskeyInput ? 'Hide Core Leadership Passkey' : 'Are you a Core Council Head? Enter Passkey'}</span>
-              </button>
-              {showCorePasskeyInput && (
-                <div className="form-field animate-fade-in" style={{ marginTop: '10px' }}>
-                  <input
-                    type="password"
-                    placeholder="Enter Core Council Passkey"
-                    value={regForm.corePasskey}
-                    onChange={e => setRegForm({ ...regForm, corePasskey: e.target.value })}
-                  />
-                  <span className="field-hint">Grants Admin status for President, Founder, VP, Sec, & Core Heads.</span>
-                </div>
-              )}
-            </div>
-
-            {/* OTP Section */}
-            {otpSent && (
-              <div className="otp-verification-section animate-fade-in">
-                <div className="form-field">
-                  <label>ENTER 6-DIGIT VERIFICATION PASSKEY *</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    placeholder="000000"
-                    className="otp-code-input"
-                    value={otpCode}
-                    onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  />
-                  {otpDevHint && (
-                    <div className="dev-otp-pill">
-                      <span>Dev Passkey: <strong>{otpDevHint}</strong></span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary w-full portal-submit-btn"
-            >
-              {isSubmitting ? 'PROCESSING APPLICATION...' : 'SUBMIT REGISTRATION'}
-            </button>
-          </form>
-        )}
-
-        {/* SIGN IN FORM */}
-        {authTab === 'login' && (
-          <form onSubmit={handleLoginSubmit} className="portal-form">
-            <div className="form-field">
-              <label>REGISTERED EMAIL *</label>
-              <div className="input-with-action">
-                <input
-                  type="email"
-                  required
-                  placeholder="student@gla.ac.in"
-                  value={loginEmail}
-                  onChange={e => setLoginEmail(e.target.value)}
-                />
+              {!otpSent ? (
                 <button
-                  type="button"
-                  disabled={isSendingOtp || otpCountdown > 0}
-                  onClick={() => handleSendOtp(loginEmail)}
+                  type="submit"
+                  disabled={isSendingOtp}
                   className="btn-input-action"
                 >
-                  {isSendingOtp ? 'SENDING...' : otpCountdown > 0 ? `${otpCountdown}s` : 'SEND CODE'}
+                  {isSendingOtp ? 'SENDING...' : 'GET CODE'}
                 </button>
-              </div>
-            </div>
-
-            {/* Core Leadership Passkey Accordion */}
-            <div className="core-passkey-toggle-box">
-              <button
-                type="button"
-                className="core-toggle-link"
-                onClick={() => setShowCorePasskeyInput(!showCorePasskeyInput)}
-              >
-                <Key size={14} />
-                <span>{showCorePasskeyInput ? 'Hide Core Passkey' : 'Core Head Sign In? Enter Passkey'}</span>
-              </button>
-              {showCorePasskeyInput && (
-                <div className="form-field animate-fade-in" style={{ marginTop: '10px' }}>
-                  <input
-                    type="password"
-                    placeholder="Enter Core Council Passkey"
-                    value={loginPasskey}
-                    onChange={e => setLoginPasskey(e.target.value)}
-                  />
-                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setOtpSent(false); setOtpCode(''); }}
+                  className="btn-input-action-edit"
+                >
+                  CHANGE
+                </button>
               )}
             </div>
+          </div>
 
-            {/* OTP Section */}
-            {otpSent && (
-              <div className="otp-verification-section animate-fade-in">
-                <div className="form-field">
-                  <label>ENTER 6-DIGIT VERIFICATION PASSKEY *</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    placeholder="000000"
-                    className="otp-code-input"
-                    value={otpCode}
-                    onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  />
-                  {otpDevHint && (
-                    <div className="dev-otp-pill">
-                      <span>Dev Passkey: <strong>{otpDevHint}</strong></span>
-                    </div>
+          {/* 6-Digit OTP Matrix Field */}
+          {otpSent && (
+            <div className="otp-verification-section animate-fade-in">
+              <div className="form-field">
+                <div className="label-with-resend">
+                  <label>ENTER 6-DIGIT VERIFICATION CODE *</label>
+                  {otpCountdown > 0 ? (
+                    <span className="resend-countdown">Resend in {otpCountdown}s</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleSendOtp()}
+                      className="resend-btn"
+                    >
+                      Resend Code
+                    </button>
                   )}
                 </div>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  maxLength={6}
+                  placeholder="000000"
+                  className="otp-code-input"
+                  value={otpCode}
+                  onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                />
+                {otpDevHint && (
+                  <button
+                    type="button"
+                    onClick={() => setOtpCode(otpDevHint)}
+                    className="dev-otp-pill"
+                    title="Click to auto-fill development code"
+                  >
+                    <span>Dev Code: <strong>{otpDevHint}</strong> (Click to fill)</span>
+                  </button>
+                )}
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary w-full portal-submit-btn"
-            >
-              {isSubmitting ? 'AUTHENTICATING...' : 'SIGN IN TO PORTAL'}
-            </button>
-          </form>
-        )}
+              <button
+                type="submit"
+                disabled={isSubmitting || otpCode.length < 6}
+                className="btn-primary w-full portal-submit-btn"
+              >
+                {isSubmitting ? 'VERIFYING...' : 'VERIFY & ENTER PORTAL'}
+              </button>
+            </div>
+          )}
+        </form>
+
+        <div className="auth-card-footer">
+          <div className="auth-guarantee-row">
+            <CheckCircle2 size={15} className="text-emerald" />
+            <span>Instant access & progressive builder profile</span>
+          </div>
+          <div className="auth-guarantee-row">
+            <CheckCircle2 size={15} className="text-emerald" />
+            <span>Whitelisted Core Council leadership auto-sync</span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 // ============================================================================
-// 2. MEMBER DASHBOARD VIEW (Isolated Account Space)
+// 2. MEMBER DASHBOARD VIEW (With Squad Theme Switcher)
 // ============================================================================
-function MemberDashboardView({ currentUser, onSignOut, onRefreshUser }) {
-  const [copiedLink, setCopiedLink] = useState(false);
-
-  const squadMeta = {
-    ironman: { name: 'STARK TECH LABS', color: '#ff0055', desc: 'Software, WASM, Rust & Applied AI Systems' },
-    captain: { name: 'VIBRANIUM ALLIANCE', color: '#0055ff', desc: 'Outreach, PR & Developer Diplomacy' },
-    thor: { name: 'STORMBREAKER OPS', color: '#d97706', desc: 'Hackathons, Sprints & Code Tournaments' },
-    core: { name: 'FOUNDRY COMMAND', color: '#8b002e', desc: 'Operations & Treasury Micro-Grants' }
-  }[currentUser.targetSquad] || { name: 'STARK TECH LABS', color: '#ff0055', desc: 'Full-Stack Software' };
-
+function MemberDashboardView({ 
+  currentUser, 
+  completionPercent, 
+  onSignOut, 
+  onOpenProfileModal, 
+  onSelectSquad,
+  currentSquad 
+}) {
+  const activeSquadKey = currentUser.targetSquad === 'core' ? 'hulk' : (currentUser.targetSquad || currentSquad || 'ironman');
+  const squad = SQUADS_CONFIG[activeSquadKey] || SQUADS_CONFIG.ironman;
   const isApproved = currentUser.status === 'approved';
   const isPending = currentUser.status === 'pending_review';
 
@@ -602,18 +467,23 @@ function MemberDashboardView({ currentUser, onSignOut, onRefreshUser }) {
       <div className="dashboard-header-bar">
         <div className="member-welcome-block">
           <div className="member-avatar-chip">
-            <User size={20} />
+            <User size={22} />
           </div>
           <div>
-            <div className="member-eyebrow">COMMUNITY MEMBER PORTAL</div>
-            <h1 className="member-name">{currentUser.fullName}</h1>
-            <span className="member-id-tag">{currentUser.email} · {currentUser.college}</span>
+            <div className="member-eyebrow">STUDENT BUILDER PORTAL</div>
+            <h1 className="member-name">{currentUser.fullName || 'Welcome, Builder'}</h1>
+            <span className="member-id-tag">{currentUser.email} · {currentUser.college || 'GLA University'}</span>
           </div>
         </div>
 
-        <button onClick={onSignOut} className="btn-secondary sign-out-btn">
-          <LogOut size={16} /> Sign Out
-        </button>
+        <div className="header-right-actions">
+          <button onClick={onOpenProfileModal} className="btn-secondary edit-profile-btn">
+            <Edit3 size={15} /> Edit Profile
+          </button>
+          <button onClick={onSignOut} className="btn-secondary sign-out-btn">
+            <LogOut size={15} /> Sign Out
+          </button>
+        </div>
       </div>
 
       {/* Application Status Banner */}
@@ -638,63 +508,90 @@ function MemberDashboardView({ currentUser, onSignOut, onRefreshUser }) {
             </h3>
             <p className="status-desc">
               {isApproved
-                ? 'Your registration has been approved by the Core Council. You have full access to internal repos and sprints.'
+                ? 'Your registration is verified by Core Council. You have access to internal repos, hackathon teams, and grants.'
                 : isPending
-                  ? 'Your student builder application is currently being evaluated by the Core Leadership Council.'
-                  : 'Your application has been concluded for this sprint cohort. Reach out during the next open hackathon.'}
+                  ? 'Your profile is under review by Core Leadership. Make sure your profile details are fully completed.'
+                  : 'Your application has concluded for this cohort. You can re-apply for future hackathons.'}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Grid: Squad Assignment & Builder Profile */}
-      <div className="dashboard-cards-grid">
-        {/* Squad Card */}
-        <div className="dashboard-card squad-focus-card">
-          <div className="card-top-row">
-            <span className="card-label">ASSIGNED SQUAD DIVISION</span>
-            <span className="squad-tag-pill" style={{ borderColor: squadMeta.color, color: squadMeta.color }}>
-              ◈ {currentUser.targetSquad.toUpperCase()}
-            </span>
+      {/* Squad Division Selector & Theme Changer */}
+      <div className="dashboard-card squad-selector-card">
+        <div className="squad-selector-header">
+          <div>
+            <span className="card-label">SQUAD DIVISION & THEME ACCENT</span>
+            <h3 className="section-title">Pick your Squad Theme</h3>
+            <p className="section-subtext">Selecting a squad dynamically customizes the entire website, certifications, and links.</p>
           </div>
-          <h2 className="squad-headline" style={{ color: squadMeta.color }}>{squadMeta.name}</h2>
-          <p className="squad-subtext">{squadMeta.desc}</p>
-
-          <div className="squad-actions-row">
-            <a 
-              href="https://chat.whatsapp.com/invite" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="btn-primary squad-btn"
-              style={{ background: squadMeta.color }}
-            >
-              JOIN SQUAD CHANNEL <ExternalLink size={14} />
-            </a>
-          </div>
+          <span className="current-squad-badge" style={{ borderColor: squad.color, color: squad.color }}>
+            CURRENT: {squad.hero}
+          </span>
         </div>
 
+        <div className="squad-grid-selector">
+          {Object.values(SQUADS_CONFIG).map((sq) => {
+            const isSelected = activeSquadKey === sq.key;
+            return (
+              <button
+                key={sq.key}
+                onClick={() => onSelectSquad(sq.key)}
+                className={`squad-pick-card ${isSelected ? 'active-squad-card' : ''}`}
+                style={{
+                  borderColor: isSelected ? sq.color : 'rgba(255, 255, 255, 0.08)',
+                  boxShadow: isSelected ? `0 0 24px ${sq.color}35` : 'none'
+                }}
+              >
+                <div className="squad-dot" style={{ background: sq.color }} />
+                <div className="squad-card-meta">
+                  <span className="squad-card-hero">{sq.hero}</span>
+                  <span className="squad-card-division">{sq.division}</span>
+                </div>
+                {isSelected && <Check size={16} className="squad-active-check" style={{ color: sq.color }} />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Grid: Profile Specs & Arsenal */}
+      <div className="dashboard-cards-grid">
         {/* Builder Profile Specs */}
         <div className="dashboard-card profile-specs-card">
-          <span className="card-label">BUILDER PROFILE SPECS</span>
+          <div className="card-top-row">
+            <span className="card-label">BUILDER PROFILE SPECS</span>
+            <button onClick={onOpenProfileModal} className="card-inline-action">
+              <Edit3 size={13} /> Edit
+            </button>
+          </div>
           <div className="specs-list">
             <div className="spec-row">
+              <span className="spec-key">Full Name:</span>
+              <span className="spec-val">{currentUser.fullName || <span className="text-dim">Not set yet</span>}</span>
+            </div>
+            <div className="spec-row">
               <span className="spec-key">Branch & Year:</span>
-              <span className="spec-val">{currentUser.branch} ({currentUser.yearOfStudy})</span>
+              <span className="spec-val">
+                {currentUser.branch ? `${currentUser.branch} (${currentUser.yearOfStudy || 'Student'})` : <span className="text-dim">Not set</span>}
+              </span>
+            </div>
+            <div className="spec-row">
+              <span className="spec-key">College / Institute:</span>
+              <span className="spec-val">{currentUser.college || 'GLA University'}</span>
             </div>
             <div className="spec-row">
               <span className="spec-key">Registered Email:</span>
               <span className="spec-val">{currentUser.email}</span>
             </div>
-            {currentUser.phone && (
+            {currentUser.githubUrl && (
               <div className="spec-row">
-                <span className="spec-key">Contact Phone:</span>
-                <span className="spec-val">{currentUser.phone}</span>
+                <span className="spec-key">GitHub:</span>
+                <a href={currentUser.githubUrl} target="_blank" rel="noreferrer" className="spec-link">
+                  {currentUser.githubUrl.replace('https://github.com/', '@')}
+                </a>
               </div>
             )}
-            <div className="spec-row">
-              <span className="spec-key">Member Role:</span>
-              <span className="spec-val highlight-val">{currentUser.roleTitle}</span>
-            </div>
           </div>
 
           {/* Skills Badges */}
@@ -709,31 +606,29 @@ function MemberDashboardView({ currentUser, onSignOut, onRefreshUser }) {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Member Resources & Official Sprints */}
-      <div className="dashboard-card resources-card">
-        <h3 className="resources-title">MEMBER-EXCLUSIVE RESOURCES</h3>
-        <p className="resources-desc">Access official internal repositories, weekly peer reviews, and workshop materials.</p>
-        
-        <div className="resources-grid">
-          <a href="/links" className="resource-item">
-            <div className="resource-icon-box"><Sparkles size={20} /></div>
-            <div>
-              <span className="resource-name">Official Community Hub</span>
-              <span className="resource-meta">All Discord, WhatsApp & Social Links</span>
-            </div>
-            <ArrowRight size={16} className="resource-arrow" />
-          </a>
+        {/* Member Resources */}
+        <div className="dashboard-card resources-card">
+          <span className="card-label">COMMUNITY RESOURCES</span>
+          <div className="resources-grid-stack">
+            <a href="/links" className="resource-item">
+              <div className="resource-icon-box"><Sparkles size={20} /></div>
+              <div>
+                <span className="resource-name">Official Community Hub</span>
+                <span className="resource-meta">All WhatsApp, Discord & Social Links</span>
+              </div>
+              <ArrowRight size={16} className="resource-arrow" />
+            </a>
 
-          <a href="/verify" className="resource-item">
-            <div className="resource-icon-box"><Shield size={20} /></div>
-            <div>
-              <span className="resource-name">Credentials & Certifications</span>
-              <span className="resource-meta">Verify hackathon awards and certificates</span>
-            </div>
-            <ArrowRight size={16} className="resource-arrow" />
-          </a>
+            <a href="/verify" className="resource-item">
+              <div className="resource-icon-box"><Shield size={20} /></div>
+              <div>
+                <span className="resource-name">Credentials & Certifications</span>
+                <span className="resource-meta">Verify hackathon awards and certificates</span>
+              </div>
+              <ArrowRight size={16} className="resource-arrow" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -741,9 +636,9 @@ function MemberDashboardView({ currentUser, onSignOut, onRefreshUser }) {
 }
 
 // ============================================================================
-// 3. ADMIN DASHBOARD VIEW (Core Leadership Command Center)
+// 3. ADMIN DASHBOARD VIEW (Core Council Command Center)
 // ============================================================================
-function AdminDashboardView({ currentUser, onSignOut }) {
+function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSquad }) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -784,19 +679,18 @@ function AdminDashboardView({ currentUser, onSignOut }) {
     }
   };
 
-  // CSV Export Generator
   const handleExportCsv = () => {
     if (!data || !data.profiles) return;
     playTechClick();
     const headers = ['Full Name', 'Email', 'College', 'Branch', 'Year', 'Squad', 'Role', 'Status', 'Registered At'];
     const rows = data.profiles.map(p => [
-      `"${p.fullName}"`,
+      `"${p.fullName || ''}"`,
       `"${p.email}"`,
-      `"${p.college}"`,
-      `"${p.branch}"`,
-      `"${p.yearOfStudy}"`,
-      `"${p.targetSquad}"`,
-      `"${p.roleTitle}"`,
+      `"${p.college || ''}"`,
+      `"${p.branch || ''}"`,
+      `"${p.yearOfStudy || ''}"`,
+      `"${p.targetSquad || ''}"`,
+      `"${p.roleTitle || ''}"`,
       `"${p.status}"`,
       `"${p.createdAt}"`
     ]);
@@ -813,12 +707,12 @@ function AdminDashboardView({ currentUser, onSignOut }) {
 
   const filteredProfiles = (data?.profiles || []).filter(p => {
     const matchesSearch = 
-      p.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.college.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.college || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.skills || []).some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesSquad = squadFilter === 'all' || p.targetSquad === squadFilter;
+    const matchesSquad = squadFilter === 'all' || p.targetSquad === squadFilter || (squadFilter === 'hulk' && p.targetSquad === 'core');
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
 
     return matchesSearch && matchesSquad && matchesStatus;
@@ -830,21 +724,21 @@ function AdminDashboardView({ currentUser, onSignOut }) {
       <div className="dashboard-header-bar">
         <div className="admin-welcome-block">
           <div className="admin-avatar-chip">
-            <Shield size={22} />
+            <Shield size={24} />
           </div>
           <div>
             <div className="admin-eyebrow">CORE COUNCIL LEADERSHIP COMMAND</div>
-            <h1 className="admin-name">{currentUser.fullName} · {currentUser.roleTitle}</h1>
-            <span className="admin-id-tag">Admin Clearance Active · {currentUser.email}</span>
+            <h1 className="admin-name">{currentUser.fullName || currentUser.roleTitle} · {currentUser.roleTitle}</h1>
+            <span className="admin-id-tag">Whitelisted Admin Clearance Active · {currentUser.email}</span>
           </div>
         </div>
 
         <div className="admin-header-actions">
           <button onClick={handleExportCsv} className="btn-secondary export-btn">
-            <FileSpreadsheet size={16} /> Export Roster (.csv)
+            <FileSpreadsheet size={15} /> Export Roster (.csv)
           </button>
           <button onClick={onSignOut} className="btn-secondary sign-out-btn">
-            <LogOut size={16} /> Sign Out
+            <LogOut size={15} /> Sign Out
           </button>
         </div>
       </div>
@@ -867,21 +761,21 @@ function AdminDashboardView({ currentUser, onSignOut }) {
           <div className="metric-tile approved-tile">
             <span className="metric-num text-emerald">{data.metrics.approved}</span>
             <span className="metric-title">APPROVED MEMBERS</span>
-            <span className="metric-sub">Active across squad tracks</span>
+            <span className="metric-sub">Active in Squad Tracks</span>
           </div>
 
           <div className="metric-tile pending-tile">
             <span className="metric-num text-amber">{data.metrics.pending}</span>
             <span className="metric-title">PENDING REVIEWS</span>
-            <span className="metric-sub">Requires Core evaluation</span>
+            <span className="metric-sub">Awaiting evaluation</span>
           </div>
 
           <div className="metric-tile squad-dist-tile">
             <div className="squad-mini-breakdown">
-              <div><span className="dot dot-iron" /> Tech: {data.metrics.squads.ironman}</div>
-              <div><span className="dot dot-cap" /> PR: {data.metrics.squads.captain}</div>
-              <div><span className="dot dot-thor" /> Events: {data.metrics.squads.thor}</div>
-              <div><span className="dot dot-core" /> Core: {data.metrics.squads.core}</div>
+              <div><span className="dot dot-iron" /> Tech: {data.metrics.squads.ironman || 0}</div>
+              <div><span className="dot dot-cap" /> PR: {data.metrics.squads.captain || 0}</div>
+              <div><span className="dot dot-thor" /> Events: {data.metrics.squads.thor || 0}</div>
+              <div><span className="dot dot-hulk" /> Design: {(data.metrics.squads.hulk || data.metrics.squads.core || 0)}</div>
             </div>
             <span className="metric-title">SQUAD BREAKDOWN</span>
           </div>
@@ -894,7 +788,7 @@ function AdminDashboardView({ currentUser, onSignOut }) {
           <Search size={16} className="search-icon" />
           <input
             type="text"
-            placeholder="Search by name, email, college, or skills..."
+            placeholder="Search roster by name, email, college, or skills..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
@@ -907,10 +801,10 @@ function AdminDashboardView({ currentUser, onSignOut }) {
             className="filter-select"
           >
             <option value="all">All Squads</option>
-            <option value="ironman">Stark Tech Labs</option>
-            <option value="captain">Vibranium Alliance</option>
-            <option value="thor">Stormbreaker Ops</option>
-            <option value="core">Core Command</option>
+            <option value="ironman">Tech (Iron Man)</option>
+            <option value="captain">PR (Captain America)</option>
+            <option value="thor">Events (Thor)</option>
+            <option value="hulk">Design (Hulk Green)</option>
           </select>
 
           <select 
@@ -919,87 +813,78 @@ function AdminDashboardView({ currentUser, onSignOut }) {
             className="filter-select"
           >
             <option value="all">All Statuses</option>
-            <option value="pending_review">Pending Review</option>
             <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="rejected">Archived</option>
           </select>
-
-          <button onClick={fetchRoster} className="icon-btn refresh-btn" title="Refresh Roster">
-            <RefreshCw size={16} />
-          </button>
         </div>
       </div>
 
-      {/* Applicant Table */}
-      <div className="admin-roster-card">
+      {/* Member Roster Table */}
+      <div className="roster-table-card">
         {isLoading ? (
-          <div className="table-loading-box">Loading member roster...</div>
+          <div className="table-loading-msg">Refreshing Core Roster...</div>
         ) : filteredProfiles.length === 0 ? (
-          <div className="table-empty-box">No applicants match your search criteria.</div>
+          <div className="table-empty-msg">No profiles match your search criteria.</div>
         ) : (
           <div className="table-responsive-wrapper">
             <table className="roster-table">
               <thead>
                 <tr>
-                  <th>APPLICANT</th>
-                  <th>COLLEGE & BRANCH</th>
-                  <th>SQUAD</th>
-                  <th>ROLE & STATUS</th>
-                  <th>SKILLS / ARSENAL</th>
-                  <th className="text-right">ACTIONS</th>
+                  <th>BUILDER</th>
+                  <th>COLLEGE & TRACK</th>
+                  <th>ASSIGNED SQUAD</th>
+                  <th>ROLE</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredProfiles.map(p => {
-                  const isBusy = actionLoadingId === p.id;
+                {filteredProfiles.map((p) => {
+                  const pSquad = p.targetSquad === 'core' ? 'hulk' : (p.targetSquad || 'ironman');
+                  const sqCfg = SQUADS_CONFIG[pSquad] || SQUADS_CONFIG.ironman;
+                  const isActioning = actionLoadingId === p.id;
+
                   return (
                     <tr key={p.id}>
                       <td>
-                        <div className="applicant-cell">
-                          <span className="applicant-name">{p.fullName}</span>
-                          <span className="applicant-email">{p.email}</span>
-                          {p.phone && <span className="applicant-phone">{p.phone}</span>}
+                        <div className="builder-cell">
+                          <span className="builder-name">{p.fullName || 'Anonymous Builder'}</span>
+                          <span className="builder-email">{p.email}</span>
+                          {p.phone && <span className="builder-phone">{p.phone}</span>}
                         </div>
                       </td>
+
                       <td>
                         <div className="college-cell">
-                          <span className="college-name">{p.college}</span>
-                          <span className="branch-name">{p.branch} ({p.yearOfStudy})</span>
+                          <span className="college-name">{p.college || 'GLA University'}</span>
+                          <span className="college-branch">{p.branch || 'Undecided'} · {p.yearOfStudy || 'Student'}</span>
                         </div>
                       </td>
+
                       <td>
-                        <span className={`squad-badge squad-${p.targetSquad}`}>
-                          {p.targetSquad.toUpperCase()}
+                        <span className="squad-badge-pill" style={{ color: sqCfg.color, borderColor: sqCfg.color }}>
+                          {sqCfg.hero}
                         </span>
                       </td>
+
                       <td>
-                        <div className="status-cell">
-                          <span className={`status-pill pill-${p.status}`}>
-                            {p.status === 'approved' ? 'Approved' : p.status === 'pending_review' ? 'Pending' : 'Rejected'}
-                          </span>
-                          <span className="role-caption">{p.roleTitle}</span>
-                        </div>
+                        <span className={`role-badge ${p.role === 'admin' ? 'role-admin' : 'role-member'}`}>
+                          {p.roleTitle || p.role}
+                        </span>
                       </td>
+
                       <td>
-                        <div className="skills-inline-list">
-                          {(p.skills || []).slice(0, 3).map((s, idx) => (
-                            <span key={idx} className="skill-mini-tag">{s}</span>
-                          ))}
-                          {(p.skills || []).length > 3 && (
-                            <span className="skill-mini-tag">+{p.skills.length - 3}</span>
-                          )}
-                          {p.githubUrl && (
-                            <a href={p.githubUrl} target="_blank" rel="noreferrer" className="external-link-icon" title="GitHub">
-                              <ExternalLink size={12} />
-                            </a>
-                          )}
-                        </div>
+                        <span className={`status-badge-pill status-${p.status}`}>
+                          {p.status === 'approved' ? 'Approved' : p.status === 'pending_review' ? 'Pending' : 'Archived'}
+                        </span>
                       </td>
-                      <td className="text-right">
-                        <div className="actions-cluster">
+
+                      <td>
+                        <div className="actions-cell">
                           {p.status !== 'approved' && (
                             <button
-                              disabled={isBusy}
+                              disabled={isActioning}
                               onClick={() => handleAction('approve', p.id)}
                               className="btn-action-approve"
                               title="Approve Member"
@@ -1009,25 +894,25 @@ function AdminDashboardView({ currentUser, onSignOut }) {
                           )}
                           {p.status !== 'rejected' && (
                             <button
-                              disabled={isBusy}
+                              disabled={isActioning}
                               onClick={() => handleAction('reject', p.id)}
                               className="btn-action-reject"
-                              title="Reject / Archive Application"
+                              title="Archive Member"
                             >
-                              Reject
+                              Archive
                             </button>
                           )}
+                          {/* Reassign Squad Selector */}
                           <select
-                            disabled={isBusy}
-                            value={p.targetSquad}
+                            disabled={isActioning}
+                            value={pSquad}
                             onChange={(e) => handleAction('reassign_squad', p.id, { newSquad: e.target.value })}
-                            className="squad-reassign-dropdown"
-                            title="Reassign Squad Division"
+                            className="squad-reassign-select"
                           >
-                            <option value="ironman">Iron Man</option>
-                            <option value="captain">Captain America</option>
-                            <option value="thor">Thor</option>
-                            <option value="core">Core</option>
+                            <option value="ironman">Tech</option>
+                            <option value="captain">PR</option>
+                            <option value="thor">Events</option>
+                            <option value="hulk">Design (Green)</option>
                           </select>
                         </div>
                       </td>
@@ -1039,23 +924,202 @@ function AdminDashboardView({ currentUser, onSignOut }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
 
-      {/* Audit Trail Section */}
-      {data?.auditLogs && data.auditLogs.length > 0 && (
-        <div className="admin-audit-section">
-          <h4 className="audit-section-title">SECURITY & GOVERNANCE AUDIT TRAIL</h4>
-          <div className="audit-logs-list">
-            {data.auditLogs.slice(0, 10).map((log, i) => (
-              <div key={log.id || i} className="audit-log-row">
-                <span className="audit-time">{new Date(log.createdAt).toLocaleTimeString()}</span>
-                <span className="audit-actor">{log.actorRole} ({log.actorEmail})</span>
-                <span className="audit-action">{log.action}</span>
-                <span className="audit-details">{JSON.stringify(log.details)}</span>
-              </div>
-            ))}
+// ============================================================================
+// 4. PROGRESSIVE PROFILE EDIT MODAL / DRAWER
+// ============================================================================
+function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
+  const [formData, setFormData] = useState({
+    fullName: currentUser.fullName || '',
+    phone: currentUser.phone || '',
+    college: currentUser.college || 'GLA University',
+    branch: currentUser.branch || '',
+    yearOfStudy: currentUser.yearOfStudy || '2nd Year',
+    targetSquad: currentUser.targetSquad || 'ironman',
+    skills: Array.isArray(currentUser.skills) ? currentUser.skills.join(', ') : (currentUser.skills || ''),
+    githubUrl: currentUser.githubUrl || '',
+    linkedinUrl: currentUser.linkedinUrl || '',
+    portfolioUrl: currentUser.portfolioUrl || ''
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setErrorMsg('');
+    try {
+      playTechClick();
+      const updated = await updatePortalProfile(formData);
+      playVibraniumPing();
+      onSaved(updated);
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to save profile changes.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSquadClick = (sqKey) => {
+    playTechClick();
+    setFormData({ ...formData, targetSquad: sqKey });
+    if (onSelectSquad) onSelectSquad(sqKey);
+  };
+
+  return (
+    <div className="modal-backdrop-fixed animate-fade-in" onClick={onClose}>
+      <div className="modal-dialog-card" onClick={e => e.stopPropagation()}>
+        <div className="modal-top-bar">
+          <div>
+            <h3 className="modal-title">Complete Builder Profile</h3>
+            <p className="modal-subline">Fill in your builder details so squad leaders can induct and mentor you.</p>
           </div>
+          <button onClick={onClose} className="modal-close-btn" aria-label="Close modal">
+            <X size={20} />
+          </button>
         </div>
-      )}
+
+        {errorMsg && (
+          <div className="portal-error-alert">
+            <AlertCircle size={16} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="modal-edit-form">
+          <div className="form-field">
+            <label>FULL NAME *</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Parv Mishra"
+              value={formData.fullName}
+              onChange={e => setFormData({ ...formData, fullName: e.target.value })}
+            />
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-field">
+              <label>COLLEGE / UNIVERSITY *</label>
+              <input
+                type="text"
+                required
+                placeholder="GLA University"
+                value={formData.college}
+                onChange={e => setFormData({ ...formData, college: e.target.value })}
+              />
+            </div>
+
+            <div className="form-field">
+              <label>BRANCH / PROGRAM *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. B.Tech CSE, IT, BCA"
+                value={formData.branch}
+                onChange={e => setFormData({ ...formData, branch: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-field">
+              <label>YEAR OF STUDY</label>
+              <select
+                value={formData.yearOfStudy}
+                onChange={e => setFormData({ ...formData, yearOfStudy: e.target.value })}
+              >
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="Alumni / Core">Alumni / Core</option>
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>PHONE / WHATSAPP NUMBER</label>
+              <input
+                type="tel"
+                placeholder="+91 9999999999"
+                value={formData.phone}
+                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Target Squad Division Selection */}
+          <div className="form-field">
+            <label>SELECT TARGET SQUAD DIVISION (SWITCHES WEBSITE THEME)</label>
+            <div className="squad-modal-grid">
+              {Object.values(SQUADS_CONFIG).map((sq) => {
+                const isSelected = formData.targetSquad === sq.key;
+                return (
+                  <button
+                    key={sq.key}
+                    type="button"
+                    onClick={() => handleSquadClick(sq.key)}
+                    className={`modal-squad-tile ${isSelected ? 'selected-tile' : ''}`}
+                    style={{
+                      borderColor: isSelected ? sq.color : 'rgba(255, 255, 255, 0.1)',
+                      boxShadow: isSelected ? `0 0 16px ${sq.color}40` : 'none'
+                    }}
+                  >
+                    <div className="squad-dot" style={{ background: sq.color }} />
+                    <span className="tile-hero">{sq.hero}</span>
+                    <span className="tile-div">{sq.division.split('&')[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="form-field">
+            <label>SKILLS & ARSENAL (COMMA SEPARATED)</label>
+            <input
+              type="text"
+              placeholder="React, Node.js, Python, Figma, Tailwind, System Design"
+              value={formData.skills}
+              onChange={e => setFormData({ ...formData, skills: e.target.value })}
+            />
+          </div>
+
+          <div className="form-grid-2">
+            <div className="form-field">
+              <label>GITHUB PROFILE URL</label>
+              <input
+                type="url"
+                placeholder="https://github.com/yourhandle"
+                value={formData.githubUrl}
+                onChange={e => setFormData({ ...formData, githubUrl: e.target.value })}
+              />
+            </div>
+
+            <div className="form-field">
+              <label>LINKEDIN / PORTFOLIO URL</label>
+              <input
+                type="url"
+                placeholder="https://linkedin.com/in/yourhandle"
+                value={formData.linkedinUrl}
+                onChange={e => setFormData({ ...formData, linkedinUrl: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="modal-actions-bar">
+            <button type="button" onClick={onClose} className="btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" disabled={isSaving} className="btn-primary modal-save-btn">
+              {isSaving ? 'SAVING PROFILE...' : 'SAVE & UPDATE PROFILE'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

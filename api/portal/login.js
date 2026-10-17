@@ -74,33 +74,37 @@ export default async function handler(req, res) {
     let user = store.profiles.find(p => p.email.toLowerCase().trim() === normalizedEmail);
 
     if (!user) {
-      // Check if this is a known Core Head registering via sign-in
+      // Automatic progressive onboarding: register profile on first OTP verification
       const roleData = evaluateLeadershipRole(normalizedEmail, corePasskey);
-      if (roleData.role === 'admin') {
-        user = {
-          id: `user-core-${Date.now()}`,
-          email: normalizedEmail,
-          fullName: roleData.roleTitle,
-          phone: '',
-          college: 'Core Command',
-          branch: 'Executive Council',
-          yearOfStudy: 'Core',
-          targetSquad: 'core',
-          skills: ['Leadership', 'Governance'],
-          role: 'admin',
-          roleTitle: roleData.roleTitle,
-          status: 'approved',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        store.profiles.push(user);
-        saveStore(store);
-      } else {
-        return res.status(404).json({
-          success: false,
-          error: 'No registered profile found with this email. Please click "Join as Member" to register.'
-        });
-      }
+      const isCore = roleData.role === 'admin';
+      user = {
+        id: `user-${isCore ? 'core' : 'mem'}-${Date.now()}`,
+        email: normalizedEmail,
+        fullName: roleData.fullName || (isCore ? roleData.roleTitle : ''),
+        phone: '',
+        college: isCore ? 'Core Command' : '',
+        branch: isCore ? 'Executive Council' : '',
+        yearOfStudy: isCore ? 'Core' : '',
+        targetSquad: isCore ? 'hulk' : 'ironman',
+        skills: isCore ? ['Leadership', 'Governance'] : [],
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        role: roleData.role,
+        roleTitle: roleData.roleTitle,
+        status: isCore ? 'approved' : 'pending_review',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      store.profiles.push(user);
+      saveStore(store);
+      recordAuditLog(
+        { userId: user.id, email: user.email, roleTitle: user.roleTitle },
+        isCore ? 'core_whitelisted_auto_onboarded' : 'member_auto_onboarded',
+        user.id,
+        { role: user.role, roleTitle: user.roleTitle },
+        clientIp
+      );
     }
 
     if (user.status === 'suspended') {

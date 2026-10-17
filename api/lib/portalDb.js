@@ -6,17 +6,31 @@ import path from 'path';
 const JWT_SECRET = process.env.PORTAL_JWT_SECRET || process.env.SESSION_SECRET || 'letscook-secure-auth-salt-key-2026';
 const CORE_PASSKEY = process.env.CORE_HEAD_PASSKEY || 'FOUNDRY-CORE-2026';
 
-// Pre-Approved Core Leadership Whitelist (Case-insensitive)
-export const CORE_LEADERSHIP_WHITELIST = {
-  'parvmishra.connect@gmail.com': { roleTitle: 'Founder', role: 'admin' },
-  'founder@letscook.co.in': { roleTitle: 'Founder', role: 'admin' },
-  'president@letscook.co.in': { roleTitle: 'President', role: 'admin' },
-  'vp@letscook.co.in': { roleTitle: 'Vice President', role: 'admin' },
-  'sec@letscook.co.in': { roleTitle: 'Secretary', role: 'admin' },
-  'techhead@letscook.co.in': { roleTitle: 'Tech Core Head', role: 'admin' },
-  'prhead@letscook.co.in': { roleTitle: 'PR Core Head', role: 'admin' },
-  'eventshead@letscook.co.in': { roleTitle: 'Events Core Head', role: 'admin' }
+// Pre-Approved Core Leadership Whitelist Default Seeds
+const DEFAULT_CORE_WHITELIST = {
+  'parvmishra.connect@gmail.com': { roleTitle: 'Founder', role: 'admin', fullName: 'Parv Mishra' },
+  'founder@letscook.co.in': { roleTitle: 'Founder', role: 'admin', fullName: 'Founder' },
+  'president@letscook.co.in': { roleTitle: 'President', role: 'admin', fullName: 'President' },
+  'vp@letscook.co.in': { roleTitle: 'Vice President', role: 'admin', fullName: 'Vice President' },
+  'sec@letscook.co.in': { roleTitle: 'Secretary', role: 'admin', fullName: 'Secretary' },
+  'techhead@letscook.co.in': { roleTitle: 'Tech Core Head', role: 'admin', fullName: 'Tech Head' },
+  'prhead@letscook.co.in': { roleTitle: 'PR Core Head', role: 'admin', fullName: 'PR Head' },
+  'eventshead@letscook.co.in': { roleTitle: 'Events Core Head', role: 'admin', fullName: 'Events Head' },
+  'designhead@letscook.co.in': { roleTitle: 'Design Core Head', role: 'admin', fullName: 'Design Head' }
 };
+
+export function getCoreLeadershipWhitelist() {
+  try {
+    const whitelistPath = path.resolve(process.cwd(), 'src/data/core-whitelist.json');
+    if (fs.existsSync(whitelistPath)) {
+      const parsed = JSON.parse(fs.readFileSync(whitelistPath, 'utf8'));
+      return { ...DEFAULT_CORE_WHITELIST, ...parsed };
+    }
+  } catch (_) {}
+  return DEFAULT_CORE_WHITELIST;
+}
+
+export const CORE_LEADERSHIP_WHITELIST = getCoreLeadershipWhitelist();
 
 // Storage Path Resolver for Serverless & Local environments
 function getStorageFilePath() {
@@ -202,12 +216,14 @@ export function verifyOtpToken(email, otp, tokenString) {
 // Check Core Clearance
 export function evaluateLeadershipRole(email, enteredPasskey) {
   const normalized = (email || '').toLowerCase().trim();
+  const whitelist = getCoreLeadershipWhitelist();
   // 1. Check Pre-Approved Core Whitelist
-  if (CORE_LEADERSHIP_WHITELIST[normalized]) {
+  if (whitelist[normalized]) {
     return {
       isCore: true,
       role: 'admin',
-      roleTitle: CORE_LEADERSHIP_WHITELIST[normalized].roleTitle
+      roleTitle: whitelist[normalized].roleTitle,
+      fullName: whitelist[normalized].fullName || ''
     };
   }
   // 2. Check Core Security Passkey
@@ -215,14 +231,16 @@ export function evaluateLeadershipRole(email, enteredPasskey) {
     return {
       isCore: true,
       role: 'admin',
-      roleTitle: 'Core Council Head'
+      roleTitle: 'Core Council Head',
+      fullName: ''
     };
   }
   // 3. Standard Community Member
   return {
     isCore: false,
     role: 'member',
-    roleTitle: 'Community Member'
+    roleTitle: 'Community Member',
+    fullName: ''
   };
 }
 

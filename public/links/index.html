@@ -535,6 +535,23 @@ footer b {
       root.setAttribute('data-theme', 'light');
     }
 
+    // Squad Dynamic Theming
+    try {
+      const squad = localStorage.getItem('letscook_squad') || 'ironman';
+      const themes = {
+        ironman: { red: '#00f0ff', redDeep: '#0088cc', trace: 'rgba(0, 240, 255, 0.35)', line: '#0f2430' },
+        captain: { red: '#38bdf8', redDeep: '#1d4ed8', trace: 'rgba(56, 189, 248, 0.35)', line: '#112233' },
+        thor: { red: '#f59e0b', redDeep: '#b45309', trace: 'rgba(245, 158, 11, 0.35)', line: '#2e2410' },
+        hulk: { red: '#22c55e', redDeep: '#15803d', trace: 'rgba(34, 197, 94, 0.35)', line: '#122919' },
+        core: { red: '#22c55e', redDeep: '#15803d', trace: 'rgba(34, 197, 94, 0.35)', line: '#122919' }
+      };
+      const t = themes[squad] || themes.ironman;
+      root.style.setProperty('--red', t.red);
+      root.style.setProperty('--red-deep', t.redDeep);
+      root.style.setProperty('--trace', t.trace);
+      root.style.setProperty('--line', t.line);
+    } catch (_) {}
+
     if (toggleBtn) {
       toggleBtn.addEventListener('click', function() {
         const current = root.getAttribute('data-theme') || 'dark';

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ArrowLeft, ExternalLink, Share2, Check } from 'lucide-react';
 import { playTechClick } from '../utils/soundEngine';
 
-export default function LinksPage({ setCurrentPage }) {
+export default function LinksPage({ setCurrentPage, currentSquad, onSelectSquad }) {
   const [copied, setCopied] = React.useState(false);
 
   useEffect(() => {
@@ -350,8 +350,8 @@ export default function LinksPage({ setCurrentPage }) {
           color: #F4F1F2;
         }
         .links-accent {
-          color: #B70E32;
-          text-shadow: 0 0 20px rgba(183, 14, 50, 0.4);
+          color: var(--accent-burgundy, #B70E32);
+          text-shadow: 0 0 20px var(--accent-glow, rgba(183, 14, 50, 0.4));
         }
 
         .links-motto {
@@ -383,7 +383,7 @@ export default function LinksPage({ setCurrentPage }) {
           top: -14px;
           bottom: 30px;
           width: 2px;
-          background: #B70E32;
+          background: var(--accent-burgundy, #B70E32);
           border-radius: 2px;
         }
 
@@ -412,7 +412,7 @@ export default function LinksPage({ setCurrentPage }) {
           top: 50%;
           width: 22px;
           height: 2px;
-          background: #B70E32;
+          background: var(--accent-burgundy, #B70E32);
         }
         .circuit-link::after {
           content: "";
@@ -424,16 +424,16 @@ export default function LinksPage({ setCurrentPage }) {
           margin-top: -6px;
           border-radius: 50%;
           background: #161214;
-          border: 2px solid #B70E32;
+          border: 2px solid var(--accent-burgundy, #B70E32);
           transition: background-color 0.2s ease;
         }
         .circuit-link:hover {
-          border-color: #B70E32;
+          border-color: var(--accent-burgundy, #B70E32);
           transform: translateX(4px);
-          box-shadow: 0 6px 20px rgba(183, 14, 50, 0.15);
+          box-shadow: 0 6px 20px var(--accent-glow, rgba(183, 14, 50, 0.15));
         }
         .circuit-link:hover::after {
-          background: #B70E32;
+          background: var(--accent-burgundy, #B70E32);
         }
 
         .link-icon {
@@ -444,7 +444,7 @@ export default function LinksPage({ setCurrentPage }) {
           display: grid;
           place-items: center;
           background: #1E181A;
-          color: #B70E32;
+          color: var(--accent-burgundy, #B70E32);
         }
         .link-icon svg {
           width: 22px;
@@ -471,8 +471,8 @@ export default function LinksPage({ setCurrentPage }) {
         }
 
         .circuit-link.primary {
-          background: #B70E32;
-          border-color: #B70E32;
+          background: var(--accent-burgundy, #B70E32);
+          border-color: var(--accent-burgundy, #B70E32);
           color: #ffffff;
         }
         .circuit-link.primary .link-icon {
@@ -486,15 +486,15 @@ export default function LinksPage({ setCurrentPage }) {
           color: rgba(255, 255, 255, 0.88);
         }
         .circuit-link.primary:hover {
-          background: #8E0A26;
-          border-color: #8E0A26;
+          background: var(--accent-burgundy-hover, #8E0A26);
+          border-color: var(--accent-burgundy-hover, #8E0A26);
         }
 
         .circuit-link.join {
-          border-color: #B70E32;
+          border-color: var(--accent-burgundy, #B70E32);
         }
         .circuit-link.join .link-icon {
-          background: #B70E32;
+          background: var(--accent-burgundy, #B70E32);
           color: #ffffff;
         }
 
@@ -533,10 +533,10 @@ export default function LinksPage({ setCurrentPage }) {
         .links-chip svg {
           width: 20px;
           height: 20px;
-          color: #B70E32;
+          color: var(--accent-burgundy, #B70E32);
         }
         .links-chip:hover {
-          border-color: #B70E32;
+          border-color: var(--accent-burgundy, #B70E32);
           transform: translateY(-2px);
           color: #ffffff;
         }

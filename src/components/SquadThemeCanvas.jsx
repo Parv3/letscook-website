@@ -264,58 +264,75 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
         });
       }
 
-      // 4. FOUNDRY CORE: QUANTUM SINGULARITY & S.H.I.E.L.D. CONDUITS
+      // 4. DESIGN TEAM: HULK GAMMA RADIATION & EMERALD SHOCKWAVES
       else {
         const cx = width * 0.5;
         const cy = height * 0.42;
 
-        // Core Singularity Event Horizon Pulsing Rings
-        const pulse = Math.sin(globalTick * 0.04) * 15;
-        ctx.strokeStyle = 'rgba(139, 0, 46, 0.4)';
+        // Interactive mouse parallax offset
+        const offsetX = (mouse.x - cx) * 0.02;
+        const offsetY = (mouse.y - cy) * 0.02;
+
+        // Concentric Gamma Bio-Radiation Rings
+        const pulse = Math.sin(globalTick * 0.04) * 16;
+        ctx.save();
+        ctx.translate(cx + offsetX, cy + offsetY);
+
+        // Ring 1 (Inner Gamma Emerald Arc)
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.28)';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(cx, cy, 120 + pulse, 0, Math.PI * 2);
+        ctx.arc(0, 0, 130 + pulse, 0, Math.PI * 2);
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(245, 158, 11, 0.3)';
-        ctx.setLineDash([12, 12]);
+        // Ring 2 (Dashed Counter-Rotating Violet Shield)
+        ctx.save();
+        ctx.rotate(-globalTick * 0.006);
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.32)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([14, 10]);
         ctx.beginPath();
-        ctx.arc(cx, cy, 180 - pulse * 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 200 - pulse * 0.6, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.restore();
 
-        // Tri-Squad Connecting Beams (Tech, PR, Events -> Core)
-        const angles = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
-        const beamColors = ['#ff0055', '#3b82f6', '#eab308'];
-        angles.forEach((ang, i) => {
-          const bx = cx + Math.cos(ang + globalTick * 0.005) * 350;
-          const by = cy + Math.sin(ang + globalTick * 0.005) * 350;
-          ctx.strokeStyle = beamColors[i];
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(cx, cy);
-          ctx.lineTo(bx, by);
-          ctx.stroke();
+        // Ring 3 (Outer Emerald Octagon Ring)
+        ctx.save();
+        ctx.rotate(globalTick * 0.004);
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i < 8; i++) {
+          const ang = (i * Math.PI) / 4;
+          const r = 260 + pulse * 0.4;
+          const px = Math.cos(ang) * r;
+          const py = Math.sin(ang) * r;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
 
-          ctx.fillStyle = beamColors[i];
-          ctx.beginPath();
-          ctx.arc(bx, by, 5, 0, Math.PI * 2);
-          ctx.fill();
-        });
+        ctx.restore();
 
-        // Ambient drifting core particles
+        // Gamma Bio-Luminescent Floating Emerald & Violet Particles
         particles.forEach(p => {
-          p.x += p.vx * 0.6;
-          p.y += p.vy * 0.6;
+          p.x += p.vx * 0.8;
+          p.y += p.vy * 0.8;
           if (p.x < 0) p.x = width;
           if (p.x > width) p.x = 0;
           if (p.y < 0) p.y = height;
           if (p.y > height) p.y = 0;
 
-          ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+          const isPurple = p.size > 2.2;
+          ctx.fillStyle = isPurple ? 'rgba(168, 85, 247, 0.55)' : 'rgba(34, 197, 94, 0.65)';
+          ctx.shadowColor = isPurple ? '#a855f7' : '#22c55e';
+          ctx.shadowBlur = 6;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fill();
+          ctx.shadowBlur = 0;
         });
       }
 

@@ -144,3 +144,27 @@ export async function executeAdminAction(action, targetUserId, options = {}) {
   }
   return data;
 }
+
+// 7. Update User Profile Details
+export async function updatePortalProfile(updates) {
+  const token = getStoredToken();
+  if (!token) throw new Error('Not authenticated.');
+
+  const res = await fetch('/api/portal/me', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(updates)
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Failed to update profile.');
+  }
+  if (data.user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  }
+  return data.user;
+}

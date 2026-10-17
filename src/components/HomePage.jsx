@@ -383,32 +383,40 @@ export const SQUADS_DATA = {
       <StormbreakerSVG idPrefix="sb_insignia" className="w-20 h-20" width={80} height={80} withLightning={true} />
     )
   },
-  core: {
-    key: 'core',
-    team: 'CORE TEAM',
-    hero: 'FOUNDRY COMMAND',
-    title: 'THE AVENGERS INITIATIVE',
-    badge: 'OPERATIONS & GRANTS',
+  hulk: {
+    key: 'hulk',
+    team: 'DESIGN TEAM',
+    hero: 'HULK',
+    title: 'GAMMA DESIGN LABS',
+    badge: 'CREATIVE & INTERFACE',
     status: 'ACTIVE DIVISION',
-    quote: '"There was an idea, to bring together a group of remarkable people."',
-    desc: 'Community operations, prototype micro-grants, hackathon sponsorship logistics, and builder mentorship initiatives.',
-    color: '#8b002e',
-    secondaryColor: '#f59e0b',
-    linksUrl: '/links?utm_source=squad_core_command',
+    quote: '"Design is intelligence made visible. Smash the templates."',
+    desc: 'UI/UX architecture, design systems, generative canvas graphics, 3D web assets, and motion engineering. We craft memorable interfaces for builder products.',
+    color: '#22c55e',
+    secondaryColor: '#a855f7',
+    linksUrl: '/links?utm_source=squad_design_hulk',
     initiatives: [
-      { title: 'Community Governance', desc: 'Transparent leadership council, operational guides, and quality standards.' },
-      { title: 'Prototype Micro-Grants', desc: 'Sponsoring server hosting, API credits, and project hardware for students.' },
-      { title: 'Cross-Squad Operations', desc: 'Synchronizing engineering, outreach, and event operations.' }
+      { title: 'Interface & Motion Engineering', desc: 'Crafting responsive 60 FPS interactions, spatial UI, and micro-animations.' },
+      { title: 'Design Systems & Tokens', desc: 'Accessible component libraries, color palettes, and typographic hierarchies.' },
+      { title: 'Generative 3D & Brand Identity', desc: 'WebGL shaders, procedural graphics, and distinctive visual identities.' }
     ],
-    arsenal: ['Governance', 'Micro-Grants', 'Operations', 'Leadership', 'Strategy', 'Auditing'],
-    sound: playAssembleFanfare,
+    arsenal: ['Figma', 'WebGL', 'Tailwind', 'Three.js', 'Spline', 'Framer'],
+    sound: playRepulsorSound,
     insigniaSvg: (
-      <svg viewBox="0 0 100 100" className="w-20 h-20 avengers-anim" width="80" height="80">
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="10 5" className="spin-slow" />
-        <circle cx="50" cy="50" r="34" fill="#0d0d14" stroke="#ff0055" strokeWidth="2.5" />
-        <path d="M48 22 L32 68 L42 68 L47 52 L60 52 L60 44 L48 44 L52 30 Z" fill="#f59e0b" />
-        <path d="M60 44 L72 68 L64 68 L60 60 L56 60 Z" fill="#f59e0b" />
-        <polygon points="56,52 78,52 68,44" fill="#ff0055" />
+      <svg viewBox="0 0 100 100" className="w-20 h-20 gamma-anim" width="80" height="80">
+        <defs>
+          <radialGradient id="gammaGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#4ade80" />
+            <stop offset="60%" stopColor="#22c55e" />
+            <stop offset="100%" stopColor="#a855f7" stopOpacity="0.8" />
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeDasharray="8 6" className="spin-slow" />
+        <circle cx="50" cy="50" r="36" fill="rgba(6, 17, 9, 0.9)" stroke="#a855f7" strokeWidth="2" strokeDasharray="14 8" className="spin-reverse" />
+        <polygon points="50,24 68,32 76,50 68,68 50,76 32,68 24,50 32,32" fill="rgba(34, 197, 94, 0.15)" stroke="#22c55e" strokeWidth="2" />
+        <path d="M50 34 L50 44 M40 56 L46 48 M60 56 L54 48" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="50" cy="50" r="8" fill="url(#gammaGlow)" className="pulse-fast" />
+        <circle cx="50" cy="50" r="3" fill="#ffffff" />
       </svg>
     )
   }
@@ -1021,7 +1029,9 @@ export default function HomePage({
                           ? 'VIBRANIUM ALLIANCE · SHIELD ACTIVE'
                           : activeSquad.key === 'ironman'
                             ? (isIronManActive ? 'IRON MAN ONLINE · CLICK TO TOGGLE' : 'ARC REACTOR READY · CLICK TO DEPLOY')
-                            : 'SYSTEM NOMINAL'}
+                            : activeSquad.key === 'hulk'
+                              ? 'GAMMA DESIGN LABS · INTERFACE ACTIVE'
+                              : 'SYSTEM NOMINAL'}
                     </div>
                   </div>
                 </div>

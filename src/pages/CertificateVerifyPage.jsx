@@ -78,7 +78,7 @@ function formatLockoutTime(ms) {
   return `${seconds}s`;
 }
 
-export default function CertificateVerifyPage({ setCurrentPage }) {
+export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) {
   // Wizard steps: 'email' | 'otp' | 'static-code' | 'verified'
   const [step, setStep] = useState('email');
   
@@ -382,7 +382,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
       <SiteExplosionEasterEgg isActive={isExploding} onComplete={handleExplosionComplete} />
 
       {/* 60 FPS Procedural Cyber Moving Background */}
-      <VerifyCyberBackground />
+      <VerifyCyberBackground currentSquad={currentSquad} />
 
       {/* Subtle Ambient Radial Glow (Adapts to Winner Gold/Silver/Bronze) */}
       <div className={`verify-scanline-ambient ${selectedCert?.awardTier ? `ambient-${selectedCert.awardTier}` : ''}`} />
@@ -871,9 +871,9 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .verify-back-btn:hover {
-          color: #00f0ff;
-          border-color: rgba(0, 240, 255, 0.4);
-          background: rgba(0, 240, 255, 0.06);
+          color: var(--accent-burgundy, #00f0ff);
+          border-color: var(--accent-burgundy-border, rgba(0, 240, 255, 0.4));
+          background: var(--accent-burgundy-light, rgba(0, 240, 255, 0.06));
           transform: translateX(-2px);
         }
 
@@ -901,9 +901,9 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .top-nav-pill.active {
-          color: #00f0ff;
-          background: rgba(0, 240, 255, 0.1);
-          border: 1px solid rgba(0, 240, 255, 0.25);
+          color: var(--accent-burgundy, #00f0ff);
+          background: var(--accent-burgundy-light, rgba(0, 240, 255, 0.1));
+          border: 1px solid var(--accent-burgundy-border, rgba(0, 240, 255, 0.25));
         }
 
         /* Hero Header */
@@ -916,17 +916,17 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: rgba(0, 240, 255, 0.08);
-          border: 1px solid rgba(0, 240, 255, 0.3);
+          background: var(--accent-burgundy-light, rgba(0, 240, 255, 0.08));
+          border: 1px solid var(--accent-burgundy-border, rgba(0, 240, 255, 0.3));
           padding: 6px 16px;
           border-radius: 9999px;
           font-family: 'Space Grotesk', monospace;
           font-size: 0.75rem;
           font-weight: 700;
           letter-spacing: 0.08em;
-          color: #00f0ff;
+          color: var(--accent-burgundy, #00f0ff);
           margin-bottom: 16px;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+          box-shadow: 0 0 20px var(--accent-glow, rgba(0, 240, 255, 0.1));
           transition: all 0.3s ease;
         }
 
@@ -961,7 +961,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .text-gradient-cyan {
-          background: linear-gradient(135deg, #00f0ff 0%, #0099ff 100%);
+          background: linear-gradient(135deg, var(--accent-burgundy, #00f0ff) 0%, var(--secondary-accent, #0099ff) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -1086,8 +1086,8 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .gate-input:focus {
-          border-color: #00f0ff;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+          border-color: var(--border-focus, #00f0ff);
+          box-shadow: 0 0 20px var(--accent-glow, rgba(0, 240, 255, 0.2));
           background: rgba(6, 8, 12, 0.95);
         }
 
@@ -1106,7 +1106,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           background: rgba(6, 8, 12, 0.9);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 10px;
-          color: #00f0ff;
+          color: var(--accent-burgundy, #00f0ff);
           font-family: 'Space Grotesk', 'SF Mono', monospace;
           font-size: 1.7rem;
           font-weight: 800;
@@ -1115,15 +1115,15 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
         }
 
         .otp-digit-box:focus {
-          border-color: #00f0ff;
-          box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+          border-color: var(--border-focus, #00f0ff);
+          box-shadow: 0 0 20px var(--accent-glow, rgba(0, 240, 255, 0.3));
           transform: translateY(-2px);
           background: rgba(14, 20, 32, 0.95);
         }
 
         .otp-digit-box.filled {
-          border-color: rgba(0, 240, 255, 0.6);
-          background: rgba(0, 240, 255, 0.05);
+          border-color: var(--accent-burgundy-border, rgba(0, 240, 255, 0.6));
+          background: var(--accent-burgundy-light, rgba(0, 240, 255, 0.05));
         }
 
         .input-hint {
@@ -1149,7 +1149,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           justify-content: center;
           gap: 10px;
           width: 100%;
-          background: linear-gradient(135deg, #00f0ff 0%, #0066ff 100%);
+          background: linear-gradient(135deg, var(--accent-burgundy, #00f0ff) 0%, var(--secondary-accent, #0066ff) 100%);
           color: #050608;
           font-family: 'Space Grotesk', sans-serif;
           font-size: 0.92rem;
@@ -1159,7 +1159,7 @@ export default function CertificateVerifyPage({ setCurrentPage }) {
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 18px rgba(0, 240, 255, 0.25);
+          box-shadow: 0 4px 18px var(--accent-glow, rgba(0, 240, 255, 0.25));
         }
 
         .gate-submit-btn:hover:not(:disabled) {

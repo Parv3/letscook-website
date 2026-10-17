@@ -196,19 +196,20 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
         )}
 
         {/* ======================================================== */}
-        {/* D. CORE TEAM: Avengers Command Quantum Nexus             */}
+        {/* D. DESIGN TEAM: Hulk Gamma Bio-Reactor Core              */}
         {/* ======================================================== */}
-        {squadKey === 'core' && (
+        {(squadKey === 'hulk' || squadKey === 'core') && (
           <div className="reactor-svg-wrap">
-            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Avengers Quantum Nexus">
+            <svg viewBox="0 0 240 240" className="reactor-svg" aria-label="Hulk Gamma Bio-Reactor Core">
               <defs>
-                <radialGradient id="avengersCoreGlow" cx="50%" cy="50%" r="50%">
+                <radialGradient id="gammaBioCoreGlow" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="40%" stopColor="#f59e0b" />
-                  <stop offset="85%" stopColor="#8b002e" stopOpacity="0.75" />
+                  <stop offset="35%" stopColor="#4ade80" />
+                  <stop offset="70%" stopColor="#22c55e" />
+                  <stop offset="95%" stopColor="#a855f7" stopOpacity="0.8" />
                   <stop offset="100%" stopColor="transparent" />
                 </radialGradient>
-                <filter id="coreGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <filter id="gammaGlowFilter" x="-30%" y="-30%" width="160%" height="160%">
                   <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -217,24 +218,38 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
                 </filter>
               </defs>
 
-              {/* Concentric Command Rings */}
-              <circle cx="120" cy="120" r="108" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="20 10" className="spin-slow" />
-              <circle cx="120" cy="120" r="92" fill="none" stroke="#ff0055" strokeWidth="1.8" strokeDasharray="10 8" className="spin-reverse" />
-              <circle cx="120" cy="120" r="74" fill="rgba(14, 8, 12, 0.9)" stroke="#f59e0b" strokeWidth="2" />
+              {/* Concentric Gamma Containment Rings */}
+              <circle cx="120" cy="120" r="108" fill="none" stroke="#22c55e" strokeWidth="2" strokeDasharray="16 8" className="spin-slow" />
+              <circle cx="120" cy="120" r="92" fill="none" stroke="#a855f7" strokeWidth="2" strokeDasharray="10 10" className="spin-reverse" />
+              <circle cx="120" cy="120" r="76" fill="rgba(6, 17, 9, 0.9)" stroke="#22c55e" strokeWidth="2.5" />
 
-              {/* Rotating Concentric Chevron Ring */}
-              <circle cx="120" cy="120" r="54" fill="url(#avengersCoreGlow)" opacity="0.85" className="pulse-fast" />
+              {/* Rotating Concentric Octagon Core */}
+              <polygon 
+                points="120,54 166,73 186,120 166,166 120,186 73,166 54,120 73,73" 
+                fill="none" 
+                stroke="#a855f7" 
+                strokeWidth="2" 
+                className="spin-slow" 
+              />
 
-              {/* Avengers Emblem In Gold & Ruby */}
-              <g filter="url(#coreGlow)">
-                <path d="M116 58 L82 168 L104 168 L116 128 L148 128 L148 112 L118 112 L126 78 Z" fill="#f59e0b" />
-                <path d="M148 112 L174 168 L154 168 L148 148 L138 148 Z" fill="#f59e0b" />
-                <polygon points="138,128 190,128 166,112" fill="#ff0055" />
+              {/* High-Energy Gamma Core Glow */}
+              <circle cx="120" cy="120" r="46" fill="url(#gammaBioCoreGlow)" className="pulse-fast" filter="url(#gammaGlowFilter)" />
+
+              {/* Central Gamma Radiation Bio-Geometry */}
+              <g filter="url(#gammaGlowFilter)">
+                <circle cx="120" cy="120" r="18" fill="#ffffff" />
+                <path d="M120 90 L120 108 M94 135 L110 126 M146 135 L130 126" stroke="#15803d" strokeWidth="3" strokeLinecap="round" />
               </g>
 
-              {/* Orbital Particle Nodes */}
-              {[0, 60, 120, 180, 240, 300].map(deg => (
-                <circle key={deg} cx={120 + 92 * Math.cos(deg * Math.PI / 180)} cy={120 + 92 * Math.sin(deg * Math.PI / 180)} r="3" fill="#f59e0b" />
+              {/* Orbital Emerald & Violet Particle Nodes */}
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => (
+                <circle 
+                  key={deg} 
+                  cx={120 + 92 * Math.cos(deg * Math.PI / 180)} 
+                  cy={120 + 92 * Math.sin(deg * Math.PI / 180)} 
+                  r="3.5" 
+                  fill={i % 2 === 0 ? '#22c55e' : '#a855f7'} 
+                />
               ))}
             </svg>
           </div>
@@ -247,7 +262,7 @@ export default function ThemeInteractiveCore({ squad, onOpenLinks, onPlaySound }
           onClick={onOpenLinks}
           className="btn-primary w-full glow-btn core-access-btn"
           style={{
-            background: `linear-gradient(135deg, ${color} 0%, #8b002e 100%)`,
+            background: `linear-gradient(135deg, ${color} 0%, #15803d 100%)`,
             boxShadow: `0 6px 28px ${color}40`
           }}
         >

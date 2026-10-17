@@ -67,6 +67,7 @@ export default async function handler(req, res) {
           ironman: profiles.filter(p => p.targetSquad === 'ironman').length,
           captain: profiles.filter(p => p.targetSquad === 'captain').length,
           thor: profiles.filter(p => p.targetSquad === 'thor').length,
+          hulk: profiles.filter(p => p.targetSquad === 'hulk' || p.targetSquad === 'core').length,
           core: profiles.filter(p => p.targetSquad === 'core').length
         },
         adminsCount: profiles.filter(p => p.role === 'admin').length,

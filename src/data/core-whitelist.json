@@ -1,0 +1,11 @@
+{
+  "parvmishra.connect@gmail.com": { "roleTitle": "Founder", "role": "admin", "fullName": "Parv Mishra" },
+  "founder@letscook.co.in": { "roleTitle": "Founder", "role": "admin", "fullName": "Founder" },
+  "president@letscook.co.in": { "roleTitle": "President", "role": "admin", "fullName": "President" },
+  "vp@letscook.co.in": { "roleTitle": "Vice President", "role": "admin", "fullName": "Vice President" },
+  "sec@letscook.co.in": { "roleTitle": "Secretary", "role": "admin", "fullName": "Secretary" },
+  "techhead@letscook.co.in": { "roleTitle": "Tech Core Head", "role": "admin", "fullName": "Tech Head" },
+  "prhead@letscook.co.in": { "roleTitle": "PR Core Head", "role": "admin", "fullName": "PR Head" },
+  "eventshead@letscook.co.in": { "roleTitle": "Events Core Head", "role": "admin", "fullName": "Events Head" },
+  "designhead@letscook.co.in": { "roleTitle": "Design Core Head", "role": "admin", "fullName": "Design Head" }
+}

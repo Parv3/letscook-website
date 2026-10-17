@@ -3,15 +3,30 @@ import React, { useRef, useEffect } from 'react';
 /**
  * VerifyCyberBackground
  * High-performance 60 FPS interactive cybernetic particle grid & constellation background
- * Colors: Electric Cyan (#00f0ff) & Crimson Flame (#ff2e56)
+ * Dynamically themed according to the active squad:
+ * - ironman: Electric Cyan (#00f0ff) & Crimson Flame (#ff2e56)
+ * - captain: Sky Blue (#38bdf8) & Silver/Red (#ef4444)
+ * - thor: Asgardian Gold (#f59e0b) & Celestial Blue (#60a5fa)
+ * - hulk: Gamma Emerald (#22c55e) & Radioactive Purple (#a855f7)
  */
-export default function VerifyCyberBackground() {
+const SQUAD_THEMES = {
+  ironman: { primary: '#00f0ff', secondary: '#ff2e56', primaryRgb: '0, 240, 255', secondaryRgb: '255, 46, 86' },
+  captain: { primary: '#38bdf8', secondary: '#ef4444', primaryRgb: '56, 189, 248', secondaryRgb: '239, 68, 68' },
+  thor: { primary: '#f59e0b', secondary: '#60a5fa', primaryRgb: '245, 158, 11', secondaryRgb: '96, 165, 250' },
+  hulk: { primary: '#22c55e', secondary: '#a855f7', primaryRgb: '34, 197, 94', secondaryRgb: '168, 85, 247' },
+  core: { primary: '#22c55e', secondary: '#a855f7', primaryRgb: '34, 197, 94', secondaryRgb: '168, 85, 247' }
+};
+
+export default function VerifyCyberBackground({ currentSquad }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
+
+    const squadKey = currentSquad || (typeof window !== 'undefined' ? localStorage.getItem('letscook_squad') : null) || 'ironman';
+    const activePalette = SQUAD_THEMES[squadKey] || SQUAD_THEMES.ironman;
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
@@ -50,7 +65,7 @@ export default function VerifyCyberBackground() {
       vx: (Math.random() - 0.5) * 0.75,
       vy: (Math.random() - 0.5) * 0.75,
       radius: Math.random() * 2 + 1,
-      color: Math.random() > 0.85 ? '#ff2e56' : '#00f0ff',
+      isSecondary: Math.random() > 0.82,
       alpha: Math.random() * 0.5 + 0.25,
       pulse: Math.random() * Math.PI * 2
     }));
@@ -64,16 +79,18 @@ export default function VerifyCyberBackground() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      gridOffset = (gridOffset + 0.3) % gridSize;
-      scanlineY = (scanlineY + 1.2) % (height + 200);
+      // Advance scanline & grid drift
+      gridOffset = (gridOffset + 0.25) % gridSize;
+      scanlineY += 1.8;
+      if (scanlineY > height + 80) scanlineY = -80;
 
-      // 1. Subtle Perspective Digital Grid Lines
+      // 1. Perspective Cybernetic Background Grid
       ctx.save();
       ctx.lineWidth = 1;
 
       // Vertical grid lines
       for (let x = 0; x < width; x += gridSize) {
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.025)';
+        ctx.strokeStyle = `rgba(${activePalette.primaryRgb}, 0.025)`;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
@@ -82,7 +99,7 @@ export default function VerifyCyberBackground() {
 
       // Horizontal drifting grid lines
       for (let y = gridOffset; y < height; y += gridSize) {
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.02)';
+        ctx.strokeStyle = `rgba(${activePalette.primaryRgb}, 0.02)`;
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
@@ -93,9 +110,9 @@ export default function VerifyCyberBackground() {
       // 2. Sweeping Holographic Laser Scanline
       if (scanlineY < height) {
         const scanGrad = ctx.createLinearGradient(0, scanlineY - 40, 0, scanlineY + 40);
-        scanGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-        scanGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.06)');
-        scanGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+        scanGrad.addColorStop(0, `rgba(${activePalette.primaryRgb}, 0)`);
+        scanGrad.addColorStop(0.5, `rgba(${activePalette.primaryRgb}, 0.06)`);
+        scanGrad.addColorStop(1, `rgba(${activePalette.primaryRgb}, 0)`);
         ctx.fillStyle = scanGrad;
         ctx.fillRect(0, scanlineY - 40, width, 80);
       }
@@ -129,9 +146,8 @@ export default function VerifyCyberBackground() {
 
         // Draw node with pulsing glow
         const currentAlpha = n.alpha + Math.sin(n.pulse) * 0.15;
-        ctx.fillStyle = n.color === '#ff2e56' 
-          ? `rgba(255, 46, 86, ${Math.max(0.1, currentAlpha)})`
-          : `rgba(0, 240, 255, ${Math.max(0.1, currentAlpha)})`;
+        const colorRgb = n.isSecondary ? activePalette.secondaryRgb : activePalette.primaryRgb;
+        ctx.fillStyle = `rgba(${colorRgb}, ${Math.max(0.1, currentAlpha)})`;
 
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
@@ -146,7 +162,7 @@ export default function VerifyCyberBackground() {
 
           if (dist < maxConnectDist) {
             const lineAlpha = (1 - dist / maxConnectDist) * 0.14;
-            ctx.strokeStyle = `rgba(0, 240, 255, ${lineAlpha})`;
+            ctx.strokeStyle = `rgba(${activePalette.primaryRgb}, ${lineAlpha})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.moveTo(n.x, n.y);
@@ -167,7 +183,7 @@ export default function VerifyCyberBackground() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [currentSquad]);
 
   return (
     <canvas

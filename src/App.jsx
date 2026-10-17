@@ -110,19 +110,17 @@ export default function App() {
   // Synchronize Marvel Tri-Squad Global Universe Theme
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('theme-ironman', 'theme-captain', 'theme-thor', 'theme-core');
+    root.classList.remove('theme-ironman', 'theme-captain', 'theme-thor', 'theme-core', 'theme-hulk');
     root.classList.add(`theme-${activeSquad}`);
     localStorage.setItem('letscook_squad', activeSquad);
   }, [activeSquad]);
-
-
 
   const sparkColor = activeSquad === 'thor' 
     ? '#f59e0b' 
     : activeSquad === 'captain' 
       ? '#38bdf8' 
-      : activeSquad === 'core' 
-        ? '#a855f7' 
+      : (activeSquad === 'hulk' || activeSquad === 'core') 
+        ? '#22c55e' 
         : '#00f0ff';
 
   return (
@@ -172,9 +170,9 @@ export default function App() {
             <Suspense fallback={null}>
               {currentPage === 'privacy' && <PrivacyPolicyPage setCurrentPage={setCurrentPage} />}
               {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
-              {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
-              {currentPage === 'verify' && <CertificateVerifyPage setCurrentPage={setCurrentPage} />}
-              {currentPage === 'portal' && <PortalPage setCurrentPage={setCurrentPage} />}
+              {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} onSelectSquad={setActiveSquad} />}
+              {currentPage === 'verify' && <CertificateVerifyPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} />}
+              {currentPage === 'portal' && <PortalPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} onSelectSquad={setActiveSquad} />}
             </Suspense>
           </main>
 
