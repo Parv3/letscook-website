@@ -68,6 +68,20 @@ export default async function handler(req, res) {
         return res.status(400).json({ success: false, error: 'Resource destination link or URL is required.' });
       }
 
+      // Security: Validate URL protocol to block javascript: and data: XSS payloads
+      const trimmedUrl = url.trim();
+      let isValidProtocol = false;
+      try {
+        const parsed = new URL(trimmedUrl);
+        isValidProtocol = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch (_) {
+        isValidProtocol = false;
+      }
+
+      if (!isValidProtocol) {
+        return res.status(400).json({ success: false, error: 'Invalid URL. Only secure http:// and https:// links are permitted.' });
+      }
+
       const created = addResource({
         title,
         description,

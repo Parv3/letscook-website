@@ -111,8 +111,8 @@ export default async function handler(req, res) {
       message: `Passkey dispatched to ${normalizedEmail}`,
       otpToken,
       expiresAt,
-      // Provide devOtp if send failed or in dev mode so nobody ever gets locked out
-      devOtp: (!resendApiKey || process.env.NODE_ENV !== 'production' || process.env.SHOW_PORTAL_OTP === 'true') ? otp : undefined
+      // Security: Only expose devOtp in explicit local development, never in live production
+      devOtp: ((process.env.NODE_ENV !== 'production' && !process.env.VERCEL) || process.env.SHOW_PORTAL_OTP === 'true') ? otp : undefined
     });
   } catch (error) {
     console.error('Error in portal send-otp:', error);

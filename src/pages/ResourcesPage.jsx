@@ -323,11 +323,11 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
           <div>
             <div className="resources-eyebrow">
               <Sparkles size={14} className="eyebrow-spark" />
-              <span>LET'S COOK INTERNAL REPOSITORY · VERIFIED CLEARANCE</span>
+              <span>COMMUNITY VAULT</span>
             </div>
-            <h1 className="resources-title">BUILDER VAULT & RESOURCES</h1>
+            <h1 className="resources-title">Resources & Blueprints</h1>
             <p className="resources-subtitle">
-              Curated production boilerplates, WebGL design systems, hackathon pitch decks, and architectural handbooks shared by Core Leadership.
+              Production starter kits, design systems, slide decks, and guides shared by core members.
             </p>
           </div>
 
@@ -342,7 +342,7 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
             ) : (
               <div className="member-status-pill">
                 <CheckCircle2 size={14} className="pill-check" />
-                <span>MEMBER ACCESS · DOWNLOAD UNLOCKED</span>
+                <span>Member Access</span>
               </div>
             )}
           </div>
@@ -889,8 +889,8 @@ function UploadResourceModal({ onClose, onUploaded }) {
       <div className="modal-dialog-card" onClick={e => e.stopPropagation()}>
         <div className="modal-top-bar">
           <div>
-            <h3 className="modal-title">Upload Vault Resource</h3>
-            <p className="modal-subline">Core Team clearance: Add internal boilerplates, decks, and guides.</p>
+            <h3 className="modal-title">Upload Resource</h3>
+            <p className="modal-subline">Share boilerplates, design kits, and guides with community members.</p>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close modal">
             <X size={20} />

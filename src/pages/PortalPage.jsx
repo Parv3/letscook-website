@@ -197,7 +197,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
     return (
       <div className="portal-loading-screen">
         <div className="portal-spinner" />
-        <p>Authenticating with Let's Cook Security Gateway...</p>
+        <p>Loading your profile...</p>
       </div>
     );
   }
@@ -228,7 +228,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
                 </div>
                 <div>
                   <h4 className="banner-title">Your Profile is {completionPercent}% complete</h4>
-                  <p className="banner-desc">Complete your builder specs so squad heads can review your track and induct you.</p>
+                  <p className="banner-desc">Complete your details so squad leads can connect with you.</p>
                 </div>
               </div>
               <div className="banner-right">
@@ -375,7 +375,7 @@ function PortalAuthView({ onAuthenticated }) {
           <div className="auth-shield-icon">
             <Shield size={28} />
           </div>
-          <h2 className="auth-headline">LET'S COOK ACCESS PORTAL</h2>
+          <h2 className="auth-headline">LET'S COOK PORTAL</h2>
           <p className="auth-subline">
             Enter your email to receive a 6-digit access code.
           </p>
@@ -504,7 +504,7 @@ function MemberDashboardView({
             )}
           </div>
           <div>
-            <div className="member-eyebrow">STUDENT BUILDER PORTAL</div>
+            <div className="member-eyebrow">MEMBER PORTAL</div>
             <h1 className="member-name">{currentUser.fullName || 'Welcome, Builder'}</h1>
             <span className="member-id-tag">{currentUser.email}{currentUser.college ? ` · ${currentUser.college}` : ''}</span>
           </div>
