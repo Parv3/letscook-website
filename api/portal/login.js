@@ -81,15 +81,16 @@ export default async function handler(req, res) {
         id: `user-${isCore ? 'core' : 'mem'}-${Date.now()}`,
         email: normalizedEmail,
         fullName: roleData.fullName || (isCore ? roleData.roleTitle : ''),
-        phone: '',
+        phone: roleData.phone || '',
         college: isCore ? 'Core Command' : '',
         branch: isCore ? 'Executive Council' : '',
         yearOfStudy: isCore ? 'Core' : '',
-        targetSquad: isCore ? 'hulk' : 'ironman',
+        targetSquad: roleData.targetSquad || (isCore ? 'hulk' : 'ironman'),
         skills: isCore ? ['Leadership', 'Governance'] : [],
         githubUrl: '',
         linkedinUrl: '',
         portfolioUrl: '',
+        avatarUrl: roleData.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(normalizedEmail)}`,
         role: roleData.role,
         roleTitle: roleData.roleTitle,
         status: isCore ? 'approved' : 'pending_review',
@@ -116,10 +117,21 @@ export default async function handler(req, res) {
 
     // If Core passkey provided or email is now whitelisted, ensure role is elevated
     const roleData = evaluateLeadershipRole(normalizedEmail, corePasskey);
-    if (roleData.role === 'admin' && user.role !== 'admin') {
-      user.role = 'admin';
+    if (roleData.role === 'admin') {
+      if (user.role !== 'admin') {
+        user.role = 'admin';
+        user.status = 'approved';
+      }
       user.roleTitle = roleData.roleTitle;
-      user.status = 'approved';
+      if (roleData.fullName && (!user.fullName || user.fullName === 'Community Member')) {
+        user.fullName = roleData.fullName;
+      }
+      if (roleData.targetSquad && !user.targetSquad) {
+        user.targetSquad = roleData.targetSquad;
+      }
+      if (roleData.avatarUrl && !user.avatarUrl) {
+        user.avatarUrl = roleData.avatarUrl;
+      }
       user.updatedAt = new Date().toISOString();
       saveStore(store);
       recordAuditLog(
@@ -140,15 +152,17 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Welcome back, ${user.fullName}!`,
+      message: `Welcome back, ${user.fullName || 'Builder'}!`,
       user: {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
+        phone: user.phone,
         college: user.college,
         branch: user.branch,
         yearOfStudy: user.yearOfStudy,
         targetSquad: user.targetSquad,
+        avatarUrl: user.avatarUrl || '',
         role: user.role,
         roleTitle: user.roleTitle,
         status: user.status,

@@ -64,6 +64,8 @@ export default async function handler(req, res) {
       if (typeof updates.linkedinUrl === 'string') user.linkedinUrl = updates.linkedinUrl.trim();
       if (typeof updates.portfolioUrl === 'string') user.portfolioUrl = updates.portfolioUrl.trim();
       
+      if (typeof updates.avatarUrl === 'string') user.avatarUrl = updates.avatarUrl.trim();
+      
       if (Array.isArray(updates.skills)) {
         user.skills = updates.skills.map(s => String(s).trim()).filter(Boolean);
       } else if (typeof updates.skills === 'string') {
@@ -99,6 +101,7 @@ export default async function handler(req, res) {
         branch: user.branch,
         yearOfStudy: user.yearOfStudy,
         targetSquad: user.targetSquad,
+        avatarUrl: user.avatarUrl || '',
         role: user.role,
         roleTitle: user.roleTitle,
         status: user.status,

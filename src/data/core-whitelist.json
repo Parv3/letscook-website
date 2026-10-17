@@ -1,11 +1,98 @@
 {
-  "parvmishra.connect@gmail.com": { "roleTitle": "Founder", "role": "admin", "fullName": "Parv Mishra" },
-  "founder@letscook.co.in": { "roleTitle": "Founder", "role": "admin", "fullName": "Founder" },
-  "president@letscook.co.in": { "roleTitle": "President", "role": "admin", "fullName": "President" },
-  "vp@letscook.co.in": { "roleTitle": "Vice President", "role": "admin", "fullName": "Vice President" },
-  "sec@letscook.co.in": { "roleTitle": "Secretary", "role": "admin", "fullName": "Secretary" },
-  "techhead@letscook.co.in": { "roleTitle": "Tech Core Head", "role": "admin", "fullName": "Tech Head" },
-  "prhead@letscook.co.in": { "roleTitle": "PR Core Head", "role": "admin", "fullName": "PR Head" },
-  "eventshead@letscook.co.in": { "roleTitle": "Events Core Head", "role": "admin", "fullName": "Events Head" },
-  "designhead@letscook.co.in": { "roleTitle": "Design Core Head", "role": "admin", "fullName": "Design Head" }
+  "abhishekgoswamibarsana27@gmail.com": {
+    "fullName": "Abhishek Goswami",
+    "roleTitle": "Founder & Corporate Relations",
+    "role": "admin",
+    "targetSquad": "ironman",
+    "phone": "+91 63960 30333",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Abhishek"
+  },
+  "anirudhkumar111211@gmail.com": {
+    "fullName": "Anirudh Kumar",
+    "roleTitle": "President & Event Management Lead",
+    "role": "admin",
+    "targetSquad": "thor",
+    "phone": "+91 63878 59767",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Anirudh"
+  },
+  "sharmakapila83@gmail.com": {
+    "fullName": "Deepak",
+    "roleTitle": "Vice President & Design Lead",
+    "role": "admin",
+    "targetSquad": "hulk",
+    "phone": "+91 70170 32182",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Deepak"
+  },
+  "dhruvb382007@gmail.com": {
+    "fullName": "Dhruv Bhardwaj",
+    "roleTitle": "General Secretary & Treasurer",
+    "role": "admin",
+    "targetSquad": "ironman",
+    "phone": "+91 81261 83859",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Dhruv"
+  },
+  "anmolgola1318@gmail.com": {
+    "fullName": "Anmol Gola",
+    "roleTitle": "Secretary (Public Relations)",
+    "role": "admin",
+    "targetSquad": "captain",
+    "phone": "+91 73022 66571",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Anmol"
+  },
+  "parvmishra44@gmail.com": {
+    "fullName": "Parv Mishra",
+    "roleTitle": "Tech Team Lead",
+    "role": "admin",
+    "targetSquad": "ironman",
+    "phone": "+91 63878 59767",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Parv"
+  },
+  "parvmishra.connect@gmail.com": {
+    "fullName": "Parv Mishra",
+    "roleTitle": "Tech Team Lead",
+    "role": "admin",
+    "targetSquad": "ironman",
+    "phone": "+91 63878 59767",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Parv"
+  },
+  "shreyashshukla801@gmail.com": {
+    "fullName": "Shreyash Shukla",
+    "roleTitle": "Growth & PR Lead",
+    "role": "admin",
+    "targetSquad": "captain",
+    "phone": "+91 79857 06461",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Shreyash"
+  },
+  "heymr.krishnahere@gmail.com": {
+    "fullName": "Krishna",
+    "roleTitle": "Tech Team Member",
+    "role": "admin",
+    "targetSquad": "ironman",
+    "phone": "+91 93892 87641",
+    "avatarUrl": "https://api.dicebear.com/7.x/bottts/svg?seed=Krishna"
+  },
+  "founder@letscook.co.in": {
+    "fullName": "Abhishek Goswami",
+    "roleTitle": "Founder",
+    "role": "admin",
+    "targetSquad": "ironman"
+  },
+  "president@letscook.co.in": {
+    "fullName": "Anirudh Kumar",
+    "roleTitle": "President",
+    "role": "admin",
+    "targetSquad": "thor"
+  },
+  "vp@letscook.co.in": {
+    "fullName": "Deepak",
+    "roleTitle": "Vice President",
+    "role": "admin",
+    "targetSquad": "hulk"
+  },
+  "sec@letscook.co.in": {
+    "fullName": "Dhruv Bhardwaj",
+    "roleTitle": "Secretary",
+    "role": "admin",
+    "targetSquad": "ironman"
+  }
 }

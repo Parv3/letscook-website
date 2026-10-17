@@ -32,4 +32,7 @@ participants-email-dispatch.csv
 *dispatch*.csv
 *participants*.csv
 src/data/portal-registry.json
+.agents/
+.qwen/
+skills-lock.json
 

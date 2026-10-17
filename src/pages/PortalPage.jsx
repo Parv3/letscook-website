@@ -17,7 +17,9 @@ import {
   X,
   Palette,
   Terminal,
-  Zap
+  Zap,
+  Camera,
+  Upload
 } from 'lucide-react';
 import { 
   getStoredToken, 
@@ -31,6 +33,18 @@ import {
   clearSession 
 } from '../services/portalService';
 import { playTechClick, playVibraniumPing, playAssembleFanfare } from '../utils/soundEngine';
+
+// Predefined Avatars List
+export const PREDEFINED_AVATARS = [
+  { id: 'arc', name: 'Arc Sentry', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=arc-sentry&backgroundColor=ff0055' },
+  { id: 'vibranium', name: 'Vibranium Aegis', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=vibranium-shield&backgroundColor=38bdf8' },
+  { id: 'thunder', name: 'Thunder Forge', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=thunder-forge&backgroundColor=f59e0b' },
+  { id: 'gamma', name: 'Gamma Titan', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=gamma-titan&backgroundColor=22c55e' },
+  { id: 'cyber', name: 'Cyber Ronin', url: 'https://api.dicebear.com/7.x/identicon/svg?seed=cyber-ronin' },
+  { id: 'synth', name: 'Synth Matrix', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=synth-matrix&backgroundColor=8b5cf6' },
+  { id: 'neural', name: 'Neural Core', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=neural-core&backgroundColor=ec4899' },
+  { id: 'quantum', name: 'Quantum Op', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=quantum-builder&backgroundColor=06b6d4' }
+];
 
 // Calculate Profile Completion Percentage
 function calculateProfileCompletion(user) {
@@ -90,6 +104,13 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isPopupDismissed, setIsPopupDismissed] = useState(false);
 
+  // Listen for open_profile_edit event from Navbar dropdown
+  useEffect(() => {
+    const handleOpenProfileModal = () => setIsProfileModalOpen(true);
+    window.addEventListener('open_profile_edit', handleOpenProfileModal);
+    return () => window.removeEventListener('open_profile_edit', handleOpenProfileModal);
+  }, []);
+
   // Sync squad theme if user has a target squad
   useEffect(() => {
     if (currentUser?.targetSquad && onSelectSquad) {
@@ -136,6 +157,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
     clearSession();
     setCurrentUser(null);
     setToken(null);
+    window.dispatchEvent(new Event('letscook_auth_change'));
   };
 
   const handleSquadSelect = (squadKey) => {
@@ -147,7 +169,10 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
     // If logged in, update profile asynchronously
     if (currentUser) {
       updatePortalProfile({ targetSquad: squadKey }).then(updated => {
-        if (updated) setCurrentUser(updated);
+        if (updated) {
+          setCurrentUser(updated);
+          window.dispatchEvent(new Event('letscook_auth_change'));
+        }
       }).catch(() => {});
     }
   };
@@ -170,6 +195,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
           onAuthenticated={(user, issuedToken) => {
             setCurrentUser(user);
             setToken(issuedToken);
+            window.dispatchEvent(new Event('letscook_auth_change'));
             if (user?.targetSquad && onSelectSquad) {
               const sq = user.targetSquad === 'core' ? 'hulk' : user.targetSquad;
               if (SQUADS_CONFIG[sq]) onSelectSquad(sq);
@@ -355,7 +381,7 @@ function PortalAuthView({ onAuthenticated }) {
                 type="email"
                 required
                 disabled={otpSent}
-                placeholder="name@gla.ac.in or personal email"
+                placeholder="alex@example.com or university email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
               />
@@ -467,12 +493,16 @@ function MemberDashboardView({
       <div className="dashboard-header-bar">
         <div className="member-welcome-block">
           <div className="member-avatar-chip">
-            <User size={22} />
+            {currentUser.avatarUrl ? (
+              <img src={currentUser.avatarUrl} alt="Avatar" className="member-avatar-img" />
+            ) : (
+              <User size={22} />
+            )}
           </div>
           <div>
             <div className="member-eyebrow">STUDENT BUILDER PORTAL</div>
             <h1 className="member-name">{currentUser.fullName || 'Welcome, Builder'}</h1>
-            <span className="member-id-tag">{currentUser.email} · {currentUser.college || 'GLA University'}</span>
+            <span className="member-id-tag">{currentUser.email} · {currentUser.college || 'Apex Institute of Technology'}</span>
           </div>
         </div>
 
@@ -578,7 +608,7 @@ function MemberDashboardView({
             </div>
             <div className="spec-row">
               <span className="spec-key">College / Institute:</span>
-              <span className="spec-val">{currentUser.college || 'GLA University'}</span>
+              <span className="spec-val">{currentUser.college || 'Apex Institute of Technology'}</span>
             </div>
             <div className="spec-row">
               <span className="spec-key">Registered Email:</span>
@@ -857,7 +887,7 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
 
                       <td>
                         <div className="college-cell">
-                          <span className="college-name">{p.college || 'GLA University'}</span>
+                          <span className="college-name">{p.college || 'Apex Institute of Technology'}</span>
                           <span className="college-branch">{p.branch || 'Undecided'} · {p.yearOfStudy || 'Student'}</span>
                         </div>
                       </td>
@@ -934,8 +964,9 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
 function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
   const [formData, setFormData] = useState({
     fullName: currentUser.fullName || '',
+    avatarUrl: currentUser.avatarUrl || '',
     phone: currentUser.phone || '',
-    college: currentUser.college || 'GLA University',
+    college: currentUser.college || 'Apex Institute of Technology',
     branch: currentUser.branch || '',
     yearOfStudy: currentUser.yearOfStudy || '2nd Year',
     targetSquad: currentUser.targetSquad || 'ironman',
@@ -948,6 +979,44 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const handleCustomAvatarUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Avatar image size must be under 5MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 160;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setFormData(prev => ({ ...prev, avatarUrl: dataUrl }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -956,6 +1025,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
       playTechClick();
       const updated = await updatePortalProfile(formData);
       playVibraniumPing();
+      window.dispatchEvent(new Event('letscook_auth_change'));
       onSaved(updated);
     } catch (err) {
       setErrorMsg(err.message || 'Failed to save profile changes.');
@@ -991,12 +1061,63 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
         )}
 
         <form onSubmit={handleSubmit} className="modal-edit-form">
+          {/* Avatar Selection & Upload Section */}
+          <div className="form-field avatar-customizer-field">
+            <label>PROFILE PICTURE & PREDEFINED AVATARS</label>
+            <div className="avatar-preview-row">
+              <div 
+                className="current-avatar-circle" 
+                style={{ borderColor: SQUADS_CONFIG[formData.targetSquad]?.color || 'var(--accent-burgundy)' }}
+              >
+                {formData.avatarUrl ? (
+                  <img src={formData.avatarUrl} alt="Avatar" className="avatar-preview-img" />
+                ) : (
+                  <User size={30} className="avatar-preview-placeholder" />
+                )}
+              </div>
+              <div className="avatar-upload-cta">
+                <label className="btn-upload-avatar">
+                  <Camera size={15} /> Upload Custom Photo
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleCustomAvatarUpload} 
+                    style={{ display: 'none' }} 
+                  />
+                </label>
+                <span className="avatar-upload-hint">PNG, JPG, WEBP · Auto-compressed to 160x160</span>
+              </div>
+            </div>
+
+            <div className="predefined-avatars-label">OR CHOOSE A PREDEFINED AVATAR</div>
+            <div className="predefined-avatars-grid">
+              {PREDEFINED_AVATARS.map((av) => {
+                const isSelected = formData.avatarUrl === av.url;
+                return (
+                  <button
+                    key={av.id}
+                    type="button"
+                    onClick={() => {
+                      playTechClick();
+                      setFormData(prev => ({ ...prev, avatarUrl: av.url }));
+                    }}
+                    className={`predefined-avatar-btn ${isSelected ? 'selected-avatar' : ''}`}
+                    title={av.name}
+                  >
+                    <img src={av.url} alt={av.name} className="predefined-avatar-img" />
+                    <span className="predefined-avatar-name">{av.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="form-field">
             <label>FULL NAME *</label>
             <input
               type="text"
               required
-              placeholder="e.g. Parv Mishra"
+              placeholder="e.g. Alex Rivera"
               value={formData.fullName}
               onChange={e => setFormData({ ...formData, fullName: e.target.value })}
             />
@@ -1008,7 +1129,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
               <input
                 type="text"
                 required
-                placeholder="GLA University"
+                placeholder="Apex Institute of Technology"
                 value={formData.college}
                 onChange={e => setFormData({ ...formData, college: e.target.value })}
               />

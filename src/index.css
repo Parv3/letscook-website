@@ -43,7 +43,7 @@
   --hero-highlight-bg: #8b002e;
   --hero-highlight-text: #ffffff;
 
-  --navbar-bg: rgba(6, 6, 8, 0.95);
+  --navbar-bg: rgba(6, 6, 8, 0.65);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
 
@@ -73,7 +73,7 @@ html.dark {
   --hero-highlight-bg: #8b002e;
   --hero-highlight-text: #ffffff;
 
-  --navbar-bg: rgba(6, 6, 8, 0.95);
+  --navbar-bg: rgba(6, 6, 8, 0.65);
   --modal-overlay: rgba(0, 0, 0, 0.85);
   --scrollbar-thumb: #2d2d38;
 
@@ -103,7 +103,7 @@ html.light {
   --hero-highlight-bg: #72092c;
   --hero-highlight-text: #ffffff;
 
-  --navbar-bg: rgba(248, 249, 250, 0.95);
+  --navbar-bg: rgba(248, 249, 250, 0.75);
   --modal-overlay: rgba(0, 0, 0, 0.6);
   --scrollbar-thumb: #cbd5e1;
 
@@ -136,7 +136,7 @@ html.theme-ironman {
   --badge-text: #00f0ff;
   --badge-border: rgba(0, 240, 255, 0.25);
   --laser-color: #00f0ff;
-  --navbar-bg: rgba(6, 4, 8, 0.95);
+  --navbar-bg: rgba(6, 4, 8, 0.65);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #ff0055;
   --logo-filter: drop-shadow(0 0 6px rgba(255, 0, 85, 0.4));
@@ -162,7 +162,7 @@ html.theme-captain {
   --badge-text: #60a5fa;
   --badge-border: rgba(59, 130, 246, 0.25);
   --laser-color: #60a5fa;
-  --navbar-bg: rgba(3, 8, 20, 0.95);
+  --navbar-bg: rgba(3, 8, 20, 0.65);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #3b82f6;
   --logo-filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
@@ -188,7 +188,7 @@ html.theme-thor {
   --badge-text: #facc15;
   --badge-border: rgba(234, 179, 8, 0.25);
   --laser-color: #facc15;
-  --navbar-bg: rgba(10, 6, 1, 0.95);
+  --navbar-bg: rgba(10, 6, 1, 0.65);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #f59e0b;
   --logo-filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
@@ -215,7 +215,7 @@ html.theme-core {
   --badge-text: #4ade80;
   --badge-border: rgba(34, 197, 94, 0.3);
   --laser-color: #22c55e;
-  --navbar-bg: rgba(4, 8, 5, 0.95);
+  --navbar-bg: rgba(4, 8, 5, 0.65);
   --logo-stem-color: #ffffff;
   --logo-accent-color: #22c55e;
   --logo-filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));
@@ -3993,5 +3993,150 @@ html.light .btn-secondary:hover {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* Builder Avatar & Photo Customizer in Profile Modal */
+.avatar-customizer-field {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.avatar-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+}
+
+.current-avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-burgundy);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+}
+
+.avatar-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-preview-placeholder {
+  color: var(--text-dim);
+}
+
+.avatar-upload-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-upload-avatar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: fit-content;
+}
+
+.btn-upload-avatar:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.avatar-upload-hint {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.predefined-avatars-label {
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.predefined-avatars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 580px) {
+  .predefined-avatars-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.predefined-avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.predefined-avatar-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.predefined-avatar-btn.selected-avatar {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent-burgundy);
+  box-shadow: 0 0 16px var(--accent-burgundy-light);
+}
+
+.predefined-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.predefined-avatar-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.member-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 

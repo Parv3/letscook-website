@@ -6,6 +6,7 @@ import TextDecoder from './TextDecoder';
 import LogoMark from './LogoMark';
 import ScrollCircuitRail from './ScrollCircuitRail';
 import IronManHologram from './IronManHologram';
+import HulkHologram from './HulkHologram';
 import { getTrackedUrl } from '../utils/utmTracker';
 import { 
   playTechClick, 
@@ -490,6 +491,16 @@ export default function HomePage({
   // Captain America Vibranium Shield State
   const [isDeployingShield, setIsDeployingShield] = useState(false);
   const [shieldDeployed, setShieldDeployed] = useState(false);
+
+  // Gamma Hulk Protocol State
+  const [isHulkActive, setIsHulkActive] = useState(false);
+
+  const handleToggleHulk = () => {
+    try {
+      playRepulsorSound();
+    } catch (_) {}
+    setIsHulkActive(prev => !prev);
+  };
 
   const handleDeployShield = () => {
     playVibraniumPing();
@@ -996,6 +1007,38 @@ export default function HomePage({
                     </span>
                   )}
 
+                  {activeSquad.key === 'hulk' && (
+                    <button
+                      type="button"
+                      onClick={handleToggleHulk}
+                      className="btn-secondary glow-btn"
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(34, 197, 94, 0.45)',
+                        color: '#ffffff',
+                        background: 'rgba(34, 197, 94, 0.1)'
+                      }}
+                      title="Deploy Gamma Hulk Protocol"
+                    >
+                      {isHulkActive ? 'DISENGAGE HULK' : 'DEPLOY HULK PROTOCOL'}
+                    </button>
+                  )}
+
+                  {activeSquad.key === 'hulk' && (
+                    <span style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.74rem',
+                      color: '#22c55e',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      animation: 'fadeIn 0.2s ease'
+                    }}>
+                      {isHulkActive ? 'GAMMA TITAN ONLINE · SMASH READY' : 'GAMMA RADIATION STABLE · 100%'}
+                    </span>
+                  )}
+
                   <span className="spotlight-cta-subtext">Direct community onboarding & links</span>
                 </div>
               </div>
@@ -1004,9 +1047,21 @@ export default function HomePage({
               <div className="spotlight-insignia-panel">
                 <div 
                   className="insignia-wrapper"
-                  onClick={activeSquad.key === 'ironman' ? handleTestArcFlux : undefined}
-                  style={activeSquad.key === 'ironman' ? { cursor: 'pointer' } : undefined}
-                  title={activeSquad.key === 'ironman' ? "Click to deploy J.A.R.V.I.S. HUD & Nanotech Swarm" : undefined}
+                  onClick={
+                    activeSquad.key === 'ironman' 
+                      ? handleTestArcFlux 
+                      : activeSquad.key === 'hulk' 
+                        ? handleToggleHulk 
+                        : undefined
+                  }
+                  style={activeSquad.key === 'ironman' || activeSquad.key === 'hulk' ? { cursor: 'pointer' } : undefined}
+                  title={
+                    activeSquad.key === 'ironman' 
+                      ? "Click to deploy J.A.R.V.I.S. HUD & Nanotech Swarm" 
+                      : activeSquad.key === 'hulk'
+                        ? "Click to deploy Gamma Hulk Hologram"
+                        : undefined
+                  }
                 >
                   <div className="insignia-hologram-aura" style={{ background: `radial-gradient(circle, ${activeSquad.color}25 0%, transparent 70%)` }} />
                   <div className={`insignia-glow-ring ${
@@ -1030,7 +1085,7 @@ export default function HomePage({
                           : activeSquad.key === 'ironman'
                             ? (isIronManActive ? 'IRON MAN ONLINE · CLICK TO TOGGLE' : 'ARC REACTOR READY · CLICK TO DEPLOY')
                             : activeSquad.key === 'hulk'
-                              ? 'GAMMA DESIGN LABS · INTERFACE ACTIVE'
+                              ? (isHulkActive ? 'GAMMA HULK ONLINE · CLICK TO TOGGLE' : 'GAMMA DESIGN LABS · CLICK TO SMASH')
                               : 'SYSTEM NOMINAL'}
                     </div>
                   </div>
@@ -1044,6 +1099,14 @@ export default function HomePage({
             <IronManHologram 
               isActive={isIronManActive} 
               onClose={() => setIsIronManActive(false)} 
+            />
+          )}
+
+          {/* Hulk Hologram with Blue Screen removed via GPU WebGL Chroma Key */}
+          {activeSquad.key === 'hulk' && (
+            <HulkHologram 
+              isActive={isHulkActive} 
+              onClose={() => setIsHulkActive(false)} 
             />
           )}
         </div>
