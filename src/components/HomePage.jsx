@@ -471,6 +471,16 @@ export function HandwrittenAnnotation({
 }) {
   return (
     <div className={`handwritten-callout-wrap ${className}`} style={{ color, ...style }}>
+      {arrow === 'up-left' && (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
+          <path d="M26 24C22 14 14 7 4 4M4 4L13 4M4 4L6 13" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'left' && (
+        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
+          <path d="M36 10C25 5 12 6 2 14M2 14L10 17M2 14L4 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
       <span className="handwritten-script-text">{text}</span>
       {arrow === 'right' && (
         <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
@@ -495,11 +505,6 @@ export function HandwrittenAnnotation({
       {arrow === 'up' && (
         <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="callout-arrow">
           <path d="M12 28C10 18 14 10 12 4M12 4L6 11M12 4L18 11" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-      {arrow === 'left' && (
-        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
-          <path d="M36 14C27 6 14 5 3 10M3 10L11 5M3 10L9 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       )}
     </div>
@@ -843,18 +848,10 @@ export default function HomePage({
                 </div>
               </div>
 
-              {/* Middle Handwritten Annotation */}
-              <HandwrittenAnnotation 
-                text="Real people. Real projects." 
-                arrow="left" 
-                color="#38bdf8" 
-                className="collage-annotation annotation-mid" 
-              />
-
-              {/* Small Floating Metric Badge Card */}
+              {/* Centered Floating Metric Badge Card */}
               <div className="collage-floating-badge">
                 <Sparkles size={16} className="badge-spark-icon" />
-                <div>
+                <div className="badge-text-stack">
                   <div className="badge-stat-num">100% Student Governed</div>
                   <div className="badge-stat-sub">Zero faculty gatekeeping</div>
                 </div>
@@ -862,9 +859,9 @@ export default function HomePage({
 
               {/* Bottom Handwritten Annotation */}
               <HandwrittenAnnotation 
-                text="Different campuses. Same vision." 
-                arrow="up-right" 
-                color="#facc15" 
+                text="Real people. Real projects." 
+                arrow="up-left" 
+                color="#38bdf8" 
                 className="collage-annotation annotation-bottom" 
               />
             </div>
@@ -1707,18 +1704,21 @@ export default function HomePage({
         .collage-floating-badge {
           position: absolute;
           top: 50%;
-          left: 36%;
+          left: 50%;
           transform: translate(-50%, -50%);
-          z-index: 5;
-          background: rgba(14, 16, 24, 0.92);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          padding: 10px 14px;
-          border-radius: 12px;
+          z-index: 10;
+          background: rgba(14, 16, 24, 0.94);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          padding: 8px 16px;
+          border-radius: 9999px;
           display: flex;
           align-items: center;
           gap: 10px;
-          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+          white-space: nowrap;
+          pointer-events: none;
         }
 
         .badge-spark-icon {
@@ -1726,38 +1726,43 @@ export default function HomePage({
           flex-shrink: 0;
         }
 
+        .badge-text-stack {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.2;
+          text-align: left;
+        }
+
         .badge-stat-num {
           font-family: var(--font-display);
           font-size: 0.82rem;
           font-weight: 700;
           color: #ffffff;
+          white-space: nowrap;
         }
 
         .badge-stat-sub {
           font-size: 0.68rem;
           color: #94a3b8;
+          white-space: nowrap;
         }
 
         .collage-annotation {
           position: absolute;
+          white-space: nowrap;
+          pointer-events: none;
         }
 
         .annotation-top {
           top: -24px;
-          left: 20%;
-          z-index: 7;
-        }
-
-        .annotation-mid {
-          bottom: 22%;
-          right: -10px;
-          z-index: 7;
+          left: 16%;
+          z-index: 9;
         }
 
         .annotation-bottom {
-          bottom: -24px;
-          left: 10%;
-          z-index: 7;
+          bottom: -28px;
+          right: 20px;
+          z-index: 9;
         }
 
         /* Hero Telemetry Strip */
@@ -1868,6 +1873,30 @@ export default function HomePage({
           .editorial-sub-cta {
             width: 100%;
             justify-content: center;
+          }
+          .collage-card {
+            max-width: 220px;
+          }
+          .collage-floating-badge {
+            padding: 6px 12px;
+            gap: 8px;
+          }
+          .badge-stat-num {
+            font-size: 0.74rem;
+          }
+          .badge-stat-sub {
+            font-size: 0.62rem;
+          }
+          .annotation-top {
+            top: -18px;
+            left: 6%;
+          }
+          .annotation-bottom {
+            bottom: -22px;
+            right: 8px;
+          }
+          .handwritten-script-text {
+            font-size: 1.15rem;
           }
         }
 
