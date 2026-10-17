@@ -245,6 +245,12 @@ export function evaluateLeadershipRole(email, enteredPasskey) {
   };
 }
 
+export function isCoreLeadership(userOrRole) {
+  if (!userOrRole) return false;
+  if (typeof userOrRole === 'string') return userOrRole === 'admin';
+  return userOrRole.role === 'admin';
+}
+
 // Rate Limiting Tracker
 const rateLimitMap = new Map();
 

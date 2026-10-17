@@ -3,11 +3,35 @@ import {
   loadResources, 
   addResource, 
   deleteResource, 
-  isCoreLeadership,
   recordAuditLog 
 } from '../lib/portalDb.js';
 
+function setCors(req, res) {
+  const origin = req.headers?.origin;
+  const isAllowed = !origin || 
+    origin.endsWith('letscook.co.in') || 
+    origin.includes('localhost') || 
+    origin.endsWith('.vercel.app');
+
+  if (typeof res.setHeader === 'function') {
+    if (isAllowed && origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+  return isAllowed;
+}
+
 export default async function handler(req, res) {
+  if (!setCors(req, res)) {
+    return res.status(403).json({ success: false, error: 'Forbidden: Origin not allowed.' });
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Security headers
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.setHeader('X-Content-Type-Options', 'nosniff');

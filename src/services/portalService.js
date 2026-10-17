@@ -169,26 +169,39 @@ export async function updatePortalProfile(updates) {
   return data.user;
 }
 
+async function safeJson(res) {
+  try {
+    return await res.json();
+  } catch (_) {
+    throw new Error(`Server returned status ${res.status || '500'}. Please try again later.`);
+  }
+}
+
 // 8. Fetch Vault Resources (Members and Admins)
 export async function fetchPortalResources() {
   const token = getStoredToken();
   if (!token) return { success: false, error: 'Authentication required' };
 
-  const res = await fetch('/api/portal/resources', {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  try {
+    const res = await fetch('/api/portal/resources', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 401) {
+      return { success: false, error: 'Authentication required' };
     }
-  });
 
-  if (res.status === 401) {
-    return { success: false, error: 'Authentication required' };
+    const data = await safeJson(res);
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Failed to fetch resources.');
+    }
+    return data;
+  } catch (err) {
+    console.error('fetchPortalResources error:', err);
+    return { success: false, error: err.message || 'Failed to fetch resources' };
   }
-
-  const data = await res.json();
-  if (!res.ok || !data.success) {
-    throw new Error(data.error || 'Failed to fetch resources.');
-  }
-  return data;
 }
 
 // 9. Upload New Vault Resource (Restricted to Core Members)
@@ -205,7 +218,7 @@ export async function uploadPortalResource(resourcePayload) {
     body: JSON.stringify(resourcePayload)
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Failed to upload resource.');
   }
@@ -226,7 +239,7 @@ export async function deletePortalResource(resourceId) {
     body: JSON.stringify({ resourceId })
   });
 
-  const data = await res.json();
+  const data = await safeJson(res);
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Failed to delete resource.');
   }
