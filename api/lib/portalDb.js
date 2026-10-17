@@ -55,7 +55,7 @@ const SEED_PROFILES = [
     email: 'alex.rivera@example.com',
     fullName: 'Alex Rivera',
     phone: '+1 555-0199',
-    college: 'Apex Institute of Technology',
+    college: 'National Institute of Technology',
     branch: 'Computer Science',
     yearOfStudy: '3rd Year',
     targetSquad: 'ironman',
@@ -277,4 +277,173 @@ export function recordAuditLog(actor, action, targetId, details = {}, ip = '') {
   store.auditLogs = [entry, ...(store.auditLogs || []).slice(0, 999)]; // Keep last 1000 logs
   saveStore(store);
   return entry;
+}
+
+// ============================================================================
+// RESOURCE VAULT MANAGEMENT (MEMBERS READ, ONLY CORE CAN UPLOAD)
+// ============================================================================
+function getResourcesFilePath() {
+  const isVercel = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+  if (isVercel) {
+    return path.join('/tmp', 'portal-resources.json');
+  }
+  const localDir = path.resolve(process.cwd(), 'src/data');
+  if (!fs.existsSync(localDir)) {
+    try { fs.mkdirSync(localDir, { recursive: true }); } catch (_) {}
+  }
+  return path.join(localDir, 'portal-resources.json');
+}
+
+const SEED_RESOURCES = [
+  {
+    id: 'res-tech-01',
+    title: 'Production Full-Stack Web Architecture Boilerplate',
+    description: 'Battle-tested Next.js 14, TypeScript, Tailwind, and Prisma scaffold with built-in RBAC authentication, rate limiting, and CI/CD pipelines.',
+    category: 'tech',
+    targetSquad: 'ironman',
+    fileType: 'Repository',
+    url: 'https://github.com/letscook-community/fullstack-production-starter',
+    tags: ['Next.js 14', 'TypeScript', 'Prisma', 'Tailwind', 'Docker'],
+    uploadedBy: {
+      name: 'Parv Mishra',
+      roleTitle: 'Founder & Tech Head',
+      email: 'founder@letscook.co.in'
+    },
+    createdAt: new Date('2026-10-01T12:00:00Z').toISOString(),
+    downloadsCount: 142
+  },
+  {
+    id: 'res-design-01',
+    title: 'Marvel WebGL Shader Library & Cinematic UI Tokens',
+    description: 'High-performance GPU shaders, real-time chroma keyers (green/blue/black background keying), bifrost lightning effects, and design system tokens.',
+    category: 'design',
+    targetSquad: 'hulk',
+    fileType: 'Design Kit',
+    url: 'https://figma.com/@letscook/marvel-webgl-design-tokens',
+    tags: ['WebGL', 'GLSL', 'Figma', 'Design Systems', 'Three.js'],
+    uploadedBy: {
+      name: 'Design Core Lead',
+      roleTitle: 'Design Core Head',
+      email: 'designhead@letscook.co.in'
+    },
+    createdAt: new Date('2026-10-05T14:30:00Z').toISOString(),
+    downloadsCount: 98
+  },
+  {
+    id: 'res-events-01',
+    title: '48-Hour Hackathon Winning Pitch Deck & Demo Strategy',
+    description: 'Framework, slide breakdown, time management guidelines, and judge Q&A preparation handbook used by Let\'s Cook teams to win national hackathons.',
+    category: 'events',
+    targetSquad: 'thor',
+    fileType: 'Pitch Deck',
+    url: 'https://pitch.com/letscook/48h-hackathon-winning-deck',
+    tags: ['Pitch Deck', 'Hackathons', 'Demo Day', 'Presentation', 'MVP'],
+    uploadedBy: {
+      name: 'President',
+      roleTitle: 'President',
+      email: 'president@letscook.co.in'
+    },
+    createdAt: new Date('2026-10-08T09:15:00Z').toISOString(),
+    downloadsCount: 187
+  },
+  {
+    id: 'res-tech-02',
+    title: 'Distributed Systems & High-Throughput API Handbook',
+    description: 'Comprehensive study notes on event-driven architecture, Redis caching patterns, Kafka streams, rate limiting algorithms, and database indexing.',
+    category: 'tech',
+    targetSquad: 'ironman',
+    fileType: 'Guide',
+    url: 'https://docs.letscook.co.in/systems/distributed-architecture',
+    tags: ['System Design', 'Redis', 'Kafka', 'Scalability', 'APIs'],
+    uploadedBy: {
+      name: 'Tech Lead',
+      roleTitle: 'Tech Core Head',
+      email: 'techhead@letscook.co.in'
+    },
+    createdAt: new Date('2026-10-12T16:00:00Z').toISOString(),
+    downloadsCount: 215
+  },
+  {
+    id: 'res-pr-01',
+    title: 'Open Source Contribution & Developer Advocacy Playbook',
+    description: 'Standard operating procedures for git workflow, writing outstanding pull requests, developer community outreach, and keynote speaking.',
+    category: 'pr',
+    targetSquad: 'captain',
+    fileType: 'Playbook',
+    url: 'https://docs.letscook.co.in/community/open-source-playbook',
+    tags: ['Open Source', 'Git', 'Advocacy', 'Community', 'PRs'],
+    uploadedBy: {
+      name: 'Vice President',
+      roleTitle: 'Vice President',
+      email: 'vp@letscook.co.in'
+    },
+    createdAt: new Date('2026-10-14T11:20:00Z').toISOString(),
+    downloadsCount: 76
+  }
+];
+
+let inMemoryResources = null;
+
+export function loadResources() {
+  if (inMemoryResources) return inMemoryResources;
+  const filePath = getResourcesFilePath();
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      inMemoryResources = JSON.parse(data);
+      if (Array.isArray(inMemoryResources) && inMemoryResources.length > 0) {
+        return inMemoryResources;
+      }
+    }
+  } catch (_) {}
+  inMemoryResources = [...SEED_RESOURCES];
+  saveResources(inMemoryResources);
+  return inMemoryResources;
+}
+
+export function saveResources(resources) {
+  inMemoryResources = resources;
+  try {
+    const filePath = getResourcesFilePath();
+    fs.writeFileSync(filePath, JSON.stringify(resources, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Failed to write resources file:', err);
+  }
+}
+
+export function addResource(resourceData, actor) {
+  const resources = loadResources();
+  const newResource = {
+    id: `res-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+    title: resourceData.title.trim(),
+    description: (resourceData.description || '').trim(),
+    category: resourceData.category || 'general',
+    targetSquad: resourceData.targetSquad || 'all',
+    fileType: resourceData.fileType || 'Guide',
+    url: resourceData.url.trim(),
+    tags: Array.isArray(resourceData.tags) 
+      ? resourceData.tags 
+      : (resourceData.tags ? resourceData.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+    uploadedBy: {
+      name: actor.fullName || actor.name || 'Core Leadership',
+      roleTitle: actor.roleTitle || 'Core Head',
+      email: actor.email
+    },
+    createdAt: new Date().toISOString(),
+    downloadsCount: 0
+  };
+  resources.unshift(newResource);
+  saveResources(resources);
+  return newResource;
+}
+
+export function deleteResource(resourceId) {
+  let resources = loadResources();
+  const initialLength = resources.length;
+  resources = resources.filter(r => r.id !== resourceId);
+  if (resources.length !== initialLength) {
+    saveResources(resources);
+    return true;
+  }
+  return false;
 }

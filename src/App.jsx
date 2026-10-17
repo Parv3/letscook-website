@@ -16,10 +16,12 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const LinksPage = lazy(() => import('./pages/LinksPage'));
 const PortalPage = lazy(() => import('./pages/PortalPage'));
+const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
 const SearchModal = lazy(() => import('./components/SearchModal'));
 const PitchIdeaModal = lazy(() => import('./components/PitchIdeaModal'));
 const TerminalDrawer = lazy(() => import('./components/TerminalDrawer'));
 const CinematicEasterEggOverlay = lazy(() => import('./components/CinematicEasterEggOverlay'));
+import ProfileCompletionPrompt from './components/ProfileCompletionPrompt';
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -44,6 +46,9 @@ export default function App() {
       }
       if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin') || path.includes('join')) {
         return 'portal';
+      }
+      if (path.includes('resource') || hash.includes('resource')) {
+        return 'resources';
       }
       if (path.includes('links') || hash.includes('links') || search.includes('links')) {
         return 'links';
@@ -73,6 +78,8 @@ export default function App() {
         setCurrentPage('verify');
       } else if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin') || path.includes('join')) {
         setCurrentPage('portal');
+      } else if (path.includes('resource') || hash.includes('resource')) {
+        setCurrentPage('resources');
       } else if (path.includes('links') || hash.includes('links')) {
         setCurrentPage('links');
       } else if (path.includes('privacy') || hash.includes('privacy')) {
@@ -173,8 +180,12 @@ export default function App() {
               {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} onSelectSquad={setActiveSquad} />}
               {currentPage === 'verify' && <CertificateVerifyPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} />}
               {currentPage === 'portal' && <PortalPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} onSelectSquad={setActiveSquad} />}
+              {currentPage === 'resources' && <ResourcesPage setCurrentPage={setCurrentPage} currentSquad={activeSquad} onSelectSquad={setActiveSquad} />}
             </Suspense>
           </main>
+
+          {/* Random Profile Completion Prompt for Incomplete Member Profiles */}
+          <ProfileCompletionPrompt />
 
           {/* 8. Global Interactive Overlays & Modals */}
           <Suspense fallback={null}>

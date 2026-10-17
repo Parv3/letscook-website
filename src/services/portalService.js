@@ -168,3 +168,67 @@ export async function updatePortalProfile(updates) {
   }
   return data.user;
 }
+
+// 8. Fetch Vault Resources (Members and Admins)
+export async function fetchPortalResources() {
+  const token = getStoredToken();
+  if (!token) return { success: false, error: 'Authentication required' };
+
+  const res = await fetch('/api/portal/resources', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (res.status === 401) {
+    return { success: false, error: 'Authentication required' };
+  }
+
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Failed to fetch resources.');
+  }
+  return data;
+}
+
+// 9. Upload New Vault Resource (Restricted to Core Members)
+export async function uploadPortalResource(resourcePayload) {
+  const token = getStoredToken();
+  if (!token) throw new Error('Authentication required.');
+
+  const res = await fetch('/api/portal/resources', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(resourcePayload)
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Failed to upload resource.');
+  }
+  return data;
+}
+
+// 10. Delete Resource (Restricted to Core Members)
+export async function deletePortalResource(resourceId) {
+  const token = getStoredToken();
+  if (!token) throw new Error('Authentication required.');
+
+  const res = await fetch('/api/portal/resources', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ resourceId })
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || 'Failed to delete resource.');
+  }
+  return data;
+}

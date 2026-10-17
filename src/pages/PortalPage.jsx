@@ -506,7 +506,7 @@ function MemberDashboardView({
           <div>
             <div className="member-eyebrow">STUDENT BUILDER PORTAL</div>
             <h1 className="member-name">{currentUser.fullName || 'Welcome, Builder'}</h1>
-            <span className="member-id-tag">{currentUser.email} · {currentUser.college || 'Apex Institute of Technology'}</span>
+            <span className="member-id-tag">{currentUser.email}{currentUser.college ? ` · ${currentUser.college}` : ''}</span>
           </div>
         </div>
 
@@ -612,7 +612,7 @@ function MemberDashboardView({
             </div>
             <div className="spec-row">
               <span className="spec-key">College / Institute:</span>
-              <span className="spec-val">{currentUser.college || 'Apex Institute of Technology'}</span>
+              <span className="spec-val">{currentUser.college || <span className="text-dim">Not set</span>}</span>
             </div>
             <div className="spec-row">
               <span className="spec-key">Registered Email:</span>
@@ -891,7 +891,7 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
 
                       <td>
                         <div className="college-cell">
-                          <span className="college-name">{p.college || 'Apex Institute of Technology'}</span>
+                          <span className="college-name">{p.college || 'Not set'}</span>
                           <span className="college-branch">{p.branch || 'Undecided'} · {p.yearOfStudy || 'Student'}</span>
                         </div>
                       </td>
@@ -970,9 +970,9 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
     fullName: currentUser.fullName || '',
     avatarUrl: currentUser.avatarUrl || '',
     phone: currentUser.phone || '',
-    college: currentUser.college || 'Apex Institute of Technology',
+    college: currentUser.college && !currentUser.college.includes('Apex') ? currentUser.college : '',
     branch: currentUser.branch || '',
-    yearOfStudy: currentUser.yearOfStudy || '2nd Year',
+    yearOfStudy: currentUser.yearOfStudy || '',
     targetSquad: currentUser.targetSquad || 'ironman',
     skills: Array.isArray(currentUser.skills) ? currentUser.skills.join(', ') : (currentUser.skills || ''),
     githubUrl: currentUser.githubUrl || '',
@@ -1047,10 +1047,11 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
   return (
     <div className="modal-backdrop-fixed animate-fade-in" onClick={onClose}>
       <div className="modal-dialog-card" onClick={e => e.stopPropagation()}>
+        {/* Sticky Header */}
         <div className="modal-top-bar">
           <div>
             <h3 className="modal-title">Complete Builder Profile</h3>
-            <p className="modal-subline">Fill in your builder details so squad leaders can induct and mentor you.</p>
+            <p className="modal-subline">Fill in your details so squad leads can verify and induct you into sprints.</p>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close modal">
             <X size={20} />
@@ -1058,14 +1059,15 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
         </div>
 
         {errorMsg && (
-          <div className="portal-error-alert">
+          <div className="portal-error-alert" style={{ margin: '16px 24px 0 24px' }}>
             <AlertCircle size={16} />
             <span>{errorMsg}</span>
           </div>
         )}
 
+        {/* Scrollable Form Body */}
         <form onSubmit={handleSubmit} className="modal-edit-form">
-          {/* Avatar Selection & Upload Section */}
+          {/* Avatar Customizer */}
           <div className="form-field avatar-customizer-field">
             <label>PROFILE PICTURE & PREDEFINED AVATARS</label>
             <div className="avatar-preview-row">
@@ -1076,12 +1078,12 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
                 {formData.avatarUrl ? (
                   <img src={formData.avatarUrl} alt="Avatar" className="avatar-preview-img" />
                 ) : (
-                  <User size={30} className="avatar-preview-placeholder" />
+                  <User size={28} className="avatar-preview-placeholder" />
                 )}
               </div>
               <div className="avatar-upload-cta">
                 <label className="btn-upload-avatar">
-                  <Camera size={15} /> Upload Custom Photo
+                  <Camera size={14} /> Upload Custom Photo
                   <input 
                     type="file" 
                     accept="image/*" 
@@ -1089,11 +1091,11 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
                     style={{ display: 'none' }} 
                   />
                 </label>
-                <span className="avatar-upload-hint">PNG, JPG, WEBP · Auto-compressed to 160x160</span>
+                <span className="avatar-upload-hint">PNG, JPG, WEBP (auto-compressed)</span>
               </div>
             </div>
 
-            <div className="predefined-avatars-label">OR CHOOSE A PREDEFINED AVATAR</div>
+            <div className="predefined-avatars-label">OR SELECT PREDEFINED AVATAR</div>
             <div className="predefined-avatars-grid">
               {PREDEFINED_AVATARS.map((av) => {
                 const isSelected = formData.avatarUrl === av.url;
@@ -1116,12 +1118,13 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
             </div>
           </div>
 
+          {/* Builder Details */}
           <div className="form-field">
             <label>FULL NAME *</label>
             <input
               type="text"
               required
-              placeholder="e.g. Alex Rivera"
+              placeholder="e.g. Parv Mishra, Alex..."
               value={formData.fullName}
               onChange={e => setFormData({ ...formData, fullName: e.target.value })}
             />
@@ -1133,18 +1136,17 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
               <input
                 type="text"
                 required
-                placeholder="Apex Institute of Technology"
+                placeholder="e.g. IIT, DTU, VIT, BITS, SRM..."
                 value={formData.college}
                 onChange={e => setFormData({ ...formData, college: e.target.value })}
               />
             </div>
 
             <div className="form-field">
-              <label>BRANCH / PROGRAM *</label>
+              <label>BRANCH / PROGRAM</label>
               <input
                 type="text"
-                required
-                placeholder="e.g. B.Tech CSE, IT, BCA"
+                placeholder="e.g. B.Tech CSE, IT, AI/ML, Design"
                 value={formData.branch}
                 onChange={e => setFormData({ ...formData, branch: e.target.value })}
               />
@@ -1158,6 +1160,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
                 value={formData.yearOfStudy}
                 onChange={e => setFormData({ ...formData, yearOfStudy: e.target.value })}
               >
+                <option value="">Select Year of Study</option>
                 <option value="1st Year">1st Year</option>
                 <option value="2nd Year">2nd Year</option>
                 <option value="3rd Year">3rd Year</option>
@@ -1170,7 +1173,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
               <label>PHONE / WHATSAPP NUMBER</label>
               <input
                 type="tel"
-                placeholder="+91 9999999999"
+                placeholder="+91 98765 43210"
                 value={formData.phone}
                 onChange={e => setFormData({ ...formData, phone: e.target.value })}
               />
@@ -1179,7 +1182,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
 
           {/* Target Squad Division Selection */}
           <div className="form-field">
-            <label>SELECT TARGET SQUAD DIVISION (SWITCHES WEBSITE THEME)</label>
+            <label>TARGET SQUAD DIVISION (SWITCHES WEBSITE THEME)</label>
             <div className="squad-modal-grid">
               {Object.values(SQUADS_CONFIG).map((sq) => {
                 const isSelected = formData.targetSquad === sq.key;
@@ -1207,7 +1210,7 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
             <label>SKILLS & ARSENAL (COMMA SEPARATED)</label>
             <input
               type="text"
-              placeholder="React, Node.js, Python, Figma, Tailwind, System Design"
+              placeholder="React, Next.js, WebGL, Figma, Tailwind, Python"
               value={formData.skills}
               onChange={e => setFormData({ ...formData, skills: e.target.value })}
             />
@@ -1235,16 +1238,251 @@ function ProfileEditModal({ currentUser, onClose, onSaved, onSelectSquad }) {
             </div>
           </div>
 
+          {/* Sticky Actions Bar inside form */}
           <div className="modal-actions-bar">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
             </button>
-            <button type="submit" disabled={isSaving} className="btn-primary modal-save-btn">
+            <button type="submit" disabled={isSaving} className="btn-primary modal-save-btn glow-btn">
               {isSaving ? 'SAVING PROFILE...' : 'SAVE & UPDATE PROFILE'}
             </button>
           </div>
         </form>
       </div>
+
+      <style>{`
+        .modal-backdrop-fixed {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          z-index: 999999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+        }
+
+        .modal-dialog-card {
+          width: 100%;
+          max-width: 660px;
+          max-height: 88vh;
+          background: #0c0e14;
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-radius: 20px;
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(239, 68, 68, 0.15);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .modal-top-bar {
+          flex-shrink: 0;
+          background: #0f121a;
+          padding: 18px 24px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .modal-title {
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 0 0 4px 0;
+        }
+
+        .modal-subline {
+          font-size: 0.8rem;
+          color: #94a3b8;
+          margin: 0;
+        }
+
+        .modal-close-btn {
+          background: transparent;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 6px;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-edit-form {
+          flex: 1;
+          overflow-y: auto;
+          padding: 22px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .modal-edit-form::-webkit-scrollbar {
+          width: 6px;
+        }
+        .modal-edit-form::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .modal-edit-form::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 4px;
+        }
+
+        .avatar-customizer-field {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 14px;
+          padding: 16px;
+        }
+
+        .avatar-preview-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 16px;
+        }
+
+        .current-avatar-circle {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          border: 2px solid;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #141722;
+          flex-shrink: 0;
+          box-shadow: 0 0 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .avatar-preview-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .avatar-upload-cta {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .btn-upload-avatar {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 8px;
+          color: #ffffff;
+          font-family: monospace;
+          font-size: 0.74rem;
+          font-weight: 700;
+          cursor: pointer;
+          width: fit-content;
+          transition: all 0.2s ease;
+        }
+
+        .btn-upload-avatar:hover {
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .avatar-upload-hint {
+          font-size: 0.68rem;
+          color: #64748b;
+        }
+
+        .predefined-avatars-label {
+          font-family: monospace;
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: #64748b;
+          letter-spacing: 0.06em;
+          margin-bottom: 8px;
+        }
+
+        .predefined-avatars-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+        }
+
+        .predefined-avatar-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 8px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .predefined-avatar-btn:hover {
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .predefined-avatar-btn.selected-avatar {
+          background: rgba(245, 158, 11, 0.12);
+          border-color: #f59e0b;
+          box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .predefined-avatar-img {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .predefined-avatar-name {
+          font-size: 0.68rem;
+          font-weight: 700;
+          color: #cbd5e1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .modal-actions-bar {
+          flex-shrink: 0;
+          background: #0f121a;
+          padding: 16px 24px;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 12px;
+          margin: 0 -24px -22px -24px;
+          position: sticky;
+          bottom: -22px;
+          z-index: 5;
+        }
+
+        .modal-save-btn {
+          height: 42px;
+          padding: 0 20px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Search, ArrowUpRight, Lightbulb, Menu, X, Terminal, User, LogOut, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Search, ArrowUpRight, Lightbulb, Menu, X, Terminal, User, LogOut, Sparkles, Lock } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { getStoredUser, clearSession } from '../services/portalService';
 import { getTrackedUrl } from '../utils/utmTracker';
@@ -67,6 +67,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
   const navItems = [
     { label: 'HOME', page: 'home' },
     { label: 'CERTIFICATIONS', page: 'verify' },
+    { label: 'RESOURCES', page: 'resources', isProtected: true },
     { label: 'LINKS', page: 'links' }
   ];
 
@@ -114,9 +115,12 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             <button
               key={idx}
               onClick={() => handleNavClick(item)}
-              className={`nav-link ${currentPage === item.page && !item.section ? 'active' : ''}`}
+              className={`nav-link ${currentPage === item.page && !item.section ? 'active' : ''} ${item.isProtected && !currentUser ? 'nav-link-locked' : ''}`}
             >
-              {item.label}
+              <span>{item.label}</span>
+              {item.isProtected && !currentUser && (
+                <Lock size={12} className="nav-lock-icon" />
+              )}
             </button>
           ))}
         </div>
@@ -292,9 +296,12 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
               <button
                 key={idx}
                 onClick={() => handleNavClick(item)}
-                className="mobile-nav-link"
+                className={`mobile-nav-link ${item.isProtected && !currentUser ? 'mobile-link-locked' : ''}`}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {item.isProtected && !currentUser && (
+                  <Lock size={14} className="nav-lock-icon" />
+                )}
               </button>
             ))}
 
@@ -479,11 +486,29 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
           padding: 6px 14px;
           border-radius: 8px;
           transition: all var(--transition-fast);
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
         }
 
         .nav-link:hover, .nav-link.active {
           color: var(--text-main);
           background-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-link-locked {
+          opacity: 0.88;
+        }
+
+        .nav-lock-icon {
+          color: #f59e0b;
+          filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+        }
+
+        .mobile-link-locked {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .nav-actions {
