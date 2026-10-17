@@ -388,39 +388,6 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
       <div className={`verify-scanline-ambient ${selectedCert?.awardTier ? `ambient-${selectedCert.awardTier}` : ''}`} />
 
       <main className="verify-main-container">
-        {/* Sleek Minimal Top Navigation Bar */}
-        <div className="verify-top-bar">
-          <button 
-            onClick={handleReturnHome}
-            className="verify-back-btn"
-            aria-label="Return to main website"
-          >
-            <ArrowLeft size={16} /> 
-            <span>Home</span>
-          </button>
-          
-          <div className="verify-top-nav-links">
-            <button onClick={handleReturnHome} className="top-nav-pill">
-              Home
-            </button>
-            <button className="top-nav-pill active">
-              Certifications
-            </button>
-            <button 
-              onClick={() => {
-                playTechClick();
-                if (window.history && window.history.pushState) {
-                  window.history.pushState(null, '', '/links');
-                }
-                setCurrentPage('links');
-              }} 
-              className="top-nav-pill"
-            >
-              Links
-            </button>
-          </div>
-        </div>
-
         {/* Portal Hero Header */}
         <header className="verify-hero">
           {step === 'verified' && selectedCert?.awardTier ? (
@@ -433,7 +400,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
           ) : (
             <div className="verify-badge-pill">
               <ShieldCheck size={14} className="text-cyan-400" />
-              <span>LET'S COOK OFFICIAL CREDENTIAL REGISTRY</span>
+              <span>VERIFY CERTIFICATE</span>
             </div>
           )}
 
@@ -444,7 +411,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
               </>
             ) : (
               <>
-                Official <span className="text-gradient-cyan">Certifications</span>
+                Verify <span className="text-gradient-cyan">Certificate</span>
               </>
             )}
           </h1>
@@ -454,7 +421,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                 Official Ideathon Podium Award credential awarded to <strong className="text-white">{selectedCert.recipient.name}</strong> for outstanding performance in ORIGIN 2026.
               </>
             ) : (
-              'Enter your registered email address to receive an automated verification code and access your official certificate.'
+              'Enter your registered email to view and download your certificate.'
             )}
           </p>
         </header>
@@ -502,16 +469,16 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                 <div className="gate-lock-icon">
                   <Mail size={26} className="text-cyan-400" />
                 </div>
-                <h3>Verify With Your Email</h3>
+                <h3>Enter Your Email</h3>
                 <p>
-                  Enter the email address you used during event registration. We'll send an automated 6-digit code to unlock your certificate.
+                  Enter the email you registered with. We'll send a 6-digit code to view your certificate.
                 </p>
               </div>
 
               <form onSubmit={handleSendOtp} className="gate-form">
                 <div className="input-group">
                   <label htmlFor="verify-email-input">
-                    REGISTERED EMAIL ADDRESS
+                    EMAIL ADDRESS
                   </label>
                   <div className="input-field-wrap">
                     <Mail size={18} className="input-icon" />
@@ -529,9 +496,6 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                       required
                     />
                   </div>
-                  <span className="input-hint">
-                    A 6-digit verification code will be sent to this email.
-                  </span>
                 </div>
 
                 {errorMessage && (
@@ -548,7 +512,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                 >
                   {isLoading ? (
                     <span className="btn-loading-state">
-                      <span className="btn-spinner" /> Sending verification code...
+                      <span className="btn-spinner" /> Sending code...
                     </span>
                   ) : (
                     <>
@@ -567,7 +531,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                     }}
                     className="link-btn"
                   >
-                    Have a direct passkey? Enter code instead →
+                    Have a passkey? Enter code →
                   </button>
                 </div>
               </form>
@@ -638,7 +602,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                     </span>
                   ) : (
                     <>
-                      <Unlock size={18} /> Unlock & View Certificate
+                      <Unlock size={18} /> View Certificate
                     </>
                   )}
                 </button>
@@ -690,11 +654,11 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                     <KeyRound size={26} className="text-cyan-400" />
                   )}
                 </div>
-                <h3>{passkeyLockoutRemaining > 0 ? 'Security Lockout' : 'Enter Direct Passkey'}</h3>
+                <h3>{passkeyLockoutRemaining > 0 ? 'Security Lockout' : 'Enter Passkey'}</h3>
                 <p>
                   {passkeyLockoutRemaining > 0
-                    ? 'Too many failed attempts (4/4). Passkey verification is temporarily restricted.'
-                    : 'If you received a 6-digit confidential passkey, enter it below to unlock your certificate immediately.'}
+                    ? 'Too many failed attempts. Passkey entry is temporarily locked.'
+                    : 'Enter the 6-digit passkey to view your certificate.'}
                 </p>
               </div>
 
@@ -705,7 +669,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                     <span>LOCKED FOR <strong className="font-mono text-amber-300">{formatLockoutTime(passkeyLockoutRemaining)}</strong></span>
                   </div>
                   <p className="lockout-desc">
-                    Maximum rate limit reached (4 tries / 1 hour). To prevent unauthorized passkey testing, direct entry is locked until the security cooldown expires.
+                    Too many attempts. Direct passkey is locked for {formatLockoutTime(passkeyLockoutRemaining)}. You can still verify using your email below.
                   </p>
                   <button
                     type="button"
@@ -718,9 +682,6 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                   >
                     <Mail size={18} /> Verify With Email Instead
                   </button>
-                  <div className="gate-footer-links">
-                    <span className="text-xs text-zinc-500">Email OTP verification remains open at all times.</span>
-                  </div>
                 </div>
               ) : (
                 <form 
@@ -733,7 +694,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                 >
                   <div className="input-group">
                     <div className="input-label-row">
-                      <label htmlFor="static-code-field">6-DIGIT PASSKEY</label>
+                      <label htmlFor="static-code-field">PASSKEY</label>
                     </div>
                     <div className="input-field-wrap">
                       <KeyRound size={18} className="input-icon" />
@@ -766,7 +727,7 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                     disabled={isLoading || !staticCodeInput}
                     className="gate-submit-btn"
                   >
-                    <Unlock size={18} /> Unlock Certificate
+                    <Unlock size={18} /> View Certificate
                   </button>
 
                   <div className="gate-footer-links">

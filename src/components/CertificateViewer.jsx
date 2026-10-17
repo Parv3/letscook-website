@@ -241,7 +241,7 @@ export default function CertificateViewer({ certificate, event }) {
         {isRendering && (
           <div className="cert-loading-overlay">
             <div className="cert-loading-spinner" />
-            <p>Rendering High-Resolution Certificate...</p>
+            <p>Loading certificate...</p>
           </div>
         )}
         <canvas ref={canvasRef} className="cert-canvas-element" />
@@ -255,7 +255,7 @@ export default function CertificateViewer({ certificate, event }) {
           className="cert-btn primary"
         >
           <Download size={18} />
-          <span>{downloading ? 'Preparing PNG...' : 'Download Certificate (PNG)'}</span>
+          <span>{downloading ? 'Preparing download...' : 'Download Certificate'}</span>
         </button>
 
         <button
@@ -263,7 +263,7 @@ export default function CertificateViewer({ certificate, event }) {
           className="cert-btn secondary"
         >
           {copied ? <Check size={18} className="text-emerald-400" /> : <Share2 size={18} />}
-          <span>{copied ? 'Link Copied!' : 'Copy Verification Link'}</span>
+          <span>{copied ? 'Link Copied!' : 'Copy Link'}</span>
         </button>
 
         <a
