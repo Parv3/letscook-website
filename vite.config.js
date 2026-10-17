@@ -15,9 +15,9 @@ function apiDevServerPlugin() {
 
         if (fs.existsSync(filePath)) {
           try {
-            // Buffer POST body
+            // Buffer request body
             let body = {};
-            if (req.method === 'POST') {
+            if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'PUT') {
               const chunks = [];
               for await (const chunk of req) {
                 chunks.push(chunk);

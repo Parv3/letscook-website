@@ -15,6 +15,7 @@ const CertificateVerifyPage = lazy(() => import('./pages/CertificateVerifyPage')
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const LinksPage = lazy(() => import('./pages/LinksPage'));
+const PortalPage = lazy(() => import('./pages/PortalPage'));
 const SearchModal = lazy(() => import('./components/SearchModal'));
 const PitchIdeaModal = lazy(() => import('./components/PitchIdeaModal'));
 const TerminalDrawer = lazy(() => import('./components/TerminalDrawer'));
@@ -40,6 +41,9 @@ export default function App() {
       const search = window.location.search.toLowerCase();
       if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
         return 'verify';
+      }
+      if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin')) {
+        return 'portal';
       }
       if (path.includes('links') || hash.includes('links') || search.includes('links')) {
         return 'links';
@@ -67,6 +71,8 @@ export default function App() {
       const hash = window.location.hash.toLowerCase();
       if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
         setCurrentPage('verify');
+      } else if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin')) {
+        setCurrentPage('portal');
       } else if (path.includes('links') || hash.includes('links')) {
         setCurrentPage('links');
       } else if (path.includes('privacy') || hash.includes('privacy')) {
@@ -168,6 +174,7 @@ export default function App() {
               {currentPage === 'terms' && <TermsPage setCurrentPage={setCurrentPage} />}
               {currentPage === 'links' && <LinksPage setCurrentPage={setCurrentPage} />}
               {currentPage === 'verify' && <CertificateVerifyPage setCurrentPage={setCurrentPage} />}
+              {currentPage === 'portal' && <PortalPage setCurrentPage={setCurrentPage} />}
             </Suspense>
           </main>
 
