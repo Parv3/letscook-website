@@ -45,10 +45,34 @@ export default async function handler(req, res) {
 
     // ACID Isolation: Fetch only the user matching the verified token
     const store = loadStore();
-    const user = store.profiles.find(p => p.id === payload.userId);
+    let user = store.profiles.find(p => p.id === payload.userId || (p.email && payload.email && p.email.toLowerCase().trim() === payload.email.toLowerCase().trim()));
 
     if (!user) {
-      return res.status(404).json({ success: false, error: 'User profile not found.' });
+      // In serverless environments, if a new instance executes without prior /tmp memory,
+      // seamlessly reconstruct the verified user profile from the signed HMAC token
+      const isCore = payload.role === 'admin';
+      user = {
+        id: payload.userId,
+        email: payload.email,
+        fullName: payload.fullName || (isCore ? (payload.roleTitle || 'Core Admin') : ''),
+        phone: '',
+        college: isCore ? 'Core Command' : 'Apex Institute of Technology',
+        branch: isCore ? 'Executive Council' : '',
+        yearOfStudy: isCore ? 'Core' : 'Student',
+        targetSquad: payload.targetSquad || (isCore ? 'hulk' : 'ironman'),
+        skills: isCore ? ['Leadership', 'Governance'] : [],
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.email)}`,
+        role: payload.role || 'member',
+        roleTitle: payload.roleTitle || 'Community Member',
+        status: isCore ? 'approved' : 'pending_review',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      store.profiles.push(user);
+      saveStore(store);
     }
 
     // Handle Profile Update (POST / PUT)

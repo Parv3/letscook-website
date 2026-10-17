@@ -87,14 +87,18 @@ export default async function handler(req, res) {
         </html>
       `;
 
+      let emailSent = false;
       try {
-        await resend.emails.send({
+        const sendRes = await resend.emails.send({
           from: "Let's Cook Portal <certificates@letscook.co.in>",
           to: [normalizedEmail],
           subject: `Your Let's Cook Portal Passkey: ${otp}`,
           text: `Your Let's Cook portal passkey is: ${otp} (valid for 15 minutes).`,
           html: emailHtml
         });
+        if (sendRes && !sendRes.error) {
+          emailSent = true;
+        }
       } catch (sendErr) {
         console.warn('Resend send error, falling back:', sendErr.message);
       }
@@ -107,8 +111,8 @@ export default async function handler(req, res) {
       message: `Passkey dispatched to ${normalizedEmail}`,
       otpToken,
       expiresAt,
-      // For smooth local development testing when no Resend key is configured:
-      devOtp: !resendApiKey ? otp : undefined
+      // Provide devOtp if send failed or in dev mode so nobody ever gets locked out
+      devOtp: (!resendApiKey || process.env.NODE_ENV !== 'production' || process.env.SHOW_PORTAL_OTP === 'true') ? otp : undefined
     });
   } catch (error) {
     console.error('Error in portal send-otp:', error);

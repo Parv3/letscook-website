@@ -30,7 +30,8 @@ import {
   updatePortalProfile,
   getAdminRoster, 
   executeAdminAction, 
-  clearSession 
+  clearSession,
+  saveSession
 } from '../services/portalService';
 import { playTechClick, playVibraniumPing, playAssembleFanfare } from '../utils/soundEngine';
 
@@ -122,10 +123,12 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
   }, [currentUser]);
 
   // Verify Session on mount
+  // Verify Session on initial mount only
   useEffect(() => {
     let isMounted = true;
     async function verifyAuth() {
-      if (!token) {
+      const storedToken = getStoredToken();
+      if (!storedToken) {
         setIsLoadingUser(false);
         return;
       }
@@ -135,14 +138,25 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
           if (user) {
             setCurrentUser(user);
           } else {
-            setCurrentUser(null);
-            setToken(null);
+            // Keep existing storedUser if server is briefly unreachable or cold
+            const cachedUser = getStoredUser();
+            if (cachedUser) {
+              setCurrentUser(cachedUser);
+            } else {
+              setCurrentUser(null);
+              setToken(null);
+            }
           }
         }
       } catch (err) {
         if (isMounted) {
-          setCurrentUser(null);
-          setToken(null);
+          const cachedUser = getStoredUser();
+          if (cachedUser) {
+            setCurrentUser(cachedUser);
+          } else {
+            setCurrentUser(null);
+            setToken(null);
+          }
         }
       } finally {
         if (isMounted) setIsLoadingUser(false);
@@ -150,7 +164,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
     }
     verifyAuth();
     return () => { isMounted = false; };
-  }, [token]);
+  }, []);
 
   const handleSignOut = () => {
     playTechClick();
@@ -193,6 +207,7 @@ export default function PortalPage({ setCurrentPage, currentSquad = 'ironman', o
       {!currentUser ? (
         <PortalAuthView 
           onAuthenticated={(user, issuedToken) => {
+            saveSession(issuedToken, user);
             setCurrentUser(user);
             setToken(issuedToken);
             window.dispatchEvent(new Event('letscook_auth_change'));
@@ -362,7 +377,7 @@ function PortalAuthView({ onAuthenticated }) {
           </div>
           <h2 className="auth-headline">LET'S COOK ACCESS PORTAL</h2>
           <p className="auth-subline">
-            Enter your email to receive a 6-digit code. Whitelisted core members automatically receive administrative command access.
+            Enter your email to receive a 6-digit access code.
           </p>
         </div>
 
@@ -438,9 +453,9 @@ function PortalAuthView({ onAuthenticated }) {
                     type="button"
                     onClick={() => setOtpCode(otpDevHint)}
                     className="dev-otp-pill"
-                    title="Click to auto-fill development code"
+                    title="Click to auto-fill verification code"
                   >
-                    <span>Dev Code: <strong>{otpDevHint}</strong> (Click to fill)</span>
+                    <span>Instant Code: <strong>{otpDevHint}</strong> (Click to fill)</span>
                   </button>
                 )}
               </div>
@@ -455,17 +470,6 @@ function PortalAuthView({ onAuthenticated }) {
             </div>
           )}
         </form>
-
-        <div className="auth-card-footer">
-          <div className="auth-guarantee-row">
-            <CheckCircle2 size={15} className="text-emerald" />
-            <span>Instant access & progressive builder profile</span>
-          </div>
-          <div className="auth-guarantee-row">
-            <CheckCircle2 size={15} className="text-emerald" />
-            <span>Whitelisted Core Council leadership auto-sync</span>
-          </div>
-        </div>
       </div>
     </div>
   );

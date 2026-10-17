@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { playRepulsorSound } from '../utils/soundEngine';
+import { playGammaSmashSound } from '../utils/soundEngine';
 
 /**
  * HulkHologram
@@ -21,7 +21,7 @@ export default function HulkHologram({ isActive, onClose }) {
     if (!isActive) return;
 
     try {
-      playRepulsorSound();
+      playGammaSmashSound();
     } catch (e) {}
 
     const video = videoRef.current;

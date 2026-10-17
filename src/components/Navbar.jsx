@@ -66,7 +66,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
 
   const navItems = [
     { label: 'HOME', page: 'home' },
-    { label: 'PORTAL', page: 'portal' },
     { label: 'CERTIFICATIONS', page: 'verify' },
     { label: 'LINKS', page: 'links' }
   ];
@@ -122,7 +121,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
           ))}
         </div>
 
-        {/* Right Actions: Sound, Search, Terminal, Pitch, Profile/Join, Mobile */}
+        {/* Right Actions: Sound, Search, Terminal, Profile/Join, Mobile */}
         <div className="nav-actions">
           <button 
             onClick={toggleSound} 
@@ -149,13 +148,6 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
             aria-label="Open Interactive Shell"
           >
             <Terminal size={17} />
-          </button>
-
-          <button 
-            onClick={() => { playTechClick(); onOpenPitchModal(); }} 
-            className="btn-secondary desktop-cta"
-          >
-            <Lightbulb size={16} /> PITCH IDEA
           </button>
 
           {/* Profile Circle Avatar / Dropdown or Login CTA */}
@@ -209,7 +201,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
                       onClick={() => {
                         playTechClick();
                         setProfileDropdownOpen(false);
-                        if (window.history && window.history.pushState) window.history.pushState(null, '', '/portal');
+                        if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
                         setCurrentPage('portal');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
@@ -223,7 +215,7 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
                       onClick={() => {
                         playTechClick();
                         setProfileDropdownOpen(false);
-                        if (window.history && window.history.pushState) window.history.pushState(null, '', '/portal');
+                        if (window.history && window.history.pushState) window.history.pushState(null, '', '/join');
                         setCurrentPage('portal');
                         window.dispatchEvent(new Event('open_profile_edit'));
                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -255,14 +247,14 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
               onClick={() => {
                 playTechClick();
                 if (window.history && window.history.pushState) {
-                  window.history.pushState(null, '', '/portal');
+                  window.history.pushState(null, '', '/join');
                 }
                 setCurrentPage('portal');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="btn-primary desktop-cta"
             >
-              PORTAL <ArrowUpRight size={16} />
+              JOIN US <ArrowUpRight size={16} />
             </button>
           )}
 
@@ -341,14 +333,14 @@ export default function Navbar({ onOpenSearch, onOpenPitchModal, onOpenTerminal,
                     playTechClick();
                     setMobileMenuOpen(false);
                     if (window.history && window.history.pushState) {
-                      window.history.pushState(null, '', '/portal');
+                      window.history.pushState(null, '', '/join');
                     }
                     setCurrentPage('portal');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="btn-primary w-full"
                 >
-                  ENTER PORTAL <ArrowUpRight size={16} />
+                  JOIN US <ArrowUpRight size={16} />
                 </button>
               )}
             </div>

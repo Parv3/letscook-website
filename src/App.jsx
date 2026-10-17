@@ -42,7 +42,7 @@ export default function App() {
       if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
         return 'verify';
       }
-      if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin')) {
+      if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin') || path.includes('join')) {
         return 'portal';
       }
       if (path.includes('links') || hash.includes('links') || search.includes('links')) {
@@ -71,7 +71,7 @@ export default function App() {
       const hash = window.location.hash.toLowerCase();
       if (path.includes('verify') || hash.includes('verify') || path.includes('certificate')) {
         setCurrentPage('verify');
-      } else if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin')) {
+      } else if (path.includes('portal') || hash.includes('portal') || path.includes('register') || path.includes('login') || path.includes('admin') || path.includes('join')) {
         setCurrentPage('portal');
       } else if (path.includes('links') || hash.includes('links')) {
         setCurrentPage('links');

@@ -13,6 +13,7 @@ import {
   playInversionSound, 
   playHoverRumbleTick,
   playRepulsorSound,
+  playGammaSmashSound,
   playVibraniumPing,
   playThunderStrike,
   playAssembleFanfare,
@@ -402,7 +403,7 @@ export const SQUADS_DATA = {
       { title: 'Generative 3D & Brand Identity', desc: 'WebGL shaders, procedural graphics, and distinctive visual identities.' }
     ],
     arsenal: ['Figma', 'WebGL', 'Tailwind', 'Three.js', 'Spline', 'Framer'],
-    sound: playRepulsorSound,
+    sound: playGammaSmashSound,
     insigniaSvg: (
       <svg viewBox="0 0 100 100" className="w-20 h-20 gamma-anim" width="80" height="80">
         <defs>
@@ -497,7 +498,7 @@ export default function HomePage({
 
   const handleToggleHulk = () => {
     try {
-      playRepulsorSound();
+      playGammaSmashSound();
     } catch (_) {}
     setIsHulkActive(prev => !prev);
   };
@@ -658,6 +659,12 @@ export default function HomePage({
 
           {/* Main Headline */}
           <div className="hero-content">
+            <div className="hero-eyebrow-pill">
+              <span className="eyebrow-pulse-dot" />
+              <Sparkles size={13} className="pill-spark" />
+              <span>STUDENT BUILDER COLLECTIVE &middot; BATCH 2026</span>
+            </div>
+
             <h1 className="hero-title">
               <span className="hero-line-1">
                 CODE, BUILD,{' '}
@@ -689,9 +696,9 @@ export default function HomePage({
                 onClick={() => {
                   playTechClick();
                   if (window.history && window.history.pushState) {
-                    window.history.pushState(null, '', '/links');
+                    window.history.pushState(null, '', '/join');
                   }
-                  setCurrentPage('links');
+                  setCurrentPage('portal');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="btn-primary btn-lg glow-btn"
@@ -841,9 +848,9 @@ export default function HomePage({
                     onClick={() => {
                       playTechClick();
                       if (window.history && window.history.pushState) {
-                        window.history.pushState(null, '', '/links');
+                        window.history.pushState(null, '', '/join');
                       }
-                      setCurrentPage('links');
+                      setCurrentPage('portal');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className="btn-primary glow-btn squad-enlist-btn"
@@ -1301,6 +1308,50 @@ export default function HomePage({
           max-width: 900px;
           position: relative;
           z-index: 10;
+        }
+
+        .hero-eyebrow-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          margin-bottom: 20px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 9999px;
+          font-family: var(--font-display);
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #e2e8f0;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .hero-eyebrow-pill:hover {
+          border-color: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
+        }
+
+        .eyebrow-pulse-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #22c55e;
+          box-shadow: 0 0 8px #22c55e;
+          animation: eyebrowPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes eyebrowPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .pill-spark {
+          color: #fbbf24;
         }
 
         .hero-title {

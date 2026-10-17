@@ -399,10 +399,96 @@ export const playRepulsorSound = () => {
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
-
     osc.start(now);
     osc.stop(now + 0.35);
+  } catch (err) {
+    // Audio fallback
+  }
+};
+
+/**
+ * 8b. Hulk Gamma Shockwave / Seismic Smash
+ * Thunderous sub-bass impact (110Hz -> 28Hz) with distorted low-end saturation and seismic rumble.
+ */
+export const playGammaSmashSound = () => {
+  if (soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // 1. Heavy Seismic Sub-Bass Impact (110Hz -> 28Hz)
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    const subFilter = ctx.createBiquadFilter();
+
+    subFilter.type = 'lowpass';
+    subFilter.frequency.setValueAtTime(320, now);
+    subFilter.frequency.exponentialRampToValueAtTime(65, now + 0.55);
+
+    subOsc.type = 'sawtooth';
+    subOsc.frequency.setValueAtTime(110, now);
+    subOsc.frequency.exponentialRampToValueAtTime(28, now + 0.55);
+
+    subGain.gain.setValueAtTime(0.4, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+
+    subOsc.connect(subFilter);
+    subFilter.connect(subGain);
+    subGain.connect(ctx.destination);
+
+    subOsc.start(now);
+    subOsc.stop(now + 0.55);
+
+    // 2. Concussive Punch Acoustic Crack
+    const punchOsc = ctx.createOscillator();
+    const punchGain = ctx.createGain();
+    const punchFilter = ctx.createBiquadFilter();
+
+    punchFilter.type = 'bandpass';
+    punchFilter.frequency.setValueAtTime(180, now);
+    punchFilter.Q.setValueAtTime(1.8, now);
+
+    punchOsc.type = 'triangle';
+    punchOsc.frequency.setValueAtTime(180, now);
+    punchOsc.frequency.exponentialRampToValueAtTime(45, now + 0.2);
+
+    punchGain.gain.setValueAtTime(0.35, now);
+    punchGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    punchOsc.connect(punchFilter);
+    punchFilter.connect(punchGain);
+    punchGain.connect(ctx.destination);
+
+    punchOsc.start(now);
+    punchOsc.stop(now + 0.2);
+
+    // 3. Subtle low-end noise rumble (kinetic shockwave)
+    const bufferSize = ctx.sampleRate * 0.35;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = (Math.random() * 2 - 1) * 0.6;
+    }
+
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(260, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(40, now + 0.35);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.25, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    whiteNoise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    whiteNoise.start(now);
+    whiteNoise.stop(now + 0.35);
   } catch (err) {
     // Audio fallback
   }

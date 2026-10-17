@@ -734,19 +734,6 @@ export default function CertificateVerifyPage({ setCurrentPage, currentSquad }) 
                   <div className="input-group">
                     <div className="input-label-row">
                       <label htmlFor="static-code-field">6-DIGIT PASSKEY</label>
-                      <div className="rate-limit-pills-wrap" title="Max 4 attempts per hour">
-                        <span className="rate-limit-badge">
-                          {RATE_LIMIT_MAX_ATTEMPTS - passkeyAttemptsCount} of {RATE_LIMIT_MAX_ATTEMPTS} tries left
-                        </span>
-                        <div className="rate-limit-dots">
-                          {[...Array(RATE_LIMIT_MAX_ATTEMPTS)].map((_, idx) => (
-                            <span 
-                              key={idx} 
-                              className={`attempt-dot ${idx < passkeyAttemptsCount ? 'used' : 'available'}`} 
-                            />
-                          ))}
-                        </div>
-                      </div>
                     </div>
                     <div className="input-field-wrap">
                       <KeyRound size={18} className="input-icon" />
