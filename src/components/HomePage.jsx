@@ -461,6 +461,51 @@ function ArcReactor3D() {
   );
 }
 
+// Editorial Handwritten Callout with Caveat cursive & SVG curved doodle arrows
+export function HandwrittenAnnotation({ 
+  text, 
+  arrow = 'right', 
+  className = '', 
+  color = '#ff2a6d', 
+  style = {} 
+}) {
+  return (
+    <div className={`handwritten-callout-wrap ${className}`} style={{ color, ...style }}>
+      <span className="handwritten-script-text">{text}</span>
+      {arrow === 'right' && (
+        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
+          <path d="M2 14C11 6 24 5 35 10M35 10L27 5M35 10L29 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'down-right' && (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
+          <path d="M4 6C8 18 16 25 26 26M26 26L17 25M26 26L23 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'down-left' && (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
+          <path d="M26 6C22 18 14 25 4 26M4 26L13 25M4 26L7 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'up-right' && (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" className="callout-arrow">
+          <path d="M4 24C9 14 17 7 26 4M26 4L17 4M26 4L24 13" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'up' && (
+        <svg width="24" height="32" viewBox="0 0 24 32" fill="none" className="callout-arrow">
+          <path d="M12 28C10 18 14 10 12 4M12 4L6 11M12 4L18 11" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+      {arrow === 'left' && (
+        <svg width="38" height="20" viewBox="0 0 38 20" fill="none" className="callout-arrow">
+          <path d="M36 14C27 6 14 5 3 10M3 10L11 5M3 10L9 17" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+    </div>
+  );
+}
+
 export default function HomePage({ 
   setCurrentPage, 
   onOpenPitchModal, 
@@ -667,27 +712,25 @@ export default function HomePage({
       )}
 
       {/* ========================================================= */}
-      {/* 1. HERO SECTION (TIGHT COMPOSITION & PROMINENT LIGHTING)  */}
+      {/* 1. HERO SECTION (EDITORIAL ASYMMETRIC COLLAGE)            */}
       {/* ========================================================= */}
-      <section id="hero-top" className="hero-section">
-        <div className="hero-container">
+      <section id="hero-top" className="hero-section editorial-hero">
+        <div className="hero-editorial-grid">
           
-
-
-          {/* Main Headline */}
-          <div className="hero-content">
+          {/* Left Column: Expressive Editorial Typography & Actions */}
+          <div className="hero-left-col">
             <div className="hero-eyebrow-pill">
               <span className="eyebrow-pulse-dot" />
-              <Sparkles size={13} className="pill-spark" />
-              <span>STUDENT BUILDER COLLECTIVE &middot; BATCH 2026</span>
+              <span>A NATIONWIDE STUDENT-BUILDER COMMUNITY</span>
             </div>
 
-            <h1 className="hero-title">
-              <span className="hero-line-1">
-                CODE, BUILD,{' '}
+            <h1 className="editorial-hero-title">
+              <span className="hero-title-lead">Big ideas don't build themselves.</span>
+              <span className="hero-title-follow">
+                Find your people.{' '}
                 <span 
                   ref={boxRef}
-                  className={`highlight-box ${isCreateInverted ? 'inverted-mode' : ''}`}
+                  className={`editorial-serif-accent ${isCreateInverted ? 'inverted-mode' : ''}`}
                   onMouseEnter={handleCreateMouseEnter}
                   onMouseLeave={handleCreateMouseLeave}
                   onTouchStart={handleCreateMouseEnter}
@@ -696,19 +739,18 @@ export default function HomePage({
                   onClick={() => {
                     if (isCreateInverted) handleCreateDoubleClick();
                   }}
-                  title={isCreateInverted ? "Tap or double-click to reset back to CREATE!" : "Hold or hover to break into LETS COOK!"}
+                  title={isCreateInverted ? "Double-click to reset!" : "Hover or hold to break into LETS COOK!"}
                 >
-                  {isCreateInverted ? 'LETS COOK' : 'CREATE'}
+                  {isCreateInverted ? "Let's Cook." : "Build what's next."}
                 </span>
-              </span>{' '}
-              <span className="hero-line-2">AND CONTRIBUTE</span>
+              </span>
             </h1>
 
-            <p className="hero-subtitle">
-              Student-run builder community shipping open-source software, hackathon projects, and production web systems together.
+            <p className="editorial-hero-desc">
+              Student-led community bringing students together across colleges to build real software, attend workshops, and collaborate.
             </p>
 
-            <div className="hero-cta-group">
+            <div className="hero-editorial-actions">
               <button 
                 onClick={() => {
                   playTechClick();
@@ -718,34 +760,141 @@ export default function HomePage({
                   setCurrentPage('portal');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="btn-primary btn-lg glow-btn"
+                className="btn-primary btn-lg editorial-main-cta glow-btn"
               >
-                JOIN US <ArrowUpRight size={18} />
+                Join the community <ArrowUpRight size={18} />
               </button>
+
               <button 
-                onClick={() => { playTechClick(); onOpenPitchModal(); }}
-                className="btn-secondary btn-lg"
+                onClick={() => {
+                  playTechClick();
+                  const el = document.getElementById('squads');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-secondary btn-lg editorial-sub-cta"
               >
-                <Lightbulb size={18} /> PITCH IDEA
+                Explore Squads ↓
               </button>
+            </div>
+
+            {/* Builder Avatar Stack / Proof Pill */}
+            <div className="hero-proof-badge">
+              <div className="avatar-overlap-stack">
+                <img 
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" 
+                  alt="Student builder" 
+                  className="stack-avatar" 
+                />
+                <img 
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" 
+                  alt="Student builder" 
+                  className="stack-avatar" 
+                />
+                <img 
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" 
+                  alt="Student builder" 
+                  className="stack-avatar" 
+                />
+                <img 
+                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" 
+                  alt="Student builder" 
+                  className="stack-avatar" 
+                />
+              </div>
+              <div className="proof-text-wrap">
+                <span className="proof-count-text">Students from <strong>200+ colleges</strong></span>
+                <span className="proof-sub-text">active and building daily</span>
+              </div>
             </div>
           </div>
 
-          {/* Integrated Student Builder Proof Strip */}
+          {/* Right Column: Layered Tilted Photographic Collage with Handwritten Doodles */}
+          <div className="hero-right-col">
+            <div className="hero-collage-scene">
+              {/* Top Handwritten Annotation */}
+              <HandwrittenAnnotation 
+                text="Learn. Build. Ship." 
+                arrow="down-right" 
+                color="var(--accent-burgundy, #e11d48)" 
+                className="collage-annotation annotation-top" 
+              />
+
+              {/* Tilted Photo Card 1 (Student Engineers Coding Together) */}
+              <div className="collage-card card-tilt-left">
+                <div className="collage-img-wrap">
+                  <img 
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80" 
+                    alt="Students coding together" 
+                    className="collage-img" 
+                  />
+                  <div className="collage-tag-pill">HACKATHON WAR ROOM</div>
+                </div>
+              </div>
+
+              {/* Tilted Photo Card 2 (Collaborative Brainstorm & Demo) */}
+              <div className="collage-card card-tilt-right">
+                <div className="collage-img-wrap">
+                  <img 
+                    src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=700&q=80" 
+                    alt="Student project demo" 
+                    className="collage-img" 
+                  />
+                  <div className="collage-tag-pill">PRODUCT SPRINT 2025</div>
+                </div>
+              </div>
+
+              {/* Middle Handwritten Annotation */}
+              <HandwrittenAnnotation 
+                text="Real people. Real projects." 
+                arrow="left" 
+                color="#38bdf8" 
+                className="collage-annotation annotation-mid" 
+              />
+
+              {/* Small Floating Metric Badge Card */}
+              <div className="collage-floating-badge">
+                <Sparkles size={16} className="badge-spark-icon" />
+                <div>
+                  <div className="badge-stat-num">100% Student Governed</div>
+                  <div className="badge-stat-sub">Zero faculty gatekeeping</div>
+                </div>
+              </div>
+
+              {/* Bottom Handwritten Annotation */}
+              <HandwrittenAnnotation 
+                text="Different campuses. Same vision." 
+                arrow="up-right" 
+                color="#facc15" 
+                className="collage-annotation annotation-bottom" 
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Integrated Telemetry Proof Strip */}
+        <div className="hero-telemetry-container">
           <div className="hero-telemetry-strip">
             <div className="telemetry-item">
-              <span className="telemetry-value">150+</span>
+              <span className="telemetry-value">200+</span>
               <div className="telemetry-text-group">
-                <span className="telemetry-label">ACTIVE BUILDERS</span>
-                <span className="telemetry-detail">Across engineering colleges</span>
+                <span className="telemetry-label">CAMPUSES REPRESENTED</span>
+                <span className="telemetry-detail">Across engineering institutions</span>
               </div>
             </div>
             <div className="telemetry-divider" />
             <div className="telemetry-item">
-              <span className="telemetry-value">12+</span>
+              <span className="telemetry-value">1,000+</span>
+              <div className="telemetry-text-group">
+                <span className="telemetry-label">ACTIVE BUILDERS</span>
+                <span className="telemetry-detail">Connected across WhatsApp & Discord</span>
+              </div>
+            </div>
+            <div className="telemetry-divider" />
+            <div className="telemetry-item">
+              <span className="telemetry-value">100+</span>
               <div className="telemetry-text-group">
                 <span className="telemetry-label">PROJECTS SHIPPED</span>
-                <span className="telemetry-detail">Deployed production software</span>
+                <span className="telemetry-detail">MVPs, open-source & production repos</span>
               </div>
             </div>
             <div className="telemetry-divider" />
@@ -754,14 +903,6 @@ export default function HomePage({
               <div className="telemetry-text-group">
                 <span className="telemetry-label">STUDENT LED</span>
                 <span className="telemetry-detail">Peer mentored & governed</span>
-              </div>
-            </div>
-            <div className="telemetry-divider" />
-            <div className="telemetry-item">
-              <span className="telemetry-value">3</span>
-              <div className="telemetry-text-group">
-                <span className="telemetry-label">HACKATHON PODIUMS</span>
-                <span className="telemetry-detail">Top-tier national finishes</span>
               </div>
             </div>
           </div>
@@ -1265,81 +1406,56 @@ export default function HomePage({
           z-index: 10;
         }
 
-        /* 1. HERO SECTION */
-        .hero-section {
-          position: relative;
-          padding: 36px 20px 56px 20px;
-          border-bottom: 1px solid var(--border-color);
-          overflow: hidden;
-          width: 100%;
-          max-width: 100vw;
-          box-sizing: border-box;
-          background: radial-gradient(circle at 50% 32%, var(--accent-burgundy-light) 0%, transparent 65%);
-        }
-
-        .hero-container {
-          position: relative;
-          z-index: 10;
-          max-width: 1000px;
-          margin: 0 auto;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          box-sizing: border-box;
-        }
-
-        /* Hero Top Badge */
-        .hero-top-badge {
+        /* ========================================================= */
+        /* EDITORIAL HERO & HANDWRITTEN ANNOTATIONS STYLES           */
+        /* ========================================================= */
+        .handwritten-callout-wrap {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 14px;
-          background-color: var(--bg-surface);
-          border: 1px solid var(--accent-burgundy-border);
-          border-radius: var(--radius-badge);
-          font-family: monospace;
-          font-size: 0.76rem;
+          user-select: none;
+          pointer-events: none;
+        }
+
+        .handwritten-script-text {
+          font-family: 'Caveat', cursive, sans-serif;
+          font-size: 1.35rem;
           font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--text-main);
-          box-shadow: 0 4px 18px var(--accent-burgundy-light);
-          margin-bottom: 18px;
-          backdrop-filter: blur(8px);
+          line-height: 1;
+          letter-spacing: 0.02em;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
-        .badge-pulse-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background-color: var(--accent-burgundy);
-          box-shadow: 0 0 10px var(--accent-burgundy);
-          animation: statusDotPulse 1.8s infinite ease-in-out;
+        .callout-arrow {
+          flex-shrink: 0;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
         }
 
-        @keyframes statusDotPulse {
-          0%, 100% { opacity: 0.4; transform: scale(0.9); }
-          50% { opacity: 1; transform: scale(1.3); }
+        /* 1. EDITORIAL HERO SECTION */
+        .editorial-hero {
+          position: relative;
+          padding: 32px 20px 48px 20px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          overflow: hidden;
+          background: radial-gradient(circle at 65% 25%, var(--accent-burgundy-light, rgba(225, 29, 72, 0.12)) 0%, transparent 60%),
+                      radial-gradient(circle at 15% 75%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                      #06070a;
         }
 
-        .badge-divider {
-          color: var(--text-dim);
+        .hero-editorial-grid {
+          max-width: 1240px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 48px;
+          align-items: center;
         }
 
-        .badge-squad {
-          color: var(--badge-text);
-          font-weight: 800;
-        }
-
-        .hero-content {
+        .hero-left-col {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          text-align: center;
-          margin-bottom: 34px;
-          max-width: 900px;
-          position: relative;
+          align-items: flex-start;
+          text-align: left;
           z-index: 10;
         }
 
@@ -1352,7 +1468,7 @@ export default function HomePage({
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 9999px;
-          font-family: var(--font-display);
+          font-family: monospace;
           font-size: 0.72rem;
           font-weight: 700;
           letter-spacing: 0.12em;
@@ -1360,13 +1476,7 @@ export default function HomePage({
           color: #e2e8f0;
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .hero-eyebrow-pill:hover {
-          border-color: rgba(255, 255, 255, 0.25);
-          transform: translateY(-1px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         }
 
         .eyebrow-pulse-dot {
@@ -1378,76 +1488,299 @@ export default function HomePage({
           animation: eyebrowPulse 2s infinite ease-in-out;
         }
 
-        @keyframes eyebrowPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        .pill-spark {
-          color: #fbbf24;
-        }
-
-        .hero-title {
-          font-family: var(--font-display);
-          font-size: clamp(1.75rem, 6vw, 4.4rem);
-          font-weight: 900;
-          line-height: 1.14;
-          letter-spacing: -0.02em;
-          margin-bottom: 18px;
+        .editorial-hero-title {
+          font-family: var(--font-display, 'Space Grotesk', sans-serif);
+          font-size: clamp(2.2rem, 4.6vw, 4rem);
+          font-weight: 800;
+          line-height: 1.1;
+          letter-spacing: -0.03em;
           color: #ffffff;
-          text-shadow: 0 2px 24px rgba(0, 0, 0, 0.85);
+          margin: 0 0 16px 0;
         }
 
-        .highlight-box {
+        .hero-title-lead {
+          display: block;
+          color: #ffffff;
+          margin-bottom: 4px;
+        }
+
+        .hero-title-follow {
+          display: block;
+          color: #e2e8f0;
+        }
+
+        .editorial-serif-accent {
+          font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-weight: 400;
+          background: linear-gradient(135deg, #ff2a6d 0%, #fb7185 50%, #f43f5e 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           display: inline-block;
-          background-color: var(--accent-burgundy);
-          color: var(--hero-highlight-text);
-          padding: 2px 14px;
-          margin: 0 4px;
-          border-radius: var(--radius-badge);
-          font-weight: 900;
-          box-shadow: 0 0 24px var(--accent-burgundy);
+          padding: 0 4px;
           cursor: pointer;
           user-select: none;
-          transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+          transition: all 0.3s ease;
         }
 
-        .highlight-box.inverted-mode {
-          background-color: #ffffff !important;
-          color: #060608 !important;
-          box-shadow: 0 0 30px rgba(255, 255, 255, 0.9) !important;
+        .editorial-serif-accent.inverted-mode {
+          background: #ffffff !important;
+          -webkit-text-fill-color: #060608 !important;
+          padding: 2px 12px;
+          border-radius: 8px;
+          box-shadow: 0 0 25px rgba(255, 255, 255, 0.85);
         }
 
-        .hero-subtitle {
-          font-size: clamp(0.95rem, 1.8vw, 1.18rem);
-          color: #cbd5e1;
-          max-width: 680px;
-          margin-bottom: 28px;
+        .editorial-hero-desc {
+          font-size: clamp(0.96rem, 1.4vw, 1.12rem);
+          color: #94a3b8;
+          max-width: 540px;
+          margin: 0 0 26px 0;
           line-height: 1.6;
-          text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7);
         }
 
-        .hero-cta-group {
+        .hero-editorial-actions {
           display: flex;
+          align-items: center;
           gap: 16px;
           flex-wrap: wrap;
+          margin-bottom: 28px;
+        }
+
+        .editorial-main-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 13px 26px;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 0.95rem;
+        }
+
+        .editorial-sub-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 13px 22px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.92rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #e2e8f0;
+          transition: all 0.2s ease;
+          cursor: pointer;
+        }
+
+        .editorial-sub-cta:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+        }
+
+        .hero-proof-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 6px 14px 6px 6px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 9999px;
+          backdrop-filter: blur(8px);
+        }
+
+        .avatar-overlap-stack {
+          display: flex;
+          align-items: center;
+        }
+
+        .stack-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 2px solid #06070a;
+          object-fit: cover;
+          margin-left: -8px;
+        }
+
+        .stack-avatar:first-child {
+          margin-left: 0;
+        }
+
+        .proof-text-wrap {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.25;
+        }
+
+        .proof-count-text {
+          font-size: 0.8rem;
+          color: #e2e8f0;
+        }
+
+        .proof-count-text strong {
+          color: #ffffff;
+        }
+
+        .proof-sub-text {
+          font-size: 0.72rem;
+          color: #64748b;
+        }
+
+        /* Right Column Collage */
+        .hero-right-col {
+          position: relative;
+          width: 100%;
+        }
+
+        .hero-collage-scene {
+          position: relative;
+          width: 100%;
+          min-height: 400px;
+          display: flex;
+          align-items: center;
           justify-content: center;
+        }
+
+        .collage-card {
+          position: absolute;
+          border-radius: 14px;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.06);
+          background: #0f1118;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+        }
+
+        .card-tilt-left {
+          top: 10px;
+          left: 10px;
+          width: 70%;
+          max-width: 340px;
+          transform: rotate(-2.8deg);
+          z-index: 2;
+        }
+
+        .card-tilt-right {
+          bottom: 15px;
+          right: 15px;
+          width: 65%;
+          max-width: 320px;
+          transform: rotate(3.4deg);
+          z-index: 3;
+        }
+
+        .collage-card:hover {
+          transform: scale(1.03) rotate(0deg);
+          z-index: 6;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(225, 29, 72, 0.35);
+        }
+
+        .collage-img-wrap {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+        }
+
+        .collage-img {
+          width: 100%;
+          height: 195px;
+          object-fit: cover;
+          display: block;
+        }
+
+        .collage-tag-pill {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          background: rgba(6, 7, 10, 0.88);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 4px 10px;
+          border-radius: 9999px;
+          font-family: monospace;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          color: #e2e8f0;
+        }
+
+        .collage-floating-badge {
+          position: absolute;
+          top: 50%;
+          left: 36%;
+          transform: translate(-50%, -50%);
+          z-index: 5;
+          background: rgba(14, 16, 24, 0.92);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          padding: 10px 14px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        .badge-spark-icon {
+          color: #facc15;
+          flex-shrink: 0;
+        }
+
+        .badge-stat-num {
+          font-family: var(--font-display);
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .badge-stat-sub {
+          font-size: 0.68rem;
+          color: #94a3b8;
+        }
+
+        .collage-annotation {
+          position: absolute;
+        }
+
+        .annotation-top {
+          top: -24px;
+          left: 20%;
+          z-index: 7;
+        }
+
+        .annotation-mid {
+          bottom: 22%;
+          right: -10px;
+          z-index: 7;
+        }
+
+        .annotation-bottom {
+          bottom: -24px;
+          left: 10%;
+          z-index: 7;
+        }
+
+        /* Hero Telemetry Strip */
+        .hero-telemetry-container {
+          max-width: 1240px;
+          margin: 36px auto 0 auto;
+          width: 100%;
         }
 
         .hero-telemetry-strip {
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 28px;
-          padding: 14px 28px;
-          background: rgba(14, 14, 18, 0.75);
+          justify-content: space-between;
+          gap: 20px;
+          padding: 16px 28px;
+          background: rgba(14, 16, 24, 0.75);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: var(--radius-card);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          max-width: 960px;
           width: 100%;
+          box-sizing: border-box;
         }
 
         .telemetry-item {
@@ -1459,7 +1792,7 @@ export default function HomePage({
 
         .telemetry-value {
           font-family: var(--font-display);
-          font-size: 1.45rem;
+          font-size: 1.55rem;
           font-weight: 800;
           color: #ffffff;
           line-height: 1;
@@ -1474,22 +1807,33 @@ export default function HomePage({
 
         .telemetry-label {
           font-family: var(--font-display);
-          font-size: 0.76rem;
+          font-size: 0.74rem;
           font-weight: 800;
-          color: var(--text-main);
-          letter-spacing: 0.05em;
+          color: #e2e8f0;
+          letter-spacing: 0.06em;
         }
 
         .telemetry-detail {
-          font-size: 0.72rem;
-          color: var(--text-dim);
+          font-size: 0.7rem;
+          color: #94a3b8;
           line-height: 1.2;
         }
 
         .telemetry-divider {
           width: 1px;
-          height: 28px;
+          height: 32px;
           background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 1080px) {
+          .hero-editorial-grid {
+            grid-template-columns: 1fr;
+            gap: 36px;
+          }
+          .hero-right-col {
+            max-width: 500px;
+            margin: 0 auto;
+          }
         }
 
         @media (max-width: 768px) {
@@ -1502,12 +1846,28 @@ export default function HomePage({
           .telemetry-divider {
             display: none;
           }
+          .collage-card {
+            max-width: 270px;
+          }
+          .collage-img {
+            height: 160px;
+          }
         }
 
         @media (max-width: 480px) {
           .hero-telemetry-strip {
             grid-template-columns: 1fr;
-            gap: 14px;
+            gap: 12px;
+            padding: 14px;
+          }
+          .hero-editorial-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+          .editorial-main-cta,
+          .editorial-sub-cta {
+            width: 100%;
+            justify-content: center;
           }
         }
 
