@@ -70,14 +70,20 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
     playGbaBip();
   }, []);
 
+  const queueDirection = useCallback((nx, ny) => {
+    const s = stateRef.current;
+    if (nx !== 0 && (s.dir.x !== 0 || s.nextDir.x !== 0)) return;
+    if (ny !== 0 && (s.dir.y !== 0 || s.nextDir.y !== 0)) return;
+    s.nextDir = { x: nx, y: ny };
+  }, []);
+
   // Controls triggers
   useEffect(() => {
-    const s = stateRef.current;
-    if (dpadState.up && s.dir.y === 0) s.nextDir = { x: 0, y: -1 };
-    if (dpadState.down && s.dir.y === 0) s.nextDir = { x: 0, y: 1 };
-    if (dpadState.left && s.dir.x === 0) s.nextDir = { x: -1, y: 0 };
-    if (dpadState.right && s.dir.x === 0) s.nextDir = { x: 1, y: 0 };
-  }, [dpadState]);
+    if (dpadState.up) queueDirection(0, -1);
+    if (dpadState.down) queueDirection(0, 1);
+    if (dpadState.left) queueDirection(-1, 0);
+    if (dpadState.right) queueDirection(1, 0);
+  }, [dpadState, queueDirection]);
 
   useEffect(() => {
     if (buttonA || startTrigger) {
@@ -88,20 +94,43 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
     }
   }, [buttonA, buttonB, startTrigger, startGame, onExit]);
 
+  // Touch swipe support on canvas
+  const touchStartRef = useRef(null);
+  const handleTouchStart = (e) => {
+    if (stateRef.current.gameState !== 'playing') {
+      startGame();
+      return;
+    }
+    if (e.touches && e.touches[0]) {
+      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+  const handleTouchEnd = (e) => {
+    if (!touchStartRef.current || !e.changedTouches || !e.changedTouches[0]) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 20) queueDirection(1, 0);
+      else if (dx < -20) queueDirection(-1, 0);
+    } else {
+      if (dy > 20) queueDirection(0, 1);
+      else if (dy < -20) queueDirection(0, -1);
+    }
+  };
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const s = stateRef.current;
       if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-        if (s.dir.y === 0) s.nextDir = { x: 0, y: -1 };
+        queueDirection(0, -1);
       } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-        if (s.dir.y === 0) s.nextDir = { x: 0, y: 1 };
+        queueDirection(0, 1);
       } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        if (s.dir.x === 0) s.nextDir = { x: -1, y: 0 };
+        queueDirection(-1, 0);
       } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        if (s.dir.x === 0) s.nextDir = { x: 1, y: 0 };
+        queueDirection(1, 0);
       } else if (e.code === 'Space' || e.key === 'z' || e.key === 'Z' || e.code === 'Enter') {
-        if (s.gameState !== 'playing') startGame();
+        if (stateRef.current.gameState !== 'playing') startGame();
       } else if (e.key === 'l' || e.key === 'L') {
         if (onOpenLeaderboard) onOpenLeaderboard();
       } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'X') {
@@ -343,23 +372,37 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
       if (delta > 80) delta = 80;
 
       accumulator += delta;
-      while (accumulator >= TICK_STEP) {
+      if (accumulator > 100) accumulator = TICK_STEP;
+      let ticks = 0;
+      while (accumulator >= TICK_STEP && ticks < 5) {
         tickPhysics();
         accumulator -= TICK_STEP;
+        ticks++;
       }
 
       draw();
     };
 
     animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      const s = stateRef.current;
+      if (s.score > 0) {
+        submitScore('snake', s.score);
+      }
+    };
   }, []);
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
       <canvas
         ref={canvasRef}
-        className="w-full h-full object-contain"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onClick={() => {
+          if (stateRef.current.gameState !== 'playing') startGame();
+        }}
+        className="w-full h-full object-contain cursor-pointer"
         style={{ imageRendering: 'pixelated' }}
       />
     </div>

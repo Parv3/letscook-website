@@ -43,6 +43,11 @@ export default async function handler(req, res) {
       list.sort((a, b) => b.score - a.score);
       if (list.length > 100) list = list.slice(0, 100);
 
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
       fs.writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf8');
       return res.status(200).json({ success: true, entry });
     } catch (e) {

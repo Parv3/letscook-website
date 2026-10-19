@@ -529,23 +529,33 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
       if (delta > 80) delta = 80;
 
       accumulator += delta;
-      while (accumulator >= TICK_STEP) {
+      if (accumulator > 100) accumulator = TICK_STEP;
+      let ticks = 0;
+      while (accumulator >= TICK_STEP && ticks < 5) {
         tickPhysics();
         accumulator -= TICK_STEP;
+        ticks++;
       }
 
       draw();
     };
 
     animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      const s = stateRef.current;
+      if (s.score > 0) {
+        submitScore('dino', s.score);
+      }
+    };
   }, []);
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
       <canvas
         ref={canvasRef}
-        className="w-full h-full object-contain"
+        onPointerDown={triggerJump}
+        className="w-full h-full object-contain cursor-pointer"
         style={{ imageRendering: 'pixelated' }}
       />
     </div>

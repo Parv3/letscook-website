@@ -75,14 +75,17 @@ export default function GbaCartridgeMenu({ onSelectGame, dpadState, buttonA, but
     });
   };
 
-  // Physical D-Pad triggers
+  const prevDpadRef = useRef({});
+  // Physical D-Pad triggers (only trigger on initial press edge)
   useEffect(() => {
-    if (dpadState.down || dpadState.right) {
+    const prev = prevDpadRef.current;
+    if ((dpadState.down && !prev.down) || (dpadState.right && !prev.right)) {
       moveSelection(1);
-    } else if (dpadState.up || dpadState.left) {
+    } else if ((dpadState.up && !prev.up) || (dpadState.left && !prev.left)) {
       moveSelection(-1);
     }
-  }, [dpadState.up, dpadState.down, dpadState.left, dpadState.right]);
+    prevDpadRef.current = { ...dpadState };
+  }, [dpadState]);
 
   // A button or Start to launch
   useEffect(() => {

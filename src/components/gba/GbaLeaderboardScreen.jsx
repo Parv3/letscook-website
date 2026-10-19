@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getLeaderboard } from '../../services/arcadeLeaderboardService';
+import { getLeaderboard, fetchGlobalLeaderboard, getPlayerCallsign, setPlayerCallsign } from '../../services/arcadeLeaderboardService';
 import { playGbaBip, playGbaBoot } from './GbaAudio';
 
 const TABS = [
@@ -13,10 +13,38 @@ const TABS = [
 export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, buttonA, buttonB }) {
   const [activeTab, setActiveTab] = useState('all');
   const [scrollIndex, setScrollIndex] = useState(0);
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [playerCallsign, setCallsignState] = useState(() => getPlayerCallsign());
+  const [isEditingCallsign, setIsEditingCallsign] = useState(false);
+  const [editInput, setEditInput] = useState('');
+
+  // Fetch global and listen for live score updates
+  useEffect(() => {
+    fetchGlobalLeaderboard().then(() => setRefreshCount(c => c + 1));
+    const handleUpdate = () => {
+      setRefreshCount(c => c + 1);
+      setCallsignState(getPlayerCallsign());
+    };
+    window.addEventListener('arcade_leaderboard_updated', handleUpdate);
+    return () => window.removeEventListener('arcade_leaderboard_updated', handleUpdate);
+  }, []);
 
   const leaderboard = useMemo(() => {
     return getLeaderboard(activeTab);
-  }, [activeTab]);
+  }, [activeTab, refreshCount]);
+
+  const handleSaveCallsign = (e) => {
+    e?.preventDefault();
+    if (editInput.trim()) {
+      const saved = setPlayerCallsign(editInput.trim());
+      setCallsignState(saved);
+      setIsEditingCallsign(false);
+      setRefreshCount(c => c + 1);
+      playGbaBip();
+    } else {
+      setIsEditingCallsign(false);
+    }
+  };
 
   // Handle D-Pad left/right for tabs
   useEffect(() => {
@@ -104,6 +132,38 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
           <span className="trophy-pulse">🏆</span>
           <span>LEADERBOARD</span>
         </div>
+
+        {/* Player Profile / Callsign Tag */}
+        <div className="lb-player-badge">
+          {isEditingCallsign ? (
+            <form onSubmit={handleSaveCallsign} className="flex items-center gap-1">
+              <input
+                type="text"
+                maxLength={10}
+                value={editInput}
+                onChange={e => setEditInput(e.target.value.toUpperCase())}
+                placeholder="CALLSIGN"
+                autoFocus
+                className="bg-black border border-cyan-400 text-cyan-300 text-xs px-1.5 py-0.5 rounded uppercase font-mono w-24 outline-none"
+              />
+              <button type="submit" className="text-xs text-green-400 hover:text-green-300 font-bold px-1">✓</button>
+              <button type="button" onClick={() => setIsEditingCallsign(false)} className="text-xs text-slate-400 hover:text-slate-200 font-bold px-1">✕</button>
+            </form>
+          ) : (
+            <button
+              onClick={() => {
+                setEditInput(playerCallsign);
+                setIsEditingCallsign(true);
+              }}
+              title="Click to edit your arcade callsign"
+              className="flex items-center gap-1 text-[11px] bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 px-2 py-0.5 rounded text-cyan-300 transition-colors"
+            >
+              <span className="text-slate-400">PILOT:</span>
+              <span className="font-bold tracking-wider">{playerCallsign}</span>
+              <span className="text-[10px] text-slate-400 ml-0.5">✏️</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Category Tabs */}
@@ -143,17 +203,19 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
               const isGold = actualRank === 1;
               const isSilver = actualRank === 2;
               const isBronze = actualRank === 3;
+              const isMe = item.isPlayer || item.callsign === playerCallsign;
 
               return (
                 <div 
                   key={item.id} 
-                  className={`lb-row ${isGold ? 'row-gold' : isSilver ? 'row-silver' : isBronze ? 'row-bronze' : ''}`}
+                  className={`lb-row ${isMe ? 'row-me' : ''} ${isGold ? 'row-gold' : isSilver ? 'row-silver' : isBronze ? 'row-bronze' : ''}`}
                 >
                   <span className="col-rank">
                     {isGold ? '🥇 1' : isSilver ? '🥈 2' : isBronze ? '🥉 3' : `#${actualRank}`}
                   </span>
                   <span className="col-player" title={item.fullName || item.callsign}>
                     {item.callsign}
+                    {isMe && <span className="ml-1 text-[9px] text-cyan-400 font-normal">(YOU)</span>}
                   </span>
                   <span className="col-squad">
                     <span className={`squad-pill squad-${item.squad || 'ironman'}`}>
@@ -296,6 +358,28 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
           margin-bottom: 3px;
         }
 
+        .lb-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 4px;
+        }
+
+        .lb-title {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.85rem;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          color: #fbbf24;
+        }
+
+        .lb-player-badge {
+          display: flex;
+          align-items: center;
+        }
+
         .lb-rows-wrap {
           flex: 1;
           overflow: hidden;
@@ -309,8 +393,13 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
           grid-template-columns: 36px 75px 65px 65px 1fr;
           align-items: center;
           font-size: 0.64rem;
-          padding: 2px 0;
+          padding: 2px 4px;
           border-radius: 3px;
+        }
+
+        .row-me {
+          border: 1px solid rgba(0, 240, 255, 0.45);
+          background: rgba(0, 240, 255, 0.08);
         }
 
         .row-gold {

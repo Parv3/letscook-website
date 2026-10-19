@@ -308,7 +308,26 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
                 ball.y - ball.r < b.y + b.h
               ) {
                 b.alive = false;
-                ball.vy = -ball.vy;
+
+                // Smart collision direction: bounce horizontal or vertical based on smaller overlap
+                const overlapLeft = (ball.x + ball.r) - b.x;
+                const overlapRight = (b.x + b.w) - (ball.x - ball.r);
+                const overlapTop = (ball.y + ball.r) - b.y;
+                const overlapBottom = (b.y + b.h) - (ball.y - ball.r);
+                const minOverlapX = Math.min(overlapLeft, overlapRight);
+                const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+                if (minOverlapX < minOverlapY) {
+                  ball.vx = -ball.vx;
+                } else {
+                  ball.vy = -ball.vy;
+                }
+
+                // Ensure ball never gets trapped bouncing horizontally
+                if (Math.abs(ball.vy) < 0.7) {
+                  ball.vy = (ball.vy < 0 ? -1 : 1) * 0.9;
+                }
+
                 s.score += b.points;
                 setScore(s.score);
                 playGbaScore();
@@ -544,16 +563,25 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
       if (delta > 80) delta = 80;
 
       accumulator += delta;
-      while (accumulator >= TICK_STEP) {
+      if (accumulator > 100) accumulator = TICK_STEP;
+      let ticks = 0;
+      while (accumulator >= TICK_STEP && ticks < 5) {
         tickPhysics();
         accumulator -= TICK_STEP;
+        ticks++;
       }
 
       draw();
     };
 
     animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+      const s = stateRef.current;
+      if (s.score > 0) {
+        submitScore('shield', s.score);
+      }
+    };
   }, []);
 
   return (
