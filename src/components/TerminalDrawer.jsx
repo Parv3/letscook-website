@@ -104,11 +104,21 @@ export default function TerminalDrawer({
       }
     };
 
+    const handleBlur = () => {
+      setDpadState({ up: false, down: false, left: false, right: false });
+      setButtonA(false);
+      setButtonB(false);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('mouseup', handleBlur);
+    window.addEventListener('blur', handleBlur);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('mouseup', handleBlur);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [isOpen, activeCartridge]);
 
@@ -121,6 +131,9 @@ export default function TerminalDrawer({
 
   const handleSelectGame = (gameId) => {
     playGbaBip();
+    setDpadState({ up: false, down: false, left: false, right: false });
+    setButtonA(false);
+    setButtonB(false);
     setActiveCartridge(gameId);
   };
 
@@ -217,8 +230,10 @@ export default function TerminalDrawer({
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, up: true }))}
                   onMouseUp={() => setDpadState(p => ({ ...p, up: false }))}
+                  onMouseLeave={() => setDpadState(p => ({ ...p, up: false }))}
                   onTouchStart={() => setDpadState(p => ({ ...p, up: true }))}
                   onTouchEnd={() => setDpadState(p => ({ ...p, up: false }))}
+                  onTouchCancel={() => setDpadState(p => ({ ...p, up: false }))}
                   className={`dpad-btn dpad-up ${dpadState.up ? 'active-pressed' : ''}`}
                   aria-label="D-Pad Up"
                 >
@@ -229,8 +244,10 @@ export default function TerminalDrawer({
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, left: true }))}
                   onMouseUp={() => setDpadState(p => ({ ...p, left: false }))}
+                  onMouseLeave={() => setDpadState(p => ({ ...p, left: false }))}
                   onTouchStart={() => setDpadState(p => ({ ...p, left: true }))}
                   onTouchEnd={() => setDpadState(p => ({ ...p, left: false }))}
+                  onTouchCancel={() => setDpadState(p => ({ ...p, left: false }))}
                   className={`dpad-btn dpad-left ${dpadState.left ? 'active-pressed' : ''}`}
                   aria-label="D-Pad Left"
                 >
@@ -243,8 +260,10 @@ export default function TerminalDrawer({
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, right: true }))}
                   onMouseUp={() => setDpadState(p => ({ ...p, right: false }))}
+                  onMouseLeave={() => setDpadState(p => ({ ...p, right: false }))}
                   onTouchStart={() => setDpadState(p => ({ ...p, right: true }))}
                   onTouchEnd={() => setDpadState(p => ({ ...p, right: false }))}
+                  onTouchCancel={() => setDpadState(p => ({ ...p, right: false }))}
                   className={`dpad-btn dpad-right ${dpadState.right ? 'active-pressed' : ''}`}
                   aria-label="D-Pad Right"
                 >
@@ -255,8 +274,10 @@ export default function TerminalDrawer({
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, down: true }))}
                   onMouseUp={() => setDpadState(p => ({ ...p, down: false }))}
+                  onMouseLeave={() => setDpadState(p => ({ ...p, down: false }))}
                   onTouchStart={() => setDpadState(p => ({ ...p, down: true }))}
                   onTouchEnd={() => setDpadState(p => ({ ...p, down: false }))}
+                  onTouchCancel={() => setDpadState(p => ({ ...p, down: false }))}
                   className={`dpad-btn dpad-down ${dpadState.down ? 'active-pressed' : ''}`}
                   aria-label="D-Pad Down"
                 >
@@ -370,8 +391,10 @@ export default function TerminalDrawer({
                     type="button"
                     onMouseDown={() => setButtonB(true)}
                     onMouseUp={() => setButtonB(false)}
+                    onMouseLeave={() => setButtonB(false)}
                     onTouchStart={() => setButtonB(true)}
                     onTouchEnd={() => setButtonB(false)}
+                    onTouchCancel={() => setButtonB(false)}
                     className={`gba-round-btn btn-b ${buttonB ? 'active-pressed' : ''}`}
                     aria-label="Button B"
                   >
@@ -385,8 +408,10 @@ export default function TerminalDrawer({
                     type="button"
                     onMouseDown={() => setButtonA(true)}
                     onMouseUp={() => setButtonA(false)}
+                    onMouseLeave={() => setButtonA(false)}
                     onTouchStart={() => setButtonA(true)}
                     onTouchEnd={() => setButtonA(false)}
+                    onTouchCancel={() => setButtonA(false)}
                     className={`gba-round-btn btn-a ${buttonA ? 'active-pressed' : ''}`}
                     aria-label="Button A"
                   >

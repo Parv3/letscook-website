@@ -108,6 +108,24 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     }
   }, [buttonA, buttonB, startTrigger, shootLaser, onExit]);
 
+  const dpadRef = useRef(dpadState);
+  useEffect(() => {
+    dpadRef.current = dpadState;
+  }, [dpadState]);
+
+  // Direct Pointer / Touch / Mouse steering on Canvas
+  const handlePointer = useCallback((e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width) return;
+    const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+    if (typeof clientX !== 'number') return;
+    const relX = (clientX - rect.left) * (480 / rect.width);
+    const s = stateRef.current;
+    s.paddleX = Math.max(6, Math.min(480 - s.paddleW - 6, relX - s.paddleW / 2));
+  }, []);
+
   // Keyboard navigation & smooth left/right holding
   useEffect(() => {
     const s = stateRef.current;
@@ -133,11 +151,18 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
       }
     };
 
+    const handleBlur = () => {
+      s.keys.left = false;
+      s.keys.right = false;
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [shootLaser, onExit, onOpenLeaderboard]);
 
@@ -159,12 +184,15 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
       const s = stateRef.current;
       s.frame++;
 
-      // D-Pad and Keyboard movement handling
-      if (dpadState.left || s.keys.left) {
-        s.paddleX = Math.max(6, s.paddleX - 6.5);
-      }
-      if (dpadState.right || s.keys.right) {
-        s.paddleX = Math.min(width - s.paddleW - 6, s.paddleX + 6.5);
+      // D-Pad and Keyboard movement handling (always read current ref)
+      const curDpad = dpadRef.current || {};
+      const goLeft = Boolean(curDpad.left || s.keys.left);
+      const goRight = Boolean(curDpad.right || s.keys.right);
+
+      if (goLeft && !goRight) {
+        s.paddleX = Math.max(6, s.paddleX - 7);
+      } else if (goRight && !goLeft) {
+        s.paddleX = Math.min(width - s.paddleW - 6, s.paddleX + 7);
       }
 
       if (s.gameState === 'playing') {
@@ -532,7 +560,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     <div className="relative w-full h-full flex flex-col items-center justify-center bg-black overflow-hidden select-none">
       <canvas
         ref={canvasRef}
-        className="w-full h-full object-contain"
+        onMouseMove={handlePointer}
+        onTouchMove={handlePointer}
+        onTouchStart={handlePointer}
+        className="w-full h-full object-contain cursor-crosshair"
         style={{ imageRendering: 'pixelated' }}
       />
     </div>
