@@ -22,10 +22,11 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     score: 0,
     lives: 3,
     bestScore: highScore,
-    paddleX: 195,
-    paddleW: 90,
+    baseSpeed: 1.5,
+    paddleX: 192,
+    paddleW: 96,
     hasLasers: false,
-    balls: [{ x: 240, y: 260, vx: 1.8, vy: -2.0, r: 7, rot: 0 }],
+    balls: [{ x: 240, y: 260, vx: 0.8, vy: -1.3, r: 7, rot: 0 }],
     bricks: [],
     powerups: [],
     lasers: [],
@@ -66,10 +67,11 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     s.gameState = 'playing';
     s.score = 0;
     s.lives = 3;
-    s.paddleX = 195;
-    s.paddleW = 90;
+    s.baseSpeed = 1.5;
+    s.paddleX = 192;
+    s.paddleW = 96;
     s.hasLasers = false;
-    s.balls = [{ x: 240, y: 260, vx: (Math.random() > 0.5 ? 1 : -1) * 1.8, vy: -2.0, r: 7, rot: 0 }];
+    s.balls = [{ x: 240, y: 260, vx: (Math.random() > 0.5 ? 0.8 : -0.8), vy: -1.3, r: 7, rot: 0 }];
     s.bricks = initBricks();
     s.powerups = [];
     s.lasers = [];
@@ -184,10 +186,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
           if (l.y < 0) s.lasers.splice(i, 1);
         }
 
-        // Update Powerups
+        // Update Powerups (Gentle fall speed)
         for (let i = s.powerups.length - 1; i >= 0; i--) {
           const p = s.powerups[i];
-          p.y += 1.6;
+          p.y += 1.2;
 
           if (
             p.y >= 278 &&
@@ -211,9 +213,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
               s.paddleW = 125;
               s.floaters.push({ text: 'WIDE SHIELD!', x: p.x, y: 255, life: 35, color: '#fbbf24' });
             } else if (p.type === 'slow') {
+              s.baseSpeed = 1.4;
               s.balls.forEach(b => {
-                b.vx = Math.sign(b.vx || 1) * 1.6;
-                b.vy = Math.sign(b.vy || -1) * 1.6;
+                b.vx = Math.sign(b.vx || 1) * 0.9;
+                b.vy = Math.sign(b.vy || -1) * 1.1;
               });
               s.floaters.push({ text: 'SLOW-MO!', x: p.x, y: 255, life: 35, color: '#22c55e' });
             } else if (p.type === 'life') {
@@ -251,7 +254,7 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
             playGbaBounce();
           }
 
-          // Paddle bounce
+          // Paddle bounce - smooth deflection based on current progressive baseSpeed
           const paddleY = 282;
           if (
             ball.y + ball.r >= paddleY &&
@@ -261,13 +264,13 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
             ball.vy > 0
           ) {
             const hitOffset = (ball.x - (s.paddleX + s.paddleW / 2)) / (s.paddleW / 2);
-            const currentSpeed = Math.hypot(ball.vx, ball.vy);
-            ball.vx = hitOffset * 2.8;
-            ball.vy = -Math.max(1.6, Math.sqrt(Math.max(0.4, currentSpeed * currentSpeed - ball.vx * ball.vx)));
+            const curSpd = s.baseSpeed || 1.5;
+            ball.vx = hitOffset * (curSpd * 0.85);
+            ball.vy = -Math.max(1.1, Math.sqrt(Math.max(0.3, curSpd * curSpd - ball.vx * ball.vx)));
             playGbaBounce();
           }
 
-          // Brick collisions
+          // Brick collisions - progressively increase ball speed
           for (const b of s.bricks) {
             if (b.alive) {
               if (
@@ -281,6 +284,9 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
                 s.score += b.points;
                 setScore(s.score);
                 playGbaScore();
+
+                // Gentle progressive difficulty ramp per brick destroyed
+                s.baseSpeed = Math.min(3.2, (s.baseSpeed || 1.5) + 0.04);
 
                 if (s.score > s.bestScore) {
                   s.bestScore = s.score;
@@ -316,9 +322,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
             playGbaCrash();
             submitScore('shield', s.score);
           } else {
-            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 260, vx: (Math.random() > 0.5 ? 1 : -1) * 1.8, vy: -2.0, r: 7, rot: 0 }];
+            s.baseSpeed = Math.max(1.5, (s.baseSpeed || 1.5) - 0.2);
+            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 260, vx: (Math.random() > 0.5 ? 0.8 : -0.8), vy: -1.3, r: 7, rot: 0 }];
             s.hasLasers = false;
-            s.paddleW = 90;
+            s.paddleW = 96;
             playGbaBounce();
           }
         }

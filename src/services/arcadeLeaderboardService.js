@@ -9,38 +9,15 @@
 
 import { getStoredUser } from './portalService';
 
-const LEADERBOARD_KEY = 'lc_arcade_leaderboard_v1';
+const LEADERBOARD_KEY = 'lc_arcade_leaderboard_v2';
 
-// Initial pre-seeded community records from Foundry Builders & Core Whitelist
-const DEFAULT_LEADERBOARD = [
-  // CYBER DINO RUN
-  { id: 'lb-1', gameId: 'dino', callsign: 'PARV', fullName: 'Parv Mishra', squad: 'ironman', score: 1840, date: '2026-10-18' },
-  { id: 'lb-2', gameId: 'dino', callsign: 'KRISHNA', fullName: 'Krishna', squad: 'ironman', score: 1420, date: '2026-10-17' },
-  { id: 'lb-3', gameId: 'dino', callsign: 'SHREYASH', fullName: 'Shreyash Shukla', squad: 'captain', score: 1190, date: '2026-10-19' },
-  { id: 'lb-4', gameId: 'dino', callsign: 'PETER_P', fullName: 'Peter Parker', squad: 'tech', score: 980, date: '2026-10-16' },
-  { id: 'lb-5', gameId: 'dino', callsign: 'TONY_S', fullName: 'Tony Stark', squad: 'ironman', score: 760, date: '2026-10-15' },
+// Clean start: no fake/mock entries. Only actual player records.
+const DEFAULT_LEADERBOARD = [];
 
-  // STARK FLIGHT
-  { id: 'lb-6', gameId: 'stark', callsign: 'TONY_S', fullName: 'Tony Stark', squad: 'ironman', score: 2650, date: '2026-10-19' },
-  { id: 'lb-7', gameId: 'stark', callsign: 'PARV', fullName: 'Parv Mishra', squad: 'ironman', score: 2180, date: '2026-10-18' },
-  { id: 'lb-8', gameId: 'stark', callsign: 'RHODEY', fullName: 'James Rhodes', squad: 'ironman', score: 1640, date: '2026-10-17' },
-  { id: 'lb-9', gameId: 'stark', callsign: 'KRISHNA', fullName: 'Krishna', squad: 'ironman', score: 1350, date: '2026-10-16' },
-  { id: 'lb-10', gameId: 'stark', callsign: 'SHREYASH', fullName: 'Shreyash Shukla', squad: 'captain', score: 890, date: '2026-10-15' },
-
-  // SHIELD BREAKER
-  { id: 'lb-11', gameId: 'shield', callsign: 'STEVE_R', fullName: 'Steve Rogers', squad: 'captain', score: 1850, date: '2026-10-19' },
-  { id: 'lb-12', gameId: 'shield', callsign: 'SHREYASH', fullName: 'Shreyash Shukla', squad: 'captain', score: 1540, date: '2026-10-18' },
-  { id: 'lb-13', gameId: 'shield', callsign: 'BUCKY', fullName: 'Bucky Barnes', squad: 'captain', score: 1220, date: '2026-10-17' },
-  { id: 'lb-14', gameId: 'shield', callsign: 'PARV', fullName: 'Parv Mishra', squad: 'ironman', score: 980, date: '2026-10-16' },
-  { id: 'lb-15', gameId: 'shield', callsign: 'SAM_W', fullName: 'Sam Wilson', squad: 'captain', score: 710, date: '2026-10-15' },
-
-  // MATRIX SNAKE
-  { id: 'lb-16', gameId: 'snake', callsign: 'BANNER', fullName: 'Bruce Banner', squad: 'hulk', score: 1240, date: '2026-10-19' },
-  { id: 'lb-17', gameId: 'snake', callsign: 'KRISHNA', fullName: 'Krishna', squad: 'ironman', score: 1020, date: '2026-10-18' },
-  { id: 'lb-18', gameId: 'snake', callsign: 'PARV', fullName: 'Parv Mishra', squad: 'ironman', score: 860, date: '2026-10-17' },
-  { id: 'lb-19', gameId: 'snake', callsign: 'NATALIA', fullName: 'Natasha Romanoff', squad: 'pr', score: 740, date: '2026-10-16' },
-  { id: 'lb-20', gameId: 'snake', callsign: 'SHREYASH', fullName: 'Shreyash Shukla', squad: 'captain', score: 530, date: '2026-10-15' }
-];
+const FAKE_MOCK_CALLSIGNS = new Set([
+  'TONY_S', 'STEVE_R', 'RHODEY', 'BANNER', 'NATALIA', 
+  'PETER_P', 'BUCKY', 'SAM_W', 'CLINT_B', 'THOR_O'
+]);
 
 export function getLeaderboard(gameId = 'all') {
   if (typeof window === 'undefined') return [];
@@ -50,12 +27,16 @@ export function getLeaderboard(gameId = 'all') {
     if (raw) {
       entries = JSON.parse(raw);
     } else {
-      entries = [...DEFAULT_LEADERBOARD];
-      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+      // Clear out old v1 mock cache if present
+      localStorage.removeItem('lc_arcade_leaderboard_v1');
+      entries = [];
     }
   } catch (_) {
-    entries = [...DEFAULT_LEADERBOARD];
+    entries = [];
   }
+
+  // Filter out any mock entries that might have persisted
+  entries = entries.filter(e => !FAKE_MOCK_CALLSIGNS.has(e.callsign));
 
   // Filter by gameId if not 'all'
   if (gameId && gameId !== 'all') {

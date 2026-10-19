@@ -23,8 +23,8 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
     bestScore: highScore,
     playerY: 150,
     velocity: 0,
-    gravity: 0.18,
-    thrust: -3.8,
+    gravity: 0.14,
+    thrust: -3.0,
     hasShield: false,
     lasers: [],
     gates: [],
@@ -151,9 +151,13 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
           s.velocity = 0.6;
         }
 
-        // Spawn gates (wide 135px gap!)
-        if (s.frame % 130 === 0) {
-          const gap = 135;
+        // Dynamic scroll speed: starts very calm at 1.05, ramps gently up to 2.2
+        const scrollSpeed = Math.min(2.2, 1.05 + (s.score / 320) * 0.35);
+
+        // Spawn gates with dynamic wide gap & spacing
+        const gateInterval = Math.max(110, Math.floor(155 - (s.score / 250) * 12));
+        if (s.frame % gateInterval === 0) {
+          const gap = Math.max(120, Math.floor(155 - (s.score / 250) * 8));
           const topH = 25 + Math.random() * (height - gap - 60);
           s.gates.push({
             x: width,
@@ -168,7 +172,7 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
             collected: false
           });
 
-          if (Math.random() < 0.28 && !s.hasShield) {
+          if (Math.random() < 0.35 && !s.hasShield) {
             s.shieldOrbs.push({
               x: width + 85,
               y: topH + gap / 2 + (Math.random() - 0.5) * 45,
@@ -177,12 +181,13 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
           }
         }
 
-        // Spawn occasional Hydra drones
-        if (s.frame % 160 === 80) {
+        // Spawn Hydra drones only after player gets familiar (score > 90)
+        if (s.score > 90 && s.frame % 170 === 85) {
+          const droneSpeed = -Math.min(2.2, 1.2 + (s.score / 400) * 0.3);
           s.drones.push({
             x: width + 15,
             y: 50 + Math.random() * (height - 100),
-            vx: -1.8,
+            vx: droneSpeed,
             hp: 1
           });
         }
@@ -226,7 +231,7 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
         // Update Gates
         for (let i = s.gates.length - 1; i >= 0; i--) {
           const g = s.gates[i];
-          g.x -= 1.6;
+          g.x -= scrollSpeed;
 
           if (!g.passed && g.x < 65) {
             g.passed = true;
@@ -300,7 +305,7 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
         // Update Arc Cores
         for (let i = s.arcCores.length - 1; i >= 0; i--) {
           const c = s.arcCores[i];
-          c.x -= 1.6;
+          c.x -= scrollSpeed;
           const dist = Math.hypot(c.x - 78, c.y - s.playerY);
           if (dist < 24) {
             s.score += 25;
@@ -315,7 +320,7 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
         // Update Shield Orbs
         for (let i = s.shieldOrbs.length - 1; i >= 0; i--) {
           const so = s.shieldOrbs[i];
-          so.x -= 1.6;
+          so.x -= scrollSpeed;
           const dist = Math.hypot(so.x - 78, so.y - s.playerY);
           if (dist < 24) {
             s.hasShield = true;

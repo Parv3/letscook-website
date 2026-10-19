@@ -33,7 +33,7 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
     food: { x: 20, y: 10 },
     bonusFood: null,
     ghostTimer: 0,
-    speed: 12, // Ticks every 12 frames at 60Hz (~5 moves/sec)
+    speed: 16, // Starts calm & easy at 16 frames per tick (~3.7 moves/sec)
     frame: 0
   });
 
@@ -63,7 +63,7 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
     s.food = spawnFood(s.snake);
     s.bonusFood = null;
     s.ghostTimer = 0;
-    s.speed = 12;
+    s.speed = 16;
     s.frame = 0;
     setScore(0);
     setGameState('playing');
@@ -176,7 +176,8 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
                 localStorage.setItem('lc_gba_snake_hi', String(s.score));
               }
 
-              if (s.speed > 8 && s.score % 50 === 0) {
+              // Smooth progressive difficulty: 1 tick faster every 40 points, min 8
+              if (s.speed > 8 && s.score % 40 === 0) {
                 s.speed--;
               }
             } else if (s.bonusFood && head.x === s.bonusFood.x && head.y === s.bonusFood.y) {
@@ -184,7 +185,7 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
               if (s.bonusFood.type === 'gold') {
                 s.score += 50;
               } else if (s.bonusFood.type === 'freeze') {
-                s.speed = 13;
+                s.speed = Math.min(16, s.speed + 3);
                 s.score += 20;
               } else if (s.bonusFood.type === 'ghost') {
                 s.ghostTimer = 220;
