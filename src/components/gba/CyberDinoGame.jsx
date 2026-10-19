@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { playGbaJump, playGbaCrash, playGbaMilestone, playGbaBip } from './GbaAudio';
+import { submitScore } from '../../services/arcadeLeaderboardService';
 
 /**
- * CYBER DINO RUN
- * Authentic Chrome T-Rex runner reimagined for the GBA LCD screen.
- * Jump over quantum cacti & spikes, duck under flying cyber-drones,
- * experience day/night cycles, smooth speed ramps, and 100-pt milestone chimes!
+ * CYBER DINO RUN (Optimized)
+ * Fixed 60Hz physics timestep accumulator (eliminates 120Hz/144Hz high refresh rate speed bugs!).
+ * Crisp 480x320 canvas, day/night cycles, 100-pt milestone chimes,
+ * and automatic leaderboard score synchronization!
  */
-export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, startTrigger }) {
+export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, buttonA, buttonB, startTrigger }) {
   const canvasRef = useRef(null);
   const [gameState, setGameState] = useState('ready'); // 'ready' | 'playing' | 'gameover'
   const [score, setScore] = useState(0);
@@ -19,36 +20,34 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
     gameState: 'ready',
     score: 0,
     bestScore: highScore,
-    speed: 2.8,
+    speed: 3.2,
     frame: 0,
     milestoneFlash: 0,
     
-    // Dino Physics
+    // Dino Physics (Tuned for 480x320 resolution)
     dino: {
-      x: 35,
-      y: 172,
-      groundY: 172,
+      x: 55,
+      y: 250,
+      groundY: 250,
       vy: 0,
-      gravity: 0.4,
-      jumpForce: -7.2,
+      gravity: 0.52,
+      jumpForce: -9.8,
       isGrounded: true,
       isDucking: false,
       step: 0
     },
 
-    // Obstacles: { type: 'cactus'|'bird', x, y, w, h, birdsWingUp: false }
+    // Obstacles
     obstacles: [],
-    minSpawnDist: 85,
-    nextSpawnIn: 70,
+    nextSpawnIn: 75,
 
-    // Environmental Deco (clouds, stars, ground pebbles)
+    // Deco
     clouds: [
-      { x: 50, y: 35, speed: 0.4 },
-      { x: 170, y: 55, speed: 0.3 },
-      { x: 280, y: 25, speed: 0.5 }
+      { x: 80, y: 45, speed: 0.4 },
+      { x: 260, y: 70, speed: 0.3 },
+      { x: 420, y: 35, speed: 0.5 }
     ],
     groundPebbles: [],
-    dayNightPhase: 0, // 0 = day, 1 = dusk, 2 = night, 3 = dawn
     particles: []
   });
 
@@ -56,11 +55,11 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
   useEffect(() => {
     const s = stateRef.current;
     s.groundPebbles = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
       s.groundPebbles.push({
-        x: Math.random() * 320,
-        y: 175 + Math.random() * 25,
-        w: Math.random() > 0.5 ? 2 : 1
+        x: Math.random() * 480,
+        y: 254 + Math.random() * 35,
+        w: Math.random() > 0.5 ? 3 : 2
       });
     }
   }, []);
@@ -70,7 +69,7 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
     if (s.gameState === 'ready') {
       s.gameState = 'playing';
       s.score = 0;
-      s.speed = 2.8;
+      s.speed = 3.2;
       s.obstacles = [];
       s.frame = 0;
       setGameState('playing');
@@ -83,7 +82,7 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
     if (s.gameState === 'gameover') {
       s.gameState = 'playing';
       s.score = 0;
-      s.speed = 2.8;
+      s.speed = 3.2;
       s.dino.y = s.dino.groundY;
       s.dino.vy = 0;
       s.dino.isGrounded = true;
@@ -101,32 +100,30 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
       s.dino.isGrounded = false;
       playGbaJump();
 
-      // Jump dust puff
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 5; i++) {
         s.particles.push({
-          x: s.dino.x + 4,
+          x: s.dino.x + 6,
           y: s.dino.groundY,
-          vx: -(Math.random() * 1.5 + 0.5),
-          vy: -(Math.random() * 1.2),
+          vx: -(Math.random() * 2 + 0.5),
+          vy: -(Math.random() * 1.5),
           life: 18
         });
       }
     }
   }, []);
 
-  // Update ducking state based on inputs
+  // Ducking state
   useEffect(() => {
     const s = stateRef.current;
     const shouldDuck = dpadState.down || buttonB;
     s.dino.isDucking = shouldDuck;
 
-    // Fast-fall if ducking in air
-    if (shouldDuck && !s.dino.isGrounded && s.dino.vy < 3) {
-      s.dino.vy += 0.8;
+    if (shouldDuck && !s.dino.isGrounded && s.dino.vy < 4) {
+      s.dino.vy += 1.2;
     }
   }, [dpadState.down, buttonB]);
 
-  // Jump trigger via A button or D-Pad UP
+  // Jump trigger
   useEffect(() => {
     if (buttonA || dpadState.up || startTrigger) {
       triggerJump();
@@ -143,7 +140,9 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
       } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S' || e.key === 'x' || e.key === 'X') {
         e.preventDefault();
         s.dino.isDucking = true;
-        if (!s.dino.isGrounded) s.dino.vy += 0.8;
+        if (!s.dino.isGrounded) s.dino.vy += 1.2;
+      } else if (e.key === 'l' || e.key === 'L') {
+        if (onOpenLeaderboard) onOpenLeaderboard();
       } else if (e.key === 'Escape') {
         if (onExit) onExit();
       }
@@ -154,10 +153,9 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
       if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S' || e.key === 'x' || e.key === 'X') {
         s.dino.isDucking = false;
       }
-      // Variable jump height: release early to cut jump
       if (e.code === 'Space' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'z' || e.key === 'Z') {
-        if (!s.dino.isGrounded && s.dino.vy < -2.5) {
-          s.dino.vy = -2.5;
+        if (!s.dino.isGrounded && s.dino.vy < -3.5) {
+          s.dino.vy = -3.5;
         }
       }
     };
@@ -168,87 +166,34 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [triggerJump, onExit]);
+  }, [triggerJump, onExit, onOpenLeaderboard]);
 
-  // Main Game Loop
+  // Main Game Loop: Fixed 60Hz Timestep Accumulator
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const width = (canvas.width = 320);
-    const height = (canvas.height = 213);
-    const groundY = 172;
+    const width = (canvas.width = 480);
+    const height = (canvas.height = 320);
+    const groundY = 250;
 
     let animId = null;
+    let lastTime = 0;
+    const TICK_STEP = 1000 / 60; // Exact 60 FPS standard
+    let accumulator = 0;
 
-    const render = () => {
+    // 1. Single Physics Tick Step (Guaranteed 60 ticks per sec)
+    const tickPhysics = () => {
       const s = stateRef.current;
       s.frame++;
 
-      // 1. Day / Night cycle logic
-      // Every 450 points, alternate cycle
-      const cycleProg = Math.floor(s.score / 350) % 2;
-      const isNight = cycleProg === 1;
-
-      // Clear Screen with day/night palette
-      ctx.fillStyle = isNight ? '#0b0f19' : '#f4f6f8';
-      ctx.fillRect(0, 0, width, height);
-
-      // Stars in night mode
-      if (isNight) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        for (let i = 0; i < 24; i++) {
-          const sx = (i * 37 + 15) % width;
-          const sy = (i * 19 + 10) % 90;
-          ctx.fillRect(sx, sy, 1.5, 1.5);
-        }
-        // Pixel Crescent Moon
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(260, 35, 12, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#0b0f19';
-        ctx.beginPath();
-        ctx.arc(264, 33, 10, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Parallax Clouds
-      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.12)' : 'rgba(148, 163, 184, 0.45)';
-      s.clouds.forEach(cloud => {
-        if (s.gameState === 'playing') cloud.x -= cloud.speed;
-        if (cloud.x < -40) cloud.x = width + Math.random() * 30;
-
-        // Draw cute retro cloud
-        ctx.fillRect(cloud.x, cloud.y, 24, 6);
-        ctx.fillRect(cloud.x + 4, cloud.y - 4, 16, 4);
-        ctx.fillRect(cloud.x + 8, cloud.y - 7, 8, 3);
-      });
-
-      // Horizon Ground Line
-      ctx.strokeStyle = isNight ? '#38bdf8' : '#334155';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(0, groundY);
-      ctx.lineTo(width, groundY);
-      ctx.stroke();
-
-      // Moving Ground Pebbles
-      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.35)' : 'rgba(100, 116, 139, 0.4)';
-      s.groundPebbles.forEach(p => {
-        if (s.gameState === 'playing') p.x -= s.speed;
-        if (p.x < 0) p.x = width + Math.random() * 20;
-        ctx.fillRect(p.x, p.y, p.w * 2, 1.5);
-      });
-
-      // 2. Gameplay Physics & Logic
       if (s.gameState === 'playing') {
-        // Score progression (every 3 frames = 1 point)
+        // Score increment every 3 ticks
         if (s.frame % 3 === 0) {
           s.score++;
           setScore(s.score);
 
-          // 100-pt milestone chime & flash!
+          // 100-pt milestone chime
           if (s.score > 0 && s.score % 100 === 0) {
             playGbaMilestone();
             s.milestoneFlash = 35;
@@ -260,9 +205,9 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
             localStorage.setItem('lc_gba_dino_hi', String(s.score));
           }
 
-          // Gradual, comfortable acceleration (never unfairly fast!)
-          if (s.speed < 5.8) {
-            s.speed += 0.0012;
+          // Gentle gradual acceleration capped at 7.2
+          if (s.speed < 7.2) {
+            s.speed += 0.0014;
           }
         }
 
@@ -276,12 +221,11 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
           d.vy = 0;
           if (!d.isGrounded) {
             d.isGrounded = true;
-            // Landing dust
-            s.particles.push({ x: d.x + 6, y: groundY, vx: -1, vy: -0.5, life: 10 });
+            s.particles.push({ x: d.x + 8, y: groundY, vx: -1.2, vy: -0.8, life: 12 });
           }
         }
 
-        // Running footstep toggle (every 6 frames)
+        // Running animation frames
         if (s.frame % 6 === 0) {
           d.step = (d.step + 1) % 2;
         }
@@ -289,44 +233,38 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
         // Spawn Obstacles
         s.nextSpawnIn--;
         if (s.nextSpawnIn <= 0) {
-          // Choose obstacle: Spikes/Cacti, or Flying Cyber Drone (if score > 120)
           const allowFlyers = s.score > 120;
           const roll = Math.random();
 
           if (allowFlyers && roll < 0.38) {
-            // Flying Pterodactyl Drone!
-            // 3 altitude levels:
-            // High (y: 120 - safe to stand)
-            // Mid (y: 140 - can duck or jump)
-            // Low (y: 154 - MUST duck under!)
-            const altLevels = [122, 142, 154];
+            // Flying Pterodactyl Drone
+            const altLevels = [175, 205, 224];
             const altY = altLevels[Math.floor(Math.random() * altLevels.length)];
             s.obstacles.push({
               type: 'bird',
-              x: width + 10,
+              x: width + 15,
               y: altY,
-              w: 22,
-              h: 14,
+              w: 30,
+              h: 18,
               wingUp: false
             });
           } else {
-            // Quantum Cactus / Spire
-            // Variety: 1 spire, 2 spires, or 3 spires
+            // Quantum Cacti
             const sizeRoll = Math.random();
-            let w = 12;
-            let h = 26;
+            let w = 16;
+            let h = 36;
             let count = 1;
             if (sizeRoll > 0.75) {
-              w = 26;
+              w = 36;
               count = 3;
             } else if (sizeRoll > 0.45) {
-              w = 18;
+              w = 26;
               count = 2;
             }
 
             s.obstacles.push({
               type: 'cactus',
-              x: width + 10,
+              x: width + 15,
               y: groundY - h,
               w,
               h,
@@ -334,8 +272,7 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
             });
           }
 
-          // Reset spawn counter with randomized spacing based on current speed
-          s.nextSpawnIn = Math.floor(45 + Math.random() * 40 + (120 / s.speed));
+          s.nextSpawnIn = Math.floor(45 + Math.random() * 45 + (160 / s.speed));
         }
 
         // Update Obstacles & Collision Check
@@ -343,238 +280,276 @@ export default function CyberDinoGame({ onExit, dpadState, buttonA, buttonB, sta
           const obs = s.obstacles[i];
           obs.x -= s.speed;
 
-          // Toggle bird flapping
           if (obs.type === 'bird' && s.frame % 10 === 0) {
             obs.wingUp = !obs.wingUp;
           }
 
-          // Player Hitbox definition
+          // Player Hitbox
           let pBox;
           if (d.isDucking && d.isGrounded) {
-            // Ducking: low profile
-            pBox = {
-              x: d.x + 3,
-              y: groundY - 14,
-              w: 24,
-              h: 14
-            };
+            pBox = { x: d.x + 4, y: groundY - 18, w: 32, h: 18 };
           } else {
-            // Standing / Jumping
-            pBox = {
-              x: d.x + 4,
-              y: d.y - 25,
-              w: 16,
-              h: 24
-            };
+            pBox = { x: d.x + 5, y: d.y - 36, w: 22, h: 36 };
           }
 
-          // Obstacle Hitbox (forgiving inner bounds)
-          const obsBox = {
-            x: obs.x + 2,
-            y: obs.y + 2,
-            w: obs.w - 4,
-            h: obs.h - 3
-          };
+          const obsBox = { x: obs.x + 3, y: obs.y + 3, w: obs.w - 6, h: obs.h - 4 };
 
-          // AABB Collision Test
           if (
             pBox.x < obsBox.x + obsBox.w &&
             pBox.x + pBox.w > obsBox.x &&
             pBox.y < obsBox.y + obsBox.h &&
             pBox.y + pBox.h > obsBox.y
           ) {
-            // CRASH!
+            // Crash!
             s.gameState = 'gameover';
             setGameState('gameover');
             playGbaCrash();
 
-            // Crash particles
-            for (let p = 0; p < 12; p++) {
+            // Submit score to global/local arcade leaderboard!
+            submitScore('dino', s.score);
+
+            for (let p = 0; p < 14; p++) {
               s.particles.push({
-                x: d.x + 10,
-                y: d.y - 12,
-                vx: (Math.random() - 0.5) * 4,
-                vy: (Math.random() - 0.7) * 4,
+                x: d.x + 12,
+                y: d.y - 18,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.7) * 5,
                 life: 25
               });
             }
             break;
           }
 
-          // Remove off-screen obstacles
-          if (obs.x + obs.w < -20) {
+          if (obs.x + obs.w < -30) {
             s.obstacles.splice(i, 1);
           }
         }
       }
+    };
 
-      // 3. Render Obstacles
+    // 2. Render Screen Frame
+    const draw = () => {
+      const s = stateRef.current;
+      const cycleProg = Math.floor(s.score / 400) % 2;
+      const isNight = cycleProg === 1;
+
+      // Background
+      ctx.fillStyle = isNight ? '#090d18' : '#f8fafc';
+      ctx.fillRect(0, 0, width, height);
+
+      // Stars
+      if (isNight) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        for (let i = 0; i < 30; i++) {
+          const sx = (i * 47 + 18) % width;
+          const sy = (i * 23 + 12) % 130;
+          ctx.fillRect(sx, sy, 2, 2);
+        }
+        // Crescent Moon
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(390, 50, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#090d18';
+        ctx.beginPath();
+        ctx.arc(396, 47, 14, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Parallax Clouds
+      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.16)' : 'rgba(148, 163, 184, 0.5)';
+      s.clouds.forEach(cloud => {
+        if (s.gameState === 'playing') cloud.x -= cloud.speed;
+        if (cloud.x < -60) cloud.x = width + Math.random() * 40;
+
+        ctx.fillRect(cloud.x, cloud.y, 34, 9);
+        ctx.fillRect(cloud.x + 6, cloud.y - 6, 22, 6);
+        ctx.fillRect(cloud.x + 12, cloud.y - 10, 10, 4);
+      });
+
+      // Ground Line
+      ctx.strokeStyle = isNight ? '#38bdf8' : '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(width, groundY);
+      ctx.stroke();
+
+      // Ground Pebbles
+      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.35)' : 'rgba(100, 116, 139, 0.45)';
+      s.groundPebbles.forEach(p => {
+        if (s.gameState === 'playing') p.x -= s.speed;
+        if (p.x < 0) p.x = width + Math.random() * 25;
+        ctx.fillRect(p.x, p.y, p.w * 2, 2);
+      });
+
+      // Render Obstacles
       s.obstacles.forEach(obs => {
         if (obs.type === 'cactus') {
-          // Pixel Cacti / Quantum Spikes
           ctx.fillStyle = isNight ? '#00f0ff' : '#0f766e';
           for (let c = 0; c < (obs.count || 1); c++) {
-            const cx = obs.x + c * 9;
-            // Main stem
-            ctx.fillRect(cx + 2, obs.y, 4, obs.h);
-            // Side branches
-            ctx.fillRect(cx, obs.y + 6, 2, 8);
-            ctx.fillRect(cx + 6, obs.y + 4, 2, 7);
+            const cx = obs.x + c * 12;
+            ctx.fillRect(cx + 3, obs.y, 6, obs.h);
+            ctx.fillRect(cx, obs.y + 8, 3, 12);
+            ctx.fillRect(cx + 8, obs.y + 6, 3, 10);
           }
         } else if (obs.type === 'bird') {
-          // Cyber Pterodactyl / Drone
           ctx.fillStyle = isNight ? '#ef4444' : '#b91c1c';
-          // Body
-          ctx.fillRect(obs.x + 6, obs.y + 4, 12, 6);
-          // Beak / Eye
-          ctx.fillRect(obs.x, obs.y + 5, 6, 3);
+          ctx.fillRect(obs.x + 8, obs.y + 5, 18, 9);
+          ctx.fillRect(obs.x, obs.y + 6, 8, 5);
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(obs.x + 7, obs.y + 5, 2, 2); // Eye
+          ctx.fillRect(obs.x + 10, obs.y + 6, 3, 3);
 
-          // Wings (animated flapping)
           ctx.fillStyle = isNight ? '#f87171' : '#dc2626';
           if (obs.wingUp) {
-            ctx.fillRect(obs.x + 8, obs.y - 4, 4, 8);
-            ctx.fillRect(obs.x + 10, obs.y - 8, 3, 5);
+            ctx.fillRect(obs.x + 12, obs.y - 6, 6, 12);
+            ctx.fillRect(obs.x + 15, obs.y - 12, 4, 7);
           } else {
-            ctx.fillRect(obs.x + 8, obs.y + 7, 4, 8);
-            ctx.fillRect(obs.x + 10, obs.y + 12, 3, 5);
+            ctx.fillRect(obs.x + 12, obs.y + 10, 6, 12);
+            ctx.fillRect(obs.x + 15, obs.y + 18, 4, 7);
           }
         }
       });
 
-      // 4. Render Particles
+      // Particles
       for (let i = s.particles.length - 1; i >= 0; i--) {
         const pt = s.particles[i];
         pt.x += pt.vx;
         pt.y += pt.vy;
         pt.life--;
         ctx.fillStyle = isNight ? '#38bdf8' : '#64748b';
-        ctx.fillRect(pt.x, pt.y, 2, 2);
+        ctx.fillRect(pt.x, pt.y, 3, 3);
         if (pt.life <= 0) s.particles.splice(i, 1);
       }
 
-      // 5. Render Dino Character
+      // Render Dino Character
       const d = s.dino;
       ctx.fillStyle = isNight ? '#22c55e' : '#1e293b';
 
       if (d.isDucking && d.isGrounded) {
-        // DUCKING DINO SPRITE
-        // Body (horizontal)
-        ctx.fillRect(d.x, groundY - 12, 26, 9);
-        // Head lower down
-        ctx.fillRect(d.x + 20, groundY - 14, 10, 8);
-        // Eye
+        // Ducking Dino
+        ctx.fillRect(d.x, groundY - 17, 36, 13);
+        ctx.fillRect(d.x + 28, groundY - 20, 14, 11);
         ctx.fillStyle = isNight ? '#ffffff' : '#f8fafc';
-        ctx.fillRect(d.x + 26, groundY - 12, 2, 2);
+        ctx.fillRect(d.x + 36, groundY - 18, 3, 3);
 
-        // Legs (ducking crawl)
         ctx.fillStyle = isNight ? '#22c55e' : '#1e293b';
         if (d.step === 0) {
-          ctx.fillRect(d.x + 4, groundY - 3, 4, 3);
-          ctx.fillRect(d.x + 16, groundY - 2, 4, 2);
+          ctx.fillRect(d.x + 6, groundY - 4, 6, 4);
+          ctx.fillRect(d.x + 22, groundY - 3, 6, 3);
         } else {
-          ctx.fillRect(d.x + 6, groundY - 2, 4, 2);
-          ctx.fillRect(d.x + 14, groundY - 3, 4, 3);
+          ctx.fillRect(d.x + 9, groundY - 3, 6, 3);
+          ctx.fillRect(d.x + 20, groundY - 4, 6, 4);
         }
       } else {
-        // STANDING / JUMPING DINO SPRITE
+        // Standing / Jumping Dino
         const dy = d.y;
-        // Head & Jaw
-        ctx.fillRect(d.x + 10, dy - 26, 12, 10);
-        ctx.fillRect(d.x + 14, dy - 22, 10, 6);
-        // Eye
+        ctx.fillRect(d.x + 14, dy - 38, 18, 15);
+        ctx.fillRect(d.x + 20, dy - 32, 14, 9);
         ctx.fillStyle = isNight ? '#ffffff' : '#f8fafc';
-        ctx.fillRect(d.x + 14, dy - 24, 2, 2);
+        ctx.fillRect(d.x + 20, dy - 35, 3, 3);
 
-        // Body & Tail
         ctx.fillStyle = isNight ? '#22c55e' : '#1e293b';
-        ctx.fillRect(d.x + 4, dy - 18, 14, 12);
-        ctx.fillRect(d.x, dy - 14, 4, 6); // Tail tip
-        ctx.fillRect(d.x + 16, dy - 14, 3, 2); // Tiny arm
+        ctx.fillRect(d.x + 6, dy - 26, 20, 18);
+        ctx.fillRect(d.x, dy - 20, 6, 9);
+        ctx.fillRect(d.x + 22, dy - 20, 5, 3);
 
-        // Legs
         if (!d.isGrounded) {
-          // Mid-air jump pose (both legs tucked)
-          ctx.fillRect(d.x + 6, dy - 6, 3, 4);
-          ctx.fillRect(d.x + 12, dy - 6, 3, 4);
+          ctx.fillRect(d.x + 8, dy - 8, 4, 6);
+          ctx.fillRect(d.x + 18, dy - 8, 4, 6);
         } else {
-          // Alternating running legs
           if (d.step === 0) {
-            ctx.fillRect(d.x + 6, dy - 6, 3, 6);
-            ctx.fillRect(d.x + 12, dy - 6, 3, 3);
+            ctx.fillRect(d.x + 8, dy - 8, 4, 9);
+            ctx.fillRect(d.x + 18, dy - 8, 4, 4);
           } else {
-            ctx.fillRect(d.x + 6, dy - 6, 3, 3);
-            ctx.fillRect(d.x + 12, dy - 6, 3, 6);
+            ctx.fillRect(d.x + 8, dy - 8, 4, 4);
+            ctx.fillRect(d.x + 18, dy - 8, 4, 9);
           }
         }
       }
 
-      // 6. HUD: Scores & Milestone Flash
-      ctx.font = '10px "Courier New", monospace';
+      // HUD
+      ctx.font = 'bold 13px "Courier New", monospace';
       ctx.textAlign = 'right';
 
-      // Score blink effect on 100s milestone
       const showScore = s.milestoneFlash > 0 ? (Math.floor(s.frame / 4) % 2 === 0) : true;
       if (s.milestoneFlash > 0) s.milestoneFlash--;
 
       ctx.fillStyle = isNight ? '#94a3b8' : '#64748b';
-      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 75, 18);
+      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 100, 24);
 
       if (showScore) {
         ctx.fillStyle = isNight ? '#00f0ff' : '#0f172a';
-        ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 15, 18);
+        ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 20, 24);
       }
 
-      // Controls helper hint on top left
       ctx.textAlign = 'left';
-      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.6)' : 'rgba(100, 116, 139, 0.8)';
-      ctx.font = '8px monospace';
-      ctx.fillText('[A/▲] JUMP  [▼] DUCK', 12, 16);
+      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.75)' : 'rgba(100, 116, 139, 0.85)';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText('[A/▲] JUMP  [▼] DUCK', 16, 24);
 
-      // 7. Overlay Screens: READY / GAME OVER
+      // Overlay Screens
       if (s.gameState === 'ready') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 14px monospace';
+        ctx.font = 'bold 20px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('CYBER DINO RUN', width / 2, height / 2 - 20);
+        ctx.fillText('CYBER DINO RUN', width / 2, height / 2 - 30);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '10px monospace';
+        ctx.font = '14px monospace';
         ctx.fillText('PRESS [A] OR [▲] TO START', width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '8px monospace';
-        ctx.fillText('JUMP OVER SPIKES • DUCK UNDER DRONES', width / 2, height / 2 + 25);
+        ctx.font = '11px monospace';
+        ctx.fillText('JUMP OVER SPIKES • DUCK UNDER DRONES', width / 2, height / 2 + 35);
       } else if (s.gameState === 'gameover') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ff0055';
-        ctx.font = 'bold 15px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('G A M E   O V E R', width / 2, height / 2 - 22);
+        ctx.fillText('G A M E   O V E R', width / 2, height / 2 - 35);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '11px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 2);
+        ctx.font = '14px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
 
         ctx.fillStyle = '#00f0ff';
-        ctx.font = '10px monospace';
-        ctx.fillText('PRESS [A] TO RUN AGAIN', width / 2, height / 2 + 22);
+        ctx.font = '13px monospace';
+        ctx.fillText('PRESS [A] TO RUN AGAIN', width / 2, height / 2 + 25);
 
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '8px monospace';
-        ctx.fillText('[B / ESC] RETURN TO MENU', width / 2, height / 2 + 40);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
       }
-
-      animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    // 3. High-Refresh-Rate Safe Game Loop
+    const loop = (currentTime) => {
+      animId = requestAnimationFrame(loop);
+      if (!lastTime) {
+        lastTime = currentTime;
+        return;
+      }
+
+      let delta = currentTime - lastTime;
+      lastTime = currentTime;
+      if (delta > 80) delta = 80;
+
+      accumulator += delta;
+      while (accumulator >= TICK_STEP) {
+        tickPhysics();
+        accumulator -= TICK_STEP;
+      }
+
+      draw();
+    };
+
+    animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
   }, []);
 

@@ -43,6 +43,16 @@ const CARTRIDGES = [
     storageKey: 'lc_gba_snake_hi'
   },
   {
+    id: 'leaderboard',
+    title: 'HALL OF FAME',
+    hero: 'LEADERBOARD',
+    type: 'ALL PLAYERS & STATS',
+    color: '#fbbf24',
+    secondary: '#00f0ff',
+    desc: 'View real high scores & rankings of all community players.',
+    storageKey: null
+  },
+  {
     id: 'terminal',
     title: 'TERMINAL CLI',
     hero: 'S.H.I.E.L.D. COMMAND',

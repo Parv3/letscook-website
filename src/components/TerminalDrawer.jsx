@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Volume2, VolumeX, Terminal as TerminalIcon, Gamepad2, RotateCcw } from 'lucide-react';
+import { X, Volume2, VolumeX, Terminal as TerminalIcon, Gamepad2, RotateCcw, Trophy, Maximize2, Minimize2 } from 'lucide-react';
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { playGbaBoot, playGbaBip } from './gba/GbaAudio';
 
@@ -8,6 +8,7 @@ import StarkFlightGame from './gba/StarkFlightGame';
 import ShieldBreakerGame from './gba/ShieldBreakerGame';
 import MatrixSnakeGame from './gba/MatrixSnakeGame';
 import ThorForgeGame from './gba/ThorForgeGame';
+import GbaLeaderboardScreen from './gba/GbaLeaderboardScreen';
 import GbaCartridgeMenu from './gba/GbaCartridgeMenu';
 import GbaShellTerminal from './gba/GbaShellTerminal';
 
@@ -27,9 +28,10 @@ export default function TerminalDrawer({
   onTriggerEasterEgg, 
   onSelectSquad 
 }) {
-  // Active ROM screen: 'menu' | 'stark' | 'shield' | 'snake' | 'thor' | 'terminal'
+  // Active ROM screen: 'menu' | 'dino' | 'stark' | 'shield' | 'snake' | 'leaderboard' | 'terminal'
   const [activeCartridge, setActiveCartridge] = useState('menu');
   const [muted, setMuted] = useState(() => isSoundMuted());
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Physical GBA Button States for on-screen touch/click + keyboard
   const [dpadState, setDpadState] = useState({ up: false, down: false, left: false, right: false });
@@ -126,7 +128,7 @@ export default function TerminalDrawer({
 
   return (
     <div className="gba-console-backdrop animate-fade-in" onClick={onClose}>
-      <div className="gba-console-outer-wrap" onClick={e => e.stopPropagation()}>
+      <div className={`gba-console-outer-wrap ${isMaximized ? 'is-maximized' : ''}`} onClick={e => e.stopPropagation()}>
         
         {/* Top Console Shoulder Triggers */}
         <div className="gba-top-shoulder-bar">
@@ -139,9 +141,30 @@ export default function TerminalDrawer({
             <span>[L] {muted ? 'MUTED' : 'AUDIO ON'}</span>
           </button>
 
-          <div className="gba-cartridge-slot-ridge">
+          <button 
+            type="button"
+            className={`gba-shoulder-btn gba-shoulder-leaderboard ${activeCartridge === 'leaderboard' ? 'active-lb' : ''}`}
+            onClick={() => {
+              playGbaBip();
+              setActiveCartridge(prev => (prev === 'leaderboard' ? 'menu' : 'leaderboard'));
+            }}
+            title="Toggle Global Hall of Fame Leaderboard"
+          >
+            <Trophy size={13} className="inline mr-1 text-amber-400" />
+            <span>LEADERBOARD</span>
+          </button>
+
+          <button 
+            type="button"
+            onClick={() => {
+              playGbaBip();
+              setActiveCartridge('menu');
+            }}
+            className="gba-cartridge-slot-ridge cursor-pointer hover:bg-slate-800 transition-colors"
+            title="Open Multicart BIOS Menu"
+          >
             <span className="cart-slot-label">▲ INSERT CARTRIDGE ▲</span>
-          </div>
+          </button>
 
           <button 
             type="button"
@@ -172,15 +195,27 @@ export default function TerminalDrawer({
               <span className="brand-sp">SP</span>
             </div>
 
-            <button 
-              type="button" 
-              onClick={onClose} 
-              className="gba-console-close-btn"
-              aria-label="Power off and close console"
-              title="Close Console"
-            >
-              <X size={16} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                type="button" 
+                onClick={() => setIsMaximized(prev => !prev)} 
+                className="gba-console-zoom-btn"
+                aria-label="Toggle Theater / Maximized Screen"
+                title={isMaximized ? "Standard GBA View" : "Maximize Screen"}
+              >
+                {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              </button>
+
+              <button 
+                type="button" 
+                onClick={onClose} 
+                className="gba-console-close-btn"
+                aria-label="Power off and close console"
+                title="Close Console"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </div>
 
           {/* Main Handheld Layout Grid: Left D-Pad | Center LCD Screen | Right A/B */}
@@ -268,6 +303,7 @@ export default function TerminalDrawer({
                   {activeCartridge === 'dino' && (
                     <CyberDinoGame 
                       onExit={() => setActiveCartridge('menu')}
+                      onOpenLeaderboard={() => setActiveCartridge('leaderboard')}
                       dpadState={dpadState}
                       buttonA={buttonA}
                       buttonB={buttonB}
@@ -278,6 +314,7 @@ export default function TerminalDrawer({
                   {activeCartridge === 'stark' && (
                     <StarkFlightGame 
                       onExit={() => setActiveCartridge('menu')}
+                      onOpenLeaderboard={() => setActiveCartridge('leaderboard')}
                       dpadState={dpadState}
                       buttonA={buttonA}
                       buttonB={buttonB}
@@ -288,6 +325,7 @@ export default function TerminalDrawer({
                   {activeCartridge === 'shield' && (
                     <ShieldBreakerGame 
                       onExit={() => setActiveCartridge('menu')}
+                      onOpenLeaderboard={() => setActiveCartridge('leaderboard')}
                       dpadState={dpadState}
                       buttonA={buttonA}
                       buttonB={buttonB}
@@ -298,10 +336,21 @@ export default function TerminalDrawer({
                   {activeCartridge === 'snake' && (
                     <MatrixSnakeGame 
                       onExit={() => setActiveCartridge('menu')}
+                      onOpenLeaderboard={() => setActiveCartridge('leaderboard')}
                       dpadState={dpadState}
                       buttonA={buttonA}
                       buttonB={buttonB}
                       startTrigger={startTrigger}
+                    />
+                  )}
+
+                  {activeCartridge === 'leaderboard' && (
+                    <GbaLeaderboardScreen 
+                      onExit={() => setActiveCartridge('menu')}
+                      onSelectGame={handleSelectGame}
+                      dpadState={dpadState}
+                      buttonA={buttonA}
+                      buttonB={buttonB}
                     />
                   )}
 
@@ -441,7 +490,12 @@ export default function TerminalDrawer({
           flex-direction: column;
           align-items: center;
           width: 100%;
-          max-width: 820px;
+          max-width: 960px;
+          transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gba-console-outer-wrap.is-maximized {
+          max-width: 1140px;
         }
 
         /* Top L/R Shoulder Triggers */
@@ -449,9 +503,10 @@ export default function TerminalDrawer({
           display: flex;
           align-items: flex-end;
           justify-content: space-between;
-          width: 90%;
+          width: 92%;
           margin-bottom: -4px;
           z-index: 2;
+          gap: 6px;
         }
 
         .gba-shoulder-btn {
@@ -460,7 +515,7 @@ export default function TerminalDrawer({
           border: 1px solid rgba(255, 255, 255, 0.2);
           border-bottom: none;
           border-radius: 12px 12px 0 0;
-          padding: 6px 20px 8px 20px;
+          padding: 6px 18px 8px 18px;
           font-family: monospace;
           font-size: 0.72rem;
           font-weight: 800;
@@ -472,6 +527,25 @@ export default function TerminalDrawer({
         .gba-shoulder-btn:hover {
           color: #ffffff;
           background: linear-gradient(180deg, #475569 0%, #334155 100%);
+        }
+
+        .gba-shoulder-leaderboard {
+          background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+          color: #fbbf24;
+          border-color: rgba(245, 158, 11, 0.35);
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 16px 8px 16px;
+        }
+
+        .gba-shoulder-leaderboard:hover,
+        .gba-shoulder-leaderboard.active-lb {
+          background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+          color: #040906;
+          border-color: #fbbf24;
+          font-weight: 900;
+          box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
         }
 
         .gba-cartridge-slot-ridge {
@@ -566,6 +640,27 @@ export default function TerminalDrawer({
           border-radius: 4px;
         }
 
+        .gba-console-zoom-btn {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .gba-console-zoom-btn:hover {
+          background: rgba(0, 240, 255, 0.2);
+          color: #00f0ff;
+          border-color: #00f0ff;
+          transform: scale(1.08);
+        }
+
         .gba-console-close-btn {
           width: 28px;
           height: 28px;
@@ -590,9 +685,9 @@ export default function TerminalDrawer({
         /* Controls & Screen Horizontal Layout */
         .gba-controls-and-screen-grid {
           display: grid;
-          grid-template-columns: 140px 1fr 140px;
+          grid-template-columns: 125px 1fr 125px;
           align-items: center;
-          gap: 20px;
+          gap: 16px;
         }
 
         /* LEFT CONTROLS: D-PAD */
@@ -684,21 +779,27 @@ export default function TerminalDrawer({
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100%;
         }
 
         .gba-screen-glass-lens {
           position: relative;
           background: #000000;
-          border: 4px solid #1e293b;
-          border-radius: 12px;
+          border: 4px solid #334155;
+          border-radius: 14px;
           box-shadow: 
-            inset 0 4px 16px rgba(0, 0, 0, 0.9), 
-            0 8px 24px rgba(0, 0, 0, 0.8),
-            0 0 0 1px rgba(255, 255, 255, 0.08);
+            inset 0 0 24px rgba(0, 240, 255, 0.22), 
+            0 12px 36px rgba(0, 0, 0, 0.95),
+            0 0 0 1px rgba(255, 255, 255, 0.12);
           overflow: hidden;
           width: 100%;
-          max-width: 480px;
+          max-width: 620px;
           aspect-ratio: 3 / 2;
+          transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gba-console-outer-wrap.is-maximized .gba-screen-glass-lens {
+          max-width: 800px;
         }
 
         .gba-glass-glare-strip {
@@ -706,8 +807,8 @@ export default function TerminalDrawer({
           top: 0;
           left: 0;
           right: 0;
-          height: 35%;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+          height: 14%;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
           pointer-events: none;
           z-index: 5;
         }

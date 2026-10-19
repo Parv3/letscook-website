@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { playGbaJump, playGbaScore, playGbaCrash, playGbaLaser, playGbaPowerup, playGbaBounce } from './GbaAudio';
+import { submitScore } from '../../services/arcadeLeaderboardService';
 
 /**
- * Game 1: STARK FLIGHT (Overhauled)
- * Smooth, floaty retro arcade Iron Man flight.
- * Fire repulsor blasters to destroy drones, glide through wide laser gates,
- * collect Arc Cores, and grab energy shields!
+ * Game 1: STARK FLIGHT (Optimized)
+ * Fixed 60Hz physics timestep accumulator (eliminates high refresh rate speedups).
+ * Crisp 480x320 canvas, gentle floaty jetpack, repulsor blasters,
+ * shield powerups, and automatic leaderboard score synchronization!
  */
-export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, startTrigger }) {
+export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, buttonA, buttonB, startTrigger }) {
   const canvasRef = useRef(null);
   const [gameState, setGameState] = useState('ready'); // 'ready' | 'playing' | 'gameover'
   const [score, setScore] = useState(0);
@@ -20,28 +21,27 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
     gameState: 'ready',
     score: 0,
     bestScore: highScore,
-    playerY: 100,
+    playerY: 150,
     velocity: 0,
-    gravity: 0.14,      // Very gentle gravity
-    thrust: -2.8,       // Floaty, controllable lift
+    gravity: 0.18,
+    thrust: -3.8,
     hasShield: false,
-    lasers: [],         // Player repulsor shots
-    gates: [],          // Wide laser barriers
-    drones: [],         // Destructible flying drones
-    arcCores: [],       // Floating Arc Reactor coins
-    shieldOrbs: [],     // Shield pickups
+    lasers: [],
+    gates: [],
+    drones: [],
+    arcCores: [],
+    shieldOrbs: [],
     particles: [],
     frame: 0
   });
 
-  // Action: Lift Repulsor Thruster
   const triggerThrust = useCallback(() => {
     const s = stateRef.current;
     if (s.gameState === 'ready') {
       s.gameState = 'playing';
       s.score = 0;
-      s.playerY = 100;
-      s.velocity = -2.2;
+      s.playerY = 150;
+      s.velocity = -2.8;
       s.gates = [];
       s.drones = [];
       s.arcCores = [];
@@ -57,8 +57,8 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
     if (s.gameState === 'gameover') {
       s.gameState = 'playing';
       s.score = 0;
-      s.playerY = 100;
-      s.velocity = -2.2;
+      s.playerY = 150;
+      s.velocity = -2.8;
       s.gates = [];
       s.drones = [];
       s.arcCores = [];
@@ -78,23 +78,21 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
     }
   }, []);
 
-  // Action: Shoot Repulsor Laser
   const triggerShoot = useCallback(() => {
     const s = stateRef.current;
     if (s.gameState !== 'playing') return;
 
-    // Fire laser beam from Iron Man's palm
     s.lasers.push({
-      x: 65,
+      x: 95,
       y: s.playerY,
-      vx: 6,
-      w: 14,
-      h: 3
+      vx: 8.5,
+      w: 20,
+      h: 4
     });
     playGbaLaser();
   }, []);
 
-  // Listen to physical GBA controls
+  // Controls triggers
   useEffect(() => {
     if (buttonA || dpadState.up || startTrigger) {
       triggerThrust();
@@ -113,67 +111,50 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
       } else if (e.key === 'z' || e.key === 'Z' || e.key === 'j' || e.key === 'J' || e.code === 'KeyF') {
         e.preventDefault();
         triggerShoot();
+      } else if (e.key === 'l' || e.key === 'L') {
+        if (onOpenLeaderboard) onOpenLeaderboard();
       } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'X') {
         if (onExit) onExit();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [triggerThrust, triggerShoot, onExit]);
+  }, [triggerThrust, triggerShoot, onExit, onOpenLeaderboard]);
 
-  // Main Canvas Render & Physics Loop
+  // Main Canvas Loop: Fixed 60Hz Timestep Accumulator
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const width = (canvas.width = 320);
-    const height = (canvas.height = 213);
+    const width = (canvas.width = 480);
+    const height = (canvas.height = 320);
 
     let animId = null;
+    let lastTime = 0;
+    const TICK_STEP = 1000 / 60;
+    let accumulator = 0;
 
-    const render = () => {
+    const tickPhysics = () => {
       const s = stateRef.current;
       s.frame++;
 
-      // 1. Cyber Sky & Parallax Skyline
-      ctx.fillStyle = '#060a17';
-      ctx.fillRect(0, 0, width, height);
-
-      // Starfield / cyber points
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
-      for (let i = 0; i < 20; i++) {
-        const sx = ((i * 35) - (s.frame * 0.2)) % width;
-        const sy = (i * 17) % (height - 30);
-        ctx.fillRect(sx < 0 ? sx + width : sx, sy, 1.5, 1.5);
-      }
-
-      // City silhouette
-      ctx.fillStyle = '#0b1426';
-      for (let i = 0; i < 12; i++) {
-        const bx = ((i * 32) - (s.frame * 0.35)) % (12 * 32);
-        const bh = 35 + ((i * 19) % 45);
-        ctx.fillRect(bx < -32 ? bx + 12 * 32 : bx, height - bh, 28, bh);
-      }
-
-      // 2. Physics & Logic when Playing
       if (s.gameState === 'playing') {
         s.velocity += s.gravity;
         s.playerY += s.velocity;
 
-        // Soft floor & ceiling dampening
-        if (s.playerY > height - 20) {
-          s.playerY = height - 20;
-          s.velocity = -1.2;
+        if (s.playerY > height - 28) {
+          s.playerY = height - 28;
+          s.velocity = -1.6;
         }
-        if (s.playerY < 14) {
-          s.playerY = 14;
-          s.velocity = 0.5;
+        if (s.playerY < 20) {
+          s.playerY = 20;
+          s.velocity = 0.6;
         }
 
-        // Spawn Laser Gates (Gentle frequency, wide 92px gaps!)
+        // Spawn gates (wide 135px gap!)
         if (s.frame % 130 === 0) {
-          const gap = 92;
-          const topH = 20 + Math.random() * (height - gap - 45);
+          const gap = 135;
+          const topH = 25 + Math.random() * (height - gap - 60);
           s.gates.push({
             x: width,
             topH,
@@ -181,79 +162,73 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
             passed: false
           });
 
-          // Spawn floating Arc Reactor ring
           s.arcCores.push({
-            x: width + 22,
+            x: width + 30,
             y: topH + gap / 2,
             collected: false
           });
 
-          // 25% chance for a Shield Orb pickup
-          if (Math.random() < 0.25 && !s.hasShield) {
+          if (Math.random() < 0.28 && !s.hasShield) {
             s.shieldOrbs.push({
-              x: width + 60,
-              y: topH + gap / 2 + (Math.random() - 0.5) * 30,
+              x: width + 85,
+              y: topH + gap / 2 + (Math.random() - 0.5) * 45,
               collected: false
             });
           }
         }
 
-        // Spawn occasional Hydra drones to blast!
+        // Spawn occasional Hydra drones
         if (s.frame % 160 === 80) {
           s.drones.push({
-            x: width + 10,
-            y: 35 + Math.random() * (height - 70),
-            vx: -1.3,
+            x: width + 15,
+            y: 50 + Math.random() * (height - 100),
+            vx: -1.8,
             hp: 1
           });
         }
 
-        // Update Repulsor Lasers
+        // Update Lasers
         for (let i = s.lasers.length - 1; i >= 0; i--) {
           const l = s.lasers[i];
           l.x += l.vx;
 
-          // Check hit against drones
           for (let dIdx = s.drones.length - 1; dIdx >= 0; dIdx--) {
             const dr = s.drones[dIdx];
             if (
               l.x + l.w > dr.x &&
-              l.x < dr.x + 18 &&
+              l.x < dr.x + 24 &&
               l.y > dr.y &&
-              l.y < dr.y + 14
+              l.y < dr.y + 18
             ) {
-              // Destroy Drone!
               s.drones.splice(dIdx, 1);
               s.lasers.splice(i, 1);
               s.score += 30;
               setScore(s.score);
               playGbaBounce();
 
-              // Explosion particles
-              for (let p = 0; p < 8; p++) {
+              for (let p = 0; p < 10; p++) {
                 s.particles.push({
-                  x: dr.x + 9,
-                  y: dr.y + 7,
-                  vx: (Math.random() - 0.5) * 3,
-                  vy: (Math.random() - 0.5) * 3,
+                  x: dr.x + 12,
+                  y: dr.y + 9,
+                  vx: (Math.random() - 0.5) * 4,
+                  vy: (Math.random() - 0.5) * 4,
                   color: '#fbbf24',
-                  life: 18
+                  life: 20
                 });
               }
               break;
             }
           }
 
-          if (l.x > width + 20) s.lasers.splice(i, 1);
+          if (l.x > width + 25) s.lasers.splice(i, 1);
         }
 
-        // Update Laser Gates (Gentle scroll speed 1.1)
+        // Update Gates
         for (let i = s.gates.length - 1; i >= 0; i--) {
           const g = s.gates[i];
-          g.x -= 1.1;
+          g.x -= 1.6;
 
-          // Score on passing
-          if (!g.passed && g.x < 45) {
+          if (!g.passed && g.x < 65) {
             g.passed = true;
             s.score += 15;
             setScore(s.score);
@@ -264,49 +239,47 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
             }
           }
 
-          // Player collision test (Hitbox: x: 48, y: s.playerY - 8, w: 16, h: 16)
           const botY = g.topH + g.gap;
           if (
-            g.x < 64 &&
-            g.x + 18 > 48 &&
-            (s.playerY - 8 < g.topH || s.playerY + 8 > botY)
+            g.x < 90 &&
+            g.x + 24 > 70 &&
+            (s.playerY - 12 < g.topH || s.playerY + 12 > botY)
           ) {
             if (s.hasShield) {
-              // Shield absorbs the crash!
               s.hasShield = false;
               setHasShield(false);
               playGbaBounce();
-              g.x = -50; // clear barrier
-              for (let p = 0; p < 10; p++) {
+              g.x = -60;
+              for (let p = 0; p < 12; p++) {
                 s.particles.push({
-                  x: 55,
+                  x: 80,
                   y: s.playerY,
-                  vx: (Math.random() - 0.5) * 4,
-                  vy: (Math.random() - 0.5) * 4,
+                  vx: (Math.random() - 0.5) * 5,
+                  vy: (Math.random() - 0.5) * 5,
                   color: '#38bdf8',
-                  life: 20
+                  life: 22
                 });
               }
             } else {
               s.gameState = 'gameover';
               setGameState('gameover');
               playGbaCrash();
+              submitScore('stark', s.score);
             }
           }
 
-          if (g.x < -30) s.gates.splice(i, 1);
+          if (g.x < -40) s.gates.splice(i, 1);
         }
 
-        // Update Hydra Drones
+        // Update Drones
         for (let i = s.drones.length - 1; i >= 0; i--) {
           const dr = s.drones[i];
           dr.x += dr.vx;
 
-          // Player collision with drone
           if (
-            dr.x < 62 &&
-            dr.x + 16 > 48 &&
-            Math.abs(s.playerY - (dr.y + 7)) < 12
+            dr.x < 90 &&
+            dr.x + 22 > 70 &&
+            Math.abs(s.playerY - (dr.y + 9)) < 16
           ) {
             if (s.hasShield) {
               s.hasShield = false;
@@ -317,23 +290,24 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
               s.gameState = 'gameover';
               setGameState('gameover');
               playGbaCrash();
+              submitScore('stark', s.score);
             }
           }
 
-          if (dr.x < -20) s.drones.splice(i, 1);
+          if (dr.x < -30) s.drones.splice(i, 1);
         }
 
         // Update Arc Cores
         for (let i = s.arcCores.length - 1; i >= 0; i--) {
           const c = s.arcCores[i];
-          c.x -= 1.1;
-          const dist = Math.hypot(c.x - 55, c.y - s.playerY);
-          if (dist < 18) {
+          c.x -= 1.6;
+          const dist = Math.hypot(c.x - 78, c.y - s.playerY);
+          if (dist < 24) {
             s.score += 25;
             setScore(s.score);
             playGbaScore();
             s.arcCores.splice(i, 1);
-          } else if (c.x < -20) {
+          } else if (c.x < -30) {
             s.arcCores.splice(i, 1);
           }
         }
@@ -341,187 +315,224 @@ export default function StarkFlightGame({ onExit, dpadState, buttonA, buttonB, s
         // Update Shield Orbs
         for (let i = s.shieldOrbs.length - 1; i >= 0; i--) {
           const so = s.shieldOrbs[i];
-          so.x -= 1.1;
-          const dist = Math.hypot(so.x - 55, so.y - s.playerY);
-          if (dist < 18) {
+          so.x -= 1.6;
+          const dist = Math.hypot(so.x - 78, so.y - s.playerY);
+          if (dist < 24) {
             s.hasShield = true;
             setHasShield(true);
             playGbaPowerup();
             s.shieldOrbs.splice(i, 1);
-          } else if (so.x < -20) {
+          } else if (so.x < -30) {
             s.shieldOrbs.splice(i, 1);
           }
         }
       }
+    };
 
-      // 3. Render Laser Gates
+    const draw = () => {
+      const s = stateRef.current;
+
+      // Cyber Sky
+      ctx.fillStyle = '#060a17';
+      ctx.fillRect(0, 0, width, height);
+
+      // Starfield
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.18)';
+      for (let i = 0; i < 28; i++) {
+        const sx = ((i * 45) - (s.frame * 0.25)) % width;
+        const sy = (i * 22) % (height - 40);
+        ctx.fillRect(sx < 0 ? sx + width : sx, sy, 2, 2);
+      }
+
+      // City silhouette
+      ctx.fillStyle = '#0b1426';
+      for (let i = 0; i < 14; i++) {
+        const bx = ((i * 44) - (s.frame * 0.45)) % (14 * 44);
+        const bh = 45 + ((i * 24) % 65);
+        ctx.fillRect(bx < -44 ? bx + 14 * 44 : bx, height - bh, 38, bh);
+      }
+
+      // Gates
       s.gates.forEach(g => {
-        // Upper Pylon
         ctx.fillStyle = '#dc2626';
-        ctx.fillRect(g.x, 0, 16, g.topH);
+        ctx.fillRect(g.x, 0, 22, g.topH);
         ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(g.x + 3, g.topH - 4, 10, 4);
+        ctx.fillRect(g.x + 4, g.topH - 6, 14, 6);
 
-        // Lower Pylon
         const botY = g.topH + g.gap;
         ctx.fillStyle = '#dc2626';
-        ctx.fillRect(g.x, botY, 16, height - botY);
+        ctx.fillRect(g.x, botY, 22, height - botY);
         ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(g.x + 3, botY, 10, 4);
+        ctx.fillRect(g.x + 4, botY, 14, 6);
 
-        // Shimmering Forcefield Line
         ctx.fillStyle = s.frame % 6 < 3 ? 'rgba(0, 240, 255, 0.45)' : 'rgba(239, 68, 68, 0.25)';
-        ctx.fillRect(g.x + 6, g.topH, 4, g.gap);
+        ctx.fillRect(g.x + 8, g.topH, 6, g.gap);
       });
 
-      // 4. Render Drones
+      // Drones
       s.drones.forEach(dr => {
         ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(dr.x, dr.y + 3, 16, 8);
+        ctx.fillRect(dr.x, dr.y + 4, 22, 10);
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(dr.x + 3, dr.y + 5, 4, 4); // Red sensor eye
-        // Rotors
+        ctx.fillRect(dr.x + 4, dr.y + 6, 5, 5);
         ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(dr.x + 2, dr.y, 12, 2);
+        ctx.fillRect(dr.x + 3, dr.y, 16, 3);
       });
 
-      // 5. Render Lasers
+      // Lasers
       ctx.fillStyle = '#00f0ff';
       s.lasers.forEach(l => {
-        ctx.fillRect(l.x, l.y - 1, l.w, l.h);
+        ctx.fillRect(l.x, l.y - 2, l.w, l.h);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(l.x + 4, l.y, l.w - 6, 1);
+        ctx.fillRect(l.x + 5, l.y - 1, l.w - 8, 2);
       });
 
-      // 6. Render Collectibles (Arc Cores & Shield Orbs)
+      // Arc Cores
       s.arcCores.forEach(c => {
-        const pulse = Math.sin(s.frame * 0.15) * 1.5;
+        const pulse = Math.sin(s.frame * 0.15) * 2;
         ctx.fillStyle = '#00f0ff';
         ctx.beginPath();
-        ctx.arc(c.x, c.y, 5 + pulse, 0, Math.PI * 2);
+        ctx.arc(c.x, c.y, 7 + pulse, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(c.x, c.y, 2, 0, Math.PI * 2);
+        ctx.arc(c.x, c.y, 3, 0, Math.PI * 2);
         ctx.fill();
       });
 
+      // Shield Orbs
       s.shieldOrbs.forEach(so => {
         ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(so.x, so.y, 7, 0, Math.PI * 2);
+        ctx.arc(so.x, so.y, 9, 0, Math.PI * 2);
         ctx.stroke();
         ctx.fillStyle = '#60a5fa';
-        ctx.fillText('🛡️', so.x - 5, so.y + 4);
+        ctx.fillText('🛡️', so.x - 6, so.y + 5);
       });
 
-      // 7. Render Particles
+      // Particles
       for (let i = s.particles.length - 1; i >= 0; i--) {
         const p = s.particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.life--;
         ctx.fillStyle = p.color || '#38bdf8';
-        ctx.fillRect(p.x, p.y, 2, 2);
+        ctx.fillRect(p.x, p.y, 3, 3);
         if (p.life <= 0) s.particles.splice(i, 1);
       }
 
-      // 8. Render Iron Man Sprite
-      const px = 52;
+      // Iron Man Sprite
+      const px = 75;
       const py = s.playerY;
 
-      // Thruster flame
+      // Flame
       if (s.gameState === 'playing') {
         ctx.fillStyle = '#00f0ff';
         ctx.beginPath();
-        ctx.moveTo(px - 8, py);
-        ctx.lineTo(px - 14 - Math.random() * 5, py - 3);
-        ctx.lineTo(px - 14 - Math.random() * 5, py + 3);
+        ctx.moveTo(px - 10, py);
+        ctx.lineTo(px - 20 - Math.random() * 8, py - 4);
+        ctx.lineTo(px - 20 - Math.random() * 8, py + 4);
         ctx.closePath();
         ctx.fill();
       }
 
-      // Armor Body (Red & Gold)
-      ctx.fillStyle = '#dc2626'; // Hot rod red
-      ctx.fillRect(px - 6, py - 6, 16, 12);
-      ctx.fillStyle = '#fbbf24'; // Gold faceplate / shoulder
-      ctx.fillRect(px + 4, py - 5, 6, 6);
-      ctx.fillStyle = '#00f0ff'; // Arc reactor & eye slit
-      ctx.fillRect(px + 6, py - 3, 2, 2);
-      ctx.fillRect(px - 1, py - 2, 4, 4);
+      // Armor
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(px - 8, py - 9, 22, 18);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(px + 6, py - 7, 8, 8);
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillRect(px + 8, py - 5, 3, 3);
+      ctx.fillRect(px - 1, py - 3, 5, 5);
 
-      // Shield Bubble if active!
       if (s.hasShield) {
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(px + 2, py, 14 + Math.sin(s.frame * 0.2) * 2, 0, Math.PI * 2);
+        ctx.arc(px + 4, py, 19 + Math.sin(s.frame * 0.2) * 2, 0, Math.PI * 2);
         ctx.stroke();
       }
 
-      // 9. HUD Overlay
-      ctx.font = '10px "Courier New", monospace';
+      // HUD
+      ctx.font = 'bold 13px "Courier New", monospace';
       ctx.textAlign = 'right';
       ctx.fillStyle = '#94a3b8';
-      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 75, 16);
+      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 100, 24);
       ctx.fillStyle = '#00f0ff';
-      ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 15, 16);
+      ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 20, 24);
 
-      // Left Hint
       ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.75)';
-      ctx.font = '8px monospace';
-      ctx.fillText('[A/▲] FLY  [B/Z] SHOOT LASER', 12, 16);
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.85)';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText('[A/▲] FLY  [B/Z] SHOOT LASER', 16, 24);
 
       if (s.hasShield) {
         ctx.fillStyle = '#38bdf8';
-        ctx.fillText('SHIELD: ACTIVE', 12, 28);
+        ctx.fillText('SHIELD: ACTIVE', 16, 42);
       }
 
-      // Ready / Game Over Screens
+      // Overlays
       if (s.gameState === 'ready') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 14px monospace';
+        ctx.font = 'bold 20px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('STARK FLIGHT', width / 2, height / 2 - 20);
+        ctx.fillText('STARK FLIGHT', width / 2, height / 2 - 30);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '10px monospace';
+        ctx.font = '14px monospace';
         ctx.fillText('PRESS [A] OR [▲] TO ENGAGE THRUSTERS', width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#00f0ff';
-        ctx.font = '8px monospace';
-        ctx.fillText('PRESS [B] TO SHOOT REPULSOR BEAMS!', width / 2, height / 2 + 25);
+        ctx.font = '11px monospace';
+        ctx.fillText('PRESS [B] TO SHOOT REPULSOR BEAMS!', width / 2, height / 2 + 35);
       } else if (s.gameState === 'gameover') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 15px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SUIT SYSTEM OFFLINE', width / 2, height / 2 - 20);
+        ctx.fillText('SUIT SYSTEM OFFLINE', width / 2, height / 2 - 35);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '11px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2);
+        ctx.font = '14px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
 
         ctx.fillStyle = '#00f0ff';
-        ctx.font = '10px monospace';
-        ctx.fillText('PRESS [A] TO REBOOT THRUSTERS', width / 2, height / 2 + 22);
+        ctx.font = '13px monospace';
+        ctx.fillText('PRESS [A] TO REBOOT THRUSTERS', width / 2, height / 2 + 25);
 
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '8px monospace';
-        ctx.fillText('[B / ESC] RETURN TO MULTICART MENU', width / 2, height / 2 + 40);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
       }
-
-      animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    const loop = (currentTime) => {
+      animId = requestAnimationFrame(loop);
+      if (!lastTime) {
+        lastTime = currentTime;
+        return;
+      }
+
+      let delta = currentTime - lastTime;
+      lastTime = currentTime;
+      if (delta > 80) delta = 80;
+
+      accumulator += delta;
+      while (accumulator >= TICK_STEP) {
+        tickPhysics();
+        accumulator -= TICK_STEP;
+      }
+
+      draw();
+    };
+
+    animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
   }, []);
 

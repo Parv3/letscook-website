@@ -10,6 +10,7 @@ import {
 
 const GBA_COMMANDS_HELP = [
   { cmd: 'games', desc: 'Exit to GBA Cartridge Selector Menu' },
+  { cmd: 'leaderboard', desc: 'View global arcade player rankings' },
   { cmd: 'play <1-4>', desc: 'Launch: 1=Dino, 2=Stark, 3=Shield, 4=Snake' },
   { cmd: 'help', desc: 'List all operational directives' },
   { cmd: 'squad <id>', desc: 'Deploy squad theme: ironman, captain, thor, hulk' },
@@ -71,6 +72,9 @@ export default function GbaShellTerminal({
       });
     } else if (cmd === 'games' || cmd === 'menu') {
       onSelectGame('menu');
+      return;
+    } else if (cmd === 'leaderboard' || cmd === 'scores' || cmd === 'top' || cmd === 'halloffame') {
+      onSelectGame('leaderboard');
       return;
     } else if (cmd === 'play 1' || cmd === 'dino' || cmd === 'play dino') {
       onSelectGame('dino');
@@ -197,7 +201,7 @@ export default function GbaShellTerminal({
 
       {/* Quick Command Chips */}
       <div className="gba-term-chips">
-        {['dino', 'games', 'help', 'assemble', 'whoami', 'clear'].map(c => (
+        {['dino', 'leaderboard', 'games', 'help', 'assemble', 'whoami', 'clear'].map(c => (
           <button 
             key={c}
             onClick={() => handleCommand(c)}

@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { playGbaBounce, playGbaScore, playGbaVictory, playGbaCrash, playGbaPowerup, playGbaLaser } from './GbaAudio';
+import { submitScore } from '../../services/arcadeLeaderboardService';
 
 /**
- * Game 2: SHIELD BREAKER (Overhauled)
- * Gentle, thrilling Arkanoid brick breaker.
- * Slower initial ball speed, wider paddle, and dynamic powerups:
- * Multi-Ball, Laser Cannons, Paddle Expander, and Slow-Mo!
+ * Game 2: SHIELD BREAKER (Optimized)
+ * Fixed 60Hz physics timestep accumulator (eliminates high refresh rate speedups).
+ * Crisp 480x320 canvas, wide paddle, multi-ball, laser blasters,
+ * and automatic leaderboard score synchronization!
  */
-export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB, startTrigger }) {
+export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState, buttonA, buttonB, startTrigger }) {
   const canvasRef = useRef(null);
   const [gameState, setGameState] = useState('ready'); // 'ready' | 'playing' | 'gameover' | 'won'
   const [score, setScore] = useState(0);
@@ -21,33 +22,34 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
     score: 0,
     lives: 3,
     bestScore: highScore,
-    paddleX: 125,
-    paddleW: 68,
+    paddleX: 195,
+    paddleW: 90,
     hasLasers: false,
-    balls: [{ x: 160, y: 175, vx: 1.2, vy: -1.4, r: 5, rot: 0 }],
+    balls: [{ x: 240, y: 260, vx: 1.8, vy: -2.0, r: 7, rot: 0 }],
     bricks: [],
-    powerups: [], // { x, y, type: 'multiball'|'laser'|'wide'|'slow'|'life' }
-    lasers: [],   // { x, y, vy: -5 }
+    powerups: [],
+    lasers: [],
     particles: [],
     floaters: [],
-    frame: 0
+    frame: 0,
+    keys: { left: false, right: false }
   });
 
   const initBricks = () => {
     const bricks = [];
     const rows = 4;
     const cols = 9;
-    const brickW = 30;
-    const brickH = 10;
-    const startX = 14;
-    const startY = 28;
+    const brickW = 46;
+    const brickH = 14;
+    const startX = 26;
+    const startY = 40;
     const colors = ['#ef4444', '#38bdf8', '#fbbf24', '#22c55e'];
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         bricks.push({
-          x: startX + c * (brickW + 4),
-          y: startY + r * (brickH + 4),
+          x: startX + c * (brickW + 5),
+          y: startY + r * (brickH + 5),
           w: brickW,
           h: brickH,
           color: colors[r % colors.length],
@@ -64,10 +66,10 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
     s.gameState = 'playing';
     s.score = 0;
     s.lives = 3;
-    s.paddleX = 125;
-    s.paddleW = 68;
+    s.paddleX = 195;
+    s.paddleW = 90;
     s.hasLasers = false;
-    s.balls = [{ x: 160, y: 175, vx: (Math.random() > 0.5 ? 1 : -1) * 1.3, vy: -1.35, r: 5, rot: 0 }];
+    s.balls = [{ x: 240, y: 260, vx: (Math.random() > 0.5 ? 1 : -1) * 1.8, vy: -2.0, r: 7, rot: 0 }];
     s.bricks = initBricks();
     s.powerups = [];
     s.lasers = [];
@@ -79,19 +81,18 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
     playGbaBounce();
   }, []);
 
-  // Action: Shoot Lasers if armed
   const shootLaser = useCallback(() => {
     const s = stateRef.current;
     if (s.gameState === 'playing' && s.hasLasers) {
-      s.lasers.push({ x: s.paddleX + 6, y: 188, vy: -4.5 });
-      s.lasers.push({ x: s.paddleX + s.paddleW - 6, y: 188, vy: -4.5 });
+      s.lasers.push({ x: s.paddleX + 8, y: 278, vy: -6.5 });
+      s.lasers.push({ x: s.paddleX + s.paddleW - 8, y: 278, vy: -6.5 });
       playGbaLaser();
     } else if (s.gameState !== 'playing') {
       startGame();
     }
   }, [startGame]);
 
-  // Button triggers
+  // Controls triggers
   useEffect(() => {
     if (buttonA || startTrigger) {
       shootLaser();
@@ -105,63 +106,71 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
     }
   }, [buttonA, buttonB, startTrigger, shootLaser, onExit]);
 
-  // Keyboard navigation
+  // Keyboard navigation & smooth left/right holding
   useEffect(() => {
+    const s = stateRef.current;
     const handleKeyDown = (e) => {
-      if (e.code === 'Space' || e.key === 'z' || e.key === 'Z' || e.code === 'Enter') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        s.keys.left = true;
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        s.keys.right = true;
+      } else if (e.code === 'Space' || e.key === 'z' || e.key === 'Z' || e.code === 'Enter') {
         shootLaser();
+      } else if (e.key === 'l' || e.key === 'L') {
+        if (onOpenLeaderboard) onOpenLeaderboard();
       } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'X') {
         if (onExit) onExit();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [shootLaser, onExit]);
 
-  // Main Canvas Loop
+    const handleKeyUp = (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        s.keys.left = false;
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        s.keys.right = false;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [shootLaser, onExit, onOpenLeaderboard]);
+
+  // Main Canvas Loop: Fixed 60Hz Timestep Accumulator
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const width = (canvas.width = 320);
-    const height = (canvas.height = 213);
+    const width = (canvas.width = 480);
+    const height = (canvas.height = 320);
 
     stateRef.current.bricks = initBricks();
     let animId = null;
+    let lastTime = 0;
+    const TICK_STEP = 1000 / 60;
+    let accumulator = 0;
 
-    const render = () => {
+    const tickPhysics = () => {
       const s = stateRef.current;
       s.frame++;
 
-      // 1. Radar Sky Background
-      ctx.fillStyle = '#060a14';
-      ctx.fillRect(0, 0, width, height);
-
-      // Radar rings
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(width / 2, height / 2, 60, 0, Math.PI * 2);
-      ctx.arc(width / 2, height / 2, 110, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // 2. D-Pad Movement handling
-      if (dpadState.left) {
-        s.paddleX = Math.max(4, s.paddleX - 4.5);
+      // D-Pad and Keyboard movement handling
+      if (dpadState.left || s.keys.left) {
+        s.paddleX = Math.max(6, s.paddleX - 6.5);
       }
-      if (dpadState.right) {
-        s.paddleX = Math.min(width - s.paddleW - 4, s.paddleX + 4.5);
+      if (dpadState.right || s.keys.right) {
+        s.paddleX = Math.min(width - s.paddleW - 6, s.paddleX + 6.5);
       }
 
-      // Keyboard left/right continuous polling
-      // 3. Gameplay Physics
       if (s.gameState === 'playing') {
         // Update Lasers
         for (let i = s.lasers.length - 1; i >= 0; i--) {
           const l = s.lasers[i];
           l.y += l.vy;
 
-          // Check brick hit
           for (const b of s.bricks) {
             if (b.alive && l.x > b.x && l.x < b.x + b.w && l.y > b.y && l.y < b.y + b.h) {
               b.alive = false;
@@ -178,42 +187,39 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
         // Update Powerups
         for (let i = s.powerups.length - 1; i >= 0; i--) {
           const p = s.powerups[i];
-          p.y += 1.2;
+          p.y += 1.6;
 
-          // Check catch by paddle
           if (
-            p.y >= 188 &&
-            p.y <= 198 &&
-            p.x >= s.paddleX - 4 &&
-            p.x <= s.paddleX + s.paddleW + 4
+            p.y >= 278 &&
+            p.y <= 294 &&
+            p.x >= s.paddleX - 6 &&
+            p.x <= s.paddleX + s.paddleW + 6
           ) {
-            // Apply Powerup!
             playGbaPowerup();
             if (p.type === 'multiball') {
-              // Duplicate existing balls
               const newBalls = [];
               s.balls.forEach(b => {
                 newBalls.push({ ...b, vx: -b.vx * 0.9, vy: b.vy });
                 newBalls.push({ ...b, vx: b.vx * 1.1, vy: b.vy * 0.9 });
               });
               s.balls.push(...newBalls);
-              s.floaters.push({ text: 'MULTI-BALL!', x: p.x, y: 175, life: 30, color: '#00f0ff' });
+              s.floaters.push({ text: 'MULTI-SHIELD!', x: p.x, y: 255, life: 35, color: '#00f0ff' });
             } else if (p.type === 'laser') {
               s.hasLasers = true;
-              s.floaters.push({ text: 'LASERS ARMED!', x: p.x, y: 175, life: 30, color: '#ef4444' });
+              s.floaters.push({ text: 'LASERS ARMED!', x: p.x, y: 255, life: 35, color: '#ef4444' });
             } else if (p.type === 'wide') {
-              s.paddleW = 92;
-              s.floaters.push({ text: 'WIDE SHIELD!', x: p.x, y: 175, life: 30, color: '#fbbf24' });
+              s.paddleW = 125;
+              s.floaters.push({ text: 'WIDE SHIELD!', x: p.x, y: 255, life: 35, color: '#fbbf24' });
             } else if (p.type === 'slow') {
               s.balls.forEach(b => {
-                b.vx = Math.sign(b.vx || 1) * 1.2;
-                b.vy = Math.sign(b.vy || -1) * 1.2;
+                b.vx = Math.sign(b.vx || 1) * 1.6;
+                b.vy = Math.sign(b.vy || -1) * 1.6;
               });
-              s.floaters.push({ text: 'SLOW-MO!', x: p.x, y: 175, life: 30, color: '#22c55e' });
+              s.floaters.push({ text: 'SLOW-MO!', x: p.x, y: 255, life: 35, color: '#22c55e' });
             } else if (p.type === 'life') {
               s.lives = Math.min(5, s.lives + 1);
               setLives(s.lives);
-              s.floaters.push({ text: '+1 LIFE!', x: p.x, y: 175, life: 30, color: '#ec4899' });
+              s.floaters.push({ text: '+1 LIFE!', x: p.x, y: 255, life: 35, color: '#ec4899' });
             }
             s.powerups.splice(i, 1);
           } else if (p.y > height) {
@@ -246,23 +252,22 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
           }
 
           // Paddle bounce
-          const paddleY = 192;
+          const paddleY = 282;
           if (
             ball.y + ball.r >= paddleY &&
-            ball.y - ball.r <= paddleY + 8 &&
+            ball.y - ball.r <= paddleY + 12 &&
             ball.x >= s.paddleX &&
             ball.x <= s.paddleX + s.paddleW &&
             ball.vy > 0
           ) {
-            // Deflection angle based on impact point
             const hitOffset = (ball.x - (s.paddleX + s.paddleW / 2)) / (s.paddleW / 2);
-            const speed = Math.hypot(ball.vx, ball.vy);
-            ball.vx = hitOffset * 2.1;
-            ball.vy = -Math.max(1.1, Math.sqrt(Math.max(0.2, speed * speed - ball.vx * ball.vx)));
+            const currentSpeed = Math.hypot(ball.vx, ball.vy);
+            ball.vx = hitOffset * 2.8;
+            ball.vy = -Math.max(1.6, Math.sqrt(Math.max(0.4, currentSpeed * currentSpeed - ball.vx * ball.vx)));
             playGbaBounce();
           }
 
-          // Brick collision check
+          // Brick collisions
           for (const b of s.bricks) {
             if (b.alive) {
               if (
@@ -283,14 +288,12 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
                   localStorage.setItem('lc_gba_shield_hi', String(s.score));
                 }
 
-                // Chance to drop power-up (32% chance!)
-                if (Math.random() < 0.32) {
+                if (Math.random() < 0.35) {
                   const pTypes = ['multiball', 'laser', 'wide', 'slow', 'life'];
-                  const chosenType = pTypes[Math.floor(Math.random() * pTypes.length)];
                   s.powerups.push({
                     x: b.x + b.w / 2,
                     y: b.y + b.h / 2,
-                    type: chosenType
+                    type: pTypes[Math.floor(Math.random() * pTypes.length)]
                   });
                 }
                 break;
@@ -298,13 +301,12 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
             }
           }
 
-          // Bottom loss
-          if (ball.y > height + 10) {
+          if (ball.y > height + 15) {
             s.balls.splice(i, 1);
           }
         }
 
-        // If all balls lost: lose a life
+        // Life loss
         if (s.balls.length === 0) {
           s.lives--;
           setLives(s.lives);
@@ -312,72 +314,88 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
             s.gameState = 'gameover';
             setGameState('gameover');
             playGbaCrash();
+            submitScore('shield', s.score);
           } else {
-            // Respawn single ball
-            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 175, vx: (Math.random() > 0.5 ? 1 : -1) * 1.3, vy: -1.35, r: 5, rot: 0 }];
+            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 260, vx: (Math.random() > 0.5 ? 1 : -1) * 1.8, vy: -2.0, r: 7, rot: 0 }];
             s.hasLasers = false;
-            s.paddleW = 68;
+            s.paddleW = 90;
             playGbaBounce();
           }
         }
 
-        // Check Victory
+        // Victory
         const remaining = s.bricks.filter(b => b.alive).length;
         if (remaining === 0) {
           s.gameState = 'won';
           setGameState('won');
           playGbaVictory();
+          submitScore('shield', s.score);
         }
       }
+    };
 
-      // 4. Render Bricks
+    const draw = () => {
+      const s = stateRef.current;
+
+      // Radar Sky
+      ctx.fillStyle = '#060a14';
+      ctx.fillRect(0, 0, width, height);
+
+      // Radar rings
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, 90, 0, Math.PI * 2);
+      ctx.arc(width / 2, height / 2, 160, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Bricks
       s.bricks.forEach(b => {
         if (b.alive) {
           ctx.fillStyle = b.color;
           ctx.fillRect(b.x, b.y, b.w, b.h);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-          ctx.fillRect(b.x + 1, b.y + 1, b.w - 2, 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.fillRect(b.x + 2, b.y + 1, b.w - 4, 3);
         }
       });
 
-      // 5. Render Powerup capsules
+      // Powerups
       s.powerups.forEach(p => {
         ctx.fillStyle = p.type === 'laser' ? '#ef4444' : p.type === 'multiball' ? '#00f0ff' : p.type === 'wide' ? '#fbbf24' : p.type === 'life' ? '#ec4899' : '#22c55e';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 7px monospace';
+        ctx.font = 'bold 9px monospace';
         ctx.textAlign = 'center';
         const letter = p.type === 'multiball' ? 'M' : p.type === 'laser' ? 'L' : p.type === 'wide' ? 'W' : p.type === 'life' ? '♥' : 'S';
-        ctx.fillText(letter, p.x, p.y + 2.5);
+        ctx.fillText(letter, p.x, p.y + 3.5);
       });
 
-      // 6. Render Lasers
+      // Lasers
       ctx.fillStyle = '#ef4444';
       s.lasers.forEach(l => {
-        ctx.fillRect(l.x - 1, l.y, 2, 7);
+        ctx.fillRect(l.x - 2, l.y, 4, 10);
       });
 
-      // 7. Render Floating Text
+      // Floating text
       for (let i = s.floaters.length - 1; i >= 0; i--) {
         const fl = s.floaters[i];
-        fl.y -= 0.6;
+        fl.y -= 0.8;
         fl.life--;
         ctx.fillStyle = fl.color;
-        ctx.font = 'bold 8px monospace';
+        ctx.font = 'bold 11px monospace';
         ctx.textAlign = 'center';
         ctx.fillText(fl.text, fl.x, fl.y);
         if (fl.life <= 0) s.floaters.splice(i, 1);
       }
 
-      // 8. Render Balls (Vibranium Shield)
+      // Balls (Captain America Shield)
       s.balls.forEach(ball => {
         ctx.save();
         ctx.translate(ball.x, ball.y);
         ctx.rotate(ball.rot);
 
-        // Shield Rings (Red, White, Blue, Star)
         ctx.fillStyle = '#dc2626';
         ctx.beginPath();
         ctx.arc(0, 0, ball.r, 0, Math.PI * 2);
@@ -401,93 +419,117 @@ export default function ShieldBreakerGame({ onExit, dpadState, buttonA, buttonB,
         ctx.restore();
       });
 
-      // 9. Render Paddle
+      // Paddle
       ctx.fillStyle = '#0284c7';
-      ctx.fillRect(s.paddleX, 192, s.paddleW, 7);
+      ctx.fillRect(s.paddleX, 282, s.paddleW, 10);
       ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(s.paddleX + 4, 193, s.paddleW - 8, 3);
+      ctx.fillRect(s.paddleX + 6, 283, s.paddleW - 12, 4);
 
-      // If lasers armed, show laser pods on edges
       if (s.hasLasers) {
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(s.paddleX + 2, 188, 4, 5);
-        ctx.fillRect(s.paddleX + s.paddleW - 6, 188, 4, 5);
+        ctx.fillRect(s.paddleX + 2, 276, 6, 8);
+        ctx.fillRect(s.paddleX + s.paddleW - 8, 276, 6, 8);
       }
 
-      // 10. HUD Overlay
-      ctx.font = '10px "Courier New", monospace';
+      // HUD
+      ctx.font = 'bold 13px "Courier New", monospace';
       ctx.textAlign = 'right';
       ctx.fillStyle = '#94a3b8';
-      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 75, 16);
+      ctx.fillText(`HI ${String(s.bestScore).padStart(5, '0')}`, width - 100, 24);
       ctx.fillStyle = '#38bdf8';
-      ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 15, 16);
+      ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 20, 24);
 
-      // Lives
       ctx.textAlign = 'left';
       ctx.fillStyle = '#ef4444';
-      ctx.fillText('♥'.repeat(Math.max(0, s.lives)), 14, 16);
+      ctx.fillText('♥'.repeat(Math.max(0, s.lives)), 18, 24);
 
       if (s.hasLasers) {
         ctx.fillStyle = '#fbbf24';
-        ctx.font = '8px monospace';
-        ctx.fillText('[A] FIRE CANNONS!', 48, 15);
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('[A] FIRE CANNONS!', 70, 24);
       }
 
       // Overlay screens
       if (s.gameState === 'ready') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 14px monospace';
+        ctx.font = 'bold 20px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SHIELD BREAKER', width / 2, height / 2 - 20);
+        ctx.fillText('SHIELD BREAKER', width / 2, height / 2 - 30);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '10px monospace';
+        ctx.font = '14px monospace';
         ctx.fillText('PRESS [A] TO LAUNCH SHIELD', width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '8px monospace';
-        ctx.fillText('CATCH FALLING POWER-UPS & SHATTER HYDRA', width / 2, height / 2 + 25);
+        ctx.font = '11px monospace';
+        ctx.fillText('CATCH FALLING POWER-UPS & SHATTER HYDRA', width / 2, height / 2 + 35);
       } else if (s.gameState === 'gameover') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 15px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SHIELD LOST // DEFEAT', width / 2, height / 2 - 20);
+        ctx.fillText('SHIELD LOST // DEFEAT', width / 2, height / 2 - 35);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '11px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2);
+        ctx.font = '14px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = '10px monospace';
-        ctx.fillText('PRESS [A] TO REDEPLOY SHIELD', width / 2, height / 2 + 22);
+        ctx.font = '13px monospace';
+        ctx.fillText('PRESS [A] TO REDEPLOY SHIELD', width / 2, height / 2 + 25);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
       } else if (s.gameState === 'won') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 15px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('HYDRA GRID PURGED!', width / 2, height / 2 - 20);
+        ctx.fillText('HYDRA GRID PURGED!', width / 2, height / 2 - 35);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '11px monospace';
-        ctx.fillText(`SCORE: ${s.score}`, width / 2, height / 2);
+        ctx.font = '14px monospace';
+        ctx.fillText(`SCORE: ${s.score}`, width / 2, height / 2 - 5);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = '10px monospace';
-        ctx.fillText('PRESS [A] TO PLAY AGAIN', width / 2, height / 2 + 22);
-      }
+        ctx.font = '13px monospace';
+        ctx.fillText('PRESS [A] TO PLAY AGAIN', width / 2, height / 2 + 25);
 
-      animId = requestAnimationFrame(render);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+      }
     };
 
-    animId = requestAnimationFrame(render);
+    const loop = (currentTime) => {
+      animId = requestAnimationFrame(loop);
+      if (!lastTime) {
+        lastTime = currentTime;
+        return;
+      }
+
+      let delta = currentTime - lastTime;
+      lastTime = currentTime;
+      if (delta > 80) delta = 80;
+
+      accumulator += delta;
+      while (accumulator >= TICK_STEP) {
+        tickPhysics();
+        accumulator -= TICK_STEP;
+      }
+
+      draw();
+    };
+
+    animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
   }, []);
 
