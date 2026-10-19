@@ -114,18 +114,70 @@ export function loadStore() {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, 'utf8');
       inMemoryStore = JSON.parse(data);
-      return inMemoryStore;
     }
   } catch (err) {
     console.error('Error reading portal store:', err);
   }
 
-  // Fallback to seed data
-  inMemoryStore = {
-    profiles: [...SEED_PROFILES],
-    auditLogs: [],
-    otps: {}
-  };
+  // Fallback to committed src/data/portal-registry.json if store is not loaded yet
+  if (!inMemoryStore) {
+    try {
+      const srcPath = path.resolve(process.cwd(), 'src/data/portal-registry.json');
+      if (fs.existsSync(srcPath)) {
+        const data = fs.readFileSync(srcPath, 'utf8');
+        inMemoryStore = JSON.parse(data);
+      }
+    } catch (_) {}
+  }
+
+  // Fallback to seed data if still uninitialized
+  if (!inMemoryStore) {
+    inMemoryStore = {
+      profiles: [...SEED_PROFILES],
+      auditLogs: [],
+      otps: {}
+    };
+  }
+
+  if (!Array.isArray(inMemoryStore.profiles)) {
+    inMemoryStore.profiles = [...SEED_PROFILES];
+  }
+
+  // Always ensure pre-approved Core Council Leadership profiles are populated
+  const whitelist = getCoreLeadershipWhitelist();
+  Object.entries(whitelist).forEach(([email, info]) => {
+    const normalized = email.toLowerCase().trim();
+    const existing = inMemoryStore.profiles.find(p => p.email && p.email.toLowerCase().trim() === normalized);
+    if (!existing) {
+      inMemoryStore.profiles.unshift({
+        id: `core-${normalized.replace(/[^a-z0-9]/g, '')}`,
+        email: normalized,
+        fullName: info.fullName || info.roleTitle || 'Core Council Head',
+        phone: info.phone || '',
+        college: 'Core Command',
+        branch: 'Executive Council',
+        yearOfStudy: 'Core',
+        targetSquad: info.targetSquad || 'core',
+        skills: ['Leadership', 'Governance'],
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        avatarUrl: info.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(info.fullName || normalized)}`,
+        role: 'admin',
+        roleTitle: info.roleTitle || 'Core Council Head',
+        status: 'approved',
+        createdAt: new Date('2026-09-01T00:00:00Z').toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    } else {
+      // Sync admin status
+      existing.role = 'admin';
+      if (info.roleTitle) existing.roleTitle = info.roleTitle;
+      if (info.fullName && !existing.fullName) existing.fullName = info.fullName;
+      existing.status = 'approved';
+    }
+  });
+
   saveStore(inMemoryStore);
   return inMemoryStore;
 }
@@ -321,16 +373,23 @@ const SEED_RESOURCES = [
 ];
 
 let inMemoryResources = null;
+const deletedResourceIds = new Set();
+
+export function isResourceDeleted(id) {
+  return deletedResourceIds.has(id);
+}
 
 export function loadResources() {
-  if (inMemoryResources) return inMemoryResources;
+  if (inMemoryResources) {
+    return inMemoryResources.filter(r => !deletedResourceIds.has(r.id));
+  }
   const filePath = getResourcesFilePath();
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, 'utf8');
       const parsed = JSON.parse(data);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        inMemoryResources = parsed;
+      if (Array.isArray(parsed)) {
+        inMemoryResources = parsed.filter(r => !deletedResourceIds.has(r.id));
         return inMemoryResources;
       }
     }
@@ -342,24 +401,24 @@ export function loadResources() {
     if (fs.existsSync(srcPath)) {
       const data = fs.readFileSync(srcPath, 'utf8');
       const parsed = JSON.parse(data);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        inMemoryResources = parsed;
+      if (Array.isArray(parsed)) {
+        inMemoryResources = parsed.filter(r => !deletedResourceIds.has(r.id));
         saveResources(inMemoryResources);
         return inMemoryResources;
       }
     }
   } catch (_) {}
 
-  inMemoryResources = [...SEED_RESOURCES];
+  inMemoryResources = SEED_RESOURCES.filter(r => !deletedResourceIds.has(r.id));
   saveResources(inMemoryResources);
   return inMemoryResources;
 }
 
 export function saveResources(resources) {
-  inMemoryResources = resources;
+  inMemoryResources = Array.isArray(resources) ? resources.filter(r => !deletedResourceIds.has(r.id)) : [];
   try {
     const filePath = getResourcesFilePath();
-    fs.writeFileSync(filePath, JSON.stringify(resources, null, 2), 'utf8');
+    fs.writeFileSync(filePath, JSON.stringify(inMemoryResources, null, 2), 'utf8');
   } catch (err) {
     console.error('Failed to write resources file:', err);
   }
@@ -392,12 +451,10 @@ export function addResource(resourceData, actor) {
 }
 
 export function deleteResource(resourceId) {
+  if (!resourceId) return false;
+  deletedResourceIds.add(resourceId);
   let resources = loadResources();
-  const initialLength = resources.length;
-  resources = resources.filter(r => r.id !== resourceId);
-  if (resources.length !== initialLength) {
-    saveResources(resources);
-    return true;
-  }
-  return false;
+  const filtered = resources.filter(r => r.id !== resourceId);
+  saveResources(filtered);
+  return true;
 }

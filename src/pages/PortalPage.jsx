@@ -685,9 +685,11 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
   const fetchRoster = async () => {
     try {
       setIsLoading(true);
+      setErrorMsg('');
       const res = await getAdminRoster();
       setData(res);
     } catch (err) {
+      console.error('Failed to load roster:', err);
       setErrorMsg(err.message || 'Failed to load leadership roster.');
     } finally {
       setIsLoading(false);
@@ -780,6 +782,22 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
       {toastMsg && (
         <div className="portal-toast animate-fade-in">
           <Check size={16} /> {toastMsg}
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="portal-error-banner animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '12px 18px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.35)', borderRadius: '10px', color: '#fca5a5', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={18} />
+            <span>{errorMsg}</span>
+          </div>
+          <button 
+            type="button"
+            onClick={fetchRoster}
+            style={{ background: 'rgba(239, 68, 68, 0.25)', border: '1px solid rgba(239, 68, 68, 0.45)', color: '#ffffff', padding: '4px 12px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}
+          >
+            Retry
+          </button>
         </div>
       )}
 

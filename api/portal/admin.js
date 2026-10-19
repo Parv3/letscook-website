@@ -1,4 +1,4 @@
-import { loadStore, saveStore, verifySessionToken, recordAuditLog } from '../lib/portalDb.js';
+import { loadStore, saveStore, verifySessionToken, recordAuditLog, evaluateLeadershipRole } from '../lib/portalDb.js';
 
 function setCors(req, res) {
   const origin = req.headers?.origin;
@@ -41,14 +41,45 @@ export default async function handler(req, res) {
     }
 
     const store = loadStore();
-    const adminUser = store.profiles.find(p => p.id === payload.userId);
+    const roleInfo = evaluateLeadershipRole(payload.email);
+    const isWhitelistedCore = payload.role === 'admin' || roleInfo.isCore;
 
     // 2. Strict Role-Based Access Control (RBAC) Clearance Check
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!isWhitelistedCore) {
       return res.status(403).json({
         success: false,
         error: 'Access Denied: Core Leadership Admin clearance required.'
       });
+    }
+
+    let adminUser = store.profiles.find(p => 
+      p.id === payload.userId || 
+      (p.email && p.email.toLowerCase().trim() === (payload.email || '').toLowerCase().trim())
+    );
+
+    if (!adminUser) {
+      adminUser = {
+        id: payload.userId,
+        email: (payload.email || '').toLowerCase().trim(),
+        fullName: roleInfo.fullName || payload.roleTitle || 'Core Council Head',
+        phone: roleInfo.phone || '',
+        college: 'Core Command',
+        branch: 'Executive Council',
+        yearOfStudy: 'Core',
+        targetSquad: roleInfo.targetSquad || 'core',
+        skills: ['Leadership', 'Governance'],
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        avatarUrl: roleInfo.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.email || 'core')}`,
+        role: 'admin',
+        roleTitle: roleInfo.roleTitle || payload.roleTitle || 'Core Council Head',
+        status: 'approved',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      store.profiles.unshift(adminUser);
+      saveStore(store);
     }
 
     const clientIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || '127.0.0.1';

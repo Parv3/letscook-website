@@ -60,7 +60,28 @@ export default async function handler(req, res) {
   // 1. GET: Fetch resources (Available to all authenticated members & admins)
   if (req.method === 'GET') {
     try {
-      const resources = loadResources();
+      let resources = loadResources();
+
+      // Optional client-side vault sync for serverless multi-container instances
+      const syncHeader = req.headers['x-sync-resources'];
+      if (syncHeader && typeof syncHeader === 'string') {
+        try {
+          const clientResources = JSON.parse(decodeURIComponent(syncHeader));
+          if (Array.isArray(clientResources)) {
+            let hasNew = false;
+            clientResources.forEach(cr => {
+              if (cr && cr.id && !resources.some(r => r.id === cr.id)) {
+                resources.push(cr);
+                hasNew = true;
+              }
+            });
+            if (hasNew) {
+              saveResources(resources);
+            }
+          }
+        } catch (_) {}
+      }
+
       return res.status(200).json({
         success: true,
         resources,
@@ -144,17 +165,25 @@ export default async function handler(req, res) {
       });
     }
 
-    const { resourceId } = req.query || req.body || {};
-    if (!resourceId) {
+    // Robust parsing of resourceId across query params, JSON body, or string body
+    let targetResourceId = req.query?.resourceId || req.query?.id || req.body?.resourceId || req.body?.id;
+    if (!targetResourceId && typeof req.body === 'string') {
+      try {
+        const parsed = JSON.parse(req.body);
+        targetResourceId = parsed?.resourceId || parsed?.id;
+      } catch (_) {}
+    }
+
+    if (!targetResourceId) {
       return res.status(400).json({ success: false, error: 'Resource ID is required.' });
     }
 
-    const deleted = deleteResource(resourceId);
+    const deleted = deleteResource(targetResourceId);
     if (deleted) {
-      recordAuditLog(payload, 'RESOURCE_DELETE', resourceId, {}, req.headers['x-forwarded-for'] || '');
+      recordAuditLog(payload, 'RESOURCE_DELETE', targetResourceId, {}, req.headers['x-forwarded-for'] || '');
       return res.status(200).json({ success: true, message: 'Resource deleted from vault.' });
     } else {
-      return res.status(404).json({ success: false, error: 'Resource not found.' });
+      return res.status(404).json({ success: false, error: 'Resource not found or already deleted.' });
     }
   }
 

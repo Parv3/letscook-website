@@ -177,17 +177,32 @@ async function safeJson(res) {
   }
 }
 
-// 8. Fetch Vault Resources (Members and Admins)
+// 8. Fetch Vault Resources (Members and Admins) with Multi-Container Sync
 export async function fetchPortalResources() {
   const token = getStoredToken();
   if (!token) return { success: false, error: 'Authentication required' };
 
   try {
-    const res = await fetch('/api/portal/resources', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    // Read locally deleted IDs
+    let deletedSet = new Set();
+    let localVault = [];
+    try {
+      deletedSet = new Set(JSON.parse(localStorage.getItem('letscook_deleted_resources') || '[]'));
+      localVault = JSON.parse(localStorage.getItem('letscook_vault_resources_v2') || '[]').filter(r => !deletedSet.has(r.id));
+    } catch (_) {}
+
+    // Prepare sync header if client has locally uploaded resources
+    let syncHeader = '';
+    if (localVault.length > 0) {
+      try {
+        syncHeader = encodeURIComponent(JSON.stringify(localVault.slice(0, 10)));
+      } catch (_) {}
+    }
+
+    const headers = { 'Authorization': `Bearer ${token}` };
+    if (syncHeader) headers['x-sync-resources'] = syncHeader;
+
+    const res = await fetch('/api/portal/resources', { headers });
 
     if (res.status === 401) {
       return { success: false, error: 'Authentication required' };
@@ -197,9 +212,32 @@ export async function fetchPortalResources() {
     if (!res.ok || !data.success) {
       throw new Error(data.error || 'Failed to fetch resources.');
     }
-    return data;
+
+    // Filter server response with deleted IDs
+    let combined = (data.resources || []).filter(r => !deletedSet.has(r.id));
+    
+    // Merge any client-cached resources not yet on server
+    localVault.forEach(lv => {
+      if (!combined.some(r => r.id === lv.id) && !deletedSet.has(lv.id)) {
+        combined.push(lv);
+      }
+    });
+
+    try {
+      localStorage.setItem('letscook_vault_resources_v2', JSON.stringify(combined));
+    } catch (_) {}
+
+    return { ...data, resources: combined };
   } catch (err) {
     console.error('fetchPortalResources error:', err);
+    // Offline fallback to local cached vault
+    try {
+      const deletedSet = new Set(JSON.parse(localStorage.getItem('letscook_deleted_resources') || '[]'));
+      const cached = JSON.parse(localStorage.getItem('letscook_vault_resources_v2') || '[]').filter(r => !deletedSet.has(r.id));
+      if (cached.length > 0) {
+        return { success: true, resources: cached, canUpload: true };
+      }
+    } catch (_) {}
     return { success: false, error: err.message || 'Failed to fetch resources' };
   }
 }
@@ -222,6 +260,16 @@ export async function uploadPortalResource(resourcePayload) {
   if (!res.ok || !data.success) {
     throw new Error(data.error || 'Failed to upload resource.');
   }
+
+  // Cache in local vault
+  if (data.resource) {
+    try {
+      const current = JSON.parse(localStorage.getItem('letscook_vault_resources_v2') || '[]');
+      current.unshift(data.resource);
+      localStorage.setItem('letscook_vault_resources_v2', JSON.stringify(current));
+    } catch (_) {}
+  }
+
   return data;
 }
 
@@ -230,13 +278,25 @@ export async function deletePortalResource(resourceId) {
   const token = getStoredToken();
   if (!token) throw new Error('Authentication required.');
 
-  const res = await fetch('/api/portal/resources', {
+  // Clean local deleted storage cache
+  try {
+    const deletedList = JSON.parse(localStorage.getItem('letscook_deleted_resources') || '[]');
+    if (!deletedList.includes(resourceId)) {
+      deletedList.push(resourceId);
+      localStorage.setItem('letscook_deleted_resources', JSON.stringify(deletedList));
+    }
+    const localVault = JSON.parse(localStorage.getItem('letscook_vault_resources_v2') || '[]');
+    localStorage.setItem('letscook_vault_resources_v2', JSON.stringify(localVault.filter(r => r.id !== resourceId)));
+  } catch (_) {}
+
+  // Pass resourceId via both query parameter and body
+  const res = await fetch(`/api/portal/resources?resourceId=${encodeURIComponent(resourceId)}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ resourceId })
+    body: JSON.stringify({ resourceId, id: resourceId })
   });
 
   const data = await safeJson(res);
