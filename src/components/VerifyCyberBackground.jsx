@@ -57,8 +57,8 @@ export default function VerifyCyberBackground({ currentSquad }) {
       window.addEventListener('mouseleave', handleMouseLeave, { passive: true });
     }
 
-    // Interactive floating constellation nodes
-    const nodeCount = isMobile ? 32 : 65;
+    // Interactive floating constellation nodes (Optimized for smooth 60 FPS)
+    const nodeCount = isMobile ? 22 : 42;
     const nodes = Array.from({ length: nodeCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -118,7 +118,8 @@ export default function VerifyCyberBackground({ currentSquad }) {
       }
 
       // 3. Update & Draw Constellation Nodes & Connecting Beams
-      const maxConnectDist = isMobile ? 90 : 130;
+      const maxConnectDist = isMobile ? 85 : 120;
+      const maxConnectDistSq = maxConnectDist * maxConnectDist;
 
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
@@ -136,8 +137,9 @@ export default function VerifyCyberBackground({ currentSquad }) {
         if (mouse.active) {
           const dx = mouse.x - n.x;
           const dy = mouse.y - n.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 180 && dist > 1) {
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 32400 && distSq > 1) { // 180^2 = 32400
+            const dist = Math.sqrt(distSq);
             const force = (180 - dist) / 180 * 0.4;
             n.x += (dx / dist) * force;
             n.y += (dy / dist) * force;
@@ -153,14 +155,15 @@ export default function VerifyCyberBackground({ currentSquad }) {
         ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Connect nearby nodes
+        // Connect nearby nodes without calling Math.sqrt when out of range
         for (let j = i + 1; j < nodes.length; j++) {
           const n2 = nodes[j];
           const dx = n.x - n2.x;
           const dy = n.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (dist < maxConnectDist) {
+          if (distSq < maxConnectDistSq) {
+            const dist = Math.sqrt(distSq);
             const lineAlpha = (1 - dist / maxConnectDist) * 0.14;
             ctx.strokeStyle = `rgba(${activePalette.primaryRgb}, ${lineAlpha})`;
             ctx.lineWidth = 0.8;
@@ -177,7 +180,18 @@ export default function VerifyCyberBackground({ currentSquad }) {
 
     animId = requestAnimationFrame(render);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        animId = null;
+      } else {
+        if (!animId) animId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (animId) cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);

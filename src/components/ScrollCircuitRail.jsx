@@ -14,6 +14,8 @@ export default function ScrollCircuitRail() {
 
   useEffect(() => {
     let ticking = false;
+    let lastPercent = -1;
+    let lastSection = 'hero-top';
 
     const handleScroll = () => {
       if (window.innerWidth <= 1320) return;
@@ -22,7 +24,11 @@ export default function ScrollCircuitRail() {
           const scrollY = window.scrollY;
           const docHeight = document.documentElement.scrollHeight - window.innerHeight;
           if (docHeight > 0) {
-            setScrollPercent(Math.min(100, Math.max(0, (scrollY / docHeight) * 100)));
+            const nextPercent = Math.round(Math.min(100, Math.max(0, (scrollY / docHeight) * 100)));
+            if (nextPercent !== lastPercent) {
+              lastPercent = nextPercent;
+              setScrollPercent(nextPercent);
+            }
           }
 
           // Section detection
@@ -35,7 +41,12 @@ export default function ScrollCircuitRail() {
               current = sec.id;
             }
           }
-          setActiveSection(current);
+
+          if (current !== lastSection) {
+            lastSection = current;
+            setActiveSection(current);
+          }
+
           ticking = false;
         });
         ticking = true;

@@ -137,33 +137,64 @@ export default function HulkHologram({ isActive, onClose }) {
 
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      gl.viewport(0, 0, 720, 824);
+      gl.clearColor(0.0, 0.0, 0.0, 0.0);
 
-      return {
-        render: () => {
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        }
-      };
+      return { gl, program, texture };
     };
 
     const leftGL = setupGL(leftCanvas);
     const rightGL = setupGL(rightCanvas);
 
+    let lastVideoTime = -1;
+
     const renderLoop = () => {
-      if (!video.paused && video.readyState >= 2) {
-        if (leftGL) leftGL.render();
-        if (rightGL) rightGL.render();
+      if (!document.hidden && video.readyState >= 2 && !video.paused) {
+        const isNewFrame = Math.abs(video.currentTime - lastVideoTime) > 0.02;
+
+        if (leftGL) {
+          leftGL.gl.viewport(0, 0, leftCanvas.width, leftCanvas.height);
+          leftGL.gl.clear(leftGL.gl.COLOR_BUFFER_BIT);
+          leftGL.gl.useProgram(leftGL.program);
+          leftGL.gl.bindTexture(leftGL.gl.TEXTURE_2D, leftGL.texture);
+          if (isNewFrame) {
+            leftGL.gl.texImage2D(leftGL.gl.TEXTURE_2D, 0, leftGL.gl.RGBA, leftGL.gl.RGBA, leftGL.gl.UNSIGNED_BYTE, video);
+          }
+          leftGL.gl.drawArrays(leftGL.gl.TRIANGLES, 0, 6);
+        }
+
+        if (rightGL) {
+          rightGL.gl.viewport(0, 0, rightCanvas.width, rightCanvas.height);
+          rightGL.gl.clear(rightGL.gl.COLOR_BUFFER_BIT);
+          rightGL.gl.useProgram(rightGL.program);
+          rightGL.gl.bindTexture(rightGL.gl.TEXTURE_2D, rightGL.texture);
+          if (isNewFrame) {
+            rightGL.gl.texImage2D(rightGL.gl.TEXTURE_2D, 0, rightGL.gl.RGBA, rightGL.gl.RGBA, rightGL.gl.UNSIGNED_BYTE, video);
+          }
+          rightGL.gl.drawArrays(rightGL.gl.TRIANGLES, 0, 6);
+        }
+
+        if (isNewFrame) {
+          lastVideoTime = video.currentTime;
+        }
       }
       animId = requestAnimationFrame(renderLoop);
     };
 
     animId = requestAnimationFrame(renderLoop);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        if (video) video.pause();
+      } else {
+        if (video && isActive) video.play().catch(() => {});
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (animId) cancelAnimationFrame(animId);
       if (video) video.pause();
     };
@@ -191,8 +222,8 @@ export default function HulkHologram({ isActive, onClose }) {
           <div className="hulk-canvas-wrap sentry-mirrored">
             <canvas 
               ref={leftCanvasRef} 
-              width={720} 
-              height={824} 
+              width={360} 
+              height={412} 
               className="hulk-sentry-canvas" 
             />
             <div className="hulk-gamma-glow" />
@@ -216,8 +247,8 @@ export default function HulkHologram({ isActive, onClose }) {
           <div className="hulk-canvas-wrap">
             <canvas 
               ref={rightCanvasRef} 
-              width={720} 
-              height={824} 
+              width={360} 
+              height={412} 
               className="hulk-sentry-canvas" 
             />
             <div className="hulk-gamma-glow" />

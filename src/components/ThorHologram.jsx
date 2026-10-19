@@ -144,14 +144,20 @@ export default function ThorHologram({ isActive, onClose }) {
     const leftGL = setupGL(leftCanvas);
     const rightGL = setupGL(rightCanvas);
 
+    let lastVideoTime = -1;
+
     const renderLoop = () => {
-      if (video.readyState >= 2) {
+      if (!document.hidden && video.readyState >= 2 && !video.paused) {
+        const isNewFrame = Math.abs(video.currentTime - lastVideoTime) > 0.02;
+
         if (leftGL) {
           leftGL.gl.viewport(0, 0, leftCanvas.width, leftCanvas.height);
           leftGL.gl.clear(leftGL.gl.COLOR_BUFFER_BIT);
           leftGL.gl.useProgram(leftGL.program);
           leftGL.gl.bindTexture(leftGL.gl.TEXTURE_2D, leftGL.texture);
-          leftGL.gl.texImage2D(leftGL.gl.TEXTURE_2D, 0, leftGL.gl.RGBA, leftGL.gl.RGBA, leftGL.gl.UNSIGNED_BYTE, video);
+          if (isNewFrame) {
+            leftGL.gl.texImage2D(leftGL.gl.TEXTURE_2D, 0, leftGL.gl.RGBA, leftGL.gl.RGBA, leftGL.gl.UNSIGNED_BYTE, video);
+          }
           leftGL.gl.drawArrays(leftGL.gl.TRIANGLE_STRIP, 0, 4);
         }
 
@@ -160,8 +166,14 @@ export default function ThorHologram({ isActive, onClose }) {
           rightGL.gl.clear(rightGL.gl.COLOR_BUFFER_BIT);
           rightGL.gl.useProgram(rightGL.program);
           rightGL.gl.bindTexture(rightGL.gl.TEXTURE_2D, rightGL.texture);
-          rightGL.gl.texImage2D(rightGL.gl.TEXTURE_2D, 0, rightGL.gl.RGBA, rightGL.gl.RGBA, rightGL.gl.UNSIGNED_BYTE, video);
+          if (isNewFrame) {
+            rightGL.gl.texImage2D(rightGL.gl.TEXTURE_2D, 0, rightGL.gl.RGBA, rightGL.gl.RGBA, rightGL.gl.UNSIGNED_BYTE, video);
+          }
           rightGL.gl.drawArrays(rightGL.gl.TRIANGLE_STRIP, 0, 4);
+        }
+
+        if (isNewFrame) {
+          lastVideoTime = video.currentTime;
         }
       }
       animId = requestAnimationFrame(renderLoop);
@@ -169,9 +181,21 @@ export default function ThorHologram({ isActive, onClose }) {
 
     animId = requestAnimationFrame(renderLoop);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        if (video) video.pause();
+      } else {
+        if (video && isActive) video.play().catch(() => {});
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       if (animId) cancelAnimationFrame(animId);
       if (video) video.pause();
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [isActive]);
 
@@ -197,8 +221,8 @@ export default function ThorHologram({ isActive, onClose }) {
           <div className="thor-canvas-wrap sentry-mirrored">
             <canvas 
               ref={leftCanvasRef} 
-              width={720} 
-              height={980} 
+              width={360} 
+              height={490} 
               className="thor-sentry-canvas" 
             />
             <div className="thor-bifrost-glow" />
@@ -222,8 +246,8 @@ export default function ThorHologram({ isActive, onClose }) {
           <div className="thor-canvas-wrap">
             <canvas 
               ref={rightCanvasRef} 
-              width={720} 
-              height={980} 
+              width={360} 
+              height={490} 
               className="thor-sentry-canvas" 
             />
             <div className="thor-bifrost-glow" />

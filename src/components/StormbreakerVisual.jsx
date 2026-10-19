@@ -150,25 +150,45 @@ export default function StormbreakerVisual({
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
 
     let animId = null;
-    const render = () => {
-      if (video && video.readyState >= 2) {
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+    let lastVideoTime = -1;
 
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    const render = () => {
+      if (!document.hidden && video && video.readyState >= 2 && !video.paused) {
+        const isNewFrame = Math.abs(video.currentTime - lastVideoTime) > 0.02;
+        if (isNewFrame) {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          lastVideoTime = video.currentTime;
+        }
       }
       animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (animId) cancelAnimationFrame(animId);
+        if (video) video.pause();
+      } else {
+        if (video) video.play().catch(() => {});
+        animId = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (animId) cancelAnimationFrame(animId);
       if (video) video.pause();
     };
   }, [crop]);
+
+  const canvasDim = Math.max(80, Math.min(200, (parseInt(width) || 80) * 2));
 
   return (
     <div 
@@ -221,8 +241,8 @@ export default function StormbreakerVisual({
       {/* Real-time WebGL Keyed Canvas */}
       <canvas
         ref={canvasRef}
-        width={360}
-        height={360}
+        width={canvasDim}
+        height={canvasDim}
         style={{
           width: '100%',
           height: '100%',

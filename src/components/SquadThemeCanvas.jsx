@@ -50,8 +50,8 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
       window.addEventListener('mousemove', handleMouseMove, { passive: true });
     }
 
-    // Ambient floating particles (Scaled dynamically: 22 on mobile, 50 on desktop)
-    const particleCount = isMobile ? 22 : 50;
+    // Ambient floating particles (Scaled dynamically: 12 on mobile, 25 on desktop for optimal FPS)
+    const particleCount = isMobile ? 12 : 25;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -254,13 +254,17 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
             p.x = Math.random() * width;
           }
 
-          ctx.fillStyle = 'rgba(234, 179, 8, 0.65)';
-          ctx.shadowColor = '#facc15';
-          ctx.shadowBlur = 8;
+          // Outer soft glow halo (GPU accelerated, no software blur fallback)
+          ctx.fillStyle = 'rgba(234, 179, 8, 0.18)';
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 1.2, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
           ctx.fill();
-          ctx.shadowBlur = 0;
+
+          // Inner molten uru core
+          ctx.fillStyle = 'rgba(250, 204, 21, 0.85)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 1.1, 0, Math.PI * 2);
+          ctx.fill();
         });
       }
 
@@ -326,13 +330,17 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
           if (p.y > height) p.y = 0;
 
           const isPurple = p.size > 2.2;
-          ctx.fillStyle = isPurple ? 'rgba(168, 85, 247, 0.55)' : 'rgba(34, 197, 94, 0.65)';
-          ctx.shadowColor = isPurple ? '#a855f7' : '#22c55e';
-          ctx.shadowBlur = 6;
+          // Outer soft glow halo
+          ctx.fillStyle = isPurple ? 'rgba(168, 85, 247, 0.18)' : 'rgba(34, 197, 94, 0.2)';
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size * 2.2, 0, Math.PI * 2);
           ctx.fill();
-          ctx.shadowBlur = 0;
+
+          // Inner luminescent core
+          ctx.fillStyle = isPurple ? 'rgba(168, 85, 247, 0.75)' : 'rgba(34, 197, 94, 0.8)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 0.9, 0, Math.PI * 2);
+          ctx.fill();
         });
       }
 
