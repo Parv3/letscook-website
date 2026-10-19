@@ -47,6 +47,22 @@ export function setPlayerCallsign(newCallsign) {
   return clean;
 }
 
+function deduplicateLeaderboard(list) {
+  const bestMap = new Map();
+  // Sort descending first so highest score is always processed first
+  const sorted = [...list].sort((a, b) => b.score - a.score);
+
+  sorted.forEach(item => {
+    // Unique key per game and user
+    const userKey = `${item.gameId}-${String(item.callsign || item.fullName || 'PLAYER').toUpperCase().trim()}`;
+    if (!bestMap.has(userKey)) {
+      bestMap.set(userKey, item);
+    }
+  });
+
+  return Array.from(bestMap.values()).sort((a, b) => b.score - a.score);
+}
+
 export function getLeaderboard(gameId = 'all') {
   if (typeof window === 'undefined') return [];
   let entries = [];
@@ -113,6 +129,15 @@ export function getLeaderboard(gameId = 'all') {
   // Filter out any mock entries
   entries = entries.filter(e => !FAKE_MOCK_CALLSIGNS.has(e.callsign));
 
+  // Strictly deduplicate: only 1 highest entry per player per game!
+  const deduplicated = deduplicateLeaderboard(entries);
+  if (deduplicated.length !== entries.length) {
+    updated = true;
+    entries = deduplicated;
+  } else {
+    entries = deduplicated;
+  }
+
   if (updated) {
     try {
       localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
@@ -139,17 +164,11 @@ export async function fetchGlobalLeaderboard(gameId = 'all') {
         let localEntries = rawLocal ? JSON.parse(rawLocal) : [];
         const remoteClean = data.leaderboard.filter(e => !FAKE_MOCK_CALLSIGNS.has(e.callsign));
 
-        // Merge remote entries into local storage
-        const seenIds = new Set(localEntries.map(e => e.id));
-        remoteClean.forEach(re => {
-          if (!seenIds.has(re.id)) {
-            localEntries.push(re);
-            seenIds.add(re.id);
-          }
-        });
+        // Merge remote entries and deduplicate strictly by user and game
+        localEntries.push(...remoteClean);
+        const merged = deduplicateLeaderboard(localEntries);
 
-        localEntries.sort((a, b) => b.score - a.score);
-        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(localEntries));
+        localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(merged));
         window.dispatchEvent(new CustomEvent('arcade_leaderboard_updated'));
       }
     }
@@ -199,18 +218,23 @@ export function submitScore(gameId, score, customCallsign = null) {
     // Filter out mock entries
     entries = entries.filter(e => !FAKE_MOCK_CALLSIGNS.has(e.callsign));
 
-    // If player already has an entry for this game, update it if current score is higher
-    const existingPlayerIdx = entries.findIndex(e => e.gameId === gameId && (e.isPlayer || e.callsign === playerCallsign));
+    // If player already has an entry for this game, only update if new score is higher or equal
+    const playerKey = `${gameId}-${playerCallsign.toUpperCase().trim()}`;
+    const existingPlayerIdx = entries.findIndex(e => `${e.gameId}-${String(e.callsign || e.fullName).toUpperCase().trim()}` === playerKey || (e.gameId === gameId && e.isPlayer));
+
     if (existingPlayerIdx >= 0) {
       if (score >= entries[existingPlayerIdx].score) {
         entries[existingPlayerIdx] = newEntry;
       }
+      // If score is less, do not create duplicate or overwrite!
     } else {
       entries.push(newEntry);
     }
 
+    // Deduplicate strictly
+    entries = deduplicateLeaderboard(entries);
+
     // Keep top 100 overall
-    entries.sort((a, b) => b.score - a.score);
     if (entries.length > 100) entries = entries.slice(0, 100);
 
     localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));

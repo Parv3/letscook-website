@@ -16,8 +16,19 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       if (fs.existsSync(filePath)) {
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        return res.status(200).json({ success: true, leaderboard: data });
+        let data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        // Deduplicate: strictly 1 highest score per user per game
+        const bestMap = new Map();
+        data.forEach(item => {
+          const key = `${item.gameId}-${String(item.callsign || item.fullName).toUpperCase()}`;
+          const existing = bestMap.get(key);
+          if (!existing || item.score > existing.score) {
+            bestMap.set(key, item);
+          }
+        });
+        const deduplicated = Array.from(bestMap.values());
+        deduplicated.sort((a, b) => b.score - a.score);
+        return res.status(200).json({ success: true, leaderboard: deduplicated });
       }
     } catch (_) {}
     return res.status(200).json({ success: true, leaderboard: [] });
@@ -39,7 +50,19 @@ export default async function handler(req, res) {
         }
       }
 
-      list.push(entry);
+      // Check if entry for this player and game already exists
+      const userKey = `${entry.gameId}-${String(entry.callsign || entry.fullName).toUpperCase()}`;
+      const existingIdx = list.findIndex(e => `${e.gameId}-${String(e.callsign || e.fullName).toUpperCase()}` === userKey);
+
+      if (existingIdx >= 0) {
+        // Only update if new score is higher
+        if (entry.score >= list[existingIdx].score) {
+          list[existingIdx] = { ...list[existingIdx], ...entry };
+        }
+      } else {
+        list.push(entry);
+      }
+
       list.sort((a, b) => b.score - a.score);
       if (list.length > 100) list = list.slice(0, 100);
 
