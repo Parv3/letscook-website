@@ -3,6 +3,7 @@ import { X, Volume2, VolumeX, Terminal as TerminalIcon, Gamepad2, RotateCcw } fr
 import { isSoundMuted, setSoundMuted, playTechClick } from '../utils/soundEngine';
 import { playGbaBoot, playGbaBip } from './gba/GbaAudio';
 
+import CyberDinoGame from './gba/CyberDinoGame';
 import StarkFlightGame from './gba/StarkFlightGame';
 import ShieldBreakerGame from './gba/ShieldBreakerGame';
 import MatrixSnakeGame from './gba/MatrixSnakeGame';
@@ -257,6 +258,16 @@ export default function TerminalDrawer({
                   {activeCartridge === 'menu' && (
                     <GbaCartridgeMenu 
                       onSelectGame={handleSelectGame}
+                      dpadState={dpadState}
+                      buttonA={buttonA}
+                      buttonB={buttonB}
+                      startTrigger={startTrigger}
+                    />
+                  )}
+
+                  {activeCartridge === 'dino' && (
+                    <CyberDinoGame 
+                      onExit={() => setActiveCartridge('menu')}
                       dpadState={dpadState}
                       buttonA={buttonA}
                       buttonB={buttonB}

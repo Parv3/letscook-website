@@ -207,3 +207,62 @@ export const playGbaVictory = () => {
     });
   } catch (_) {}
 };
+
+// 9. Chrome Dino style 100-pt Milestone Chime
+export const playGbaMilestone = () => {
+  if (isSoundMuted()) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'square';
+    osc1.frequency.setValueAtTime(783.99, now); // G5
+    gain1.gain.setValueAtTime(0.14, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.13);
+
+    setTimeout(() => {
+      if (isSoundMuted()) return;
+      const t = ctx.currentTime;
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(1046.5, t); // C6
+      gain2.gain.setValueAtTime(0.16, t);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(t);
+      osc2.stop(t + 0.2);
+    }, 110);
+  } catch (_) {}
+};
+
+// 10. Power-up collected chime
+export const playGbaPowerup = () => {
+  if (isSoundMuted()) return;
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const freqs = [587.33, 739.99, 880.0, 1174.66]; // D5, F#5, A5, D6
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const st = now + idx * 0.05;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, st);
+      gain.gain.setValueAtTime(0.15, st);
+      gain.gain.exponentialRampToValueAtTime(0.001, st + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(st);
+      osc.stop(st + 0.11);
+    });
+  } catch (_) {}
+};

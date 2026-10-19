@@ -3,13 +3,23 @@ import { playGbaBip, playGbaBoot } from './GbaAudio';
 
 const CARTRIDGES = [
   {
+    id: 'dino',
+    title: 'CYBER DINO RUN',
+    hero: 'BLACK PANTHER // RAPTOR',
+    type: 'ENDLESS HORIZON RUNNER',
+    color: '#22c55e',
+    secondary: '#00f0ff',
+    desc: 'Jump over spikes & duck under cyber-drones! Chrome Dino style.',
+    storageKey: 'lc_gba_dino_hi'
+  },
+  {
     id: 'stark',
     title: 'STARK FLIGHT',
     hero: 'IRON MAN',
-    type: 'ARCADE JETPACK',
+    type: 'BLASTER JETPACK',
     color: '#ef4444',
-    secondary: '#00f0ff',
-    desc: 'Dodge electrical laser traps & harvest Arc Reactor cores.',
+    secondary: '#fbbf24',
+    desc: 'Glide gently, fire repulsor blasters & collect shield bubbles.',
     storageKey: 'lc_gba_stark_hi'
   },
   {
@@ -19,7 +29,7 @@ const CARTRIDGES = [
     type: 'VIBRANIUM BRICK BREAKER',
     color: '#38bdf8',
     secondary: '#ef4444',
-    desc: 'Bounce Vibranium shield to shatter Hydra security ciphers.',
+    desc: 'Relaxed speed, Multi-Ball, paddle lasers & power-ups!',
     storageKey: 'lc_gba_shield_hi'
   },
   {
@@ -27,20 +37,10 @@ const CARTRIDGES = [
     title: 'MATRIX SNAKE',
     hero: 'HULK // TECH LABS',
     type: 'CYBER NEURAL TRACE',
-    color: '#22c55e',
-    secondary: '#a855f7',
-    desc: 'Navigate CRT matrix grid & absorb quantum data packets.',
+    color: '#a855f7',
+    secondary: '#22c55e',
+    desc: 'Smooth speed, bonus golden matrix gems & ghost chip wrap.',
     storageKey: 'lc_gba_snake_hi'
-  },
-  {
-    id: 'thor',
-    title: "THOR'S FORGE",
-    hero: 'THOR ODINSON',
-    type: 'REFLEX FALLING CATCH',
-    color: '#f59e0b',
-    secondary: '#60a5fa',
-    desc: 'Catch molten Uru ingots & Bifrost stars while dodging bombs.',
-    storageKey: 'lc_gba_thor_hi'
   },
   {
     id: 'terminal',

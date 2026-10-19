@@ -10,7 +10,7 @@ import {
 
 const GBA_COMMANDS_HELP = [
   { cmd: 'games', desc: 'Exit to GBA Cartridge Selector Menu' },
-  { cmd: 'play <1-4>', desc: 'Launch: 1=Stark, 2=Shield, 3=Snake, 4=Thor' },
+  { cmd: 'play <1-4>', desc: 'Launch: 1=Dino, 2=Stark, 3=Shield, 4=Snake' },
   { cmd: 'help', desc: 'List all operational directives' },
   { cmd: 'squad <id>', desc: 'Deploy squad theme: ironman, captain, thor, hulk' },
   { cmd: 'assemble', desc: 'Execute Avengers protocol + orchestral fanfare' },
@@ -72,16 +72,19 @@ export default function GbaShellTerminal({
     } else if (cmd === 'games' || cmd === 'menu') {
       onSelectGame('menu');
       return;
-    } else if (cmd === 'play 1' || cmd === 'stark') {
+    } else if (cmd === 'play 1' || cmd === 'dino' || cmd === 'play dino') {
+      onSelectGame('dino');
+      return;
+    } else if (cmd === 'play 2' || cmd === 'stark' || cmd === 'play stark') {
       onSelectGame('stark');
       return;
-    } else if (cmd === 'play 2' || cmd === 'shield') {
+    } else if (cmd === 'play 3' || cmd === 'shield' || cmd === 'play shield') {
       onSelectGame('shield');
       return;
-    } else if (cmd === 'play 3' || cmd === 'snake') {
+    } else if (cmd === 'play 4' || cmd === 'snake' || cmd === 'play snake') {
       onSelectGame('snake');
       return;
-    } else if (cmd === 'play 4' || cmd === 'thor') {
+    } else if (cmd === 'play 5' || cmd === 'thor') {
       onSelectGame('thor');
       return;
     } else if (cmd === 'assemble') {
@@ -194,7 +197,7 @@ export default function GbaShellTerminal({
 
       {/* Quick Command Chips */}
       <div className="gba-term-chips">
-        {['games', 'help', 'assemble', 'whoami', 'clear'].map(c => (
+        {['dino', 'games', 'help', 'assemble', 'whoami', 'clear'].map(c => (
           <button 
             key={c}
             onClick={() => handleCommand(c)}
