@@ -483,48 +483,35 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
         ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 20, 24);
       }
 
-      ctx.textAlign = 'left';
-      ctx.fillStyle = isNight ? 'rgba(56, 189, 248, 0.75)' : 'rgba(100, 116, 139, 0.85)';
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText('[A/▲] JUMP  [▼] DUCK', 16, 24);
-
       // Overlay Screens
       if (s.gameState === 'ready') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#00f0ff';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('CYBER DINO RUN', width / 2, height / 2 - 30);
+        ctx.fillText('CYBER DINO RUN', width / 2, height / 2 - 20);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '14px monospace';
-        ctx.fillText('PRESS [A] OR [▲] TO START', width / 2, height / 2 + 5);
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px monospace';
-        ctx.fillText('JUMP OVER SPIKES • DUCK UNDER DRONES', width / 2, height / 2 + 35);
+        ctx.fillText('PRESS [A] TO START', width / 2, height / 2 + 15);
       } else if (s.gameState === 'gameover') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ff0055';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 24px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('G A M E   O V E R', width / 2, height / 2 - 35);
+        ctx.fillText('GAME OVER', width / 2, height / 2 - 25);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '14px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
+        ctx.font = '15px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#00f0ff';
         ctx.font = '13px monospace';
-        ctx.fillText('PRESS [A] TO RUN AGAIN', width / 2, height / 2 + 25);
-
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+        ctx.fillText('PRESS [A] TO RETRY', width / 2, height / 2 + 35);
       }
     };
 

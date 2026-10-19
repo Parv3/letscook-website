@@ -462,14 +462,9 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
       ctx.fillStyle = '#00f0ff';
       ctx.fillText(`${String(s.score).padStart(5, '0')}`, width - 20, 24);
 
-      ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.85)';
-      ctx.font = 'bold 11px monospace';
-      ctx.fillText('[A/▲] FLY  [B/Z] SHOOT LASER', 16, 24);
-
       if (s.hasShield) {
         ctx.fillStyle = '#38bdf8';
-        ctx.fillText('SHIELD: ACTIVE', 16, 42);
+        ctx.fillText('SHIELD', 16, 24);
       }
 
       // Overlays
@@ -478,37 +473,29 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('STARK FLIGHT', width / 2, height / 2 - 30);
+        ctx.fillText('STARK FLIGHT', width / 2, height / 2 - 20);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '14px monospace';
-        ctx.fillText('PRESS [A] OR [▲] TO ENGAGE THRUSTERS', width / 2, height / 2 + 5);
-
-        ctx.fillStyle = '#00f0ff';
-        ctx.font = '11px monospace';
-        ctx.fillText('PRESS [B] TO SHOOT REPULSOR BEAMS!', width / 2, height / 2 + 35);
+        ctx.fillText('PRESS [A] TO START', width / 2, height / 2 + 15);
       } else if (s.gameState === 'gameover') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 24px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SUIT SYSTEM OFFLINE', width / 2, height / 2 - 35);
+        ctx.fillText('GAME OVER', width / 2, height / 2 - 25);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '14px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
+        ctx.font = '15px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#00f0ff';
         ctx.font = '13px monospace';
-        ctx.fillText('PRESS [A] TO REBOOT THRUSTERS', width / 2, height / 2 + 25);
-
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+        ctx.fillText('PRESS [A] TO RETRY', width / 2, height / 2 + 35);
       }
     };
 

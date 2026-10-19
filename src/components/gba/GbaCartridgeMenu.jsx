@@ -110,13 +110,12 @@ export default function GbaCartridgeMenu({ onSelectGame, dpadState, buttonA, but
 
   return (
     <div className="gba-menu-screen animate-fade-in">
-      {/* Top Retro BIOS Banner */}
+      {/* Top Header */}
       <div className="gba-menu-header">
         <div className="gba-header-brand">
           <span className="brand-dot" />
-          <span>LET'S COOK ADVANCE // MULTICART</span>
+          <span>GAMES & SHELL</span>
         </div>
-        <div className="gba-header-track">SELECT CARTRIDGE</div>
       </div>
 
       {/* Cartridge List */}
@@ -148,9 +147,6 @@ export default function GbaCartridgeMenu({ onSelectGame, dpadState, buttonA, but
                   <span className="cart-title" style={{ color: isSelected ? '#ffffff' : '#cbd5e1' }}>
                     {cart.title}
                   </span>
-                  <span className="cart-hero-tag" style={{ color: cart.color }}>
-                    {cart.hero}
-                  </span>
                 </div>
                 <div className="cart-desc">{cart.desc}</div>
               </div>
@@ -164,13 +160,6 @@ export default function GbaCartridgeMenu({ onSelectGame, dpadState, buttonA, but
             </div>
           );
         })}
-      </div>
-
-      {/* Footer Instructions */}
-      <div className="gba-menu-footer">
-        <span>[D-PAD] SELECT</span>
-        <span>[A / ENTER] INSERT & PLAY</span>
-        <span>[SELECT] CLI</span>
       </div>
 
       <style>{`

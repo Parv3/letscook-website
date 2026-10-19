@@ -98,13 +98,12 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
 
   return (
     <div className="gba-leaderboard-screen select-none">
-      {/* Top Retro Header */}
+      {/* Top Header */}
       <div className="lb-header">
         <div className="lb-title">
           <span className="trophy-pulse">🏆</span>
-          <span>HALL OF FAME // LEADERBOARD</span>
+          <span>LEADERBOARD</span>
         </div>
-        <div className="lb-hint">◄ [D-PAD] ► SWITCH</div>
       </div>
 
       {/* Category Tabs */}
@@ -174,17 +173,17 @@ export default function GbaLeaderboardScreen({ onExit, onSelectGame, dpadState, 
         </div>
       </div>
 
-      {/* Footer Controls Strip */}
+      {/* Footer Strip */}
       <div className="lb-footer">
         <div className="lb-action-hint">
           {activeTab !== 'all' ? (
-            <span>[A] LAUNCH {TABS.find(t => t.id === activeTab)?.label}</span>
+            <span>[A] PLAY {TABS.find(t => t.id === activeTab)?.label}</span>
           ) : (
-            <span>SELECT GAME TAB TO LAUNCH</span>
+            <span />
           )}
         </div>
         <button onClick={onExit} className="lb-back-btn">
-          [B / ESC] RETURN
+          [B] BACK
         </button>
       </div>
 

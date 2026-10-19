@@ -129,89 +129,78 @@ export default function TerminalDrawer({
   return (
     <div className="gba-console-backdrop animate-fade-in" onClick={onClose}>
       <div className={`gba-console-outer-wrap ${isMaximized ? 'is-maximized' : ''}`} onClick={e => e.stopPropagation()}>
-        
-        {/* Top Console Shoulder Triggers */}
-        <div className="gba-top-shoulder-bar">
-          <button 
-            type="button"
-            className="gba-shoulder-btn gba-shoulder-left"
-            onClick={toggleSound}
-            title="L Trigger: Toggle Audio"
-          >
-            <span>[L] {muted ? 'MUTED' : 'AUDIO ON'}</span>
-          </button>
-
-          <button 
-            type="button"
-            className={`gba-shoulder-btn gba-shoulder-leaderboard ${activeCartridge === 'leaderboard' ? 'active-lb' : ''}`}
-            onClick={() => {
-              playGbaBip();
-              setActiveCartridge(prev => (prev === 'leaderboard' ? 'menu' : 'leaderboard'));
-            }}
-            title="Toggle Global Hall of Fame Leaderboard"
-          >
-            <Trophy size={13} className="inline mr-1 text-amber-400" />
-            <span>LEADERBOARD</span>
-          </button>
-
-          <button 
-            type="button"
-            onClick={() => {
-              playGbaBip();
-              setActiveCartridge('menu');
-            }}
-            className="gba-cartridge-slot-ridge cursor-pointer hover:bg-slate-800 transition-colors"
-            title="Open Multicart BIOS Menu"
-          >
-            <span className="cart-slot-label">▲ INSERT CARTRIDGE ▲</span>
-          </button>
-
-          <button 
-            type="button"
-            className="gba-shoulder-btn gba-shoulder-right"
-            onClick={() => {
-              playGbaBip();
-              setActiveCartridge('menu');
-            }}
-            title="R Trigger: Reset to Cartridge Menu"
-          >
-            <span>[R] MENU</span>
-          </button>
-        </div>
 
         {/* Sculpted Handheld GBA Shell */}
         <div className="gba-hardware-chassis">
           
-          {/* Top Bezel Utility Bar: Power LED & Exit */}
+          {/* Top Bezel Utility Bar: Power LED, Branding, Controls */}
           <div className="gba-bezel-top-strip">
-            <div className="gba-power-indicator">
-              <span className="power-led-dot" />
-              <span className="power-text">POWER</span>
+            <div className="flex items-center gap-2.5">
+              <span className="power-led-dot" title="Power On" />
+              <div className="gba-hardware-brand">
+                <span className="brand-cook">LET'S COOK</span>
+                <span className="brand-advance">ADVANCE</span>
+              </div>
             </div>
 
-            <div className="gba-hardware-brand">
-              <span className="brand-cook">LET'S COOK</span>
-              <span className="brand-advance">ADVANCE</span>
-              <span className="brand-sp">SP</span>
-            </div>
+            <div className="flex items-center gap-1.5">
+              {/* Sound Toggle */}
+              <button 
+                type="button" 
+                onClick={toggleSound} 
+                className={`gba-icon-action-btn ${muted ? 'text-slate-500' : 'text-cyan-400'}`}
+                title={muted ? 'Unmute Audio' : 'Mute Audio'}
+                aria-label="Toggle Sound"
+              >
+                {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              </button>
 
-            <div className="flex items-center gap-2">
+              {/* Leaderboard Button */}
+              <button 
+                type="button" 
+                onClick={() => {
+                  playGbaBip();
+                  setActiveCartridge(prev => (prev === 'leaderboard' ? 'menu' : 'leaderboard'));
+                }}
+                className={`gba-pill-action-btn ${activeCartridge === 'leaderboard' ? 'active-lb' : ''}`}
+                title="Leaderboard"
+              >
+                <Trophy size={13} className="text-amber-400 mr-1" />
+                <span>LEADERBOARD</span>
+              </button>
+
+              {/* Games Menu Button */}
+              <button 
+                type="button" 
+                onClick={() => {
+                  playGbaBip();
+                  setActiveCartridge('menu');
+                }}
+                className={`gba-pill-action-btn ${activeCartridge === 'menu' ? 'active-menu' : ''}`}
+                title="Cartridge Menu"
+              >
+                <Gamepad2 size={13} className="mr-1" />
+                <span>GAMES</span>
+              </button>
+
+              {/* Screen Zoom Toggle */}
               <button 
                 type="button" 
                 onClick={() => setIsMaximized(prev => !prev)} 
-                className="gba-console-zoom-btn"
-                aria-label="Toggle Theater / Maximized Screen"
-                title={isMaximized ? "Standard GBA View" : "Maximize Screen"}
+                className="gba-icon-action-btn"
+                title={isMaximized ? "Standard Size" : "Expand Screen"}
+                aria-label="Expand Screen"
               >
                 {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               </button>
 
+              {/* Close Console */}
               <button 
                 type="button" 
                 onClick={onClose} 
-                className="gba-console-close-btn"
-                aria-label="Power off and close console"
+                className="gba-icon-action-btn gba-close-action-btn"
                 title="Close Console"
+                aria-label="Close Console"
               >
                 <X size={16} />
               </button>
@@ -221,10 +210,9 @@ export default function TerminalDrawer({
           {/* Main Handheld Layout Grid: Left D-Pad | Center LCD Screen | Right A/B */}
           <div className="gba-controls-and-screen-grid">
             
-            {/* LEFT CONTROLS: METALLIC D-PAD */}
+            {/* LEFT CONTROLS: D-PAD */}
             <div className="gba-left-controls">
               <div className="dpad-mount">
-                {/* D-Pad Up */}
                 <button
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, up: true }))}
@@ -237,7 +225,6 @@ export default function TerminalDrawer({
                   ▲
                 </button>
 
-                {/* D-Pad Left */}
                 <button
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, left: true }))}
@@ -250,10 +237,8 @@ export default function TerminalDrawer({
                   ◀
                 </button>
 
-                {/* D-Pad Center Pivot */}
                 <div className="dpad-center-pivot" />
 
-                {/* D-Pad Right */}
                 <button
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, right: true }))}
@@ -266,7 +251,6 @@ export default function TerminalDrawer({
                   ▶
                 </button>
 
-                {/* D-Pad Down */}
                 <button
                   type="button"
                   onMouseDown={() => setDpadState(p => ({ ...p, down: true }))}
@@ -279,8 +263,6 @@ export default function TerminalDrawer({
                   ▼
                 </button>
               </div>
-
-              <div className="dpad-legend">D-PAD // WASD</div>
             </div>
 
             {/* CENTER: WIDESCREEN LCD DISPLAY BEZEL */}
@@ -377,16 +359,9 @@ export default function TerminalDrawer({
                   )}
                 </div>
               </div>
-
-              {/* Bottom Bezel Sub-Logo */}
-              <div className="gba-lens-subline">
-                <span>COMMUNITY RECREATION UNIT</span>
-                <span className="dot-sep">•</span>
-                <span>WIDE COLOR LCD</span>
-              </div>
             </div>
 
-            {/* RIGHT CONTROLS: A & B SLANTED PILL BUTTONS */}
+            {/* RIGHT CONTROLS: A & B BUTTONS */}
             <div className="gba-right-controls">
               <div className="action-buttons-cluster">
                 {/* Button B */}
@@ -398,11 +373,10 @@ export default function TerminalDrawer({
                     onTouchStart={() => setButtonB(true)}
                     onTouchEnd={() => setButtonB(false)}
                     className={`gba-round-btn btn-b ${buttonB ? 'active-pressed' : ''}`}
-                    aria-label="Button B: Back / Exit"
+                    aria-label="Button B"
                   >
                     B
                   </button>
-                  <span className="btn-sub-label">[X / ESC]</span>
                 </div>
 
                 {/* Button A */}
@@ -414,18 +388,11 @@ export default function TerminalDrawer({
                     onTouchStart={() => setButtonA(true)}
                     onTouchEnd={() => setButtonA(false)}
                     className={`gba-round-btn btn-a ${buttonA ? 'active-pressed' : ''}`}
-                    aria-label="Button A: Action / Jump / Select"
+                    aria-label="Button A"
                   >
                     A
                   </button>
-                  <span className="btn-sub-label">[Z / SPACE]</span>
                 </div>
-              </div>
-
-              {/* Speaker Grille Holes */}
-              <div className="gba-speaker-holes" aria-hidden="true">
-                <div className="hole" /><div className="hole" /><div className="hole" />
-                <div className="hole" /><div className="hole" /><div className="hole" />
               </div>
             </div>
 
@@ -442,11 +409,10 @@ export default function TerminalDrawer({
                     setActiveCartridge(prev => (prev === 'terminal' ? 'menu' : 'terminal'));
                   }}
                   className="gba-pill-meta-btn"
-                  title="SELECT: Toggle CLI Shell"
+                  title="SELECT: Toggle Terminal"
                 >
                   SELECT
                 </button>
-                <span className="meta-subtext">[CLI / SHIFT]</span>
               </div>
 
               <div className="meta-btn-item">
@@ -461,7 +427,6 @@ export default function TerminalDrawer({
                 >
                   START
                 </button>
-                <span className="meta-subtext">[PAUSE / ENTER]</span>
               </div>
             </div>
           </div>
@@ -498,72 +463,6 @@ export default function TerminalDrawer({
           max-width: 1140px;
         }
 
-        /* Top L/R Shoulder Triggers */
-        .gba-top-shoulder-bar {
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          width: 92%;
-          margin-bottom: -4px;
-          z-index: 2;
-          gap: 6px;
-        }
-
-        .gba-shoulder-btn {
-          background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-          color: #94a3b8;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-bottom: none;
-          border-radius: 12px 12px 0 0;
-          padding: 6px 18px 8px 18px;
-          font-family: monospace;
-          font-size: 0.72rem;
-          font-weight: 800;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-        }
-
-        .gba-shoulder-btn:hover {
-          color: #ffffff;
-          background: linear-gradient(180deg, #475569 0%, #334155 100%);
-        }
-
-        .gba-shoulder-leaderboard {
-          background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-          color: #fbbf24;
-          border-color: rgba(245, 158, 11, 0.35);
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          padding: 6px 16px 8px 16px;
-        }
-
-        .gba-shoulder-leaderboard:hover,
-        .gba-shoulder-leaderboard.active-lb {
-          background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-          color: #040906;
-          border-color: #fbbf24;
-          font-weight: 900;
-          box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
-        }
-
-        .gba-cartridge-slot-ridge {
-          padding: 4px 18px;
-          background: #0f131f;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-bottom: none;
-          border-radius: 6px 6px 0 0;
-        }
-
-        .cart-slot-label {
-          font-family: monospace;
-          font-size: 0.62rem;
-          font-weight: 800;
-          color: #64748b;
-          letter-spacing: 0.1em;
-        }
-
         /* Sculpted Handheld Hardware Body */
         .gba-hardware-chassis {
           width: 100%;
@@ -574,7 +473,7 @@ export default function TerminalDrawer({
             0 30px 80px rgba(0, 0, 0, 0.95), 
             0 0 45px rgba(0, 240, 255, 0.18),
             inset 0 2px 4px rgba(255, 255, 255, 0.15);
-          padding: 20px 28px 18px 28px;
+          padding: 18px 26px 18px 26px;
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -586,7 +485,60 @@ export default function TerminalDrawer({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 8px;
+          padding: 0 4px;
+        }
+
+        .gba-icon-action-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .gba-icon-action-btn:hover {
+          background: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+        .gba-close-action-btn:hover {
+          background: rgba(239, 68, 68, 0.85);
+          color: #ffffff;
+          border-color: #ef4444;
+        }
+
+        .gba-pill-action-btn {
+          display: flex;
+          align-items: center;
+          height: 30px;
+          padding: 0 10px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #94a3b8;
+          font-family: monospace;
+          font-size: 0.68rem;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .gba-pill-action-btn:hover {
+          background: rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+        }
+        .gba-pill-action-btn.active-lb {
+          background: rgba(245, 158, 11, 0.2);
+          border-color: rgba(245, 158, 11, 0.5);
+          color: #fbbf24;
+        }
+        .gba-pill-action-btn.active-menu {
+          background: rgba(0, 240, 255, 0.2);
+          border-color: rgba(0, 240, 255, 0.5);
+          color: #00f0ff;
         }
 
         .gba-power-indicator {

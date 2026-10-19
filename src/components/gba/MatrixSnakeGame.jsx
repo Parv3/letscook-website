@@ -295,10 +295,7 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
       ctx.font = 'bold 11px monospace';
       if (s.ghostTimer > 0) {
         ctx.fillStyle = '#ec4899';
-        ctx.fillText(`GHOST: ACTIVE (${Math.ceil(s.ghostTimer / 30)}s)`, 16, 24);
-      } else {
-        ctx.fillStyle = 'rgba(34, 197, 94, 0.85)';
-        ctx.fillText('D-PAD TO STEER • WRAP-AROUND OK', 16, 24);
+        ctx.fillText(`GHOST (${Math.ceil(s.ghostTimer / 30)}s)`, 16, 24);
       }
 
       // Overlays
@@ -307,37 +304,29 @@ export default function MatrixSnakeGame({ onExit, onOpenLeaderboard, dpadState, 
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('MATRIX SNAKE', width / 2, height / 2 - 30);
+        ctx.fillText('MATRIX SNAKE', width / 2, height / 2 - 20);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '14px monospace';
-        ctx.fillText('PRESS [A] OR [START] TO BEGIN', width / 2, height / 2 + 5);
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px monospace';
-        ctx.fillText('GRAB DATA PACKETS • BONUS GEMS AVAILABLE', width / 2, height / 2 + 35);
+        ctx.fillText('PRESS [A] TO START', width / 2, height / 2 + 15);
       } else if (s.gameState === 'gameover') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ff0055';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 24px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('CIRCUIT SHORT // GAME OVER', width / 2, height / 2 - 35);
+        ctx.fillText('GAME OVER', width / 2, height / 2 - 25);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '14px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
+        ctx.font = '15px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#22c55e';
         ctx.font = '13px monospace';
-        ctx.fillText('PRESS [A] TO RECONNECT TRACE', width / 2, height / 2 + 25);
-
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+        ctx.fillText('PRESS [A] TO RETRY', width / 2, height / 2 + 35);
       }
     };
 

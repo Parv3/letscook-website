@@ -455,57 +455,45 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SHIELD BREAKER', width / 2, height / 2 - 30);
+        ctx.fillText('SHIELD BREAKER', width / 2, height / 2 - 20);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '14px monospace';
-        ctx.fillText('PRESS [A] TO LAUNCH SHIELD', width / 2, height / 2 + 5);
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '11px monospace';
-        ctx.fillText('CATCH FALLING POWER-UPS & SHATTER HYDRA', width / 2, height / 2 + 35);
+        ctx.fillText('PRESS [A] TO START', width / 2, height / 2 + 15);
       } else if (s.gameState === 'gameover') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 24px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('SHIELD LOST // DEFEAT', width / 2, height / 2 - 35);
+        ctx.fillText('GAME OVER', width / 2, height / 2 - 25);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '14px monospace';
-        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 - 5);
+        ctx.font = '15px monospace';
+        ctx.fillText(`SCORE: ${s.score}   HI: ${s.bestScore}`, width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#38bdf8';
         ctx.font = '13px monospace';
-        ctx.fillText('PRESS [A] TO REDEPLOY SHIELD', width / 2, height / 2 + 25);
-
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+        ctx.fillText('PRESS [A] TO RETRY', width / 2, height / 2 + 35);
       } else if (s.gameState === 'won') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 24px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('HYDRA GRID PURGED!', width / 2, height / 2 - 35);
+        ctx.fillText('VICTORY!', width / 2, height / 2 - 25);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '14px monospace';
-        ctx.fillText(`SCORE: ${s.score}`, width / 2, height / 2 - 5);
+        ctx.font = '15px monospace';
+        ctx.fillText(`SCORE: ${s.score}`, width / 2, height / 2 + 5);
 
         ctx.fillStyle = '#38bdf8';
         ctx.font = '13px monospace';
-        ctx.fillText('PRESS [A] TO PLAY AGAIN', width / 2, height / 2 + 25);
-
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText('[L] VIEW LEADERBOARD   •   [B / ESC] MENU', width / 2, height / 2 + 55);
+        ctx.fillText('PRESS [A] TO PLAY AGAIN', width / 2, height / 2 + 35);
       }
     };
 
