@@ -20,18 +20,18 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
     gameState: 'ready',
     score: 0,
     bestScore: highScore,
-    speed: 2.0,
+    speed: 2.6,
     frame: 0,
     milestoneFlash: 0,
     
-    // Dino Physics (Tuned for 480x320 resolution - Easy, forgiving floaty jumps)
+    // Dino Physics (Tuned for 480x320 resolution - Crisp, snappy arcade feel)
     dino: {
       x: 55,
       y: 250,
       groundY: 250,
       vy: 0,
-      gravity: 0.48,
-      jumpForce: -9.2,
+      gravity: 0.50,
+      jumpForce: -9.5,
       isGrounded: true,
       isDucking: false,
       step: 0
@@ -39,7 +39,7 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
 
     // Obstacles
     obstacles: [],
-    nextSpawnIn: 110,
+    nextSpawnIn: 75,
 
     // Deco
     clouds: [
@@ -69,7 +69,7 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
     if (s.gameState === 'ready') {
       s.gameState = 'playing';
       s.score = 0;
-      s.speed = 2.0;
+      s.speed = 2.6;
       s.obstacles = [];
       s.frame = 0;
       setGameState('playing');
@@ -82,7 +82,7 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
     if (s.gameState === 'gameover') {
       s.gameState = 'playing';
       s.score = 0;
-      s.speed = 2.0;
+      s.speed = 2.6;
       s.dino.y = s.dino.groundY;
       s.dino.vy = 0;
       s.dino.isGrounded = true;
@@ -205,9 +205,9 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
             localStorage.setItem('lc_gba_dino_hi', String(s.score));
           }
 
-          // Very gradual acceleration capped at 6.8
-          if (s.speed < 6.8) {
-            s.speed += 0.0008;
+          // Engaging acceleration capped at 7.2
+          if (s.speed < 7.2) {
+            s.speed += 0.0012;
           }
         }
 
@@ -230,13 +230,13 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
           d.step = (d.step + 1) % 2;
         }
 
-        // Spawn Obstacles with gentle progressive difficulty
+        // Spawn Obstacles with balanced, rhythmic arcade pacing
         s.nextSpawnIn--;
         if (s.nextSpawnIn <= 0) {
-          const allowFlyers = s.score > 160;
+          const allowFlyers = s.score > 90;
           const roll = Math.random();
 
-          if (allowFlyers && roll < 0.32) {
+          if (allowFlyers && roll < 0.35) {
             // Flying Pterodactyl Drone
             const altLevels = [175, 205, 224];
             const altY = altLevels[Math.floor(Math.random() * altLevels.length)];
@@ -249,15 +249,15 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
               wingUp: false
             });
           } else {
-            // Quantum Cacti - starts with easy single cactus, scales up later
+            // Quantum Cacti - starts with single cactus, scales up naturally
             const sizeRoll = Math.random();
             let w = 16;
             let h = 34;
             let count = 1;
-            if (s.score > 250 && sizeRoll > 0.72) {
+            if (s.score > 180 && sizeRoll > 0.70) {
               w = 34;
               count = 3;
-            } else if (s.score > 75 && sizeRoll > 0.45) {
+            } else if (s.score > 60 && sizeRoll > 0.45) {
               w = 26;
               count = 2;
             }
@@ -272,8 +272,8 @@ export default function CyberDinoGame({ onExit, onOpenLeaderboard, dpadState, bu
             });
           }
 
-          // Generous obstacle spacing at first, shrinks smoothly as speed increases
-          s.nextSpawnIn = Math.floor(65 + Math.random() * 55 + (180 / s.speed));
+          // Balanced obstacle spacing formula
+          s.nextSpawnIn = Math.floor(45 + Math.random() * 45 + (150 / s.speed));
         }
 
         // Update Obstacles & Collision Check

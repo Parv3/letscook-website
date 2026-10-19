@@ -22,11 +22,11 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     score: 0,
     lives: 3,
     bestScore: highScore,
-    baseSpeed: 1.5,
-    paddleX: 192,
-    paddleW: 96,
+    baseSpeed: 2.1,
+    paddleX: 194,
+    paddleW: 92,
     hasLasers: false,
-    balls: [{ x: 240, y: 260, vx: 0.8, vy: -1.3, r: 7, rot: 0 }],
+    balls: [{ x: 240, y: 260, vx: 1.2, vy: -1.7, r: 7, rot: 0 }],
     bricks: [],
     powerups: [],
     lasers: [],
@@ -67,11 +67,11 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
     s.gameState = 'playing';
     s.score = 0;
     s.lives = 3;
-    s.baseSpeed = 1.5;
-    s.paddleX = 192;
-    s.paddleW = 96;
+    s.baseSpeed = 2.1;
+    s.paddleX = 194;
+    s.paddleW = 92;
     s.hasLasers = false;
-    s.balls = [{ x: 240, y: 260, vx: (Math.random() > 0.5 ? 0.8 : -0.8), vy: -1.3, r: 7, rot: 0 }];
+    s.balls = [{ x: 240, y: 260, vx: (Math.random() > 0.5 ? 1.2 : -1.2), vy: -1.7, r: 7, rot: 0 }];
     s.bricks = initBricks();
     s.powerups = [];
     s.lasers = [];
@@ -190,9 +190,9 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
       const goRight = Boolean(curDpad.right || s.keys.right);
 
       if (goLeft && !goRight) {
-        s.paddleX = Math.max(6, s.paddleX - 7);
+        s.paddleX = Math.max(6, s.paddleX - 8.5);
       } else if (goRight && !goLeft) {
-        s.paddleX = Math.min(width - s.paddleW - 6, s.paddleX + 7);
+        s.paddleX = Math.min(width - s.paddleW - 6, s.paddleX + 8.5);
       }
 
       if (s.gameState === 'playing') {
@@ -214,10 +214,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
           if (l.y < 0) s.lasers.splice(i, 1);
         }
 
-        // Update Powerups (Gentle fall speed)
+        // Update Powerups (Brisk, catchable fall speed)
         for (let i = s.powerups.length - 1; i >= 0; i--) {
           const p = s.powerups[i];
-          p.y += 1.2;
+          p.y += 1.4;
 
           if (
             p.y >= 278 &&
@@ -369,10 +369,10 @@ export default function ShieldBreakerGame({ onExit, onOpenLeaderboard, dpadState
             playGbaCrash();
             submitScore('shield', s.score);
           } else {
-            s.baseSpeed = Math.max(1.5, (s.baseSpeed || 1.5) - 0.2);
-            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 260, vx: (Math.random() > 0.5 ? 0.8 : -0.8), vy: -1.3, r: 7, rot: 0 }];
+            s.baseSpeed = Math.max(2.1, (s.baseSpeed || 2.1) - 0.2);
+            s.balls = [{ x: s.paddleX + s.paddleW / 2, y: 260, vx: (Math.random() > 0.5 ? 1.2 : -1.2), vy: -1.7, r: 7, rot: 0 }];
             s.hasLasers = false;
-            s.paddleW = 96;
+            s.paddleW = 92;
             playGbaBounce();
           }
         }

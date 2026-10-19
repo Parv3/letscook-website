@@ -23,8 +23,8 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
     bestScore: highScore,
     playerY: 150,
     velocity: 0,
-    gravity: 0.14,
-    thrust: -3.0,
+    gravity: 0.16,
+    thrust: -3.4,
     hasShield: false,
     lasers: [],
     gates: [],
@@ -151,13 +151,13 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
           s.velocity = 0.6;
         }
 
-        // Dynamic scroll speed: starts very calm at 1.05, ramps gently up to 2.2
-        const scrollSpeed = Math.min(2.2, 1.05 + (s.score / 320) * 0.35);
+        // Dynamic scroll speed: starts brisk and confident at 1.45, ramps smoothly up to 2.5
+        const scrollSpeed = Math.min(2.5, 1.45 + (s.score / 260) * 0.35);
 
         // Spawn gates with dynamic wide gap & spacing
-        const gateInterval = Math.max(110, Math.floor(155 - (s.score / 250) * 12));
+        const gateInterval = Math.max(90, Math.floor(135 - (s.score / 220) * 12));
         if (s.frame % gateInterval === 0) {
-          const gap = Math.max(120, Math.floor(155 - (s.score / 250) * 8));
+          const gap = Math.max(120, Math.floor(145 - (s.score / 220) * 8));
           const topH = 25 + Math.random() * (height - gap - 60);
           s.gates.push({
             x: width,
@@ -181,9 +181,9 @@ export default function StarkFlightGame({ onExit, onOpenLeaderboard, dpadState, 
           }
         }
 
-        // Spawn Hydra drones only after player gets familiar (score > 90)
-        if (s.score > 90 && s.frame % 170 === 85) {
-          const droneSpeed = -Math.min(2.2, 1.2 + (s.score / 400) * 0.3);
+        // Spawn Hydra drones when score > 60 for action
+        if (s.score > 60 && s.frame % 150 === 75) {
+          const droneSpeed = -Math.min(2.4, 1.5 + (s.score / 350) * 0.3);
           s.drones.push({
             x: width + 15,
             y: 50 + Math.random() * (height - 100),
