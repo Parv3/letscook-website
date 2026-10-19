@@ -115,38 +115,41 @@ export default function CertificateViewer({ certificate, event }) {
         certIdPos.y
       );
 
-      // 4. Draw dynamic Verification QR Code if configured
-      if (cfg.qrPosition) {
-        const qrPos = cfg.qrPosition;
-        try {
-          const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-            margin: 1,
-            width: qrPos.size * 2,
-            color: {
-              dark: '#000000',
-              light: '#ffffff'
-            }
-          });
+      // 4. Draw dynamic Verification QR Code
+      const qrPos = cfg.qrPosition || {
+        x: baseWidth - 175,
+        y: baseHeight - 175,
+        size: 115
+      };
 
-          const qrImg = new Image();
-          await new Promise((resolve) => {
-            qrImg.onload = resolve;
-            qrImg.src = qrDataUrl;
-          });
+      try {
+        const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+          margin: 1,
+          width: qrPos.size * 2,
+          color: {
+            dark: '#000000',
+            light: '#ffffff'
+          }
+        });
 
-          // Crisp white backing frame
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(qrPos.x - 3, qrPos.y - 3, qrPos.size + 6, qrPos.size + 6);
-          ctx.drawImage(qrImg, qrPos.x, qrPos.y, qrPos.size, qrPos.size);
+        const qrImg = new Image();
+        await new Promise((resolve) => {
+          qrImg.onload = resolve;
+          qrImg.src = qrDataUrl;
+        });
 
-          // QR label
-          ctx.font = '700 8px "Space Grotesk", sans-serif';
-          ctx.fillStyle = '#71717a';
-          ctx.textAlign = 'center';
-          ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 12);
-        } catch (err) {
-          console.error('QR code generation error:', err);
-        }
+        // Crisp white backing frame
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(qrPos.x - 3, qrPos.y - 3, qrPos.size + 6, qrPos.size + 6);
+        ctx.drawImage(qrImg, qrPos.x, qrPos.y, qrPos.size, qrPos.size);
+
+        // QR label
+        ctx.font = '700 8px "Space Grotesk", sans-serif';
+        ctx.fillStyle = '#71717a';
+        ctx.textAlign = 'center';
+        ctx.fillText('SCAN TO VERIFY', qrPos.x + qrPos.size / 2, qrPos.y + qrPos.size + 12);
+      } catch (err) {
+        console.error('QR code generation error:', err);
       }
 
       if (!isCancelled) {
@@ -208,6 +211,11 @@ export default function CertificateViewer({ certificate, event }) {
     const issueYear = "2026";
     const issueMonth = "10";
     return `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(certName)}&organizationName=${encodeURIComponent(orgName)}&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(verifyUrl)}&certId=${encodeURIComponent(certId)}`;
+  };
+
+  const getTwitterShareUrl = () => {
+    const text = `Just verified my official certification from Let's Cook (${certificate.credentialType || 'Certificate of Achievement'})! 🚀 Check out my verified credential:`;
+    return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(verifyUrl)}`;
   };
 
   return (
@@ -275,6 +283,17 @@ export default function CertificateViewer({ certificate, event }) {
         >
           <ExternalLink size={18} />
           <span>Add to LinkedIn</span>
+        </a>
+
+        <a
+          href={getTwitterShareUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cert-btn twitter"
+          onClick={() => playTechClick()}
+        >
+          <Share2 size={18} />
+          <span>Post on X</span>
         </a>
 
         <button
@@ -591,6 +610,19 @@ export default function CertificateViewer({ certificate, event }) {
           border-color: #0a66c2;
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+        }
+
+        .cert-btn.twitter {
+          background: rgba(255, 255, 255, 0.05);
+          color: #f1f5f9;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .cert-btn.twitter:hover {
+          background: rgba(255, 255, 255, 0.12);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
         }
 
         .cert-btn.ghost {

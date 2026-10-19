@@ -15,10 +15,19 @@ import {
   AlertCircle, 
   Trash2, 
   Sparkles,
-  DownloadCloud
+  DownloadCloud,
+  Copy,
+  Check
 } from 'lucide-react';
 import { getStoredUser, fetchPortalResources, uploadPortalResource, deletePortalResource } from '../services/portalService';
 import { playTechClick, playVibraniumPing } from '../utils/soundEngine';
+
+function sanitizeUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '#';
+  const trimmed = rawUrl.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return '#';
+}
 
 export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSquad }) {
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
@@ -29,6 +38,7 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successToast, setSuccessToast] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
 
   // Sync auth state
   useEffect(() => {
@@ -127,7 +137,7 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
           </div>
 
           <h1 className="locked-minimal-title">
-            Login to acess
+            Login to access
           </h1>
 
           <button 
@@ -451,6 +461,25 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
                     </div>
 
                     <div className="resource-actions-cell">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          playTechClick();
+                          navigator.clipboard.writeText(res.url);
+                          setCopiedId(res.id);
+                          setSuccessToast('Resource link copied to clipboard!');
+                          setTimeout(() => {
+                            setCopiedId(null);
+                            setSuccessToast('');
+                          }, 2500);
+                        }}
+                        className="btn-copy-resource"
+                        title="Copy direct link to clipboard"
+                        aria-label="Copy direct link"
+                      >
+                        {copiedId === res.id ? <Check size={14} style={{ color: '#4ade80' }} /> : <Copy size={14} />}
+                      </button>
+
                       {isCoreMember && (
                         <button
                           onClick={() => handleDeleteResource(res.id)}
@@ -461,7 +490,7 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
                         </button>
                       )}
                       <a
-                        href={res.url}
+                        href={sanitizeUrl(res.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-open-resource glow-btn"
@@ -794,6 +823,26 @@ export default function ResourcesPage({ setCurrentPage, onSelectSquad, currentSq
           gap: 8px;
         }
 
+        .btn-copy-resource {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #94a3b8;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .btn-copy-resource:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
         .btn-delete-resource {
           background: transparent;
           border: 1px solid rgba(239, 68, 68, 0.3);
@@ -871,10 +920,20 @@ function UploadResourceModal({ onClose, onUploaded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
+    const trimmedUrl = (formData.url || '').trim();
+    if (!/^https?:\/\//i.test(trimmedUrl)) {
+      setErrorMsg('Invalid URL. Links must start with http:// or https://');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       playTechClick();
-      const res = await uploadPortalResource(formData);
+      const res = await uploadPortalResource({
+        ...formData,
+        url: trimmedUrl
+      });
       playVibraniumPing();
       onUploaded(res.resource);
     } catch (err) {

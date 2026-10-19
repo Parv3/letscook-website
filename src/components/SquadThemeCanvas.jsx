@@ -347,6 +347,15 @@ export default function SquadThemeCanvas({ squad = 'ironman' }) {
       animId = requestAnimationFrame(render);
     };
 
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      render(); // Render single static aesthetic frame
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('mousemove', handleMouseMove);
+      };
+    }
+
     animId = requestAnimationFrame(render);
 
     const handleVisibilityChange = () => {

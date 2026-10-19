@@ -178,6 +178,16 @@ export default function VerifyCyberBackground({ currentSquad }) {
       animId = requestAnimationFrame(render);
     };
 
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      render(); // Single static render
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+
     animId = requestAnimationFrame(render);
 
     const handleVisibility = () => {

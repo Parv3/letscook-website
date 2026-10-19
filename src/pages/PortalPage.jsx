@@ -681,6 +681,8 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
   const [statusFilter, setStatusFilter] = useState('all');
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [toastMsg, setToastMsg] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [isBatchActioning, setIsBatchActioning] = useState(false);
 
   const fetchRoster = async () => {
     try {
@@ -715,19 +717,43 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
     }
   };
 
+  const handleBatchApprove = async () => {
+    if (selectedUserIds.length === 0) return;
+    if (!window.confirm(`Approve ${selectedUserIds.length} selected member(s) into active squads?`)) return;
+    playTechClick();
+    setIsBatchActioning(true);
+    try {
+      await Promise.allSettled(
+        selectedUserIds.map(id => executeAdminAction('approve', id))
+      );
+      setToastMsg(`Successfully approved ${selectedUserIds.length} members!`);
+      setTimeout(() => setToastMsg(''), 3500);
+      setSelectedUserIds([]);
+      fetchRoster();
+    } catch (err) {
+      alert('Batch approval encountered an issue.');
+    } finally {
+      setIsBatchActioning(false);
+    }
+  };
+
   const handleExportCsv = () => {
     if (!data || !data.profiles) return;
     playTechClick();
-    const headers = ['Full Name', 'Email', 'College', 'Branch', 'Year', 'Squad', 'Role', 'Status', 'Registered At'];
+    const headers = ['Full Name', 'Email', 'Phone', 'College', 'Branch', 'Year', 'Squad', 'Role', 'Status', 'GitHub', 'LinkedIn', 'Skills', 'Registered At'];
     const rows = data.profiles.map(p => [
       `"${p.fullName || ''}"`,
       `"${p.email}"`,
+      `"${p.phone || ''}"`,
       `"${p.college || ''}"`,
       `"${p.branch || ''}"`,
       `"${p.yearOfStudy || ''}"`,
       `"${p.targetSquad || ''}"`,
-      `"${p.roleTitle || ''}"`,
+      `"${p.roleTitle || p.role || ''}"`,
       `"${p.status}"`,
+      `"${p.githubUrl || ''}"`,
+      `"${p.linkedinUrl || ''}"`,
+      `"${(p.skills || []).join('; ')}"`,
       `"${p.createdAt}"`
     ]);
 
@@ -754,6 +780,22 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
     return matchesSearch && matchesSquad && matchesStatus;
   });
 
+  const pendingProfiles = filteredProfiles.filter(p => p.status === 'pending_review');
+
+  const toggleSelectAllPending = () => {
+    if (selectedUserIds.length === pendingProfiles.length && pendingProfiles.length > 0) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(pendingProfiles.map(p => p.id));
+    }
+  };
+
+  const toggleSelectUser = (id) => {
+    setSelectedUserIds(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="admin-dashboard-wrapper">
       {/* Top Header */}
@@ -770,6 +812,13 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
         </div>
 
         <div className="admin-header-actions">
+          <a 
+            href="/resources" 
+            className="btn-secondary vault-shortcut-btn" 
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Sparkles size={14} style={{ color: '#fbbf24' }} /> Vault Resources
+          </a>
           <button onClick={handleExportCsv} className="btn-secondary export-btn">
             <FileSpreadsheet size={15} /> Export Roster (.csv)
           </button>
@@ -872,6 +921,35 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
         </div>
       </div>
 
+      {/* Batch Actions Bar */}
+      {pendingProfiles.length > 0 && (
+        <div className="batch-actions-bar animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: '12px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '0.86rem', color: '#fde68a', fontWeight: 600 }}>
+              {selectedUserIds.length} of {pendingProfiles.length} pending member(s) selected
+            </span>
+            <button
+              type="button"
+              onClick={toggleSelectAllPending}
+              style={{ background: 'transparent', border: '1px solid rgba(253, 230, 138, 0.3)', color: '#fef08a', padding: '4px 10px', borderRadius: '6px', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
+            >
+              {selectedUserIds.length === pendingProfiles.length ? 'Deselect All' : 'Select All Pending'}
+            </button>
+          </div>
+
+          {selectedUserIds.length > 0 && (
+            <button
+              type="button"
+              disabled={isBatchActioning}
+              onClick={handleBatchApprove}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 16px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '0.84rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 0 16px rgba(16, 185, 129, 0.4)' }}
+            >
+              <Check size={14} /> {isBatchActioning ? 'Approving...' : `Approve Selected (${selectedUserIds.length})`}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Member Roster Table */}
       <div className="roster-table-card">
         {isLoading ? (
@@ -883,6 +961,15 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
             <table className="roster-table">
               <thead>
                 <tr>
+                  <th style={{ width: '40px', textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      aria-label="Select all pending"
+                      checked={pendingProfiles.length > 0 && selectedUserIds.length === pendingProfiles.length}
+                      onChange={toggleSelectAllPending}
+                      style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                    />
+                  </th>
                   <th>BUILDER</th>
                   <th>COLLEGE & TRACK</th>
                   <th>ASSIGNED SQUAD</th>
@@ -896,9 +983,20 @@ function AdminDashboardView({ currentUser, onSignOut, onSelectSquad, currentSqua
                   const pSquad = p.targetSquad === 'core' ? 'hulk' : (p.targetSquad || 'ironman');
                   const sqCfg = SQUADS_CONFIG[pSquad] || SQUADS_CONFIG.ironman;
                   const isActioning = actionLoadingId === p.id;
+                  const isSelected = selectedUserIds.includes(p.id);
 
                   return (
-                    <tr key={p.id}>
+                    <tr key={p.id} className={isSelected ? 'row-selected' : ''}>
+                      <td style={{ textAlign: 'center' }}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${p.fullName || p.email}`}
+                          checked={isSelected}
+                          onChange={() => toggleSelectUser(p.id)}
+                          style={{ cursor: 'pointer', accentColor: '#10b981' }}
+                        />
+                      </td>
+
                       <td>
                         <div className="builder-cell">
                           <span className="builder-name">{p.fullName || 'Anonymous Builder'}</span>
